@@ -7,47 +7,47 @@ Demo application showcasing Configuration with Design Automation for Inventor
 1. Go inside the repository
 1. `dotnet run`
 
-### Backend
+## Backend
 We are using forge service on the backend https://forge.autodesk.com/
 
-#### .NET Core
+### .NET Core
+Using latest version of .NET Core (now 3.1) https://dotnet.microsoft.com/download/dotnet-core/3.1
 
-Using latest version of .NET Core (now 3.1). https://dotnet.microsoft.com/download/dotnet-core/3.1
 Project is created using `dotnet new react`
 
-#### Forge Design Automation
+### Forge Design Automation
 https://forge.autodesk.com/en/docs/design-automation/v3/developers_guide/overview/
 
 C# SDK https://github.com/Autodesk-Forge/forge-api-dotnet-design.automation
 
 We are using Inventor and Revit engine. 
 
-#### OSS
+### OSS
 Used for storing your designs. For communication with Forge Design Automation
 
 https://forge.autodesk.com/en/docs/data/v2/developers_guide/overview/
 
 C# SDK https://github.com/Autodesk-Forge/forge-api-dotnet-client
 
-### Client app
+## Client app
 
-#### React
+### React
 https://reactjs.org/
 
-#### Redux
+### Redux
 https://redux.js.org/
 
 We are using redux-thunk for complex and asynchronous operations https://github.com/reduxjs/redux-thunk
 
-#### Autodesk HIG React
+### Autodesk HIG React
 
 https://github.com/Autodesk/hig
 
 Table is not part of todays React HIG implementation so we will use https://github.com/Autodesk/react-base-table
 
-### How to
+## How to
 
-#### Add npm package to project
+### Add npm package to project
 
 We are using npm.
 
