@@ -6,6 +6,13 @@ import './app.css'
 
 export default class App extends Component {
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      isPrimary: true
+    };
+  }
+
   render () {
     return (
       <Surface id="main" level={200}
@@ -15,8 +22,9 @@ export default class App extends Component {
         borderRadius="m">
         <Button
           size="standard"
-          title="I am Autodesk HIG button and I am doing nothing"
-          type="primary"
+          title={ this.state.isPrimary ? "I am Autodesk HIG button and I am doing nothing" : "Oops"}
+          type={ this.state.isPrimary ? "primary" : "secondary"}
+          onClick={ () => this.setState({ isPrimary: !this.state.isPrimary }) }
         />
       </Surface>
     );
