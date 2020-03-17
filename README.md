@@ -6,6 +6,7 @@ Demo application showcasing Configuration with Design Automation for Inventor
 1. Clone repository
 1. Go inside the repository
 1. `dotnet run`
+1. Open https://localhost:5001
 
 ### Backend
 We are using forge service on the backend https://forge.autodesk.com/
