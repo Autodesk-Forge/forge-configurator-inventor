@@ -12,7 +12,7 @@ We are using forge service on the backend https://forge.autodesk.com/
 
 #### .NET Core
 
-Using latest version of .NET Core (now 3.1).
+Using latest version of .NET Core (now 3.1). https://dotnet.microsoft.com/download/dotnet-core/3.1
 Project is created using `dotnet new react`
 
 #### Forge Design Automation
@@ -45,4 +45,10 @@ https://github.com/Autodesk/hig
 
 Table is not part of todays React HIG implementation so we will use https://github.com/Autodesk/react-base-table
 
-### 
+### How to
+
+#### Add npm package to project
+
+We are using npm.
+
+1. Using command line go to ClientApp and write `npm install <package>`
