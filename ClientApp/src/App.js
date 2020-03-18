@@ -13,7 +13,8 @@ export class ProjectList extends Component {
     const projects = this.props.projects;
 
     if (! projects) {
-      return (<div>No projects loaded</div>)
+
+      return (<span>No projects loaded</span>)
     } else {
 
       //console.log(projects);
@@ -36,7 +37,6 @@ export default class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isPrimary: true,
       projects: null
     };
   }
@@ -50,17 +50,18 @@ export default class App extends Component {
         borderRadius="m">
         <Button
           size="standard"
-          title={ this.state.isPrimary ? "I am Autodesk HIG button and I am doing nothing" : "Oops"}
-          type={ this.state.isPrimary ? "primary" : "secondary"}
+          title="I am Autodesk HIG button and I can load projects"
+          type="primary"
           onClick={ async () => {
-            this.setState({ isPrimary: ! this.state.isPrimary });
 
             // load projects data
             const projects = await getRepo().loadProjects();
-            this.setState( Object.assign({}, this.state, { projects: projects } ) );
+            this.setState( { projects: projects });
           } }
         />
-        <ProjectList projects={ this.state.projects } />
+        <div id="projectList">
+          <ProjectList projects={ this.state.projects } />
+        </div>
       </Surface>
     );
   }
