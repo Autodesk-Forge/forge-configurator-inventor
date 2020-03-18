@@ -17,7 +17,7 @@ export class ProjectList extends Component {
       return (<span>No projects loaded</span>)
     } else {
 
-      //console.log(projects);
+      console.log(projects);
 
       return (
         <ul>
@@ -36,6 +36,7 @@ export default class App extends Component {
 
   constructor(props) {
     super(props);
+
     this.state = {
       projects: null
     };
@@ -59,7 +60,7 @@ export default class App extends Component {
             this.setState( { projects: projects });
           } }
         />
-        <div id="projectList">
+        <div id="project-list">
           <ProjectList projects={ this.state.projects } />
         </div>
       </Surface>

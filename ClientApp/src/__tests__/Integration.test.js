@@ -2,12 +2,12 @@ const playwright = require('playwright');
 
 const pageUrl = "https://localhost:5001"
 
-const config = { 
+const config = {
     // headless: false, // NOTE: uncomment to see what is actually going o the screen
     args: [
         // to avoid errors about self-signed SSL certificate: https://stackoverflow.com/q/55207690
         '--ignore-certificate-errors',
-        '--ignore-certificate-errors-spki-list', 
+        '--ignore-certificate-errors-spki-list',
     ]};
 
 
@@ -37,21 +37,27 @@ describe('Integration UI tests', () => {
         await browser.close();
     });
 
-    it(`should check click on button`, async () => {
+    it('should check the page is loaded', async () => {
 
         // check the page is loaded
         expect(page).not.toBeNull();
         expect(await page.title()).not.toBeNull();
+    });
 
-        // check initial button title
-        const buttonTitle = await page.evaluate(() => document.querySelector("button span").textContent);
-        expect(buttonTitle).toBe("I am Autodesk HIG button and I am doing nothing");
+    it(`should project loading`, async () => {
 
-        // emulate click
+        // check initial list content
+        let initialContent = await page.evaluate(() => document.querySelector("#project-list").textContent);
+        expect(initialContent).toBe("No projects loaded");
+
+        // emulate click to trigger project loading
         await page.evaluate(() => document.querySelector("button span").click()); // TODO: this is pretty ineffective. Need to work with handles, I guess
 
-        // verify that the button title is changed
-        const updatedTitle = await page.evaluate(() => document.querySelector("button span").textContent);
-        expect(updatedTitle).toBe("Oops");
+        // wait until project list is refreshed
+        await page.waitForSelector("#project-list ul");
+
+        // check updated list content
+        const updatedContent = await page.evaluate(() => document.querySelector("#project-list").textContent);
+        expect(updatedContent).not.toBe("No projects loaded");
     });
 });
