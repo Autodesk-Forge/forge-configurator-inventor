@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import axios from 'axios';
 
 import Surface from '@hig/surface';
 import Button from '@hig/button';
 import './app.css'
+import { getRepo } from './Repository';
 
 export class ProjectList extends Component {
 
@@ -51,16 +51,12 @@ export default class App extends Component {
           size="standard"
           title={ this.state.isPrimary ? "I am Autodesk HIG button and I am doing nothing" : "Oops"}
           type={ this.state.isPrimary ? "primary" : "secondary"}
-          onClick={ () => {
-            this.setState({ isPrimary: !this.state.isPrimary });
+          onClick={ async () => {
+            this.setState({ isPrimary: ! this.state.isPrimary });
 
-            axios("/Project")
-              .then(response => { 
-
-                console.log(response);
-                this.setState( Object.assign({}, this.state, { projects: response.data } ) );
-              })
-              .catch(e => console.log(`Project loading error: ${e}`));
+            // load projects data
+            const projects = await getRepo().loadProjects();
+            this.setState( Object.assign({}, this.state, { projects: projects } ) );
           } }
         />
         <ProjectList projects={ this.state.projects } />
