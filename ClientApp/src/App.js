@@ -5,23 +5,24 @@ import Button from '@hig/button';
 import './app.css'
 import { getRepo } from './Repository';
 
+/** Dummy class to display project list */
 export class ProjectList extends Component {
 
   render() {
 
     const projects = this.props.projects;
 
-    console.log(projects);
-
     if (! projects) {
-      return (<div>Loading...</div>)
+      return (<div>No projects loaded</div>)
     } else {
+
+      //console.log(projects);
 
       return (
         <ul>
           {
-            projects.map(project => {
-              return (<li>{project.name}</li>)
+            projects.map((project, index) => {
+              return (<li key={index}>{project.name}</li>)
             })
           }
         </ul>
