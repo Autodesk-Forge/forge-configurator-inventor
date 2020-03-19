@@ -1,6 +1,9 @@
 # IO Config Demo
 Demo application showcasing Configuration with Design Automation for Inventor
 
+## Setup
+1. Create forge app at https://forge.autodesk.com/
+1. Set environment variables `FORGE_CLIENT_ID` and `FORGE_CLIENT_SECRET` with the values for the app created in step one
 ## Run the app
 
 1. Clone repository
