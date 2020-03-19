@@ -1,12 +1,13 @@
 {
   "name": "ioconfigdemo",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "dependencies": {
     "@hig/button": "^1.4.3",
     "@hig/surface": "^1.1.0",
     "@hig/theme-context": "^3.0.0",
     "@hig/theme-data": "^2.15.1",
+    "axios": "^0.19.2",
     "bootstrap": "^4.1.3",
     "jquery": "^3.4.1",
     "merge": "^1.2.1",

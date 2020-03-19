@@ -1,31 +1,58 @@
+// prepare mocks
+jest.mock('../Repository');
+import { getRepo } from '../Repository';
+
+const loadProjectsMock = jest.fn();
+getRepo.mockImplementation(
+  () => ({
+    loadProjects: loadProjectsMock
+  })
+);
+
 import React from 'react';
 import { unmountComponentAtNode, render } from 'react-dom';
 import { act } from "react-dom/test-utils";
 import App from '../App';
 
-let container = null;
-beforeEach(() => {
-  // setup a DOM element as a render target
-  container = document.createElement("div");
-  document.body.appendChild(container);
-});
 
-afterEach(() => {
-  // cleanup on exiting
-  unmountComponentAtNode(container);
-  container.remove();
-  container = null;
-});
+describe.skip('test App component', () => {
 
-it('Check expected context', () => {
-
+  let container = null;
+  beforeEach(() => {
+    // setup a DOM element as a render target
+    container = document.createElement("div");
+    document.body.appendChild(container);
     act(() => { render(<App />, container); });
 
-    const button = container.querySelector('button');
-    expect(button.textContent).toBe("I am Autodesk HIG button and I am doing nothing");
-    //expect(button.type).toBe("primary");
+    loadProjectsMock.mockClear();
+  });
+
+  afterEach(() => {
+    // cleanup on exiting
+    unmountComponentAtNode(container);
+    container.remove();
+    container = null;
+  });
+
+  /** Get text content from HTML element */
+  function tc(selector) {
+    return container.querySelector(selector).textContent;
+  }
+
+  it('should check empty list on start', () => {
+
+    expect(tc('#project-list')).toBe("No projects loaded");
+    expect(loadProjectsMock).toHaveBeenCalledTimes(0);
+  });
+
+  it('check loaded content', () => {
+
+    loadProjectsMock.mockReturnValue([{ name: 'foo' }]);
 
     // change state on button click
-    act(() => { button.dispatchEvent(new MouseEvent('click', { bubbles: true }));});
-    expect(button.textContent).toBe("Oops");
+    act(() => { button.dispatchEvent(new MouseEvent('click', { bubbles: true })); });
+
+    expect(loadProjectsMock).toHaveBeenCalledTimes(1);
+    expect(tc("#project-list")).toMatch(/foo/);
+  });
 });
