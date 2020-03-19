@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 
 import Surface from '@hig/surface';
 import Button from '@hig/button';
-import './app.css'
+import './app.css' 
+import Toolbar from './toolbar';
 import { getRepo } from './Repository';
 
 /** Dummy class to display project list */
@@ -60,6 +61,7 @@ export default class App extends Component {
             this.setState( { projects: projects });
           } }
         />
+        <Toolbar/>
         <div id="project-list">
           <ProjectList projects={ this.state.projects } />
         </div>
