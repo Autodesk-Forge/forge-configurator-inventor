@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 
 RUN apt-get update -y
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash --debug
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash
 RUN apt-get install nodejs -yq
 
 COPY . /app
