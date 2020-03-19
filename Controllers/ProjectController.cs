@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Autodesk.Forge.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -10,28 +10,27 @@ namespace IoConfigDemo.Controllers
     [Route("[controller]")]
     public class ProjectController : ControllerBase
     {
-        private static readonly string[] Names = new[]
-        {
-            "Project1", "Project2", "Project3", "Project4", "Project5", "Project6", "Project7", "Project8", "Project9", "Project10"
-        };
-
         private readonly ILogger<ProjectController> _logger;
+        private Forge _forge;
 
         public ProjectController(ILogger<ProjectController> logger)
         {
             _logger = logger;
+            _forge = new Forge(); // TODO inject for unit testing?
         }
 
         [HttpGet]
-        public IEnumerable<Project> Get()
+        public async Task<IEnumerable<Project>> Get()
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new Project
+            // TODO move to projects repository?
+            string projectsBucketKey = "io-config-demo-projects"; // TODO get from config
+            List<ObjectDetails> objects = await _forge.GetBucketObjects(projectsBucketKey);
+            List<Project> projects = new List<Project>();
+            foreach(ObjectDetails objDetails in objects)
             {
-                Date = DateTime.Now.AddDays(index),
-                Name = Names[rng.Next(Names.Length)]
-            })
-            .ToArray();
+                projects.Add(new Project { Name = objDetails.ObjectKey });
+            }
+            return projects;
         }
     }
 }
