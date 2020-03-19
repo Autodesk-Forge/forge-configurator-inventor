@@ -7,7 +7,7 @@ using Autodesk.Forge.Model;
 
 namespace IoConfigDemo
 {
-    class Forge
+    class Forge : IForge
     {
         // Initialize the oAuth 2.0 client configuration fron enviroment variables
         private static string FORGE_CLIENT_ID = Environment.GetEnvironmentVariable("FORGE_CLIENT_ID");
