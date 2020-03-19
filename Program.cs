@@ -21,6 +21,12 @@ namespace IoConfigDemo
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                    var port = Environment.GetEnvironmentVariable("PORT");
+                    // In case deployed to Heroku, we need to listen on port given by Heroku, not the default one
+                    if (!string.IsNullOrEmpty(port))
+                    {
+                        webBuilder.UseUrls("http://*:" + port);
+                    }
                 })
                 .ConfigureLogging(logging => 
                 {
