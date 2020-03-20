@@ -5,18 +5,16 @@ using Microsoft.Extensions.Options;
 using Autodesk.Forge;
 using Autodesk.Forge.Client;
 using Autodesk.Forge.Model;
+using IoConfigDemo.Configuration;
 
 namespace IoConfigDemo
 {
     class Forge : IForge
     {
-        // Initialize the oAuth 2.0 client configuration fron enviroment variables
-        // private static string FORGE_CLIENT_ID = Environment.GetEnvironmentVariable("FORGE_CLIENT_ID");
-        // private static string FORGE_CLIENT_SECRET = Environment.GetEnvironmentVariable("FORGE_CLIENT_SECRET");
-        private static Scope[] _scope = new Scope[] { Scope.DataRead };
+        private static readonly Scope[] _scope = { Scope.DataRead };
 
-        // Intialize the 2-legged oAuth 2.0 client.
-        private static TwoLeggedApi _twoLeggedApi = new TwoLeggedApi();
+        // Initialize the 2-legged oAuth 2.0 client.
+        private static readonly TwoLeggedApi _twoLeggedApi = new TwoLeggedApi();
 
         private string _twoLeggedAccessToken;
         private async Task<string> GetTwoLeggedAccessToken()
@@ -30,10 +28,14 @@ namespace IoConfigDemo
             return _twoLeggedAccessToken;
         }
 
-        private readonly ForgeConfiguration _options;
+        private readonly ForgeCredentialOptions _options;
 
-        public Forge(IOptionsMonitor<ForgeConfiguration> optionsAccessor)
+        public Forge(IOptionsMonitor<ForgeCredentialOptions> optionsAccessor)
         {
+            ForgeCredentialOptions options = optionsAccessor.CurrentValue;
+            if (string.IsNullOrEmpty(options.ClientId)) throw new ArgumentException("Forge Client ID is not provided.");
+            if (string.IsNullOrEmpty(options.ClientSecret)) throw new ArgumentException("Forge Client Secret is not provided.");
+
             _options = optionsAccessor.CurrentValue;
         }
 
