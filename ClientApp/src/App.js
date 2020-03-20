@@ -1,48 +1,29 @@
 import React, { Component } from 'react';
+import {connect} from 'react-redux';
 
 import Surface from '@hig/surface';
 import Button from '@hig/button';
 import './app.css' 
 import Toolbar from './toolbar';
-import { getRepo } from './Repository';
+import ProjectList from './components/projectList';
 
-/** Dummy class to display project list */
-export class ProjectList extends Component {
+import {updateProjectList} from './actions/projectListActions';
+import {addError, addLog} from './actions/notificationActions';
 
-  render() {
+import repo from './Repository';
 
-    const projects = this.props.projects;
-
-    if (! projects) {
-
-      return (<span>No projects loaded</span>)
-    } else {
-
-      console.log(projects);
-
-      return (
-        <ul>
-          {
-            projects.map((project, index) => {
-              return (<li key={index}>{project.name}</li>)
-            })
-          }
-        </ul>
-      )
+const thunkedLoadProjects = () => async (dispatch, getState) => {
+    dispatch(addLog('Load Projects invoked'));
+    try {
+        const data = await repo.loadProjects();
+        dispatch(addLog('Load Projects received'));
+        dispatch(updateProjectList(data));
+    } catch (error) {
+        dispatch(addError('Failed to get Project list.'));
     }
-  }
 }
 
-export default class App extends Component {
-
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      projects: null
-    };
-  }
-
+class App extends Component {
   render () {
     return (
       <Surface id="main" level={200}
@@ -54,18 +35,19 @@ export default class App extends Component {
           size="standard"
           title="I am Autodesk HIG button and I can load projects"
           type="primary"
-          onClick={ async () => {
-
-            // load projects data
-            const projects = await getRepo().loadProjects();
-            this.setState( { projects: projects });
+          onClick={ () => {
+            this.props.thunkedLoadProjects();
           } }
         />
         <Toolbar/>
         <div id="project-list">
-          <ProjectList projects={ this.state.projects } />
+          <ProjectList/>
         </div>
       </Surface>
     );
   }
 }
+
+App = connect(function (store){ return {} }, { thunkedLoadProjects })(App);
+
+export default App;

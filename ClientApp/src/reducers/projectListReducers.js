@@ -1,6 +1,6 @@
-import * as projectListActions from '../actions/projectListActions';
+import projectListActionTypes from '../actions/projectListActions';
 
-const initialState = [
+export const initialState = [
     {
         id: '1',
         label: 'Local Project 1',
@@ -15,10 +15,19 @@ const initialState = [
 
 export const projectListReducer = function(state = initialState, action) {
     switch(action.type) {
-        case projectListActions.PROJECT_LIST: {
-            action.projectList = action.projectList || [];
-            // always do complete replacement for this action
-            return action.projectList;
+        case projectListActionTypes.PROJECT_LIST_UPDATED: {
+            // todo: project.label is required in toolbar for hig's project selector.
+            // if we make the server to return correctly formatted project objects (with id, label, image), 
+            // we can get rid of the map altogether and do just
+            // return action.projectList;
+            const projectList = action.projectList.map((project, index) => {
+                return {
+                    id: project.id,
+                    label: project.name,
+                    image: project.image
+                }
+            });
+            return projectList;
         }
         default:
             return state;
