@@ -11,12 +11,12 @@ namespace IoConfigDemo.Controllers
     public class ProjectController : ControllerBase
     {
         private readonly ILogger<ProjectController> _logger;
-        private Forge _forge;
+        private IForge _forge;
 
-        public ProjectController(ILogger<ProjectController> logger)
+        public ProjectController(ILogger<ProjectController> logger, IForge forge)
         {
             _logger = logger;
-            _forge = new Forge(); // TODO inject for unit testing?
+            _forge = forge;
         }
 
         [HttpGet]
