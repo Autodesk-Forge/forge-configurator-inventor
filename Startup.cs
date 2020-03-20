@@ -8,6 +8,12 @@ using Microsoft.Extensions.Hosting;
 
 namespace IoConfigDemo
 {
+    public class ForgeConfiguration
+    {
+        public string ClientId { get; set; }
+        public string ClientSecret { get; set; }
+    }
+
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -28,6 +34,8 @@ namespace IoConfigDemo
             {
                 configuration.RootPath = "ClientApp/build";
             });
+
+            services.Configure<ForgeConfiguration>(Configuration.GetSection("ForgeCredentials"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

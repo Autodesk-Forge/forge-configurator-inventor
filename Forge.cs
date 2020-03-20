@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Autodesk.Forge;
 using Autodesk.Forge.Client;
 using Autodesk.Forge.Model;
@@ -10,8 +11,8 @@ namespace IoConfigDemo
     class Forge : IForge
     {
         // Initialize the oAuth 2.0 client configuration fron enviroment variables
-        private static string FORGE_CLIENT_ID = Environment.GetEnvironmentVariable("FORGE_CLIENT_ID");
-        private static string FORGE_CLIENT_SECRET = Environment.GetEnvironmentVariable("FORGE_CLIENT_SECRET");
+        // private static string FORGE_CLIENT_ID = Environment.GetEnvironmentVariable("FORGE_CLIENT_ID");
+        // private static string FORGE_CLIENT_SECRET = Environment.GetEnvironmentVariable("FORGE_CLIENT_SECRET");
         private static Scope[] _scope = new Scope[] { Scope.DataRead };
 
         // Intialize the 2-legged oAuth 2.0 client.
@@ -29,19 +30,26 @@ namespace IoConfigDemo
             return _twoLeggedAccessToken;
         }
 
-        private static async Task<dynamic> _2leggedAsync()
+        private readonly ForgeConfiguration _options;
+
+        public Forge(IOptionsMonitor<ForgeConfiguration> optionsAccessor)
+        {
+            _options = optionsAccessor.CurrentValue;
+        }
+
+        private async Task<dynamic> _2leggedAsync()
         {
             // Call the asynchronous version of the 2-legged client with HTTP information
             // HTTP information helps to verify if the call was successful as well as read the HTTP transaction headers.
-            ApiResponse<dynamic> bearer = await _twoLeggedApi.AuthenticateAsyncWithHttpInfo(FORGE_CLIENT_ID, FORGE_CLIENT_SECRET, oAuthConstants.CLIENT_CREDENTIALS, _scope);
+            ApiResponse<dynamic> response = await _twoLeggedApi.AuthenticateAsyncWithHttpInfo(_options.ClientId, _options.ClientSecret, oAuthConstants.CLIENT_CREDENTIALS, _scope);
 
-            if (bearer.StatusCode != 200)
+            if (response.StatusCode != 200)
             {
-                throw new Exception("Request failed! (with HTTP response " + bearer.StatusCode + ")");
+                throw new Exception("Request failed! (with HTTP response " + response.StatusCode + ")");
             }
 
             // The JSON response from the oAuth server is the Data variable and has already been parsed into a DynamicDictionary object.
-            return bearer.Data;
+            return response.Data;
         }
 
         public async Task<List<ObjectDetails>> GetBucketObjects(string bucketKey)

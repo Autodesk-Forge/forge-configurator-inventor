@@ -23,7 +23,7 @@ namespace IoConfigDemo.Controllers
         public async Task<IEnumerable<Project>> Get()
         {
             // TODO move to projects repository?
-            string projectsBucketKey = "io-config-demo-projects"; // TODO get from config
+            string projectsBucketKey = "er-io-config-demo-projects"; // TODO get from config
             List<ObjectDetails> objects = await _forge.GetBucketObjects(projectsBucketKey);
             List<Project> projects = new List<Project>();
             foreach(ObjectDetails objDetails in objects)
