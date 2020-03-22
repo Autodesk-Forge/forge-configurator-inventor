@@ -12,6 +12,8 @@ import TopNav, {
 
 import ProjectAccountSwitcher from '@hig/project-account-switcher';
 import styled from 'styled-components';
+import {Service24} from "@hig/icons";
+
 
 const PlaceCenterContainer = styled.div`
   place-items: center;
@@ -45,7 +47,7 @@ class Toolbar extends Component {
               </PlaceCenterContainer>
               <Interactions>
                 <Separator/>
-                <NavAction title="Log" icon={<img src="log.png"/>}>
+                <NavAction title="Log" icon={<Service24/>}>
                   <div>
                     <h3>Navigation Action</h3>
                     <p>
