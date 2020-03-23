@@ -32,6 +32,8 @@ namespace IoConfigDemo
                 configuration.RootPath = "ClientApp/build";
             });
 
+            // NOTE: eventually we might want to use `AddForgeService()`, but right now it might break existing stuff
+            // https://github.com/Autodesk-Forge/forge-api-dotnet-core/blob/master/src/Autodesk.Forge.Core/ServiceCollectionExtensions.cs
             services.Configure<ForgeConfiguration>(Configuration.GetSection(ForgeSectionKey));
         }
 
