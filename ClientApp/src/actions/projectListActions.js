@@ -1,8 +1,12 @@
-export const PROJECT_LIST = 'PROJECT_LIST'
+const actionTypes = {
+    PROJECT_LIST_UPDATED: 'PROJECT_LIST_UPDATED'
+}
+
+export default actionTypes;
 
 export const updateProjectList = projectList => {
     return {
-        type: PROJECT_LIST,
+        type: actionTypes.PROJECT_LIST_UPDATED,
         projectList
     }
 }

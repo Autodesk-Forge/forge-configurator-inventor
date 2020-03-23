@@ -13,7 +13,7 @@ import {mainReducer} from './reducers/mainReducer';
 const createStoreWithMiddleware = applyMiddleware(thunk)(createStore);
 const store = createStoreWithMiddleware(mainReducer);
 
-const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
+// const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
 const rootElement = document.getElementById('root');
 
 ReactDOM.render(
