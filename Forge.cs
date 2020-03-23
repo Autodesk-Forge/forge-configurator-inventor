@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Autodesk.Forge;
-using Autodesk.Forge.Client;
+using Autodesk.Forge.Core;
 using Autodesk.Forge.Model;
-using IoConfigDemo.Configuration;
 
 namespace IoConfigDemo
 {
@@ -28,11 +27,11 @@ namespace IoConfigDemo
             return _twoLeggedAccessToken;
         }
 
-        private readonly ForgeCredentialOptions _options;
+        private readonly ForgeConfiguration _options;
 
-        public Forge(IOptionsMonitor<ForgeCredentialOptions> optionsAccessor)
+        public Forge(IOptionsMonitor<ForgeConfiguration> optionsAccessor)
         {
-            ForgeCredentialOptions options = optionsAccessor.CurrentValue;
+            ForgeConfiguration options = optionsAccessor.CurrentValue;
             if (string.IsNullOrEmpty(options.ClientId)) throw new ArgumentException("Forge Client ID is not provided.");
             if (string.IsNullOrEmpty(options.ClientSecret)) throw new ArgumentException("Forge Client Secret is not provided.");
 
@@ -43,7 +42,7 @@ namespace IoConfigDemo
         {
             // Call the asynchronous version of the 2-legged client with HTTP information
             // HTTP information helps to verify if the call was successful as well as read the HTTP transaction headers.
-            ApiResponse<dynamic> response = await _twoLeggedApi.AuthenticateAsyncWithHttpInfo(_options.ClientId, _options.ClientSecret, oAuthConstants.CLIENT_CREDENTIALS, _scope);
+            Autodesk.Forge.Client.ApiResponse<dynamic> response = await _twoLeggedApi.AuthenticateAsyncWithHttpInfo(_options.ClientId, _options.ClientSecret, oAuthConstants.CLIENT_CREDENTIALS, _scope);
 
             if (response.StatusCode != 200)
             {

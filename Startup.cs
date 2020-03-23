@@ -1,4 +1,4 @@
-using IoConfigDemo.Configuration;
+using Autodesk.Forge.Core;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -32,7 +32,7 @@ namespace IoConfigDemo
                 configuration.RootPath = "ClientApp/build";
             });
 
-            services.Configure<ForgeCredentialOptions>(Configuration.GetSection(ForgeSectionKey));
+            services.Configure<ForgeConfiguration>(Configuration.GetSection(ForgeSectionKey));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
