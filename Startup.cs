@@ -11,6 +11,8 @@ namespace IoConfigDemo
 {
     public class Startup
     {
+        private const string ForgeSectionKey = "Forge";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -30,7 +32,7 @@ namespace IoConfigDemo
                 configuration.RootPath = "ClientApp/build";
             });
 
-            services.Configure<ForgeCredentialOptions>(Configuration.GetSection("Forge"));
+            services.Configure<ForgeCredentialOptions>(Configuration.GetSection(ForgeSectionKey));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

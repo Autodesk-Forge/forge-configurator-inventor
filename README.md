@@ -20,8 +20,8 @@ Use one of the following approaches:
 ```json
 {
     "Forge": {
-        "clientId": "<YOU CLIENT ID>",
-        "clientSecret": "<YOU CLIENT SECRET>"
+        "clientId": "<YOUR CLIENT ID>",
+        "clientSecret": "<YOUR CLIENT SECRET>"
        }
 }
 ```
