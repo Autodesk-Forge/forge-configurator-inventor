@@ -7,4 +7,4 @@ phases:
       - dotnet publish -c Release
 artifacts:
   files:
-    - .\bin\Release\netcoreapp3.1\publish\*
+    - ./bin/Release/netcoreapp3.1/publish/*
