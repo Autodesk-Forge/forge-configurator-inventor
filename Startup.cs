@@ -1,3 +1,4 @@
+using Autodesk.Forge.Core;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -10,6 +11,8 @@ namespace IoConfigDemo
 {
     public class Startup
     {
+        private const string ForgeSectionKey = "Forge";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -28,6 +31,10 @@ namespace IoConfigDemo
             {
                 configuration.RootPath = "ClientApp/build";
             });
+
+            // NOTE: eventually we might want to use `AddForgeService()`, but right now it might break existing stuff
+            // https://github.com/Autodesk-Forge/forge-api-dotnet-core/blob/master/src/Autodesk.Forge.Core/ServiceCollectionExtensions.cs
+            services.Configure<ForgeConfiguration>(Configuration.GetSection(ForgeSectionKey));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

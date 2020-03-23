@@ -3,13 +3,30 @@ Demo application showcasing Configuration with Design Automation for Inventor
 
 ## Setup
 1. Create forge app at https://forge.autodesk.com/
-1. Set environment variables `FORGE_CLIENT_ID` and `FORGE_CLIENT_SECRET` with the values for the app created in step one
+1. Note Client ID and Secret.
+
 ## Run the app
 
 1. Clone repository
 1. Go inside the repository
+1. Specify [forge credentials](#specify-forge-credentials).
 1. `dotnet run`
 1. Open https://localhost:5001
+
+### Specify Forge credentials
+Use one of the following approaches:
+* Set environment variables `FORGE_CLIENT_ID` and `FORGE_CLIENT_SECRET`.
+* Create `appsettings.Local.json` in root dir and use the following as its content template:
+```json
+{
+    "Forge": {
+        "clientId": "<YOUR CLIENT ID>",
+        "clientSecret": "<YOUR CLIENT SECRET>"
+       }
+}
+```
+* Set environment variables `Forge__ClientId` and `Forge__ClientSecret`.
+* _(not on dev machine)_ Modify `appsettings.json` (or `appsettings.<ENVIRONMENT>.json`) with the template above.
 
 ## Backend
 We are using forge service on the backend https://forge.autodesk.com/
@@ -56,3 +73,7 @@ Table is not part of todays React HIG implementation so we will use https://gith
 We are using npm.
 
 1. Using command line go to ClientApp and write `npm install <package>`
+
+### Run unit/integration tests for client app
+
+1. Using command line go to ClientApp and execute `npm run test`

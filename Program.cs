@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Autodesk.Forge.Core;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -18,6 +16,12 @@ namespace IoConfigDemo
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration(builder =>
+                {
+                    builder
+                        .AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true)
+                        .AddForgeAlternativeEnvironmentVariables();
+                })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
@@ -31,7 +35,6 @@ namespace IoConfigDemo
                 .ConfigureLogging(logging => 
                 {
                     logging.AddConsole();
-                })
-                ;
+                });
     }
 }
