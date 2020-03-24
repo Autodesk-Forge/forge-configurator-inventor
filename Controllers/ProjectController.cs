@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Autodesk.Forge.Core;
 using Autodesk.Forge.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -54,13 +53,6 @@ namespace IoConfigDemo.Controllers
                 projects.Add(new Project { Name = objDetails.ObjectKey });
             }
             return projects;
-        }
-
-        private string GetBucketName()
-        {
-            ForgeConfiguration configuration = _forge.Configuration;
-            // bucket name generated as "project-<three first chars from client ID>-<hash of client ID>"
-            return $"projects-{configuration.ClientId.Substring(0, 3)}-{configuration.HashString()}";
         }
     }
 }
