@@ -7,17 +7,39 @@ using Autodesk.Forge.Client;
 using Autodesk.Forge.Core;
 using Autodesk.Forge.Model;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using SalesDemoToolApp.Utilities;
 
 namespace IoConfigDemo
 {
+    /// <summary>
+    /// Class to work with Forge APIs.
+    /// </summary>
     class Forge : IForge
     {
-        private static readonly Scope[] _scope = { Scope.DataRead, Autodesk.Forge.Scope.BucketCreate, Autodesk.Forge.Scope.BucketRead };
+        private readonly ILogger<Forge> _logger;
+        private static readonly Scope[] _scope = { Scope.DataRead, Scope.BucketCreate, Scope.BucketRead };
 
         // Initialize the 2-legged oAuth 2.0 client.
         private static readonly TwoLeggedApi _twoLeggedApi = new TwoLeggedApi();
 
         private string _twoLeggedAccessToken;
+
+        /// <summary>
+        /// Forge configuration.
+        /// </summary>
+        public ForgeConfiguration Configuration { get; }
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="optionsAccessor"></param>
+        public Forge(IOptionsMonitor<ForgeConfiguration> optionsAccessor, ILogger<Forge> logger)
+        {
+            _logger = logger;
+            Configuration = optionsAccessor.CurrentValue.Validate();
+        }
+
         private async Task<string> GetTwoLeggedAccessToken()
         {
             if (_twoLeggedAccessToken == null)
@@ -29,22 +51,11 @@ namespace IoConfigDemo
             return _twoLeggedAccessToken;
         }
 
-        private readonly ForgeConfiguration _options;
-
-        public Forge(IOptionsMonitor<ForgeConfiguration> optionsAccessor)
-        {
-            ForgeConfiguration options = optionsAccessor.CurrentValue;
-            if (string.IsNullOrEmpty(options.ClientId)) throw new ArgumentException("Forge Client ID is not provided.");
-            if (string.IsNullOrEmpty(options.ClientSecret)) throw new ArgumentException("Forge Client Secret is not provided.");
-
-            _options = optionsAccessor.CurrentValue;
-        }
-
         private async Task<dynamic> _2leggedAsync()
         {
             // Call the asynchronous version of the 2-legged client with HTTP information
             // HTTP information helps to verify if the call was successful as well as read the HTTP transaction headers.
-            Autodesk.Forge.Client.ApiResponse<dynamic> response = await _twoLeggedApi.AuthenticateAsyncWithHttpInfo(_options.ClientId, _options.ClientSecret, oAuthConstants.CLIENT_CREDENTIALS, _scope);
+            Autodesk.Forge.Client.ApiResponse<dynamic> response = await _twoLeggedApi.AuthenticateAsyncWithHttpInfo(Configuration.ClientId, Configuration.ClientSecret, oAuthConstants.CLIENT_CREDENTIALS, _scope);
 
             if (response.StatusCode != StatusCodes.Status200OK)
             {
@@ -95,8 +106,10 @@ namespace IoConfigDemo
                 // so we don't care about the response, just need to ensure about succeeded call
                 await api.GetBucketDetailsAsync(bucketName);
             }
-            catch (ApiException e) when(e.ErrorCode == StatusCodes.Status404NotFound) // try to create the bucket if error is "Not Found"
+            catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound) // try to create the bucket if error is "Not Found"
             {
+                this._logger.LogInformation($"Creating '{bucketName}' bucket.");
+
                 var payload = new PostBucketsPayload(bucketName, /*allow*/null, PostBucketsPayload.PolicyKeyEnum.Persistent);
                 await api.CreateBucketAsync(payload);
             }
