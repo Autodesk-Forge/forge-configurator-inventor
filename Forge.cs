@@ -103,7 +103,7 @@ namespace IoConfigDemo
             try
             {
                 var payload = new PostBucketsPayload(bucketName, /*allow*/null, PostBucketsPayload.PolicyKeyEnum.Persistent);
-                await api.CreateBucketAsync(payload);
+                await api.CreateBucketAsync(payload, /* use default (US region) */ null);
             }
             catch (ApiException e) when (e.ErrorCode == StatusCodes.Status409Conflict)
             {
