@@ -102,16 +102,12 @@ namespace IoConfigDemo
 
             try
             {
-                // the API call will throw an exception if the bucket is missing,
-                // so we don't care about the response, just need to ensure about succeeded call
-                await api.GetBucketDetailsAsync(bucketName);
-            }
-            catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound) // try to create the bucket if error is "Not Found"
-            {
-                this._logger.LogInformation($"Creating '{bucketName}' bucket.");
-
                 var payload = new PostBucketsPayload(bucketName, /*allow*/null, PostBucketsPayload.PolicyKeyEnum.Persistent);
                 await api.CreateBucketAsync(payload);
+            }
+            catch (ApiException e) when (e.ErrorCode == StatusCodes.Status409Conflict)
+            {
+                // swallow exception about "Conflict", which means the bucket exists already
             }
         }
     }
