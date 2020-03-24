@@ -4,7 +4,9 @@ phases:
     commands:
       - echo Build started on `date`
       - dotnet restore
-      - dotnet publish -c Release
+      - dotnet publish -c Release -o output
 artifacts:
   files:
-    - ./bin/Release/netcoreapp3.1/publish/*
+    - '**/*'
+  base-directory: ./output
+  
