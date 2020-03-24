@@ -33,7 +33,7 @@ class App extends Component {
         borderRadius="m">
         <Button
           size="standard"
-          title="I am Autodesk HIG button (AwsPipeline) and I can load projects"
+          title="I am Autodesk HIG button and I can load projects"
           type="primary"
           onClick={ () => {
             this.props.thunkedLoadProjects();
