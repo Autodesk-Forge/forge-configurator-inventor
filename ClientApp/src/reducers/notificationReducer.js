@@ -1,6 +1,6 @@
 import notificationTypes from '../actions/notificationActions';
 
-const initialState = [
+export const initialState = [
     '0 Errors'
 ]
 
