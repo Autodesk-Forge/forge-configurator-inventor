@@ -13,7 +13,21 @@ import TopNav, {
 import ProjectAccountSwitcher from '@hig/project-account-switcher';
 import styled from 'styled-components';
 import {Service24} from "@hig/icons";
+import repo from './Repository';
 
+import {updateProjectList, updateActiveProject} from './actions/projectListActions';
+import {addError, addLog} from './actions/notificationActions';
+
+const fetchProjects = () => async (dispatch, getState) => {
+    dispatch(addLog('Load Projects invoked'));
+    try {
+        const data = await repo.loadProjects();
+        dispatch(addLog('Load Projects received'));
+        dispatch(updateProjectList(data));
+      } catch (error) {
+        dispatch(addError('Failed to get Project list. (' + error + ')'));
+    }
+}
 
 const PlaceCenterContainer = styled.div`
   place-items: center;
@@ -21,6 +35,22 @@ const PlaceCenterContainer = styled.div`
 `;
 
 class Toolbar extends Component {
+
+  constructor(props) {
+    super(props);
+    this.onProjectChange = this.onProjectChange.bind(this);
+  }
+
+  componentDidMount() {
+    this.props.fetchProjects(this);
+  }
+
+  onProjectChange(data)
+  {
+    const id = data.project.id;
+    this.props.updateActiveProject(id);
+    this.props.addLog('Selected: ' + id);
+  }
 
   render () {
     return (
@@ -39,10 +69,11 @@ class Toolbar extends Component {
             <React.Fragment>
               <PlaceCenterContainer>
               <ProjectAccountSwitcher
-                defaultProject="1"
+                defaultProject={this.props.projectList.activeProjectId}
                 activeProject={null}
-                projects={this.props.projectList}
+                projects={this.props.projectList.projects}
                 projectTitle="Projects"
+                onChange={this.onProjectChange}
               />
               </PlaceCenterContainer>
               <Interactions>
@@ -65,10 +96,8 @@ class Toolbar extends Component {
   }
 }
 
-Toolbar = connect(function (store){
+export default Toolbar = connect(function (store){
   return {
     projectList: store.projectList
   }
-})(Toolbar);
-
-export default Toolbar;
+}, { fetchProjects, updateActiveProject, addLog } )(Toolbar);

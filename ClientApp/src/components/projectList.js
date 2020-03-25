@@ -6,7 +6,7 @@ class ProjectList extends Component {
 
     render() {
   
-      const projects = this.props.projectList;
+      const projects = this.props.projectList.projects;
       const infos = this.props.notifications;
   
       if (! projects) {
@@ -24,7 +24,7 @@ class ProjectList extends Component {
               }
             </ul>
             {
-              infos.map((info) => (<div>{info}</div>))
+              infos.map((info, index) => (<div key={index}>{info}</div>))
             }
           </div>
         )

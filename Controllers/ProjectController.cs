@@ -50,7 +50,10 @@ namespace IoConfigDemo.Controllers
             var projects = new List<Project>();
             foreach(ObjectDetails objDetails in objects)
             {
-                projects.Add(new Project { Name = objDetails.ObjectKey });
+                projects.Add(new Project { 
+                    Id = objDetails.ObjectKey,
+                    Label = objDetails.ObjectKey,
+                    Image = null });
             }
             return projects;
         }
