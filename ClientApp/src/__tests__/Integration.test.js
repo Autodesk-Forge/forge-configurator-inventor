@@ -29,6 +29,11 @@ describe('Integration UI tests', () => {
             throw new Error("Connection wasn't established");
         }
 
+        await page.route('**', route => {
+            console.log(route.url());
+            route.continue();
+        });
+
         // Open the page
         await page.goto(pageUrl, { waitUntil: "networkidle0" });
     });
@@ -46,17 +51,11 @@ describe('Integration UI tests', () => {
 
     it(`should project loading`, async () => {
 
-        // check initial list content
-//        let initialContent = await page.evaluate(() => document.querySelector("#project-list").textContent);
-//        expect(initialContent).toBe("No projects loaded");
-//
-//        // emulate click to trigger project loading
-//        await page.evaluate(() => document.querySelector("button span").click()); // TODO: this is pretty ineffective. Need to work with handles, I guess
-
         // wait until project list is refreshed
         await page.waitForSelector("#project-list ul");
 
         // check updated list content
+        // it's assumed that the bucket is not empty
         const updatedContent = await page.evaluate(() => document.querySelector("#project-list").textContent);
         expect(updatedContent).not.toBe("No projects loaded");
     });
