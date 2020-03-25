@@ -1,13 +1,8 @@
 // prepare mocks
 jest.mock('../Repository');
-import { getRepo } from '../Repository';
+import repoInstance from '../Repository';
 
-const loadProjectsMock = jest.fn();
-getRepo.mockImplementation(
-  () => ({
-    loadProjects: loadProjectsMock
-  })
-);
+const loadProjectsMock = repoInstance.loadProjects;
 
 import React from 'react';
 import { unmountComponentAtNode, render } from 'react-dom';
@@ -45,14 +40,14 @@ describe.skip('test App component', () => {
     expect(loadProjectsMock).toHaveBeenCalledTimes(0);
   });
 
-  it('check loaded content', () => {
+  // it('check loaded content', () => {
 
-    loadProjectsMock.mockReturnValue([{ name: 'foo' }]);
+  //   loadProjectsMock.mockReturnValue([{ name: 'foo' }]);
 
-    // change state on button click
-    act(() => { button.dispatchEvent(new MouseEvent('click', { bubbles: true })); });
+  //   // change state on button click
+  //   act(() => { button.dispatchEvent(new MouseEvent('click', { bubbles: true })); });
 
-    expect(loadProjectsMock).toHaveBeenCalledTimes(1);
-    expect(tc("#project-list")).toMatch(/foo/);
-  });
+  //   expect(loadProjectsMock).toHaveBeenCalledTimes(1);
+  //   expect(tc("#project-list")).toMatch(/foo/);
+  // });
 });
