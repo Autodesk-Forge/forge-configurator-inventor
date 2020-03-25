@@ -8,7 +8,7 @@ using SalesDemoToolApp.Utilities;
 namespace IoConfigDemo.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("projects")]
     public class ProjectController : ControllerBase
     {
         private readonly ILogger<ProjectController> _logger;
@@ -41,8 +41,8 @@ namespace IoConfigDemo.Controllers
             _forge = forge;
         }
 
-        [HttpGet]
-        public async Task<IEnumerable<Project>> Get()
+        [HttpGet("")]
+        public async Task<IEnumerable<Project>> List()
         {
             // TODO move to projects repository?
 
