@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import Surface from '@hig/surface';
 import Button from '@hig/button';
 import './app.css' 
-import Toolbar from './toolbar';
+import Toolbar from './components/toolbar';
 import ProjectList from './components/projectList';
 
 class App extends Component {

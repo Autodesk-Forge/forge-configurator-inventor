@@ -53,7 +53,7 @@ namespace IoConfigDemo.Controllers
                 projects.Add(new Project { 
                     Id = objDetails.ObjectKey,
                     Label = objDetails.ObjectKey,
-                    Image = null });
+                    Image = "./bike.png" }); // temporary icon to verify control
             }
             return projects;
         }
