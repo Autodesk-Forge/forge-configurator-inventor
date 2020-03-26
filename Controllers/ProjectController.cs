@@ -14,31 +14,13 @@ namespace IoConfigDemo.Controllers
         private readonly ILogger<ProjectController> _logger;
         private readonly IForge _forge;
 
-        /// <summary>
-        /// Generated bucket name.
-        /// </summary>
-        private string BucketName
-        {
-            get
-            {
-                if (_bucketName == null)
-                {
-                    var configuration = _forge.Configuration;
-                    // bucket name generated as "project-<three first chars from client ID>-<hash of client ID>"
-                    _bucketName = $"projects-{configuration.ClientId.Substring(0, 3)}-{configuration.HashString()}".ToLowerInvariant();
+        private readonly BucketNameProvider _bucketNameProvider;
 
-                    _logger.LogInformation($"Using '{_bucketName}' bucket.");
-                }
-
-                return _bucketName;
-            }
-        }
-        private string _bucketName;
-
-        public ProjectController(ILogger<ProjectController> logger, IForge forge)
+        public ProjectController(ILogger<ProjectController> logger, IForge forge, BucketNameProvider bucketNameProvider)
         {
             _logger = logger;
             _forge = forge;
+            _bucketNameProvider = bucketNameProvider;
         }
 
         [HttpGet]
@@ -46,7 +28,7 @@ namespace IoConfigDemo.Controllers
         {
             // TODO move to projects repository?
 
-            List<ObjectDetails> objects = await _forge.GetBucketObjects(BucketName);
+            List<ObjectDetails> objects = await _forge.GetBucketObjects(_bucketNameProvider.BucketName);
             var projects = new List<Project>();
             foreach(ObjectDetails objDetails in objects)
             {
