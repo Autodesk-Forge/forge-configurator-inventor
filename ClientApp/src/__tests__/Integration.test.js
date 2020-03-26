@@ -64,9 +64,9 @@ describe('Integration UI tests', () => {
     it('PROJECTS is loaded', async () => {
 
         // check initial project list is filled
-        const initialContent = await page.evaluate(() => document.evaluate("//p", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent);
+        const initialContent = await page.evaluate(() => document.evaluate('//p', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent);
         //expect(initialContent).toBe("Local Project 1");
-        expect(initialContent).toBe("Wrench.zip");
+        expect(initialContent).toBe("Project1.zip");
     });
 
     it('Check Autodesk Forge link', async () => {
@@ -98,12 +98,12 @@ describe('Integration UI tests', () => {
         // check name of the first project
         //*[@id="root"]/div/div[1]/div[3]/div/div[2]/div[2]/div/div/div/ul/li[1]/span[2]
         const firstDemoProject = await page.evaluate(() => document.evaluate('//ul/li[1]/span[2]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent);
-        expect(firstDemoProject).toBe("Wrench.zip");
+        expect(firstDemoProject).toBe("Project1.zip");
 
         // check name of the second project
         //*[@id="root"]/div/div[1]/div[3]/div/div[2]/div[2]/div/div/div/ul/li[2]/span[2]
         const secondDemoProject = await page.evaluate(() => document.evaluate('//ul/li[2]/span[2]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent);
-        expect(secondDemoProject).toBe("Wrench1.zip");
+        expect(secondDemoProject).toBe("Project2.zip");
     });
 
     it('check if the right PROJECT is set', async () => {
@@ -118,7 +118,7 @@ describe('Integration UI tests', () => {
         // emulate click to trigger project loading
         await page.evaluate(() => document.evaluate('//ul/li[1]/span[2]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click());
         let project_name = await page.evaluate(() => document.evaluate('//p', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent);
-        expect(project_name).toBe("Wrench.zip");
+        expect(project_name).toBe("Project1.zip");
 
         // click to show popup menu with list of projects
         await page.evaluate(() => document.evaluate('//p', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click());
@@ -129,7 +129,7 @@ describe('Integration UI tests', () => {
         // emulate click to trigger project loading
         await page.evaluate(() => document.evaluate('//ul/li[2]/span[2]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click());
         project_name = await page.evaluate(() => document.evaluate('//p', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent);
-        expect(project_name).toBe("Wrench1.zip");        
+        expect(project_name).toBe("Project2.zip");        
      });
 
      it('Check Log Button', async () => {
