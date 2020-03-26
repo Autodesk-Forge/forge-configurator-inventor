@@ -67,6 +67,7 @@ describe('Integration UI tests', () => {
         const initialContent = await page.evaluate(() => document.evaluate('//p', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent);
         //expect(initialContent).toBe("Local Project 1");
         expect(initialContent).toBe("Project1.zip");
+
     });
 
     it('Check Autodesk Forge link', async () => {
@@ -99,6 +100,7 @@ describe('Integration UI tests', () => {
         //*[@id="root"]/div/div[1]/div[3]/div/div[2]/div[2]/div/div/div/ul/li[1]/span[2]
         const firstDemoProject = await page.evaluate(() => document.evaluate('//ul/li[1]/span[2]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent);
         expect(firstDemoProject).toBe("Project1.zip");
+
 
         // check name of the second project
         //*[@id="root"]/div/div[1]/div[3]/div/div[2]/div[2]/div/div/div/ul/li[2]/span[2]
