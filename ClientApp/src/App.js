@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Surface from '@hig/surface';
 import './app.css' 
-import Toolbar from './toolbar';
+import Toolbar from './components/toolbar';
 import ProjectList from './components/projectList';
 
 class App extends Component {

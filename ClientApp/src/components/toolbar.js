@@ -13,10 +13,10 @@ import TopNav, {
 import ProjectAccountSwitcher from '@hig/project-account-switcher';
 import styled from 'styled-components';
 import {Service24} from "@hig/icons";
-import repo from './Repository';
+import repo from '../Repository';
 
-import {updateProjectList, updateActiveProject} from './actions/projectListActions';
-import {addError, addLog} from './actions/notificationActions';
+import {updateProjectList, updateActiveProject} from '../actions/projectListActions';
+import {addError, addLog} from '../actions/notificationActions';
 
 export const fetchProjects = () => async (dispatch, getState) => {
     dispatch(addLog('Load Projects invoked'));
