@@ -59,4 +59,9 @@ describe('Integration UI tests', () => {
         const updatedContent = await page.evaluate(() => document.querySelector("#project-list").textContent);
         expect(updatedContent).not.toBe("No projects loaded");
     });
+
+    it('checks Version endpoint', async () => {
+        await page.goto(pageUrl + '/Version');
+        expect(await page.$('pre')).not.toBeNull();
+    })
 });
