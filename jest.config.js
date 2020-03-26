@@ -5,5 +5,6 @@ module.exports = {
   testPathIgnorePatterns: [
     '/node_modules/'
   ],
-  verbose: true
+  verbose: true,
+  transform: {"\\.js$": ['babel-jest', {rootMode: "upward"}]}
 };
