@@ -109,7 +109,7 @@ namespace IoConfigDemo
             await api.DeleteBucketAsync(bucketName);
         }
 
-        public async Task CreateObject(string bucketKey, string objectName) {
+        public async Task CreateEmptyObject(string bucketKey, string objectName) {
             ObjectsApi objectsApi = new ObjectsApi{ Configuration = { AccessToken = await GetTwoLeggedAccessToken() }};
             
             using(var stream = new MemoryStream())
