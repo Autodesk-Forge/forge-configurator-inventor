@@ -24,7 +24,7 @@ namespace IoConfigDemo
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            services.AddScoped<IForge, Forge>();
+            
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -35,11 +35,24 @@ namespace IoConfigDemo
             // NOTE: eventually we might want to use `AddForgeService()`, but right now it might break existing stuff
             // https://github.com/Autodesk-Forge/forge-api-dotnet-core/blob/master/src/Autodesk.Forge.Core/ServiceCollectionExtensions.cs
             services.Configure<ForgeConfiguration>(Configuration.GetSection(ForgeSectionKey));
+            services.AddScoped<BucketNameProvider>();
+            services.AddScoped<IForge, Forge>();
+            services.AddTransient<Initializer>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Initializer initializer)
         {
+            if(Configuration.GetValue<bool>("clear"))
+            {
+                initializer.Clear().Wait();
+            }
+
+            if(Configuration.GetValue<bool>("initialize"))
+            {
+                initializer.Initialize().Wait();
+            }
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -59,9 +72,7 @@ namespace IoConfigDemo
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller}/{action=Index}/{id?}");
+                endpoints.MapControllers();
             });
 
             app.UseSpa(spa =>

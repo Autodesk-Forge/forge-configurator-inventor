@@ -4,6 +4,7 @@ Demo application showcasing Configuration with Design Automation for Inventor
 ## Setup
 1. Create forge app at https://forge.autodesk.com/
 1. Note Client ID and Secret.
+1. In order to debug the solution in VS Code you have to install the extension Debugger for Chrome
 
 ## Run the app
 
@@ -12,6 +13,12 @@ Demo application showcasing Configuration with Design Automation for Inventor
 1. Specify [forge credentials](#specify-forge-credentials).
 1. `dotnet run`
 1. Open https://localhost:5001
+
+### Clear and load initial data during app launch time
+
+ - Create initial data `dotnet run initialize=true`
+ - Clear data `dotnet run clear=true`
+ - Clear and then load initial data `dotnet run initialize=true clear=true`
 
 ### Specify Forge credentials
 Use one of the following approaches:

@@ -9,6 +9,7 @@ using Autodesk.Forge.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using SalesDemoToolApp.Utilities;
+using System.IO;
 
 namespace IoConfigDemo
 {
@@ -18,7 +19,7 @@ namespace IoConfigDemo
     class Forge : IForge
     {
         private readonly ILogger<Forge> _logger;
-        private static readonly Scope[] _scope = { Scope.DataRead, Scope.BucketCreate, Scope.BucketRead };
+        private static readonly Scope[] _scope = { Scope.DataRead, Scope.DataWrite, Scope.BucketCreate, Scope.BucketDelete, Scope.BucketRead };
 
         // Initialize the 2-legged oAuth 2.0 client.
         private static readonly TwoLeggedApi _twoLeggedApi = new TwoLeggedApi();
@@ -68,10 +69,8 @@ namespace IoConfigDemo
 
         public async Task<List<ObjectDetails>> GetBucketObjects(string bucketKey)
         {
-            await EnsureBucket(bucketKey);
+            ObjectsApi objectsApi = new ObjectsApi{ Configuration = { AccessToken = await GetTwoLeggedAccessToken() }};
 
-            ObjectsApi objectsApi = new ObjectsApi();
-            objectsApi.Configuration.AccessToken = await GetTwoLeggedAccessToken();
             var objects = new List<ObjectDetails>();
 
             dynamic objectsList = await objectsApi.GetObjectsAsync(bucketKey);
@@ -93,21 +92,29 @@ namespace IoConfigDemo
         }
 
         /// <summary>
-        /// Make sure the bucket is exists.  Create if necessary.
+        /// Create bucket with given name
         /// </summary>
         /// <param name="bucketName">The bucket name.</param>
-        private async Task EnsureBucket(string bucketName)
+        public async Task CreateBucket(string bucketName)
         {
             var api = new BucketsApi { Configuration = { AccessToken = await GetTwoLeggedAccessToken() }};
 
-            try
+            var payload = new PostBucketsPayload(bucketName, /*allow*/null, PostBucketsPayload.PolicyKeyEnum.Persistent);
+            await api.CreateBucketAsync(payload, /* use default (US region) */ null);
+        }
+
+        public async Task DeleteBucket(string bucketName)
+        {
+            var api = new BucketsApi { Configuration = { AccessToken = await GetTwoLeggedAccessToken() }};
+            await api.DeleteBucketAsync(bucketName);
+        }
+
+        public async Task CreateEmptyObject(string bucketKey, string objectName) {
+            ObjectsApi objectsApi = new ObjectsApi{ Configuration = { AccessToken = await GetTwoLeggedAccessToken() }};
+            
+            using(var stream = new MemoryStream())
             {
-                var payload = new PostBucketsPayload(bucketName, /*allow*/null, PostBucketsPayload.PolicyKeyEnum.Persistent);
-                await api.CreateBucketAsync(payload, /* use default (US region) */ null);
-            }
-            catch (ApiException e) when (e.ErrorCode == StatusCodes.Status409Conflict)
-            {
-                // swallow exception about "Conflict", which means the bucket exists already
+                await objectsApi.UploadObjectAsync(bucketKey, objectName, 0, stream);
             }
         }
     }

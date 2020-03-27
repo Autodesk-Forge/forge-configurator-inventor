@@ -5,7 +5,7 @@ class Repository {
 
     /** Get list of projects */
     async loadProjects() {
-        const response = await axios.get("/Project");
+        const response = await axios.get("/projects");
         return response.data;
     }
 }
