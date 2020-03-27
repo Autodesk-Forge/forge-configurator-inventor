@@ -4,6 +4,7 @@ Demo application showcasing Configuration with Design Automation for Inventor
 ## Setup
 1. Create forge app at https://forge.autodesk.com/
 1. Note Client ID and Secret.
+1. In order to debug the solution in VS Code you have to install the extension Debugger for Chrome
 
 ## Run the app
 

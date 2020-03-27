@@ -60,4 +60,9 @@ describe('Integration UI tests', () => {
         const listItems = await page.$$("#project-list ul li");
         expect(listItems.length).toBeGreaterThan(0); // expects that
     });
+
+    it('checks Version endpoint', async () => {
+        await page.goto(pageUrl + '/Version');
+        expect(await page.$('pre')).not.toBeNull();
+    })
 });
