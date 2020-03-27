@@ -51,6 +51,9 @@
     "eject": "react-scripts eject",
     "lint": "eslint ./src/"
   },
+  "jest": {
+    "testEnvironment": "node"
+  },
   "browserslist": {
     "production": [
       ">0.2%",

@@ -3,5 +3,6 @@
         "**/bin": true,
         "**/obj": true,
         "**/node_modules": true
-    }
+    },
+    "jest.pathToJest": "ClientApp/node_modules/.bin/jest"
 }
