@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
+import PropTypes from 'prop-types';
 
 /** Dummy class to display project list */
 class ProjectList extends Component {
@@ -13,8 +14,6 @@ class ProjectList extends Component {
   
         return (<span>No projects loaded</span>)
       } else {
-  
-        console.log(projects);
   
         return (
           <div>
@@ -31,12 +30,15 @@ class ProjectList extends Component {
       }
     }
 }
+
+ProjectList.propTypes = {
+  projectList: PropTypes.array,
+  notifications: PropTypes.array
+};
   
-ProjectList = connect(function (store){
-    return {
-      projectList: store.projectList,
-      notifications: store.notifications
-    }
-  })(ProjectList);
-  
-export default ProjectList;
+export default connect(function (store) {
+  return {
+    projectList: store.projectList,
+    notifications: store.notifications
+  }
+})(ProjectList);

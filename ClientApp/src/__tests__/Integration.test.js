@@ -30,12 +30,14 @@ describe('Integration UI tests', () => {
             throw new Error("Connection wasn't established");
         }
 
-        // report about requested URLs
+        // uncomment to watch the requested URLs
+        /*
         await page.route('**', async (request) => {
 
             console.log(request.url());
             await request.continue();
         });
+        */
 
         // Open the page
         await page.goto(pageUrl, { waitUntil: "networkidle0" });

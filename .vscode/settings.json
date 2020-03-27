@@ -4,5 +4,6 @@
         "**/obj": true,
         "**/node_modules": true
     },
-    "jest.pathToJest": "ClientApp/node_modules/.bin/jest"
+    "jest.pathToJest": "ClientApp/node_modules/.bin/jest",
+    "eslint.workingDirectories": [ "ClientApp" ]
 }
