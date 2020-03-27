@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 
 /** Dummy class to display project list */
 class ProjectList extends Component {
-
     render() {
   
       const projects = this.props.projectList.projects;

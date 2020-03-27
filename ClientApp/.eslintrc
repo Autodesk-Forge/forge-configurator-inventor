@@ -6,7 +6,9 @@
     },
     "extends": [
         "eslint:recommended",
-        "plugin:react/recommended"
+        "plugin:react/recommended",
+        //"plugin:prettier/recommended",
+        "prettier/react"
     ],
     "globals": {
         "Atomics": "readonly",
@@ -23,6 +25,7 @@
         "react"
     ],
     "rules": {
-        "no-console": "error"
+        "no-console": "error",
+        "linebreak-style": "off"
     }
 }
