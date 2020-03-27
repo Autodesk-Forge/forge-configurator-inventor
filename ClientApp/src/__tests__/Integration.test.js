@@ -3,14 +3,13 @@ const playwright = require('playwright');
 const pageUrl = "https://localhost:5001"
 
 const config = {
-    headless: false, // NOTE: uncomment to see what is actually going o the screen
+    //headless: false, // NOTE: uncomment to see what is actually going o the screen
     devtools: true,
     args: [
         // to avoid errors about self-signed SSL certificate: https://stackoverflow.com/q/55207690
         '--ignore-certificate-errors',
         '--ignore-certificate-errors-spki-list',
     ]};
-
 
 describe('Integration UI tests', () => {
 
@@ -65,9 +64,7 @@ describe('Integration UI tests', () => {
 
         // check initial project list is filled
         const initialContent = await page.evaluate(() => document.evaluate('//p', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent);
-        //expect(initialContent).toBe("Local Project 1");
         expect(initialContent).toBe("Project1.zip");
-
     });
 
     it('Check Autodesk Forge link', async () => {
@@ -75,6 +72,8 @@ describe('Integration UI tests', () => {
         // check Forge link            
         const link = await page.waitFor('a[aria-label="Autodesk HIG"]', {timeout: 3000});
         await link.click();
+
+        //wait for Autodesk Forge page
         const element = await page.waitForSelector('.adskf__navbar-logo', {visible: true, timeout: 5000})
         expect(element).not.toBeNull();
         expect(page).not.toBeNull();
@@ -88,22 +87,17 @@ describe('Integration UI tests', () => {
         await project.click();
 
         // wait until project list is displayed
-        //*[@id="root"]/div/div[1]/div[3]/div/div[2]
         await page.waitForSelector('//div/div[2]', {visible: true, timeout: 2000});
 
         // check content of PROJECTS menu
-        //*[@id="root"]/div/div[1]/div[3]/div/div[2]/div[2]/div/div/div/ul/span
         const caption = await page.evaluate(() => document.evaluate('//ul/span', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent);
         expect(caption).toBe("Projects");
 
         // check name of the first project
-        //*[@id="root"]/div/div[1]/div[3]/div/div[2]/div[2]/div/div/div/ul/li[1]/span[2]
         const firstDemoProject = await page.evaluate(() => document.evaluate('//ul/li[1]/span[2]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent);
         expect(firstDemoProject).toBe("Project1.zip");
 
-
         // check name of the second project
-        //*[@id="root"]/div/div[1]/div[3]/div/div[2]/div[2]/div/div/div/ul/li[2]/span[2]
         const secondDemoProject = await page.evaluate(() => document.evaluate('//ul/li[2]/span[2]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent);
         expect(secondDemoProject).toBe("Project2.zip");
     });
@@ -142,7 +136,6 @@ describe('Integration UI tests', () => {
         await button.click();
         
         // wait until log popup is displayed
-        //*[@id="root"]/div/div[1]/div[4]/div[2]/div/div[2]
         await page.waitForSelector('//div/div[2]', {visible: true, timeout: 3000});
 
         const log_description = await page.evaluate(() => document.evaluate('//h3', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent);
@@ -159,7 +152,7 @@ describe('Integration UI tests', () => {
         expect(text).toBe("AU") 
     });
 
-/*
+    /*
     it('test version', async () =>{
         await page.goto("https://localhost:5001/version", {waitUntil: 'networkidle0'});
         const version = await page.evaluate(() => document.body.textContent);
