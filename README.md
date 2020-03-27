@@ -4,7 +4,11 @@ Demo application showcasing Configuration with Design Automation for Inventor
 ## Setup
 1. Create forge app at https://forge.autodesk.com/
 1. Note Client ID and Secret.
-1. In order to debug the solution in VS Code you have to install the extension Debugger for Chrome
+
+### VSCode extensions
+* In order to debug the solution in VS Code you have to install the extension [Debugger for Chrome](https://marketplace.visualstudio.com/items?itemName=msjsdiag.debugger-for-chrome)
+* [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
+* [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
 
 ## Run the app
 
