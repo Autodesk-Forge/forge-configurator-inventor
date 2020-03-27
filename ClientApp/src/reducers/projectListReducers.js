@@ -1,19 +1,7 @@
 import projectListActionTypes from '../actions/projectListActions';
 
 export const initialState = {
-    activeProjectId: '1',
-    projects: [
-        {
-            id: '1',
-            label: 'Local Project 1',
-            image: 'bike.png'
-        },
-        {
-            id: '2',
-            label: 'Another Local One',
-            image: 'logo.png'
-        }
-    ]
+    activeProjectId: null
 }
 
 export const projectListReducer = function(state = initialState, action) {

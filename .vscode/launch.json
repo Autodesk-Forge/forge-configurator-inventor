@@ -3,6 +3,12 @@
    // Use hover for the description of the existing attributes
    // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
    "version": "0.2.0",
+   "compounds": [
+      {
+        "name": "Server/Client",
+        "configurations": ["Server", "Client"]
+      }
+   ],
    "configurations": [
         {
             "name": "Server",
@@ -34,12 +40,36 @@
             "name": "Client",
             "url": "https://localhost:5001",
             "webRoot": "${workspaceFolder}"
-        }
-    ],
-    "compounds": [
+        },
         {
-            "name": "Server/Client",
-            "configurations": ["Server", "Client"]
-        }
-    ]
+            "type": "node",
+            "request": "launch",
+            "name": "Jest All",
+            "program": "${workspaceFolder}/ClientApp/node_modules/.bin/jest",
+            "args": ["--runInBand"],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "disableOptimisticBPs": true,
+            "windows": {
+              "program": "${workspaceFolder}/ClientApp/node_modules/jest/bin/jest",
+            }
+        },
+        {
+          "type": "node",
+          "request": "launch",
+          "name": "Jest Current File",
+          "program": "${workspaceFolder}/ClientApp/node_modules/.bin/jest",
+          "args": [
+            "${fileBasenameNoExtension}",
+            "--config",
+            "jest.config.js"
+          ],
+          "console": "integratedTerminal",
+          "internalConsoleOptions": "neverOpen",
+          "disableOptimisticBPs": true,
+          "windows": {
+            "program": "${workspaceFolder}/ClientApp/node_modules/jest/bin/jest",
+          }
+        },
+      ]
 }

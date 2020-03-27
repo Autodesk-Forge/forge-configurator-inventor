@@ -18,7 +18,7 @@ import repo from '../Repository';
 import {updateProjectList, updateActiveProject} from '../actions/projectListActions';
 import {addError, addLog} from '../actions/notificationActions';
 
-const fetchProjects = () => async (dispatch, getState) => {
+export const fetchProjects = () => async (dispatch, getState) => {
     dispatch(addLog('Load Projects invoked'));
     try {
         const data = await repo.loadProjects();

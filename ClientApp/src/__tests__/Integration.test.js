@@ -1,6 +1,7 @@
 const playwright = require('playwright');
 
-const pageUrl = "https://localhost:5001"
+// IMPORTANT: this is the page URL.  And it's expected that backend is running.
+const pageUrl = "https://localhost:5001";
 
 const config = {
     // headless: false, // NOTE: uncomment to see what is actually going o the screen
@@ -29,9 +30,11 @@ describe('Integration UI tests', () => {
             throw new Error("Connection wasn't established");
         }
 
-        await page.route('**', route => {
-            console.log(route.url());
-            route.continue();
+        // report about requested URLs
+        await page.route('**', async (request) => {
+
+            console.log(request.url());
+            await request.continue();
         });
 
         // Open the page
@@ -42,6 +45,7 @@ describe('Integration UI tests', () => {
         await browser.close();
     });
 
+
     it('should check the page is loaded', async () => {
 
         // check the page is loaded
@@ -51,13 +55,10 @@ describe('Integration UI tests', () => {
 
     it(`should project loading`, async () => {
 
-        // wait until project list is refreshed
-        await page.waitForSelector("#project-list ul");
-
-        // check updated list content
-        // it's assumed that the bucket is not empty
-        const updatedContent = await page.evaluate(() => document.querySelector("#project-list").textContent);
-        expect(updatedContent).not.toBe("No projects loaded");
+        // wait until project list is refreshed.
+        // This selector does not exist on page opening, and will be created after projects are loaded from the server. Wait for it.
+        const listItems = await page.$$("#project-list ul li");
+        expect(listItems.length).toBeGreaterThan(0); // expects that
     });
 
     it('checks Version endpoint', async () => {

@@ -13,6 +13,12 @@ Demo application showcasing Configuration with Design Automation for Inventor
 1. `dotnet run`
 1. Open https://localhost:5001
 
+### Clear and load initial data during app launch time
+
+ - Create initial data `dotnet run initialize=true`
+ - Clear data `dotnet run clear=true`
+ - Clear and then load initial data `dotnet run initialize=true clear=true`
+
 ### Specify Forge credentials
 Use one of the following approaches:
 * Set environment variables `FORGE_CLIENT_ID` and `FORGE_CLIENT_SECRET`.
