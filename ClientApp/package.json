@@ -51,8 +51,10 @@
     "eject": "react-scripts eject",
     "lint": "eslint ./src/"
   },
-  "jest": {
-    "testEnvironment": "node"
+  "babel": {
+    "presets": [
+      "react-app"
+    ]
   },
   "browserslist": {
     "production": [
