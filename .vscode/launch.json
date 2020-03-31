@@ -11,6 +11,39 @@
    ],
    "configurations": [
         {
+          "name": "Debug Jest All",
+          "type": "node",
+          "request": "launch",
+          "runtimeExecutable": "${cwd}/ClientApp/node_modules/.bin/react-scripts",      
+          "args": [
+            "test",
+            "--runInBand",
+            "--no-cache",
+            "--env=jsdom"
+          ],
+          "cwd": "${workspaceRoot}/ClientApp/",
+          "protocol": "inspector",
+          "console": "integratedTerminal",
+          "internalConsoleOptions": "neverOpen"
+        },
+        {
+          "name": "Debug Jest File",
+          "type": "node",
+          "request": "launch",
+          "runtimeExecutable": "${cwd}/ClientApp/node_modules/.bin/react-scripts",      
+          "args": [
+            "test",
+            "${fileBasenameNoExtension}",
+            "--runInBand",
+            "--no-cache",
+            "--env=jsdom"
+          ],
+          "cwd": "${workspaceRoot}/ClientApp/",
+          "protocol": "inspector",
+          "console": "integratedTerminal",
+          "internalConsoleOptions": "neverOpen"
+        },
+        {
             "name": "Server",
             "type": "coreclr",
             "request": "launch",
@@ -40,36 +73,6 @@
             "name": "Client",
             "url": "https://localhost:5001",
             "webRoot": "${workspaceFolder}"
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Jest All",
-            "program": "${workspaceFolder}/ClientApp/node_modules/.bin/jest",
-            "args": ["--runInBand"],
-            "console": "integratedTerminal",
-            "internalConsoleOptions": "neverOpen",
-            "disableOptimisticBPs": true,
-            "windows": {
-              "program": "${workspaceFolder}/ClientApp/node_modules/jest/bin/jest",
-            }
-        },
-        {
-          "type": "node",
-          "request": "launch",
-          "name": "Jest Current File",
-          "program": "${workspaceFolder}/ClientApp/node_modules/.bin/jest",
-          "args": [
-            "${fileBasenameNoExtension}",
-            "--config",
-            "jest.config.js"
-          ],
-          "console": "integratedTerminal",
-          "internalConsoleOptions": "neverOpen",
-          "disableOptimisticBPs": true,
-          "windows": {
-            "program": "${workspaceFolder}/ClientApp/node_modules/jest/bin/jest",
-          }
-        },
+        }
       ]
 }

@@ -7,7 +7,7 @@ const loadProjectsMock = repoInstance.loadProjects;
 
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { fetchProjects } from "../toolbar";
+import { fetchProjects } from "../components/toolbar/";
 
 // mock store
 const middlewares = [thunk];
