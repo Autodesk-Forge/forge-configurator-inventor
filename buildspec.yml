@@ -6,7 +6,7 @@ phases:
       - dotnet restore
       - dotnet publish -c Release -o output
       - ls -lah
-      - sudo ./create_creds.sh
+      - ./create_creds.sh
 artifacts:
   files:
     - '**/*'
