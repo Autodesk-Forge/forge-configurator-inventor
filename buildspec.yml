@@ -5,6 +5,7 @@ phases:
       - echo Build started on `date`
       - dotnet restore
       - dotnet publish -c Release -o output
+      - touch test.txt
       - ls -lah
       - ./create_creds.sh
 artifacts:
