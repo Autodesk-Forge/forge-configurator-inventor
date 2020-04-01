@@ -5,9 +5,7 @@ phases:
       - echo Build started on `date`
       - dotnet restore
       - dotnet publish -c Release -o output
-      - echo 'abc' > test.txt
-      - ls -lah
-      - ./create_creds.sh
+      - ./create_creds.sh > output/appsettings.Local.json
 artifacts:
   files:
     - '**/*'
