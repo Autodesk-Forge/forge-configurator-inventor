@@ -5,6 +5,7 @@ phases:
       - echo Build started on `date`
       - dotnet restore
       - dotnet publish -c Release -o output
+      - echo '{ "Forge": { "clientId": "$FORGE_CLIENT_ID", "clientSecret": "$FORGE_CLIENT_SECRET" } }' > appsettings.Local.json        
 artifacts:
   files:
     - '**/*'
