@@ -2,9 +2,8 @@ version: 0.2
 phases:
   pre_build:
     commands:
-      - ls -lah
+      - printenv
       - chmod +x create_creds.sh
-      - ls -lah
       - ./create_creds.sh
   build:
     commands:
