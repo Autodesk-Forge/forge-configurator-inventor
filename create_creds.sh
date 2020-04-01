@@ -1,6 +1,7 @@
 #/bin/bash
 echo 'running create_creds.sh'
 cd output
+ls -lah
 echo 'test' > test.txt
 echo 'after test'
 ls -lah
