@@ -5,7 +5,7 @@ phases:
       - echo Build started on `date`
       - dotnet restore
       - dotnet publish -c Release -o output
-      - create_creds.sh
+      - ./create_creds.sh
 artifacts:
   files:
     - '**/*'
