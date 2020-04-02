@@ -2,7 +2,7 @@ import React from 'react'
 import Enzyme, { shallow } from 'enzyme'
 import Adapter from 'enzyme-adapter-react-16'
 import Tabs, { Tab } from "@hig/tabs";
-import App from '../App'
+import TabsContainer from './tabsContainer'
 
 Enzyme.configure({ adapter: new Adapter() })
 
@@ -27,7 +27,7 @@ function setup() {
         fetchProjects: () => {}
     }    
     
-    const enzymeWrapper = shallow(<App {...props} />)
+    const enzymeWrapper = shallow(<TabsContainer {...props} />)
 
     return {
         props,
