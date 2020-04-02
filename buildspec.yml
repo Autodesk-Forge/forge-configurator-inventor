@@ -1,5 +1,9 @@
 version: 0.2
 phases:
+  pre_build:
+    commands:
+      - chmod +x create_creds.sh
+      - ./create_creds.sh
   build:
     commands:
       - echo Build started on `date`
