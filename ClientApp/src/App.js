@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Surface from '@hig/surface';
 import './app.css' 
 import Toolbar from './components/toolbar';
-import ProjectList from './components/projectList';
+import TabsContainer from './components/tabsContainer';
 
 class App extends Component {
   render () {
@@ -13,9 +13,7 @@ class App extends Component {
         shadow="high"
         borderRadius="m">
         <Toolbar/>
-        <div id="project-list">
-          <ProjectList/>
-        </div>
+        <TabsContainer/>      
       </Surface>
     );
   }

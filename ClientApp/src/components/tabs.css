@@ -1,0 +1,9 @@
+.tabsContainer {
+    padding-top: 20px;
+}
+
+.tabContent {
+    border-style: solid;
+    border-width: 8px;
+    border-color: #D9D9D9;
+}
