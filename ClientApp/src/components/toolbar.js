@@ -34,7 +34,7 @@ const PlaceCenterContainer = styled.div`
   display: flex;
 `;
 
-class Toolbar extends Component {
+export class Toolbar extends Component {
 
   constructor(props) {
     super(props);
@@ -96,7 +96,7 @@ class Toolbar extends Component {
   }
 }
 
-export default Toolbar = connect(function (store){
+export default connect(function (store){
   return {
     projectList: store.projectList
   }
