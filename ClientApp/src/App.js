@@ -3,6 +3,7 @@ import Surface from '@hig/surface';
 import './app.css' 
 import Toolbar from './components/toolbar';
 import TabsContainer from './components/tabsContainer';
+import ProjectSwitcher from './components/projectSwitcher';
 
 class App extends Component {
   render () {
@@ -12,7 +13,9 @@ class App extends Component {
         verticalPadding="m"
         shadow="high"
         borderRadius="m">
-        <Toolbar/>
+        <Toolbar>
+          <ProjectSwitcher />
+        </Toolbar>
         <TabsContainer/>      
       </Surface>
     );
