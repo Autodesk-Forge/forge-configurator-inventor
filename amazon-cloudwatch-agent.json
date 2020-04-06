@@ -14,11 +14,17 @@
                "log_group_name": "test.log",
                "log_stream_name": "test.log",
                "timezone": "Local"
+            },
+            {
+               "file_path": "/var/log/**.log",
+               "log_group_name": "sdra-logs",
+               "log_stream_name": "sdra-logs",
+               "timezone": "Local"
             }
          ]
          }
       },
-      "log_stream_name": "my_log_stream_name",
+      "log_stream_name": "sdra-default-stream",
       "force_flush_interval" : 15
    }
 }
