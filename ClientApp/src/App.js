@@ -8,8 +8,6 @@ class App extends Component {
   render () {
     return (
       <Surface id="main" level={200}
-        horizontalPadding="m"
-        verticalPadding="m"
         shadow="high"
         borderRadius="m">
         <Toolbar/>
