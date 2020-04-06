@@ -11,17 +11,18 @@ Demo application showcasing Configuration with Design Automation for Inventor
 1. Note the Client ID and Secret generated.
 1. In order to debug the solution in VS Code you have to install the extension Debugger for Chrome
 
-## Run/Debug the app
+## Build the solution
 
 1. Clone repository
 1. Specify [forge credentials](#specify-forge-credentials).
+1. From a command prompt, go to the root directory, and run `dotnet build`. This builds the projects and also installs required packages (can take several minutes).
 
-#### To Run Without Debugging
+## Run The App Without Debugging
 
-1. From a command prompt, go to the `WebApplication` directory, and execute `dotnet run`
+1. From a command prompt, go to the `WebApplication` directory, and run `dotnet run`
 1. Open https://localhost:5001
 
-#### To Debug from VS Code
+## Debug The App With VS Code
 
 1. Open the repository root folder in VS Code
 1. In the Run tab, select the `Server/Client` configuration and click the "Start Debugging" (arrow) button
