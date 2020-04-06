@@ -1,3 +1,5 @@
+import { fetchProjects } from './projectListActions'
+
 // the test based on https://redux.js.org/recipes/writing-tests#async-action-creators
 
 // prepare mock for Repository module
@@ -7,7 +9,6 @@ const loadProjectsMock = repoInstance.loadProjects;
 
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { fetchProjects } from "../components/toolbar/";
 
 // mock store
 const middlewares = [thunk];
