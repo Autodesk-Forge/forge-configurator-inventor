@@ -17,7 +17,7 @@ WORKDIR /app
 COPY --from=build amazon-cloudwatch-agent.deb .
 RUN dpkg -i -E ./amazon-cloudwatch-agent.deb
 COPY amazon-cloudwatch-agent.json /opt/aws/amazon-cloudwatch-agent/etc/
-COPY rc.local /etc/
-RUN chmod +x /etc/rc.local
+COPY commands.sh .
+RUN chmod +x commands.sh
 
-ENTRYPOINT ["dotnet", "SalesDemoToolApp.dll"]
+ENTRYPOINT ["./commands.sh"]
