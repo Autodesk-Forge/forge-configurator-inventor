@@ -5,20 +5,20 @@
          "collect_list": [
             {
                "file_path": "/opt/aws/amazon-cloudwatch-agent/logs/amazon-cloudwatch-agent.log",
-               "log_group_name": "amazon-cloudwatch-agent.log",
+               "log_group_name": "sdra",
                "log_stream_name": "amazon-cloudwatch-agent.log",
-               "timezone": "UTC"
-            },
-            {
-               "file_path": "/opt/aws/amazon-cloudwatch-agent/logs/test.log",
-               "log_group_name": "test.log",
-               "log_stream_name": "test.log",
                "timezone": "Local"
             },
             {
                "file_path": "/var/log/**.log",
-               "log_group_name": "sdra-logs",
-               "log_stream_name": "sdra-logs",
+               "log_group_name": "sdra",
+               "log_stream_name": "var-logs",
+               "timezone": "Local"
+            },
+            {
+               "file_path": "/app/console.log",
+               "log_group_name": "sdra",
+               "log_stream_name": "console.log",
                "timezone": "Local"
             }
          ]
