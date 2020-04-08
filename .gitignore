@@ -232,3 +232,5 @@ _Pvt_Extensions
 .fake/
 
 appsettings.Local.json
+
+AppBundles/Output
