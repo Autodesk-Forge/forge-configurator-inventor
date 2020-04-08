@@ -1,15 +1,15 @@
 using System.Collections.Generic;
 using Autodesk.Forge.DesignAutomation.Model;
-using WebApplication.Utilities;
 
-namespace IoConfigDemo
+namespace WebApplication.Processing
 {
     internal class CreateSvfDefinition : ForgeAppConfigBase
     {
-        public override int EngineVersion => 23;
-        public override string Description => "Generate SVF from Inventor document";
-        public override string Id => "CreateSvfForInventor";
+        public override int EngineVersion => 24;
+
+        public override string Id => "CreateSvf";
         public override string Label => "alpha";
+        public override string Description => "Generate SVF from Inventor document";
 
         internal static class Parameters
         {

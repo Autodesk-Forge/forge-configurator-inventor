@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Autodesk.Forge.DesignAutomation;
 using Autodesk.Forge.DesignAutomation.Model;
 
-namespace WebApplication.Utilities
+namespace WebApplication.Processing
 {
     internal class Publisher
     {

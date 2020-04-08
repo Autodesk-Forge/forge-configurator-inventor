@@ -6,7 +6,7 @@ using Autodesk.Forge.DesignAutomation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using WebApplication.Utilities;
+using WebApplication.Processing;
 
 namespace IoConfigDemo
 {
@@ -16,6 +16,9 @@ namespace IoConfigDemo
         private readonly BucketNameProvider _bucketNameProvider;
         private readonly ILogger<Initializer> _logger;
 
+        /// <summary>
+        /// Design Automation client.
+        /// </summary>
         private DesignAutomationClient DesignAutomationClient
         {
             get
@@ -30,6 +33,9 @@ namespace IoConfigDemo
             }
         }
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>
         public Initializer(IForge forge, BucketNameProvider bucketNameProvider, ILogger<Initializer> logger)
         {
             _forge = forge;
@@ -51,7 +57,7 @@ namespace IoConfigDemo
             _logger.LogInformation("Added empty projects.");
 
             // create bundles and activities
-            var publisher = new Publisher(new CreateSvfDefinition(), DesignAutomationClient);
+            var publisher = GetSvfPublisher();
             await publisher.PostAppBundleAsync(@"C:\Projects\adsk\src\io-config-demo\AppBundles\Output\CreateSVFPlugin.bundle.zip");
             await publisher.PublishActivityAsync();
         }
@@ -70,9 +76,12 @@ namespace IoConfigDemo
             }
 
             // delete bundles and activities
-            var publisher = new Publisher(new CreateSvfDefinition(), DesignAutomationClient);
+            var publisher = GetSvfPublisher();
             await publisher.CleanExistingAppActivityAsync();
             // TODO: delete app bundle
         }
+
+        private Publisher GetSvfPublisher() => new Publisher(new CreateSvfDefinition(), DesignAutomationClient);
+        private Publisher GetThumbnailPublisher() => new Publisher(new CreateThumbnailDefinition(), DesignAutomationClient);
     }
 }

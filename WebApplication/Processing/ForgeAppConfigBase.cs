@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Autodesk.Forge.DesignAutomation.Model;
 
-namespace WebApplication.Utilities
+namespace WebApplication.Processing
 {
     /// <summary>
     /// Abstract class for Forge App definition.
@@ -12,9 +12,9 @@ namespace WebApplication.Utilities
         public abstract int EngineVersion { get; }
         public string Engine => $"Autodesk.Inventor+{EngineVersion}";
 
-        public abstract string Description { get; }
         public abstract string Id { get; }
         public abstract string Label { get; }
+        public abstract string Description { get; }
 
         public AppBundle Bundle
         {
