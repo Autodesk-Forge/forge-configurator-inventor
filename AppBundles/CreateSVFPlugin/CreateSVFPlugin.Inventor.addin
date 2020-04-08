@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Addin Type="Plugin">
+  <ClassId>{9641ff40-1e73-4208-be7a-4936197d4743}</ClassId>
+  <ClientId>{9641ff40-1e73-4208-be7a-4936197d4743}</ClientId>
+  <DisplayName>CreateSVFPlugin</DisplayName>
+  <Description>CreateSVFPlugin</Description>
+  <Assembly>CreateSVFPlugin.dll</Assembly>
+</Addin>
