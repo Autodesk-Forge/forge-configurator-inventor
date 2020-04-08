@@ -16,7 +16,6 @@ namespace WebApplication.Utilities
     internal class Publisher
     {
         private readonly ForgeAppConfigBase _appConfig;
-        private readonly string _packagePathname;
         private string _nickname;
 
         internal DesignAutomationClient Client { get; }
@@ -24,16 +23,15 @@ namespace WebApplication.Utilities
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Publisher(IConfiguration configuration, ForgeAppConfigBase appConfig, string packagePathname)
+        public Publisher(IConfiguration configuration, ForgeAppConfigBase appConfig)
         {
             _appConfig = appConfig;
-            _packagePathname = packagePathname;
             Client = CreateDesignAutomationClient(configuration);
         }
 
-        public async Task PostAppBundleAsync()
+        public async Task PostAppBundleAsync(string packagePathname)
         {
-            if (!File.Exists(_packagePathname))
+            if (!File.Exists(packagePathname))
                 throw new Exception("App Bundle with package is not found.");
 
             var shortAppBundleId = $"{_appConfig.Bundle.Id}+{_appConfig.Label}";
@@ -43,12 +41,12 @@ namespace WebApplication.Utilities
             var response = await Client.AppBundlesApi.GetAppBundleAsync(shortAppBundleId, throwOnError: false);
             if (response.HttpResponse.StatusCode == HttpStatusCode.NotFound) // create new bundle
             {
-                await Client.CreateAppBundleAsync(_appConfig.Bundle, _appConfig.Label, _packagePathname);
+                await Client.CreateAppBundleAsync(_appConfig.Bundle, _appConfig.Label, packagePathname);
                 Console.WriteLine("Created new app bundle.");
             }
             else // create new bundle version
             {
-                var version = await Client.UpdateAppBundleAsync(_appConfig.Bundle, _appConfig.Label, _packagePathname);
+                var version = await Client.UpdateAppBundleAsync(_appConfig.Bundle, _appConfig.Label, packagePathname);
                 Console.WriteLine($"Created version #{version} for '{shortAppBundleId}' app bundle.");
             }
         }

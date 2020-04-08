@@ -1,9 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Autodesk.Forge.Client;
 using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using WebApplication.Utilities;
 
@@ -87,11 +87,14 @@ namespace IoConfigDemo
         private readonly IForge _forge;
         private readonly BucketNameProvider _bucketNameProvider;
         private readonly ILogger<Initializer> _logger;
-        public Initializer(IForge forge, BucketNameProvider bucketNameProvider, ILogger<Initializer> logger)
+        private readonly IConfiguration _configuration; // TODO: ER: not good I guess. Refactor later
+
+        public Initializer(IForge forge, BucketNameProvider bucketNameProvider, ILogger<Initializer> logger, IConfiguration configuration)
         {
             _forge = forge;
             _bucketNameProvider = bucketNameProvider;
             _logger = logger;
+            _configuration = configuration;
         }
 
         public async Task Initialize()
@@ -108,6 +111,9 @@ namespace IoConfigDemo
             _logger.LogInformation("Added empty projects.");
 
             // create bundles and activities
+            var publisher = new Publisher(_configuration, new CreateSvfDefinition());
+            await publisher.PostAppBundleAsync(@"C:\Projects\adsk\src\io-config-demo\AppBundles\Output\CreateSVFPlugin.bundle.zip");
+            await publisher.PublishActivityAsync();
         }
 
         public async Task Clear()
@@ -124,6 +130,9 @@ namespace IoConfigDemo
             }
 
             // delete bundles and activities
+            var publisher = new Publisher(_configuration, new CreateSvfDefinition());
+            await publisher.CleanExistingAppActivityAsync();
+            // TODO: delete app bundle
         }
     }
 }
