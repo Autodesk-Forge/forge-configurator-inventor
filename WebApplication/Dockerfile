@@ -4,6 +4,8 @@ RUN apt-get update -y
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash
 RUN apt-get install nodejs -yq
 RUN wget https://s3.us-west-2.amazonaws.com/amazoncloudwatch-agent-us-west-2/debian/amd64/latest/amazon-cloudwatch-agent.deb
+ARG COMMIT_ID
+ENV CODEBUILD_RESOLVED_SOURCE_VERSION=$COMMIT_ID
 
 COPY . /app
 WORKDIR /app
