@@ -5,11 +5,8 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Autodesk.Forge.Core;
 using Autodesk.Forge.DesignAutomation;
 using Autodesk.Forge.DesignAutomation.Model;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 
 namespace WebApplication.Utilities
 {
@@ -23,10 +20,10 @@ namespace WebApplication.Utilities
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Publisher(IConfiguration configuration, ForgeAppConfigBase appConfig)
+        public Publisher(ForgeAppConfigBase appConfig, DesignAutomationClient client)
         {
             _appConfig = appConfig;
-            Client = CreateDesignAutomationClient(configuration);
+            Client = client;
         }
 
         public async Task PostAppBundleAsync(string packagePathname)
@@ -163,27 +160,6 @@ namespace WebApplication.Utilities
             {
                 Console.WriteLine($"The activity {activityId} does not exist.");
             }
-        }
-
-
-        private static DesignAutomationClient CreateDesignAutomationClient(IConfiguration configuration)
-        {
-            var forgeService = CreateForgeService(configuration);
-
-            var rsdkCfg = configuration.GetSection("DesignAutomation").Get<Configuration>();
-            var options = (rsdkCfg == null) ? null : Options.Create(rsdkCfg);
-            return new DesignAutomationClient(forgeService, options);
-        }
-
-        private static ForgeService CreateForgeService(IConfiguration configuration)
-        {
-            var forgeCfg = configuration.GetSection("Forge").Get<ForgeConfiguration>();
-            var httpMessageHandler = new ForgeHandler(Options.Create(forgeCfg))
-            {
-                InnerHandler = new HttpClientHandler()
-            };
-
-            return new ForgeService(new HttpClient(httpMessageHandler));
         }
     }
 }

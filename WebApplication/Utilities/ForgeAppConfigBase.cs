@@ -4,7 +4,8 @@ using Autodesk.Forge.DesignAutomation.Model;
 namespace WebApplication.Utilities
 {
     /// <summary>
-    /// Abstract class for Forge App definition
+    /// Abstract class for Forge App definition.
+    /// Override the class and provide data which is specific for your forge app.
     /// </summary>
     public abstract class ForgeAppConfigBase
     {

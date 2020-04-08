@@ -1,10 +1,13 @@
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Autodesk.Forge.Client;
+using Autodesk.Forge.Core;
+using Autodesk.Forge.DesignAutomation;
 using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using WebApplication.Utilities;
 
 namespace IoConfigDemo
@@ -87,14 +90,26 @@ namespace IoConfigDemo
         private readonly IForge _forge;
         private readonly BucketNameProvider _bucketNameProvider;
         private readonly ILogger<Initializer> _logger;
-        private readonly IConfiguration _configuration; // TODO: ER: not good I guess. Refactor later
 
-        public Initializer(IForge forge, BucketNameProvider bucketNameProvider, ILogger<Initializer> logger, IConfiguration configuration)
+        private DesignAutomationClient DesignAutomationClient
+        {
+            get
+            {
+                // TODO: can it be reused? creating new instance each time, just in case
+                var httpMessageHandler = new ForgeHandler(Options.Create(_forge.Configuration))
+                {
+                    InnerHandler = new HttpClientHandler()
+                };
+                var forgeService = new ForgeService(new HttpClient(httpMessageHandler));
+                return new DesignAutomationClient(forgeService);
+            }
+        }
+
+        public Initializer(IForge forge, BucketNameProvider bucketNameProvider, ILogger<Initializer> logger)
         {
             _forge = forge;
             _bucketNameProvider = bucketNameProvider;
             _logger = logger;
-            _configuration = configuration;
         }
 
         public async Task Initialize()
@@ -111,7 +126,7 @@ namespace IoConfigDemo
             _logger.LogInformation("Added empty projects.");
 
             // create bundles and activities
-            var publisher = new Publisher(_configuration, new CreateSvfDefinition());
+            var publisher = new Publisher(new CreateSvfDefinition(), DesignAutomationClient);
             await publisher.PostAppBundleAsync(@"C:\Projects\adsk\src\io-config-demo\AppBundles\Output\CreateSVFPlugin.bundle.zip");
             await publisher.PublishActivityAsync();
         }
@@ -130,7 +145,7 @@ namespace IoConfigDemo
             }
 
             // delete bundles and activities
-            var publisher = new Publisher(_configuration, new CreateSvfDefinition());
+            var publisher = new Publisher(new CreateSvfDefinition(), DesignAutomationClient);
             await publisher.CleanExistingAppActivityAsync();
             // TODO: delete app bundle
         }
