@@ -1,0 +1,30 @@
+{
+   "logs": {
+      "logs_collected": {
+         "files": {
+         "collect_list": [
+            {
+               "file_path": "/opt/aws/amazon-cloudwatch-agent/logs/amazon-cloudwatch-agent.log",
+               "log_group_name": "sdra",
+               "log_stream_name": "amazon-cloudwatch-agent.log",
+               "timezone": "Local"
+            },
+            {
+               "file_path": "/var/log/**.log",
+               "log_group_name": "sdra",
+               "log_stream_name": "var-logs",
+               "timezone": "Local"
+            },
+            {
+               "file_path": "/app/console.log",
+               "log_group_name": "sdra",
+               "log_stream_name": "console.log",
+               "timezone": "Local"
+            }
+         ]
+         }
+      },
+      "log_stream_name": "sdra-default-stream",
+      "force_flush_interval" : 15
+   }
+}
