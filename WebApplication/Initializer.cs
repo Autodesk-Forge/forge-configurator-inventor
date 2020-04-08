@@ -58,7 +58,7 @@ namespace IoConfigDemo
 
             // create bundles and activities
             var publisher = GetSvfPublisher();
-            await publisher.PostAppBundleAsync(@"C:\Projects\adsk\src\io-config-demo\AppBundles\Output\CreateSVFPlugin.bundle.zip");
+            await publisher.PostAppBundleAsync(@"..\AppBundles\Output\CreateSVFPlugin.bundle.zip"); // TODO: move it to configuration?
             await publisher.PublishActivityAsync();
         }
 

@@ -7,7 +7,7 @@ namespace WebApplication.Processing
     {
         public override int EngineVersion => 24;
 
-        public override string Id => "CreateSvf";
+        public override string Id => "CreateSVF";
         public override string Label => "alpha";
         public override string Description => "Generate SVF from Inventor document";
 
