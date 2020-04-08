@@ -11,6 +11,7 @@ namespace IoConfigDemo
         Task CreateBucket(string name);
         Task DeleteBucket(string name);
         Task CreateEmptyObject(string bucketKey, string objectName);
+        Task UploadObject(string bucketKey, string localName, string objectName);
         /// <summary>
         /// Forge configuration.
         /// </summary>

@@ -1,7 +1,10 @@
 using System;
+using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 using Autodesk.Forge.Client;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace IoConfigDemo
@@ -18,18 +21,29 @@ namespace IoConfigDemo
             _logger = logger;
         }
 
-        public async Task Initialize()
+        public async Task Initialize(IConfiguration Configuration)
         {
             _logger.LogInformation($"Initializing base data");
             await _forge.CreateBucket(_bucketNameProvider.BucketName);
             _logger.LogInformation($"Bucket {_bucketNameProvider.BucketName} created");
-            
-            await Task.WhenAll(
-                _forge.CreateEmptyObject(_bucketNameProvider.BucketName, "Project1.zip"),
-                _forge.CreateEmptyObject(_bucketNameProvider.BucketName, "Project2.zip"),
-                _forge.CreateEmptyObject(_bucketNameProvider.BucketName, "Project3.zip")
-            );
-            _logger.LogInformation($"Added empty projects.");
+
+            // download default project files from the public location
+            // specified by the appsettings.json
+            var client = new WebClient();
+            string file = null;
+            const string ProjectsFolder = "ProjectsFolder";
+            int fileIndex = 0;
+            // read the config file
+            string location = Configuration.GetValue<string>("DefaultProjects:Location");
+            Directory.CreateDirectory(ProjectsFolder);
+            while ((file = Configuration.GetValue<string>("DefaultProjects:Files:" + fileIndex.ToString())) != null)
+            {
+                string localLocation = Path.Combine(ProjectsFolder, file);
+                client.DownloadFile(location + "/" + file, localLocation);
+                await _forge.UploadObject(_bucketNameProvider.BucketName, localLocation, file);
+                fileIndex++;
+            }
+            _logger.LogInformation($"Added default projects.");
         }
 
         public async Task Clear()
