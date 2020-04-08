@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace IoConfigDemo
 {
@@ -14,8 +15,14 @@ namespace IoConfigDemo
             CreateHostBuilder(args).Build().Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
+        public static IHostBuilder CreateHostBuilder(string[] args)
+        {
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.File("console.log")
+                .CreateLogger();
+
+            return Host.CreateDefaultBuilder(args)
+                .UseSerilog()
                 .ConfigureAppConfiguration(builder =>
                 {
                     builder
@@ -36,5 +43,6 @@ namespace IoConfigDemo
                 {
                     logging.AddConsole();
                 });
+        }
     }
 }
