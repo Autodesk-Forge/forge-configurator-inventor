@@ -117,17 +117,11 @@ namespace IoConfigDemo
                 await objectsApi.UploadObjectAsync(bucketKey, objectName, 0, stream);
             }
         }
-        public async Task UploadObject(string bucketKey, string localName, string objectName)
+        public async Task UploadObject(string bucketKey, Stream stream, string objectName)
         {
             ObjectsApi objectsApi = new ObjectsApi { Configuration = { AccessToken = await GetTwoLeggedAccessToken() } };
 
-            using (FileStream stream = new FileStream(localName, FileMode.Open, FileAccess.Read))
-            {
-                byte[] bytes = new byte[stream.Length];
-                stream.Read(bytes, 0, (int)stream.Length);
-
-                await objectsApi.UploadObjectAsync(bucketKey, objectName, 0, stream);
-            }
+            await objectsApi.UploadObjectAsync(bucketKey, objectName, 0, stream);
         }
     }
 }

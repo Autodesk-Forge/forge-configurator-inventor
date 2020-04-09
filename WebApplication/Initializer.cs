@@ -33,21 +33,16 @@ namespace IoConfigDemo
             // specified by the appsettings.json
             var client = new HttpClient();
             string file = null;
-            const string ProjectsFolder = "ProjectsFolder";
             int fileIndex = 0;
             // read the config file
             string location = _configuration.GetValue<string>("DefaultProjects:Location");
-            Directory.CreateDirectory(ProjectsFolder);
             while ((file = _configuration.GetValue<string>("DefaultProjects:Files:" + fileIndex.ToString())) != null)
             {
-                string localLocation = Path.Combine(ProjectsFolder, file);
                 HttpResponseMessage response = await client.GetAsync(location + "/" + file);
                 if (response.IsSuccessStatusCode) {
-                    using (var fs = new FileStream(localLocation, FileMode.Create)) {
-                        await response.Content.CopyToAsync(fs);
-                    }
+                    Stream stream = await response.Content.ReadAsStreamAsync();
+                    await _forge.UploadObject(_bucketNameProvider.BucketName, stream, file);
                 }
-                await _forge.UploadObject(_bucketNameProvider.BucketName, localLocation, file);
                 fileIndex++;
             }
             _logger.LogInformation($"Added default projects.");
