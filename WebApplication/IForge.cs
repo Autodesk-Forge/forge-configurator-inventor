@@ -7,7 +7,7 @@ namespace IoConfigDemo
 {
     public interface IForge
     {
-        Task<List<ObjectDetails>> GetBucketObjects(string bucketKey);
+        Task<List<ObjectDetails>> GetBucketObjects(string bucketKey, string beginsWith = null);
         Task CreateBucket(string name);
         Task DeleteBucket(string name);
         Task CreateEmptyObject(string bucketKey, string objectName);

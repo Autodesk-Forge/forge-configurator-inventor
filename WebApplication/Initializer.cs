@@ -25,9 +25,9 @@ namespace IoConfigDemo
             _logger.LogInformation($"Bucket {_bucketNameProvider.BucketName} created");
             
             await Task.WhenAll(
-                _forge.CreateEmptyObject(_bucketNameProvider.BucketName, "Project1.zip"),
-                _forge.CreateEmptyObject(_bucketNameProvider.BucketName, "Project2.zip"),
-                _forge.CreateEmptyObject(_bucketNameProvider.BucketName, "Project3.zip")
+                _forge.CreateEmptyObject(_bucketNameProvider.BucketName, new ObjectNameProvider("Project1.zip").SourceModel),
+                _forge.CreateEmptyObject(_bucketNameProvider.BucketName, new ObjectNameProvider("Project2.zip").SourceModel),
+                _forge.CreateEmptyObject(_bucketNameProvider.BucketName, new ObjectNameProvider("Project3.ipt").SourceModel)
             );
             _logger.LogInformation($"Added empty projects.");
         }

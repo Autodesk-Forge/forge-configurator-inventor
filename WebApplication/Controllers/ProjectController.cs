@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Autodesk.Forge.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using SalesDemoToolApp.Utilities;
 
 namespace IoConfigDemo.Controllers
 {
@@ -28,13 +27,14 @@ namespace IoConfigDemo.Controllers
         {
             // TODO move to projects repository?
 
-            List<ObjectDetails> objects = await _forge.GetBucketObjects(_bucketNameProvider.BucketName);
+            List<ObjectDetails> objects = await _forge.GetBucketObjects(_bucketNameProvider.BucketName, $"{ONK.projectsFolder}-");
             var projects = new List<Project>();
             foreach(ObjectDetails objDetails in objects)
             {
+                var nameProvider = new ObjectNameProvider(objDetails.ObjectKey, true);
                 projects.Add(new Project { 
-                    Id = objDetails.ObjectKey,
-                    Label = objDetails.ObjectKey,
+                    Id = nameProvider.ProjectName,
+                    Label = nameProvider.ProjectName,
                     Image = "./bike.png" }); // temporary icon to verify control
             }
             return projects;
