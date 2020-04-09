@@ -1,11 +1,8 @@
-using System.Net.Http;
 using System.Threading.Tasks;
 using Autodesk.Forge.Client;
-using Autodesk.Forge.Core;
 using Autodesk.Forge.DesignAutomation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using WebApplication.Processing;
 
 namespace IoConfigDemo
@@ -15,32 +12,17 @@ namespace IoConfigDemo
         private readonly IForge _forge;
         private readonly BucketNameProvider _bucketNameProvider;
         private readonly ILogger<Initializer> _logger;
-
-        /// <summary>
-        /// Design Automation client.
-        /// </summary>
-        private DesignAutomationClient DesignAutomationClient
-        {
-            get
-            {
-                // TODO: can it be reused? creating new instance each time, just in case
-                var httpMessageHandler = new ForgeHandler(Options.Create(_forge.Configuration))
-                {
-                    InnerHandler = new HttpClientHandler()
-                };
-                var forgeService = new ForgeService(new HttpClient(httpMessageHandler));
-                return new DesignAutomationClient(forgeService);
-            }
-        }
+        private readonly DesignAutomationClient _fdaClient;
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Initializer(IForge forge, BucketNameProvider bucketNameProvider, ILogger<Initializer> logger)
+        public Initializer(IForge forge, BucketNameProvider bucketNameProvider, ILogger<Initializer> logger, DesignAutomationClient fdaClient)
         {
             _forge = forge;
             _bucketNameProvider = bucketNameProvider;
             _logger = logger;
+            _fdaClient = fdaClient;
         }
 
         public async Task Initialize()
@@ -76,12 +58,11 @@ namespace IoConfigDemo
             }
 
             // delete bundles and activities
-            var publisher = GetSvfPublisher();
-            //await publisher.CleanExistingAppActivityAsync();
-            // TODO: delete app bundle
+            var svfPublisher = GetSvfPublisher();
+            await svfPublisher.CleanUpAsync();
         }
 
-        private Publisher GetSvfPublisher() => new Publisher(new CreateSvfDefinition(), DesignAutomationClient);
-        private Publisher GetThumbnailPublisher() => new Publisher(new CreateThumbnailDefinition(), DesignAutomationClient);
+        private Publisher GetSvfPublisher() => new Publisher(new CreateSvfDefinition(), _fdaClient);
+        private Publisher GetThumbnailPublisher() => new Publisher(new CreateThumbnailDefinition(), _fdaClient);
     }
 }

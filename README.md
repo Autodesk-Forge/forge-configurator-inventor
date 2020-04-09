@@ -5,6 +5,7 @@ Demo application showcasing Configuration with Design Automation for Inventor
 
 1. .NET Core 3.1
 1. Node.js
+1. _(if you want to build app bundles)_ Autodesk Inventor 2021
 
 ## Setup
 1. Create a forge app at https://forge.autodesk.com/, and select the Design Automation V3 API

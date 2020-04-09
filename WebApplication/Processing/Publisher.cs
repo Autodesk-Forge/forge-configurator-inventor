@@ -15,7 +15,7 @@ namespace WebApplication.Processing
         private readonly ForgeAppConfigBase _appConfig;
         private string _nickname;
 
-        internal DesignAutomationClient Client { get; }
+        private readonly DesignAutomationClient _client;
 
         /// <summary>
         /// Constructor.
@@ -23,7 +23,7 @@ namespace WebApplication.Processing
         public Publisher(ForgeAppConfigBase appConfig, DesignAutomationClient client)
         {
             _appConfig = appConfig;
-            Client = client;
+            _client = client;
         }
 
         public async Task PostAppBundleAsync(string packagePathname)
@@ -35,15 +35,15 @@ namespace WebApplication.Processing
             Console.WriteLine($"Posting app bundle '{shortAppBundleId}'.");
 
             // try to get already existing bundle
-            var response = await Client.AppBundlesApi.GetAppBundleAsync(shortAppBundleId, throwOnError: false);
+            var response = await _client.AppBundlesApi.GetAppBundleAsync(shortAppBundleId, throwOnError: false);
             if (response.HttpResponse.StatusCode == HttpStatusCode.NotFound) // create new bundle
             {
-                await Client.CreateAppBundleAsync(_appConfig.Bundle, _appConfig.Label, packagePathname);
+                await _client.CreateAppBundleAsync(_appConfig.Bundle, _appConfig.Label, packagePathname);
                 Console.WriteLine("Created new app bundle.");
             }
             else // create new bundle version
             {
-                var version = await Client.UpdateAppBundleAsync(_appConfig.Bundle, _appConfig.Label, packagePathname);
+                var version = await _client.UpdateAppBundleAsync(_appConfig.Bundle, _appConfig.Label, packagePathname);
                 Console.WriteLine($"Created version #{version} for '{shortAppBundleId}' app bundle.");
             }
         }
@@ -58,26 +58,21 @@ namespace WebApplication.Processing
             };
 
             // run WI and wait for completion
-            var status = await Client.CreateWorkItemAsync(wi);
+            var status = await _client.CreateWorkItemAsync(wi);
             Console.WriteLine($"Created WI {status.Id}");
             while (status.Status == Status.Pending || status.Status == Status.Inprogress)
             {
                 Console.Write(".");
                 Thread.Sleep(2000);
-                status = await Client.GetWorkitemStatusAsync(status.Id);
+                status = await _client.GetWorkitemStatusAsync(status.Id);
             }
 
-            Console.WriteLine();
             Console.WriteLine($"WI {status.Id} completed with {status.Status}");
-            Console.WriteLine();
 
             // dump report
             var client = new HttpClient();
             var report = await client.GetStringAsync(status.ReportUrl);
-            var oldColor = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
             Console.Write(report);
-            Console.ForegroundColor = oldColor;
             Console.WriteLine();
         }
 
@@ -91,7 +86,7 @@ namespace WebApplication.Processing
         {
             if (_nickname == null)
             {
-                _nickname = await Client.GetNicknameAsync("me");
+                _nickname = await _client.GetNicknameAsync("me");
             }
 
             return _nickname;
@@ -113,22 +108,25 @@ namespace WebApplication.Processing
             };
 
             // check if the activity exists already
-            var response = await Client.ActivitiesApi.GetActivityAsync(await GetFullActivityId(), throwOnError: false);
+            var response = await _client.ActivitiesApi.GetActivityAsync(await GetFullActivityId(), throwOnError: false);
             if (response.HttpResponse.StatusCode == HttpStatusCode.NotFound) // create activity
             {
                 Console.WriteLine($"Creating activity '{_appConfig.ActivityId}'");
-                await Client.CreateActivityAsync(activity, _appConfig.ActivityLabel);
+                await _client.CreateActivityAsync(activity, _appConfig.ActivityLabel);
                 Console.WriteLine("Done");
             }
             else // add new activity version
             {
                 Console.WriteLine("Found existing activity. Updating...");
-                int version = await Client.UpdateActivityAsync(activity, _appConfig.ActivityLabel);
+                int version = await _client.UpdateActivityAsync(activity, _appConfig.ActivityLabel);
                 Console.WriteLine($"Created version #{version} for '{_appConfig.ActivityId}' activity.");
             }
         }
 
-        public async Task CleanExistingAppActivityAsync()
+        /// <summary>
+        /// Delete app bundle and activity.
+        /// </summary>
+        public async Task CleanUpAsync()
         {
             var bundleId = _appConfig.Bundle.Id;
             var activityId = _appConfig.ActivityId;
@@ -136,12 +134,12 @@ namespace WebApplication.Processing
 
 
             //check app bundle exists already
-            var appResponse = await Client.AppBundlesApi.GetAppBundleAsync(shortAppBundleId, throwOnError: false);
+            var appResponse = await _client.AppBundlesApi.GetAppBundleAsync(shortAppBundleId, throwOnError: false);
             if (appResponse.HttpResponse.StatusCode == HttpStatusCode.OK)
             {
                 //remove existed app bundle 
                 Console.WriteLine($"Removing existing app bundle. Deleting {bundleId}...");
-                await Client.AppBundlesApi.DeleteAppBundleAsync(bundleId);
+                await _client.AppBundlesApi.DeleteAppBundleAsync(bundleId);
             }
             else
             {
@@ -149,12 +147,12 @@ namespace WebApplication.Processing
             }
 
             //check activity exists already
-            var activityResponse = await Client.ActivitiesApi.GetActivityAsync(await GetFullActivityId(), throwOnError: false);
+            var activityResponse = await _client.ActivitiesApi.GetActivityAsync(await GetFullActivityId(), throwOnError: false);
             if (activityResponse.HttpResponse.StatusCode == HttpStatusCode.OK)
             {
                 //remove existed activity
                 Console.WriteLine($"Removing existing activity. Deleting {activityId}...");
-                await Client.ActivitiesApi.DeleteActivityAsync(activityId);
+                await _client.ActivitiesApi.DeleteActivityAsync(activityId);
             }
             else
             {

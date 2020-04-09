@@ -1,4 +1,6 @@
+using System.Net.Http;
 using Autodesk.Forge.Core;
+using Autodesk.Forge.DesignAutomation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -6,6 +8,7 @@ using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 namespace IoConfigDemo
 {
@@ -24,7 +27,6 @@ namespace IoConfigDemo
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -38,6 +40,16 @@ namespace IoConfigDemo
             services.AddScoped<BucketNameProvider>();
             services.AddScoped<IForge, Forge>();
             services.AddTransient<Initializer>();
+            services.AddScoped<DesignAutomationClient>(provider =>
+                                    {
+                                        var forge = provider.GetService<IForge>();
+                                        var httpMessageHandler = new ForgeHandler(Options.Create(forge.Configuration))
+                                        {
+                                            InnerHandler = new HttpClientHandler()
+                                        };
+                                        var forgeService = new ForgeService(new HttpClient(httpMessageHandler));
+                                        return new DesignAutomationClient(forgeService);
+                                    });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
