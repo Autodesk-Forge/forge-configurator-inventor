@@ -21,7 +21,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Threading;
 using Autodesk.Forge.DesignAutomation.Inventor.Utils;
 using Inventor;
 using Path = System.IO.Path;
