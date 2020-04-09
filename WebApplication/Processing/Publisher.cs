@@ -10,7 +10,7 @@ using Autodesk.Forge.DesignAutomation.Model;
 
 namespace WebApplication.Processing
 {
-    internal class Publisher
+    public class Publisher
     {
         private readonly ForgeAppConfigBase _appConfig;
         private string _nickname;

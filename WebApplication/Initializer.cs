@@ -60,6 +60,9 @@ namespace IoConfigDemo
             var publisher = GetSvfPublisher();
             await publisher.PostAppBundleAsync(@"..\AppBundles\Output\CreateSVFPlugin.bundle.zip"); // TODO: move it to configuration?
             await publisher.PublishActivityAsync();
+            publisher = GetThumbnailPublisher();
+            await publisher.PostAppBundleAsync(@"..\AppBundles\Output\CreateThumbnailPlugin.bundle.zip"); // TODO: move it to configuration?
+            await publisher.PublishActivityAsync();
         }
 
         public async Task Clear()
@@ -82,6 +85,6 @@ namespace IoConfigDemo
         }
 
         private Publisher GetSvfPublisher() => new Publisher(new CreateSvfDefinition(), DesignAutomationClient);
-        private Publisher GetThumbnailPublisher() => new Publisher(new CreateThumbnailDefinition(), DesignAutomationClient);
+        private Publisher GetThumbnailPublisher() => new Publisher(new CreateThumbnailDefinition(string.Empty, string.Empty), DesignAutomationClient);
     }
 }
