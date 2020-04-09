@@ -38,7 +38,7 @@ namespace CreateSVFPlugin
 
             // Initialize AddIn members.
             _inventorServer = addInSiteObject.InventorServer;
-            Automation = new SampleAutomation(_inventorServer);
+            Automation = new CreateSvfAutomation(_inventorServer);
         }
 
         public void Deactivate()

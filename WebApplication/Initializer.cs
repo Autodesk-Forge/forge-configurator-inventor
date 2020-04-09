@@ -77,7 +77,7 @@ namespace IoConfigDemo
 
             // delete bundles and activities
             var publisher = GetSvfPublisher();
-            await publisher.CleanExistingAppActivityAsync();
+            //await publisher.CleanExistingAppActivityAsync();
             // TODO: delete app bundle
         }
 

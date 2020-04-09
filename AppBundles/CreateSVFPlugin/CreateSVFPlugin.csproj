@@ -53,7 +53,7 @@
   <ItemGroup>
     <Compile Include="PluginServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SampleAutomation.cs" />
+    <Compile Include="CreateSvfAutomation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="CreateSVFPlugin.X.manifest" />
@@ -63,6 +63,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Autodesk.Forge.DesignAutomation.Inventor.Utils">
+      <Version>1.0.0-beta3</Version>
+    </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>11.0.2</Version>
     </PackageReference>
