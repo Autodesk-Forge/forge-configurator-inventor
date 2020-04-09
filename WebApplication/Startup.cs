@@ -40,8 +40,8 @@ namespace IoConfigDemo
             // https://github.com/Autodesk-Forge/forge-api-dotnet-core/blob/master/src/Autodesk.Forge.Core/ServiceCollectionExtensions.cs
             services.Configure<ForgeConfiguration>(Configuration.GetSection(ForgeSectionKey));
             services.AddSingleton<BucketNameProvider>();
-            services.AddSingleton<IForge, Forge>();
-            services.AddScoped<FDAStuff>();
+            services.AddSingleton<IForge, Forge>(); // ER: TODO: this works, but is it correct???
+            services.AddSingleton<FDAStuff>();
             services.AddTransient<Initializer>();
             services.AddSingleton<DesignAutomationClient>(provider =>
                                     {
