@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using WebApplication;
+using WebApplication.Processing;
 
 namespace IoConfigDemo
 {
@@ -40,6 +41,7 @@ namespace IoConfigDemo
             services.Configure<ForgeConfiguration>(Configuration.GetSection(ForgeSectionKey));
             services.AddScoped<BucketNameProvider>();
             services.AddScoped<IForge, Forge>();
+            services.AddScoped<FDAStuff>();
             services.AddTransient<Initializer>();
             services.AddScoped<DesignAutomationClient>(provider =>
                                     {

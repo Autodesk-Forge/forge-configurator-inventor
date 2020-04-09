@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using Autodesk.Forge.Client;
-using Autodesk.Forge.DesignAutomation;
 using IoConfigDemo;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -13,17 +12,17 @@ namespace WebApplication
         private readonly IForge _forge;
         private readonly BucketNameProvider _bucketNameProvider;
         private readonly ILogger<Initializer> _logger;
-        private readonly DesignAutomationClient _fdaClient;
+        private readonly FDAStuff _fdaStuff;
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Initializer(IForge forge, BucketNameProvider bucketNameProvider, ILogger<Initializer> logger, DesignAutomationClient fdaClient)
+        public Initializer(IForge forge, BucketNameProvider bucketNameProvider, ILogger<Initializer> logger, FDAStuff fdaStuff)
         {
             _forge = forge;
             _bucketNameProvider = bucketNameProvider;
             _logger = logger;
-            _fdaClient = fdaClient;
+            _fdaStuff = fdaStuff;
         }
 
         public async Task Initialize()
@@ -40,8 +39,7 @@ namespace WebApplication
             _logger.LogInformation("Added empty projects.");
 
             // create bundles and activities
-            await GetSvfPublisher().Initialize(@"..\AppBundles\Output\CreateSVFPlugin.bundle.zip"); // TODO: move it to configuration?
-            //await GetThumbnailPublisher().Initialize(@"..\AppBundles\Output\CreateSVFPlugin.bundle.zip"); // TODO: move it to configuration?
+            await _fdaStuff.Initialize();
         }
 
         public async Task Clear()
@@ -58,16 +56,7 @@ namespace WebApplication
             }
 
             // delete bundles and activities
-            await GetSvfPublisher().CleanUpAsync();
-            //await GetThumbnailPublisher().CleanUpAsync();
-        }
-
-        private Publisher GetSvfPublisher() => Create<CreateSvfDefinition>();
-        private Publisher GetThumbnailPublisher() => Create<CreateThumbnailDefinition>();
-
-        private Publisher Create<T>() where T : ForgeAppConfigBase, new()
-        {
-            return new Publisher(new T(), _fdaClient);
+            await _fdaStuff.CleanUp();
         }
     }
 }
