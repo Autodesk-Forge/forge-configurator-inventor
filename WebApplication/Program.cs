@@ -3,7 +3,6 @@ using Autodesk.Forge.Core;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Serilog;
 
 namespace IoConfigDemo
@@ -19,6 +18,7 @@ namespace IoConfigDemo
         {
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.File("console.log")
+                .WriteTo.Console()
                 .CreateLogger();
 
             return Host.CreateDefaultBuilder(args)
@@ -38,10 +38,6 @@ namespace IoConfigDemo
                     {
                         webBuilder.UseUrls("http://*:" + port);
                     }
-                })
-                .ConfigureLogging(logging => 
-                {
-                    logging.AddConsole();
                 });
         }
     }
