@@ -32,16 +32,16 @@ namespace IoConfigDemo
             // download default project files from the public location
             // specified by the appsettings.json
             var client = new HttpClient();
-            string file = null;
+            string projectUrl;
             int fileIndex = 0;
-            // read the config file
-            string location = _configuration.GetValue<string>("DefaultProjects:Location");
-            while ((file = _configuration.GetValue<string>("DefaultProjects:Files:" + fileIndex.ToString())) != null)
+            while ((projectUrl = _configuration.GetValue<string>("DefaultProjects:Files:" + fileIndex.ToString())) != null)
             {
-                HttpResponseMessage response = await client.GetAsync(location + "/" + file);
+                HttpResponseMessage response = await client.GetAsync(projectUrl);
                 if (response.IsSuccessStatusCode) {
                     Stream stream = await response.Content.ReadAsStreamAsync();
-                    await _forge.UploadObject(_bucketNameProvider.BucketName, stream, file);
+                    string[] urlParts = projectUrl.Split("/");
+                    string OSSObjectName = urlParts[urlParts.Length - 1];
+                    await _forge.UploadObject(_bucketNameProvider.BucketName, stream, OSSObjectName);
                 }
                 fileIndex++;
             }
