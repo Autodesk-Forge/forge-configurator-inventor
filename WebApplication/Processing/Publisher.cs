@@ -13,36 +13,31 @@ namespace WebApplication.Processing
     internal class Publisher
     {
         private readonly ForgeAppConfigBase _appConfig;
-        private string _nickname;
+        private readonly string _nickname;
 
         private readonly DesignAutomationClient _client;
         private readonly ILogger _logger;
 
-        private string ShortAppBundleId => $"{_appConfig.Bundle.Id}+{_appConfig.Label}";
+        private string FullActivityId => $"{_nickname}.{_appConfig.ActivityId}+{_appConfig.ActivityLabel}";
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Publisher(ForgeAppConfigBase appConfig, DesignAutomationClient client, ILogger logger)
+        public Publisher(ForgeAppConfigBase appConfig, DesignAutomationClient client, ILogger logger, string nickname)
         {
             _appConfig = appConfig;
             _client = client;
             _logger = logger;
+            _nickname = nickname;
         }
 
-        public async Task Initialize(string packagePathname)
-        {
-            await PostAppBundleAsync(packagePathname);
-            await PublishActivityAsync();
-        }
-
-        public async Task RunWorkItemAsync()
+        public async Task RunWorkItemAsync(Dictionary<string, IArgument> workItemArgs)
         {
             // create work item
             var wi = new WorkItem
             {
-                ActivityId = await GetFullActivityId(),
-                Arguments = _appConfig.WorkItemArgs
+                ActivityId = FullActivityId,
+                Arguments = workItemArgs
             };
 
             // run WI and wait for completion
@@ -64,10 +59,8 @@ namespace WebApplication.Processing
             if (!File.Exists(packagePathname))
                 throw new Exception("App Bundle with package is not found.");
 
-            Trace($"Posting app bundle '{ShortAppBundleId}'.");
-
+            Trace($"Posting app bundle '{_appConfig.Bundle}'.");
             await _client.CreateAppBundleAsync(_appConfig.Bundle, _appConfig.Label, packagePathname);
-            Trace("Created new app bundle.");
         }
 
 
@@ -78,12 +71,10 @@ namespace WebApplication.Processing
         /// <returns></returns>
         protected async Task PublishActivityAsync()
         {
-            var nickname = await GetNicknameAsync();
-
             // prepare activity definition
             var activity = new Activity
             {
-                Appbundles = new List<string> { $"{nickname}.{_appConfig.Id}+{_appConfig.Label}" },
+                Appbundles = new List<string> { $"{_nickname}.{_appConfig.Id}+{_appConfig.Label}" },
                 Id = _appConfig.ActivityId,
                 Engine = _appConfig.Engine,
                 Description = _appConfig.Description,
@@ -95,20 +86,14 @@ namespace WebApplication.Processing
             await _client.CreateActivityAsync(activity, _appConfig.ActivityLabel);
         }
 
-        private async Task<string> GetFullActivityId()
+        /// <summary>
+        /// Create app bundle and activity.
+        /// </summary>
+        /// <param name="packagePathname">Pathname to ZIP with app bundle.</param>
+        public async Task Initialize(string packagePathname)
         {
-            string nickname = await GetNicknameAsync();
-            return $"{nickname}.{_appConfig.ActivityId}+{_appConfig.ActivityLabel}";
-        }
-
-        private async Task<string> GetNicknameAsync()
-        {
-            if (_nickname == null)
-            {
-                _nickname = await _client.GetNicknameAsync("me");
-            }
-
-            return _nickname;
+            await PostAppBundleAsync(packagePathname);
+            await PublishActivityAsync();
         }
 
         /// <summary>
@@ -117,9 +102,10 @@ namespace WebApplication.Processing
         public async Task CleanUpAsync()
         {
             var bundleId = _appConfig.Bundle.Id;
+            var shortBundleId = $"{_appConfig.Bundle.Id}+{_appConfig.Label}";
 
             //check app bundle exists already
-            var appResponse = await _client.AppBundlesApi.GetAppBundleAsync(ShortAppBundleId, throwOnError: false);
+            var appResponse = await _client.AppBundlesApi.GetAppBundleAsync(shortBundleId, throwOnError: false);
             if (appResponse.HttpResponse.StatusCode == HttpStatusCode.OK)
             {
                 //remove existed app bundle 
@@ -133,7 +119,7 @@ namespace WebApplication.Processing
 
             //check activity exists already
             var activityId = _appConfig.ActivityId;
-            var activityResponse = await _client.ActivitiesApi.GetActivityAsync(await GetFullActivityId(), throwOnError: false);
+            var activityResponse = await _client.ActivitiesApi.GetActivityAsync(FullActivityId, throwOnError: false);
             if (activityResponse.HttpResponse.StatusCode == HttpStatusCode.OK)
             {
                 //remove existed activity

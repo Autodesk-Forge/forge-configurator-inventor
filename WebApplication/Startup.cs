@@ -39,11 +39,11 @@ namespace IoConfigDemo
             // NOTE: eventually we might want to use `AddForgeService()`, but right now it might break existing stuff
             // https://github.com/Autodesk-Forge/forge-api-dotnet-core/blob/master/src/Autodesk.Forge.Core/ServiceCollectionExtensions.cs
             services.Configure<ForgeConfiguration>(Configuration.GetSection(ForgeSectionKey));
-            services.AddScoped<BucketNameProvider>();
-            services.AddScoped<IForge, Forge>();
+            services.AddSingleton<BucketNameProvider>();
+            services.AddSingleton<IForge, Forge>();
             services.AddScoped<FDAStuff>();
             services.AddTransient<Initializer>();
-            services.AddScoped<DesignAutomationClient>(provider =>
+            services.AddSingleton<DesignAutomationClient>(provider =>
                                     {
                                         var forge = provider.GetService<IForge>();
                                         var httpMessageHandler = new ForgeHandler(Options.Create(forge.Configuration))

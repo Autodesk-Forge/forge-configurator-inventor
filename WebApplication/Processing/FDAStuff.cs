@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Autodesk.Forge.DesignAutomation;
+using IoConfigDemo;
 using Microsoft.Extensions.Logging;
 
 namespace WebApplication.Processing
@@ -8,33 +9,42 @@ namespace WebApplication.Processing
     {
         private readonly DesignAutomationClient _fdaClient;
         private readonly ILogger<FDAStuff> _logger;
+        private readonly BucketNameProvider _bucketNameProvider;
 
-        public FDAStuff(DesignAutomationClient fdaClient, ILogger<FDAStuff> logger)
+        public FDAStuff(DesignAutomationClient fdaClient, ILogger<FDAStuff> logger, BucketNameProvider bucketNameProvider)
         {
             _fdaClient = fdaClient;
             _logger = logger;
+            _bucketNameProvider = bucketNameProvider;
         }
 
         public async Task Initialize()
         {
             // create bundles and activities
-            await GetSvfPublisher().Initialize(@"..\AppBundles\Output\CreateSVFPlugin.bundle.zip"); // TODO: move it to configuration?
+            var publisher = await GetSvfPublisher();
+            await publisher.Initialize(@"..\AppBundles\Output\CreateSVFPlugin.bundle.zip"); // TODO: move it to configuration?
             //await GetThumbnailPublisher().Initialize(@"..\AppBundles\Output\CreateSVFPlugin.bundle.zip"); // TODO: move it to configuration?
         }
 
         public async Task CleanUp()
         {
             // delete bundles and activities
-            await GetSvfPublisher().CleanUpAsync();
+            var publisher = await GetSvfPublisher();
+            await publisher.CleanUpAsync();
             //await GetThumbnailPublisher().CleanUpAsync();
         }
 
-        private Publisher GetSvfPublisher() => Create<CreateSvfDefinition>();
-        private Publisher GetThumbnailPublisher() => Create<CreateThumbnailDefinition>();
+        private Task<Publisher> GetSvfPublisher() => Create<CreateSvfDefinition>();
+        private Task<Publisher> GetThumbnailPublisher() => Create<CreateThumbnailDefinition>();
 
-        private Publisher Create<T>() where T : ForgeAppConfigBase, new()
+        private async Task<Publisher> Create<T>() where T : ForgeAppConfigBase, new()
         {
-            return new Publisher(new T(), _fdaClient, _logger);
+            return new Publisher(new T(), _fdaClient, _logger, await _bucketNameProvider.GetNicknameAsync());
+        }
+
+        public void GenerateSVF(string inventorDocUrl)
+        {
+            //new CreateSvfDefinition().ProcessIPT()
         }
     }
 }

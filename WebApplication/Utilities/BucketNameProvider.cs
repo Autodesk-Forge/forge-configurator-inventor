@@ -1,10 +1,11 @@
+using System.Threading.Tasks;
+using Autodesk.Forge.DesignAutomation;
 using SalesDemoToolApp.Utilities;
 
 namespace IoConfigDemo
 {
     public class BucketNameProvider
     {
-
         public string BucketName
         {
             get
@@ -21,10 +22,25 @@ namespace IoConfigDemo
         }
         private string _bucketName;
         private readonly IForge _forge;
+        private readonly DesignAutomationClient _client;
 
-        public BucketNameProvider(IForge forge)
+        private string _nickname;
+
+
+        public BucketNameProvider(IForge forge, DesignAutomationClient client)
         {
             _forge = forge;
+            _client = client;
+        }
+
+        public async Task<string> GetNicknameAsync()
+        {
+            if (_nickname == null)
+            {
+                _nickname = await _client.GetNicknameAsync("me");
+            }
+
+            return _nickname;
         }
     }
 }
