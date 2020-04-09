@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Autodesk.Forge.DesignAutomation;
@@ -18,6 +17,8 @@ namespace WebApplication.Processing
 
         private readonly DesignAutomationClient _client;
         private readonly ILogger _logger;
+
+        private string ShortAppBundleId => $"{_appConfig.Bundle.Id}+{_appConfig.Label}";
 
         /// <summary>
         /// Constructor.
@@ -55,11 +56,7 @@ namespace WebApplication.Processing
             }
 
             Trace($"WI {status.Id} completed with {status.Status}");
-
-            // dump report
-            var client = new HttpClient();
-            var report = await client.GetStringAsync(status.ReportUrl);
-            Console.Write(report);
+            Trace($"{status.ReportUrl}");
         }
 
         protected async Task PostAppBundleAsync(string packagePathname)
@@ -67,12 +64,12 @@ namespace WebApplication.Processing
             if (!File.Exists(packagePathname))
                 throw new Exception("App Bundle with package is not found.");
 
-            var shortAppBundleId = $"{_appConfig.Bundle.Id}+{_appConfig.Label}";
-            Trace($"Posting app bundle '{shortAppBundleId}'.");
+            Trace($"Posting app bundle '{ShortAppBundleId}'.");
 
             await _client.CreateAppBundleAsync(_appConfig.Bundle, _appConfig.Label, packagePathname);
             Trace("Created new app bundle.");
         }
+
 
         /// <summary>
         /// Create new activity.
@@ -93,7 +90,6 @@ namespace WebApplication.Processing
                 CommandLine = _appConfig.ActivityCommandLine,
                 Parameters = _appConfig.ActivityParams
             };
-
 
             Trace($"Creating activity '{_appConfig.ActivityId}'");
             await _client.CreateActivityAsync(activity, _appConfig.ActivityLabel);
@@ -121,11 +117,9 @@ namespace WebApplication.Processing
         public async Task CleanUpAsync()
         {
             var bundleId = _appConfig.Bundle.Id;
-            var activityId = _appConfig.ActivityId;
-            var shortAppBundleId = $"{bundleId}+{_appConfig.Label}";
 
             //check app bundle exists already
-            var appResponse = await _client.AppBundlesApi.GetAppBundleAsync(shortAppBundleId, throwOnError: false);
+            var appResponse = await _client.AppBundlesApi.GetAppBundleAsync(ShortAppBundleId, throwOnError: false);
             if (appResponse.HttpResponse.StatusCode == HttpStatusCode.OK)
             {
                 //remove existed app bundle 
@@ -138,6 +132,7 @@ namespace WebApplication.Processing
             }
 
             //check activity exists already
+            var activityId = _appConfig.ActivityId;
             var activityResponse = await _client.ActivitiesApi.GetActivityAsync(await GetFullActivityId(), throwOnError: false);
             if (activityResponse.HttpResponse.StatusCode == HttpStatusCode.OK)
             {

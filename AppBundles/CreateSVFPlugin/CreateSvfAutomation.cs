@@ -62,8 +62,6 @@ namespace CreateSVFPlugin
             {
                 LogTrace("** Saving SVF");
 
-                TranslatorAddIn oAddin = null;
-
                 try
                 {
                     ApplicationAddIn svfAddin = inventorApplication
@@ -71,7 +69,7 @@ namespace CreateSVFPlugin
                         .Cast<ApplicationAddIn>()
                         .FirstOrDefault(item => item.ClassIdString == "{C200B99B-B7DD-4114-A5E9-6557AB5ED8EC}");
                         
-                    oAddin = (TranslatorAddIn)svfAddin;
+                    var oAddin = (TranslatorAddIn)svfAddin;
 
                     if (oAddin != null)
                     {
