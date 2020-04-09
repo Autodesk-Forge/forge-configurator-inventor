@@ -121,16 +121,12 @@ namespace IoConfigDemo
         {
             ObjectsApi objectsApi = new ObjectsApi { Configuration = { AccessToken = await GetTwoLeggedAccessToken() } };
 
-            using (MemoryStream stream = new MemoryStream())
+            using (FileStream stream = new FileStream(localName, FileMode.Open, FileAccess.Read))
             {
-                using (FileStream file = new FileStream(localName, FileMode.Open, FileAccess.Read))
-                {
-                    byte[] bytes = new byte[file.Length];
-                    file.Read(bytes, 0, (int)file.Length);
-                    stream.Write(bytes, 0, (int)file.Length);
+                byte[] bytes = new byte[stream.Length];
+                stream.Read(bytes, 0, (int)stream.Length);
 
-                    await objectsApi.UploadObjectAsync(bucketKey, objectName, 0, stream);
-                }
+                await objectsApi.UploadObjectAsync(bucketKey, objectName, 0, stream);
             }
         }
     }

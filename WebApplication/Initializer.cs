@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Autodesk.Forge.Client;
 using Microsoft.AspNetCore.Http;
@@ -14,14 +14,16 @@ namespace IoConfigDemo
         private readonly IForge _forge;
         private readonly BucketNameProvider _bucketNameProvider;
         private readonly ILogger<Initializer> _logger;
-        public Initializer(IForge forge, BucketNameProvider bucketNameProvider, ILogger<Initializer> logger)
+        private readonly IConfiguration _configuration;
+        public Initializer(IForge forge, BucketNameProvider bucketNameProvider, ILogger<Initializer> logger, IConfiguration configuration)
         {
             _forge = forge;
             _bucketNameProvider = bucketNameProvider;
             _logger = logger;
+            _configuration = configuration;
         }
 
-        public async Task Initialize(IConfiguration Configuration)
+        public async Task Initialize()
         {
             _logger.LogInformation($"Initializing base data");
             await _forge.CreateBucket(_bucketNameProvider.BucketName);
@@ -29,17 +31,22 @@ namespace IoConfigDemo
 
             // download default project files from the public location
             // specified by the appsettings.json
-            var client = new WebClient();
+            var client = new HttpClient();
             string file = null;
             const string ProjectsFolder = "ProjectsFolder";
             int fileIndex = 0;
             // read the config file
-            string location = Configuration.GetValue<string>("DefaultProjects:Location");
+            string location = _configuration.GetValue<string>("DefaultProjects:Location");
             Directory.CreateDirectory(ProjectsFolder);
-            while ((file = Configuration.GetValue<string>("DefaultProjects:Files:" + fileIndex.ToString())) != null)
+            while ((file = _configuration.GetValue<string>("DefaultProjects:Files:" + fileIndex.ToString())) != null)
             {
                 string localLocation = Path.Combine(ProjectsFolder, file);
-                client.DownloadFile(location + "/" + file, localLocation);
+                HttpResponseMessage response = await client.GetAsync(location + "/" + file);
+                if (response.IsSuccessStatusCode) {
+                    using (var fs = new FileStream(localLocation, FileMode.Create)) {
+                        await response.Content.CopyToAsync(fs);
+                    }
+                }
                 await _forge.UploadObject(_bucketNameProvider.BucketName, localLocation, file);
                 fileIndex++;
             }

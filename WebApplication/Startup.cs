@@ -50,7 +50,7 @@ namespace IoConfigDemo
 
             if(Configuration.GetValue<bool>("initialize"))
             {
-                initializer.Initialize(Configuration).Wait();
+                initializer.Initialize().Wait();
             }
 
             if (env.IsDevelopment())
