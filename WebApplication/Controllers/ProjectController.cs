@@ -23,21 +23,21 @@ namespace IoConfigDemo.Controllers
         }
 
         [HttpGet("")]
-        public async Task<IEnumerable<Project>> List()
+        public async Task<IEnumerable<ProjectDTO>> List()
         {
             // TODO move to projects repository?
 
-            List<ObjectDetails> objects = await _forge.GetBucketObjects(_bucketNameProvider.BucketName, $"{ONK.projectsFolder}-");
-            var projects = new List<Project>();
+            List<ObjectDetails> objects = await _forge.GetBucketObjects(_bucketNameProvider.BucketName, $"{ONC.projectsFolder}-");
+            var projectDTOs = new List<ProjectDTO>();
             foreach(ObjectDetails objDetails in objects)
             {
-                var nameProvider = new ObjectNameProvider(objDetails.ObjectKey, true);
-                projects.Add(new Project { 
-                    Id = nameProvider.ProjectName,
-                    Label = nameProvider.ProjectName,
-                    Image = "./bike.png" }); // temporary icon to verify control
+                var project = Project.FromBucketKey(objDetails.ObjectKey);
+                projectDTOs.Add(new ProjectDTO { 
+                    Id = project.Name,
+                    Label = project.Name,
+                    Image = project.Thumbnail }); // temporary icon to verify control
             }
-            return projects;
+            return projectDTOs;
         }
     }
 }
