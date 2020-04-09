@@ -26,26 +26,10 @@ namespace WebApplication.Processing
             _client = client;
         }
 
-        public async Task PostAppBundleAsync(string packagePathname)
+        public async Task Initialize(string packagePathname)
         {
-            if (!File.Exists(packagePathname))
-                throw new Exception("App Bundle with package is not found.");
-
-            var shortAppBundleId = $"{_appConfig.Bundle.Id}+{_appConfig.Label}";
-            Console.WriteLine($"Posting app bundle '{shortAppBundleId}'.");
-
-            // try to get already existing bundle
-            var response = await _client.AppBundlesApi.GetAppBundleAsync(shortAppBundleId, throwOnError: false);
-            if (response.HttpResponse.StatusCode == HttpStatusCode.NotFound) // create new bundle
-            {
-                await _client.CreateAppBundleAsync(_appConfig.Bundle, _appConfig.Label, packagePathname);
-                Console.WriteLine("Created new app bundle.");
-            }
-            else // create new bundle version
-            {
-                var version = await _client.UpdateAppBundleAsync(_appConfig.Bundle, _appConfig.Label, packagePathname);
-                Console.WriteLine($"Created version #{version} for '{shortAppBundleId}' app bundle.");
-            }
+            await PostAppBundleAsync(packagePathname);
+            await PublishActivityAsync();
         }
 
         public async Task RunWorkItemAsync()
@@ -76,23 +60,29 @@ namespace WebApplication.Processing
             Console.WriteLine();
         }
 
-        private async Task<string> GetFullActivityId()
+        protected async Task PostAppBundleAsync(string packagePathname)
         {
-            string nickname = await GetNicknameAsync();
-            return $"{nickname}.{_appConfig.ActivityId}+{_appConfig.ActivityLabel}";
-        }
+            if (!File.Exists(packagePathname))
+                throw new Exception("App Bundle with package is not found.");
 
-        public async Task<string> GetNicknameAsync()
-        {
-            if (_nickname == null)
+            var shortAppBundleId = $"{_appConfig.Bundle.Id}+{_appConfig.Label}";
+            Console.WriteLine($"Posting app bundle '{shortAppBundleId}'.");
+
+            // try to get already existing bundle
+            var response = await _client.AppBundlesApi.GetAppBundleAsync(shortAppBundleId, throwOnError: false);
+            if (response.HttpResponse.StatusCode == HttpStatusCode.NotFound) // create new bundle
             {
-                _nickname = await _client.GetNicknameAsync("me");
+                await _client.CreateAppBundleAsync(_appConfig.Bundle, _appConfig.Label, packagePathname);
+                Console.WriteLine("Created new app bundle.");
             }
-
-            return _nickname;
+            else // create new bundle version
+            {
+                var version = await _client.UpdateAppBundleAsync(_appConfig.Bundle, _appConfig.Label, packagePathname);
+                Console.WriteLine($"Created version #{version} for '{shortAppBundleId}' app bundle.");
+            }
         }
 
-        public async Task PublishActivityAsync()
+        protected async Task PublishActivityAsync()
         {
             var nickname = await GetNicknameAsync();
 
@@ -121,6 +111,22 @@ namespace WebApplication.Processing
                 int version = await _client.UpdateActivityAsync(activity, _appConfig.ActivityLabel);
                 Console.WriteLine($"Created version #{version} for '{_appConfig.ActivityId}' activity.");
             }
+        }
+
+        private async Task<string> GetFullActivityId()
+        {
+            string nickname = await GetNicknameAsync();
+            return $"{nickname}.{_appConfig.ActivityId}+{_appConfig.ActivityLabel}";
+        }
+
+        private async Task<string> GetNicknameAsync()
+        {
+            if (_nickname == null)
+            {
+                _nickname = await _client.GetNicknameAsync("me");
+            }
+
+            return _nickname;
         }
 
         /// <summary>

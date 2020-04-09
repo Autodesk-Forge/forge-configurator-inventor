@@ -1,11 +1,12 @@
 using System.Threading.Tasks;
 using Autodesk.Forge.Client;
 using Autodesk.Forge.DesignAutomation;
+using IoConfigDemo;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using WebApplication.Processing;
 
-namespace IoConfigDemo
+namespace WebApplication
 {
     public class Initializer
     {
@@ -39,9 +40,8 @@ namespace IoConfigDemo
             _logger.LogInformation("Added empty projects.");
 
             // create bundles and activities
-            var publisher = GetSvfPublisher();
-            await publisher.PostAppBundleAsync(@"..\AppBundles\Output\CreateSVFPlugin.bundle.zip"); // TODO: move it to configuration?
-            await publisher.PublishActivityAsync();
+            await GetSvfPublisher().Initialize(@"..\AppBundles\Output\CreateSVFPlugin.bundle.zip"); // TODO: move it to configuration?
+            //await GetThumbnailPublisher().Initialize(@"..\AppBundles\Output\CreateSVFPlugin.bundle.zip"); // TODO: move it to configuration?
         }
 
         public async Task Clear()
@@ -58,11 +58,16 @@ namespace IoConfigDemo
             }
 
             // delete bundles and activities
-            var svfPublisher = GetSvfPublisher();
-            await svfPublisher.CleanUpAsync();
+            await GetSvfPublisher().CleanUpAsync();
+            //await GetThumbnailPublisher().CleanUpAsync();
         }
 
-        private Publisher GetSvfPublisher() => new Publisher(new CreateSvfDefinition(), _fdaClient);
-        private Publisher GetThumbnailPublisher() => new Publisher(new CreateThumbnailDefinition(), _fdaClient);
+        private Publisher GetSvfPublisher() => Create<CreateSvfDefinition>();
+        private Publisher GetThumbnailPublisher() => Create<CreateThumbnailDefinition>();
+
+        private Publisher Create<T>() where T : ForgeAppConfigBase, new()
+        {
+            return new Publisher(new T(), _fdaClient);
+        }
     }
 }
