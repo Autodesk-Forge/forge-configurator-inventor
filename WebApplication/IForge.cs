@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Autodesk.Forge.Core;
 using Autodesk.Forge.Model;
 
-namespace IoConfigDemo
+namespace WebApplication
 {
     public interface IForge
     {

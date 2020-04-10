@@ -1,11 +1,12 @@
 using System;
 using Autodesk.Forge.Core;
+using IoConfigDemo;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
-namespace IoConfigDemo
+namespace WebApplication
 {
     public class Program
     {

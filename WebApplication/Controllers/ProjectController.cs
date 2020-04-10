@@ -3,9 +3,10 @@ using System.Threading.Tasks;
 using Autodesk.Forge.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using SalesDemoToolApp.Utilities;
+using WebApplication.Processing;
+using WebApplication.Utilities;
 
-namespace IoConfigDemo.Controllers
+namespace WebApplication.Controllers
 {
     [ApiController]
     [Route("projects")]
@@ -15,17 +16,23 @@ namespace IoConfigDemo.Controllers
         private readonly IForge _forge;
 
         private readonly BucketNameProvider _bucketNameProvider;
+        private readonly FdaClient _fda;
 
-        public ProjectController(ILogger<ProjectController> logger, IForge forge, BucketNameProvider bucketNameProvider)
+        public ProjectController(ILogger<ProjectController> logger, IForge forge, BucketNameProvider bucketNameProvider, FdaClient fda)
         {
             _logger = logger;
             _forge = forge;
             _bucketNameProvider = bucketNameProvider;
+            _fda = fda;
         }
 
         [HttpGet("")]
         public async Task<IEnumerable<Project>> List()
         {
+            string inventorDocUrl = "http://testipt.s3-us-west-2.amazonaws.com/PictureInFormTest.ipt";
+            string outputUrl = "https://developer.api.autodesk.com/oss/v2/signedresources/c36c4b69-50a0-4b83-bf1d-b35843115db1?region=US";
+            await _fda.GenerateSVF(inventorDocUrl, outputUrl);
+
             // TODO move to projects repository?
 
             List<ObjectDetails> objects = await _forge.GetBucketObjects(_bucketNameProvider.BucketName);

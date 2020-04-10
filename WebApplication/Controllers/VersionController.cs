@@ -1,7 +1,7 @@
-using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
+using Microsoft.AspNetCore.Mvc;
 
-namespace IoConfigDemo.Controllers
+namespace WebApplication.Controllers
 {
     [Route("[controller]")]
     public class VersionController : ControllerBase

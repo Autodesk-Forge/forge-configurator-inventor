@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using Autodesk.Forge;
 using Autodesk.Forge.Core;
 using Autodesk.Forge.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using SalesDemoToolApp.Utilities;
-using System.IO;
+using Microsoft.Extensions.Options;
+using WebApplication.Utilities;
 
-namespace IoConfigDemo
+namespace WebApplication
 {
     /// <summary>
     /// Class to work with Forge APIs.

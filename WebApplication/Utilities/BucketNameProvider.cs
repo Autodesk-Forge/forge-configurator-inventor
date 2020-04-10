@@ -2,9 +2,8 @@ using System.Threading.Tasks;
 using Autodesk.Forge.Core;
 using Autodesk.Forge.DesignAutomation;
 using Microsoft.Extensions.Options;
-using SalesDemoToolApp.Utilities;
 
-namespace IoConfigDemo
+namespace WebApplication.Utilities
 {
     public class BucketNameProvider
     {

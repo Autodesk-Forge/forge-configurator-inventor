@@ -1,6 +1,4 @@
-using System;
-
-namespace IoConfigDemo
+namespace WebApplication
 {
     public class Project
     {

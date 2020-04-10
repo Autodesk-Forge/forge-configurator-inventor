@@ -1,18 +1,18 @@
 using System.Net.Http;
 using Autodesk.Forge.Core;
 using Autodesk.Forge.DesignAutomation;
+using IoConfigDemo;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using WebApplication;
 using WebApplication.Processing;
+using WebApplication.Utilities;
 
-namespace IoConfigDemo
+namespace WebApplication
 {
     public class Startup
     {
