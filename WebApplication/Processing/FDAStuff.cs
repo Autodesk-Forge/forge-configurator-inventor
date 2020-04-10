@@ -42,9 +42,10 @@ namespace WebApplication.Processing
             return new Publisher(new T(), _fdaClient, _logger, await _bucketNameProvider.GetNicknameAsync());
         }
 
-        public void GenerateSVF(string inventorDocUrl)
+        public async Task GenerateSVF(string inventorDocUrl, string outputUrl)
         {
-            //new CreateSvfDefinition().ProcessIPT()
+            var publisher = await GetSvfPublisher();
+            await new CreateSvfDefinition().ProcessIPT(publisher, inventorDocUrl, outputUrl);
         }
     }
 }
