@@ -22,9 +22,9 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using Inventor;
 
-namespace CreateSVFPlugin
+namespace ExtractParametersPlugin
 {
-    [Guid("5b608275-a063-4323-ae3b-195eaabf2049")]
+    [Guid("824d9b00-545b-4929-accf-a47b7eca80a1")]
     public class PluginServer : ApplicationAddInServer
     {
         // Inventor application object.
@@ -34,16 +34,16 @@ namespace CreateSVFPlugin
 
         public void Activate(ApplicationAddInSite addInSiteObject, bool firstTime)
         {
-            Trace.TraceInformation(": CreateSVFPlugin (" + Assembly.GetExecutingAssembly().GetName().Version.ToString(4) + "): initializing... ");
+            Trace.TraceInformation(": ExtractParametersPlugin (" + Assembly.GetExecutingAssembly().GetName().Version.ToString(4) + "): initializing... ");
 
             // Initialize AddIn members.
             _inventorServer = addInSiteObject.InventorServer;
-            Automation = new CreateSvfAutomation(_inventorServer);
+            Automation = new SampleAutomation(_inventorServer);
         }
 
         public void Deactivate()
         {
-            Trace.TraceInformation(": CreateSVFPlugin: deactivating... ");
+            Trace.TraceInformation(": ExtractParametersPlugin: deactivating... ");
 
             // Release objects.
             Marshal.ReleaseComObject(_inventorServer);

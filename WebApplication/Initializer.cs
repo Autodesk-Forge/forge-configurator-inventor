@@ -1,46 +1,28 @@
-using System.Net.Http;
 using System.Threading.Tasks;
 using Autodesk.Forge.Client;
-using Autodesk.Forge.Core;
-using Autodesk.Forge.DesignAutomation;
+using IoConfigDemo;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using WebApplication.Processing;
 
-namespace IoConfigDemo
+namespace WebApplication
 {
     public class Initializer
     {
         private readonly IForge _forge;
         private readonly BucketNameProvider _bucketNameProvider;
         private readonly ILogger<Initializer> _logger;
-
-        /// <summary>
-        /// Design Automation client.
-        /// </summary>
-        private DesignAutomationClient DesignAutomationClient
-        {
-            get
-            {
-                // TODO: can it be reused? creating new instance each time, just in case
-                var httpMessageHandler = new ForgeHandler(Options.Create(_forge.Configuration))
-                {
-                    InnerHandler = new HttpClientHandler()
-                };
-                var forgeService = new ForgeService(new HttpClient(httpMessageHandler));
-                return new DesignAutomationClient(forgeService);
-            }
-        }
+        private readonly FDAStuff _fdaStuff;
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Initializer(IForge forge, BucketNameProvider bucketNameProvider, ILogger<Initializer> logger)
+        public Initializer(IForge forge, BucketNameProvider bucketNameProvider, ILogger<Initializer> logger, FDAStuff fdaStuff)
         {
             _forge = forge;
             _bucketNameProvider = bucketNameProvider;
             _logger = logger;
+            _fdaStuff = fdaStuff;
         }
 
         public async Task Initialize()
@@ -57,12 +39,7 @@ namespace IoConfigDemo
             _logger.LogInformation("Added empty projects.");
 
             // create bundles and activities
-            var publisher = GetSvfPublisher();
-            await publisher.PostAppBundleAsync(@"..\AppBundles\Output\CreateSVFPlugin.bundle.zip"); // TODO: move it to configuration?
-            await publisher.PublishActivityAsync();
-            publisher = GetThumbnailPublisher();
-            await publisher.PostAppBundleAsync(@"..\AppBundles\Output\CreateThumbnailPlugin.bundle.zip"); // TODO: move it to configuration?
-            await publisher.PublishActivityAsync();
+            await _fdaStuff.Initialize();
         }
 
         public async Task Clear()
@@ -79,9 +56,7 @@ namespace IoConfigDemo
             }
 
             // delete bundles and activities
-            var publisher = GetSvfPublisher();
-            await publisher.CleanExistingAppActivityAsync();
-            // TODO: delete app bundle
+            await _fdaStuff.CleanUp();
         }
 
         private Publisher GetSvfPublisher() => new Publisher(new CreateSvfDefinition(), DesignAutomationClient);

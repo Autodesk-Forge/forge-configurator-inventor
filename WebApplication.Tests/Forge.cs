@@ -92,5 +92,11 @@ namespace WebApplication.Tests
             signedLocation = createOutputSignedResourceResult.Data.signedUrl;
             return signedLocation;
         }
+
+        public void DeleteBucket(string bucketName)
+        {
+            BucketsApi bucketsApi = new BucketsApi { Configuration = { AccessToken = GetTwoLeggedAccessToken().Result } };
+            bucketsApi.DeleteBucket(bucketName);
+        }
     }
 }

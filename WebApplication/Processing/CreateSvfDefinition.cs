@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Autodesk.Forge.DesignAutomation.Model;
 
 namespace WebApplication.Processing
@@ -14,7 +15,7 @@ namespace WebApplication.Processing
         internal static class Parameters
         {
             public static string InventorDoc = nameof(InventorDoc);
-            public static string OutputIpt = nameof(OutputIpt);
+            public static string OutputZip = nameof(OutputZip);
         }
 
         /// <summary>
@@ -41,14 +42,15 @@ namespace WebApplication.Processing
                     }
                 },
                 {
-                    Parameters.OutputIpt,
+                    Parameters.OutputZip,
                     new Parameter
                     {
                         Verb = Verb.Put,
-                        LocalName = "result.ipt",
-                        Description = "Resulting IPT",
-                        Ondemand = false,
-                        Required = false
+                        LocalName = "SvfOutput",
+                        Description = "Resulting files with SVF",
+                        //Ondemand = false,
+                        //Required = false,
+                        Zip = true
                     }
                 }
             };
@@ -67,7 +69,7 @@ namespace WebApplication.Processing
                     }
                 },
                 {
-                    Parameters.OutputIpt,
+                    Parameters.OutputZip,
                     new XrefTreeArgument
                     {
                         Verb = Verb.Put,
@@ -75,5 +77,29 @@ namespace WebApplication.Processing
                     }
                 }
             };
+
+        public async Task ProcessIPT(Publisher publisher, string url, string outputUrl)
+        {
+            var args = new Dictionary<string, IArgument>
+                            {
+                                {
+                                    Parameters.InventorDoc,
+                                    new XrefTreeArgument
+                                    {
+                                        Url = url
+                                    }
+                                },
+                                {
+                                    Parameters.OutputZip,
+                                    new XrefTreeArgument
+                                    {
+                                        Verb = Verb.Put,
+                                        Url = outputUrl
+                                    }
+                                }
+                            };
+
+            await publisher.RunWorkItemAsync(args);
+        }
     }
 }

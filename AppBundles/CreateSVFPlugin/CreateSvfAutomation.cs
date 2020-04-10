@@ -21,7 +21,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Threading;
+using Autodesk.Forge.DesignAutomation.Inventor.Utils;
 using Inventor;
 using Path = System.IO.Path;
 using File = System.IO.File;
@@ -29,56 +29,11 @@ using File = System.IO.File;
 namespace CreateSVFPlugin
 {
     [ComVisible(true)]
-    public class SampleAutomation
+    public class CreateSvfAutomation
     {
-        private class HeartBeat : IDisposable
-        {
-            private Thread t;
-
-            // default is 50s
-            public HeartBeat(int intervalMillisec = 50000)
-            {
-                long ticks = DateTime.UtcNow.Ticks;
-
-                t = new Thread(() =>
-                {
-
-                    LogTrace("HeartBeating every {0}ms.", intervalMillisec);
-
-                    for (;;)
-                    {
-                        Thread.Sleep(intervalMillisec);
-                        LogTrace("HeartBeat {0}.",
-                            (long) TimeSpan.FromTicks(DateTime.UtcNow.Ticks - ticks).TotalSeconds);
-                    }
-                });
-
-                t.Start();
-            }
-
-            public void Dispose()
-            {
-                Dispose(true);
-                GC.SuppressFinalize(this);
-            }
-
-            protected virtual void Dispose(bool disposing)
-            {
-                if (disposing)
-                {
-                    if (t != null)
-                    {
-                        LogTrace("Ending HeartBeat");
-                        t.Abort();
-                        t = null;
-                    }
-                }
-            }
-        }
-
         private readonly InventorServer inventorApplication;
 
-        public SampleAutomation(InventorServer inventorApp)
+        public CreateSvfAutomation(InventorServer inventorApp)
         {
             inventorApplication = inventorApp;
         }
@@ -105,9 +60,7 @@ namespace CreateSVFPlugin
         {
             using (new HeartBeat())
             {
-                LogTrace($"** Saving SVF");
-
-                TranslatorAddIn oAddin = null;
+                LogTrace("** Saving SVF");
 
                 try
                 {
@@ -116,7 +69,7 @@ namespace CreateSVFPlugin
                         .Cast<ApplicationAddIn>()
                         .FirstOrDefault(item => item.ClassIdString == "{C200B99B-B7DD-4114-A5E9-6557AB5ED8EC}");
                         
-                    oAddin = (TranslatorAddIn)svfAddin;
+                    var oAddin = (TranslatorAddIn)svfAddin;
 
                     if (oAddin != null)
                     {
@@ -146,7 +99,7 @@ namespace CreateSVFPlugin
                             oOptions.set_Value("ObfuscateLabels", true);
                         }
 
-                        LogTrace($"SVF files are oputput to: {oOptions.get_Value("SVFFileOutputDir")}");
+                        LogTrace($"SVF files are output to: {oOptions.get_Value("SVFFileOutputDir")}");
 
                         oAddin.SaveCopyAs(Doc, oContext, oOptions, oData);
                         Trace.TraceInformation("SVF can be exported.");

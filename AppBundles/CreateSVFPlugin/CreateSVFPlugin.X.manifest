@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
   <assemblyIdentity name="CreateSVFPlugin" version="1.0.0.0"></assemblyIdentity>
-  <clrClass clsid="{9641ff40-1e73-4208-be7a-4936197d4743}" progid="CreateSVFPlugin.PluginServer" threadingModel="Both" name="CreateSVFPlugin.PluginServer"></clrClass>
+  <clrClass clsid="{5b608275-a063-4323-ae3b-195eaabf2049}" progid="CreateSVFPlugin.PluginServer" threadingModel="Both" name="CreateSVFPlugin.PluginServer"></clrClass>
   <file name="CreateSVFPlugin.dll" hashalg="SHA1"></file>
 </assembly>

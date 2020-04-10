@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Autodesk.Forge;
-using Autodesk.Forge.Client;
 using Autodesk.Forge.Core;
 using Autodesk.Forge.Model;
 using Microsoft.AspNetCore.Http;
@@ -35,10 +34,10 @@ namespace IoConfigDemo
         /// Constructor.
         /// </summary>
         /// <param name="optionsAccessor"></param>
-        public Forge(IOptionsMonitor<ForgeConfiguration> optionsAccessor, ILogger<Forge> logger)
+        public Forge(IOptions<ForgeConfiguration> optionsAccessor, ILogger<Forge> logger)
         {
             _logger = logger;
-            Configuration = optionsAccessor.CurrentValue.Validate();
+            Configuration = optionsAccessor.Value.Validate();
         }
 
         private async Task<string> GetTwoLeggedAccessToken()

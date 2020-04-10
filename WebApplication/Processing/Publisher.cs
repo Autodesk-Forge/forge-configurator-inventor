@@ -2,109 +2,79 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Autodesk.Forge.DesignAutomation;
 using Autodesk.Forge.DesignAutomation.Model;
+using Microsoft.Extensions.Logging;
 
 namespace WebApplication.Processing
 {
     public class Publisher
     {
         private readonly ForgeAppConfigBase _appConfig;
-        private string _nickname;
+        private readonly string _nickname;
 
-        internal DesignAutomationClient Client { get; }
+        private readonly DesignAutomationClient _client;
+        private readonly ILogger _logger;
+
+        private string FullActivityId => $"{_nickname}.{_appConfig.ActivityId}+{_appConfig.ActivityLabel}";
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Publisher(ForgeAppConfigBase appConfig, DesignAutomationClient client)
+        public Publisher(ForgeAppConfigBase appConfig, DesignAutomationClient client, ILogger logger, string nickname)
         {
             _appConfig = appConfig;
-            Client = client;
+            _client = client;
+            _logger = logger;
+            _nickname = nickname;
         }
 
-        public async Task PostAppBundleAsync(string packagePathname)
-        {
-            if (!File.Exists(packagePathname))
-                throw new Exception("App Bundle with package is not found.");
-
-            var shortAppBundleId = $"{_appConfig.Bundle.Id}+{_appConfig.Label}";
-            Console.WriteLine($"Posting app bundle '{shortAppBundleId}'.");
-
-            // try to get already existing bundle
-            var response = await Client.AppBundlesApi.GetAppBundleAsync(shortAppBundleId, throwOnError: false);
-            if (response.HttpResponse.StatusCode == HttpStatusCode.NotFound) // create new bundle
-            {
-                await Client.CreateAppBundleAsync(_appConfig.Bundle, _appConfig.Label, packagePathname);
-                Console.WriteLine("Created new app bundle.");
-            }
-            else // create new bundle version
-            {
-                var version = await Client.UpdateAppBundleAsync(_appConfig.Bundle, _appConfig.Label, packagePathname);
-                Console.WriteLine($"Created version #{version} for '{shortAppBundleId}' app bundle.");
-            }
-        }
-
-        public async Task RunWorkItemAsync()
+        public async Task RunWorkItemAsync(Dictionary<string, IArgument> workItemArgs)
         {
             // create work item
             var wi = new WorkItem
             {
-                ActivityId = await GetFullActivityId(),
-                Arguments = _appConfig.WorkItemArgs
+                ActivityId = FullActivityId,
+                Arguments = workItemArgs
             };
 
             // run WI and wait for completion
-            var status = await Client.CreateWorkItemAsync(wi);
-            Console.WriteLine($"Created WI {status.Id}");
+            var status = await _client.CreateWorkItemAsync(wi);
+            Trace($"Created WI {status.Id}");
             while (status.Status == Status.Pending || status.Status == Status.Inprogress)
             {
-                Console.Write(".");
+                //Console.Write(".");
                 Thread.Sleep(2000);
-                status = await Client.GetWorkitemStatusAsync(status.Id);
+                status = await _client.GetWorkitemStatusAsync(status.Id);
             }
 
-            Console.WriteLine();
-            Console.WriteLine($"WI {status.Id} completed with {status.Status}");
-            Console.WriteLine();
-
-            // dump report
-            var client = new HttpClient();
-            var report = await client.GetStringAsync(status.ReportUrl);
-            var oldColor = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
-            Console.Write(report);
-            Console.ForegroundColor = oldColor;
-            Console.WriteLine();
+            Trace($"WI {status.Id} completed with {status.Status}");
+            Trace($"{status.ReportUrl}");
         }
 
-        private async Task<string> GetFullActivityId()
+        protected async Task PostAppBundleAsync(string packagePathname)
         {
-            string nickname = await GetNicknameAsync();
-            return $"{nickname}.{_appConfig.ActivityId}+{_appConfig.ActivityLabel}";
+            if (!File.Exists(packagePathname))
+                throw new Exception("App Bundle with package is not found.");
+
+            Trace($"Posting app bundle '{_appConfig.Bundle}'.");
+            await _client.CreateAppBundleAsync(_appConfig.Bundle, _appConfig.Label, packagePathname);
         }
 
-        public async Task<string> GetNicknameAsync()
+
+        /// <summary>
+        /// Create new activity.
+        /// Throws an exception if the activity exists already.
+        /// </summary>
+        /// <returns></returns>
+        protected async Task PublishActivityAsync()
         {
-            if (_nickname == null)
-            {
-                _nickname = await Client.GetNicknameAsync("me");
-            }
-
-            return _nickname;
-        }
-
-        public async Task PublishActivityAsync()
-        {
-            var nickname = await GetNicknameAsync();
-
             // prepare activity definition
             var activity = new Activity
             {
-                Appbundles = new List<string> { $"{nickname}.{_appConfig.Id}+{_appConfig.Label}" },
+                Appbundles = new List<string> { $"{_nickname}.{_appConfig.Id}+{_appConfig.Label}" },
                 Id = _appConfig.ActivityId,
                 Engine = _appConfig.Engine,
                 Description = _appConfig.Description,
@@ -112,54 +82,59 @@ namespace WebApplication.Processing
                 Parameters = _appConfig.ActivityParams
             };
 
-            // check if the activity exists already
-            var response = await Client.ActivitiesApi.GetActivityAsync(await GetFullActivityId(), throwOnError: false);
-            if (response.HttpResponse.StatusCode == HttpStatusCode.NotFound) // create activity
-            {
-                Console.WriteLine($"Creating activity '{_appConfig.ActivityId}'");
-                await Client.CreateActivityAsync(activity, _appConfig.ActivityLabel);
-                Console.WriteLine("Done");
-            }
-            else // add new activity version
-            {
-                Console.WriteLine("Found existing activity. Updating...");
-                int version = await Client.UpdateActivityAsync(activity, _appConfig.ActivityLabel);
-                Console.WriteLine($"Created version #{version} for '{_appConfig.ActivityId}' activity.");
-            }
+            Trace($"Creating activity '{_appConfig.ActivityId}'");
+            await _client.CreateActivityAsync(activity, _appConfig.ActivityLabel);
         }
 
-        public async Task CleanExistingAppActivityAsync()
+        /// <summary>
+        /// Create app bundle and activity.
+        /// </summary>
+        /// <param name="packagePathname">Pathname to ZIP with app bundle.</param>
+        public async Task Initialize(string packagePathname)
+        {
+            await PostAppBundleAsync(packagePathname);
+            await PublishActivityAsync();
+        }
+
+        /// <summary>
+        /// Delete app bundle and activity.
+        /// </summary>
+        public async Task CleanUpAsync()
         {
             var bundleId = _appConfig.Bundle.Id;
-            var activityId = _appConfig.ActivityId;
-            var shortAppBundleId = $"{bundleId}+{_appConfig.Label}";
-
+            var shortBundleId = $"{_appConfig.Bundle.Id}+{_appConfig.Label}";
 
             //check app bundle exists already
-            var appResponse = await Client.AppBundlesApi.GetAppBundleAsync(shortAppBundleId, throwOnError: false);
+            var appResponse = await _client.AppBundlesApi.GetAppBundleAsync(shortBundleId, throwOnError: false);
             if (appResponse.HttpResponse.StatusCode == HttpStatusCode.OK)
             {
                 //remove existed app bundle 
-                Console.WriteLine($"Removing existing app bundle. Deleting {bundleId}...");
-                await Client.AppBundlesApi.DeleteAppBundleAsync(bundleId);
+                Trace($"Removing existing app bundle. Deleting {bundleId}...");
+                await _client.AppBundlesApi.DeleteAppBundleAsync(bundleId);
             }
             else
             {
-                Console.WriteLine($"The app bundle {bundleId} does not exist.");
+                Trace($"The app bundle {bundleId} does not exist.");
             }
 
             //check activity exists already
-            var activityResponse = await Client.ActivitiesApi.GetActivityAsync(await GetFullActivityId(), throwOnError: false);
+            var activityId = _appConfig.ActivityId;
+            var activityResponse = await _client.ActivitiesApi.GetActivityAsync(FullActivityId, throwOnError: false);
             if (activityResponse.HttpResponse.StatusCode == HttpStatusCode.OK)
             {
                 //remove existed activity
-                Console.WriteLine($"Removing existing activity. Deleting {activityId}...");
-                await Client.ActivitiesApi.DeleteActivityAsync(activityId);
+                Trace($"Removing existing activity. Deleting {activityId}...");
+                await _client.ActivitiesApi.DeleteActivityAsync(activityId);
             }
             else
             {
-                Console.WriteLine($"The activity {activityId} does not exist.");
+                Trace($"The activity {activityId} does not exist.");
             }
+        }
+
+        private void Trace(string message)
+        {
+            _logger.LogInformation(message);
         }
     }
 }

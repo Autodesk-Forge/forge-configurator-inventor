@@ -19,7 +19,7 @@ namespace WebApplication.Tests
 
         public void Dispose()
         {
-            // TODO delete bucket
+            Forge.OSSClient.DeleteBucket(BucketName);
         }
     }
 
