@@ -12,17 +12,17 @@ namespace WebApplication
         private readonly IForge _forge;
         private readonly BucketNameProvider _bucketNameProvider;
         private readonly ILogger<Initializer> _logger;
-        private readonly FDAStuff _fdaStuff;
+        private readonly FdaClient _fdaClient;
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Initializer(IForge forge, BucketNameProvider bucketNameProvider, ILogger<Initializer> logger, FDAStuff fdaStuff)
+        public Initializer(IForge forge, BucketNameProvider bucketNameProvider, ILogger<Initializer> logger, FdaClient fdaClient)
         {
             _forge = forge;
             _bucketNameProvider = bucketNameProvider;
             _logger = logger;
-            _fdaStuff = fdaStuff;
+            _fdaClient = fdaClient;
         }
 
         public async Task Initialize()
@@ -39,7 +39,7 @@ namespace WebApplication
             _logger.LogInformation("Added empty projects.");
 
             // create bundles and activities
-            await _fdaStuff.Initialize();
+            await _fdaClient.Initialize();
         }
 
         public async Task Clear()
@@ -56,7 +56,7 @@ namespace WebApplication
             }
 
             // delete bundles and activities
-            await _fdaStuff.CleanUp();
+            await _fdaClient.CleanUp();
         }
     }
 }

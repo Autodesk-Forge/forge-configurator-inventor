@@ -41,7 +41,7 @@ namespace IoConfigDemo
             services.Configure<ForgeConfiguration>(Configuration.GetSection(ForgeSectionKey));
             services.AddSingleton<BucketNameProvider>();
             services.AddSingleton<IForge, Forge>(); // ER: TODO: this works, but is it correct???
-            services.AddSingleton<FDAStuff>();
+            services.AddSingleton<FdaClient>();
             services.AddTransient<Initializer>();
             services.AddSingleton<DesignAutomationClient>(provider =>
                                     {

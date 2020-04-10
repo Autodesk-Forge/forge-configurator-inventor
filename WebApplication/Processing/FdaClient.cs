@@ -5,13 +5,13 @@ using Microsoft.Extensions.Logging;
 
 namespace WebApplication.Processing
 {
-    public class FDAStuff
+    public class FdaClient
     {
         private readonly DesignAutomationClient _fdaClient;
-        private readonly ILogger<FDAStuff> _logger;
+        private readonly ILogger<FdaClient> _logger;
         private readonly BucketNameProvider _bucketNameProvider;
 
-        public FDAStuff(DesignAutomationClient fdaClient, ILogger<FDAStuff> logger, BucketNameProvider bucketNameProvider)
+        public FdaClient(DesignAutomationClient fdaClient, ILogger<FdaClient> logger, BucketNameProvider bucketNameProvider)
         {
             _fdaClient = fdaClient;
             _logger = logger;

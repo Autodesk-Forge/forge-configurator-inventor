@@ -84,18 +84,11 @@ namespace WebApplication.Processing
                             {
                                 {
                                     Parameters.InventorDoc,
-                                    new XrefTreeArgument
-                                    {
-                                        Url = url
-                                    }
+                                    new XrefTreeArgument { Url = url }
                                 },
                                 {
                                     Parameters.OutputZip,
-                                    new XrefTreeArgument
-                                    {
-                                        Verb = Verb.Put,
-                                        Url = outputUrl
-                                    }
+                                    new XrefTreeArgument { Verb = Verb.Put, Url = outputUrl }
                                 }
                             };
 
