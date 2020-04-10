@@ -55,29 +55,6 @@ namespace WebApplication.Processing
                 }
             };
 
-        /// <summary>
-        /// Get arguments for workitem.
-        /// </summary>
-        public override Dictionary<string, IArgument> WorkItemArgs =>
-            new Dictionary<string, IArgument>
-            {
-                {
-                    Parameters.InventorDoc,
-                    new XrefTreeArgument
-                    {
-                        Url = "!!! CHANGE ME !!!"
-                    }
-                },
-                {
-                    Parameters.OutputZip,
-                    new XrefTreeArgument
-                    {
-                        Verb = Verb.Put,
-                        Url = "!!! CHANGE ME !!!"
-                    }
-                }
-            };
-
         public async Task ProcessIPT(Publisher publisher, string url, string outputUrl)
         {
             var args = new Dictionary<string, IArgument>
@@ -92,7 +69,7 @@ namespace WebApplication.Processing
                                 }
                             };
 
-            await publisher.RunWorkItemAsync(args);
+            await publisher.RunWorkItemAsync(args, this);
         }
     }
 }

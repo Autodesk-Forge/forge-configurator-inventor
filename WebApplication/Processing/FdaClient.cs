@@ -10,6 +10,8 @@ namespace WebApplication.Processing
         private readonly DesignAutomationClient _fdaClient;
         private readonly ILogger<FdaClient> _logger;
         private readonly BucketNameProvider _bucketNameProvider;
+        private readonly CreateSvfDefinition _svfWork = new CreateSvfDefinition();
+        private Publisher _publisher;
 
         public FdaClient(DesignAutomationClient fdaClient, ILogger<FdaClient> logger, BucketNameProvider bucketNameProvider)
         {
@@ -21,31 +23,30 @@ namespace WebApplication.Processing
         public async Task Initialize()
         {
             // create bundles and activities
-            var publisher = await GetSvfPublisher();
-            await publisher.Initialize(@"..\AppBundles\Output\CreateSVFPlugin.bundle.zip"); // TODO: move it to configuration?
+            var publisher = await GetPublisher();
+            await publisher.Initialize(@"..\AppBundles\Output\CreateSVFPlugin.bundle.zip", _svfWork); // TODO: move pathname to configuration?
             //await GetThumbnailPublisher().Initialize(@"..\AppBundles\Output\CreateSVFPlugin.bundle.zip"); // TODO: move it to configuration?
+        }
+
+        private async Task<Publisher> GetPublisher()
+        {
+            if (_publisher == null)
+            {
+                _publisher = new Publisher(_fdaClient, _logger, await _bucketNameProvider.GetNicknameAsync()); // TODO: find a proper way to resolve bucket name once. too many awaits
+            }
+            return _publisher;
         }
 
         public async Task CleanUp()
         {
             // delete bundles and activities
-            var publisher = await GetSvfPublisher();
-            await publisher.CleanUpAsync();
+            await (await GetPublisher()).CleanUpAsync(_svfWork);
             //await GetThumbnailPublisher().CleanUpAsync();
-        }
-
-        private Task<Publisher> GetSvfPublisher() => Create<CreateSvfDefinition>();
-        private Task<Publisher> GetThumbnailPublisher() => Create<CreateThumbnailDefinition>();
-
-        private async Task<Publisher> Create<T>() where T : ForgeAppConfigBase, new()
-        {
-            return new Publisher(new T(), _fdaClient, _logger, await _bucketNameProvider.GetNicknameAsync());
         }
 
         public async Task GenerateSVF(string inventorDocUrl, string outputUrl)
         {
-            var publisher = await GetSvfPublisher();
-            await new CreateSvfDefinition().ProcessIPT(publisher, inventorDocUrl, outputUrl);
+            await _svfWork.ProcessIPT(await GetPublisher(), inventorDocUrl, outputUrl);
         }
     }
 }

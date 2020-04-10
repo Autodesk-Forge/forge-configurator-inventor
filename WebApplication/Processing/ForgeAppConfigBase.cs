@@ -47,10 +47,5 @@ namespace WebApplication.Processing
         /// Activity parameters.
         /// </summary>
         public abstract Dictionary<string, Parameter> ActivityParams { get; }
-
-        /// <summary>
-        /// Arguments for workitem.
-        /// </summary>
-        public abstract Dictionary<string, IArgument> WorkItemArgs { get; }
     }
 }
