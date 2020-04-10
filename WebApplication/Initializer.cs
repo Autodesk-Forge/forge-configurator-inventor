@@ -32,18 +32,15 @@ namespace IoConfigDemo
             // download default project files from the public location
             // specified by the appsettings.json
             var client = new HttpClient();
-            string projectUrl;
-            int fileIndex = 0;
-            while ((projectUrl = _configuration.GetValue<string>("DefaultProjects:Files:" + fileIndex.ToString())) != null)
+            string[] defaultProjects = _configuration.GetSection("DefaultProjects:Files").Get<string[]>();
+            foreach (var projectUrl in defaultProjects)
             {
                 HttpResponseMessage response = await client.GetAsync(projectUrl);
-                if (response.IsSuccessStatusCode) {
-                    Stream stream = await response.Content.ReadAsStreamAsync();
-                    string[] urlParts = projectUrl.Split("/");
-                    string OSSObjectName = urlParts[urlParts.Length - 1];
-                    await _forge.UploadObject(_bucketNameProvider.BucketName, stream, OSSObjectName);
-                }
-                fileIndex++;
+                response.EnsureSuccessStatusCode();
+                Stream stream = await response.Content.ReadAsStreamAsync();
+                string[] urlParts = projectUrl.Split("/");
+                string OSSObjectName = urlParts[urlParts.Length - 1];
+                await _forge.UploadObject(_bucketNameProvider.BucketName, stream, OSSObjectName);
             }
             _logger.LogInformation($"Added default projects.");
         }
