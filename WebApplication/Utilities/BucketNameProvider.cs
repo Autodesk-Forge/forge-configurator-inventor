@@ -28,9 +28,9 @@ namespace IoConfigDemo
         private readonly ForgeConfiguration _configuration;
         private readonly DesignAutomationClient _client;
 
-        public BucketNameProvider(IOptionsMonitor<ForgeConfiguration> optionsAccessor, DesignAutomationClient client)
+        public BucketNameProvider(IOptions<ForgeConfiguration> optionsAccessor, DesignAutomationClient client)
         {
-            _configuration = optionsAccessor.CurrentValue.Validate();
+            _configuration = optionsAccessor.Value.Validate();
             _client = client;
         }
 
