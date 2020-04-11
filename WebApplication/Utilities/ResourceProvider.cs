@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 
 namespace WebApplication.Utilities
 {
-    public class BucketNameProvider
+    public class ResourceProvider
     {
         public string BucketName
         {
@@ -27,7 +27,7 @@ namespace WebApplication.Utilities
         private readonly ForgeConfiguration _configuration;
         private readonly DesignAutomationClient _client;
 
-        public BucketNameProvider(IOptions<ForgeConfiguration> optionsAccessor, DesignAutomationClient client)
+        public ResourceProvider(IOptions<ForgeConfiguration> optionsAccessor, DesignAutomationClient client)
         {
             _configuration = optionsAccessor.Value.Validate();
             _client = client;
