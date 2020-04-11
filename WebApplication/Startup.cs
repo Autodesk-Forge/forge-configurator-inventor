@@ -39,7 +39,7 @@ namespace WebApplication
             // NOTE: eventually we might want to use `AddForgeService()`, but right now it might break existing stuff
             // https://github.com/Autodesk-Forge/forge-api-dotnet-core/blob/master/src/Autodesk.Forge.Core/ServiceCollectionExtensions.cs
             services.Configure<ForgeConfiguration>(Configuration.GetSection(ForgeSectionKey));
-            services.AddSingleton<BucketNameProvider>();
+            services.AddSingleton<ResourceProvider>();
             services.AddSingleton<IForge, Forge>(); // ER: TODO: this works, but is it correct???
             services.AddSingleton<FdaClient>();
             services.AddTransient<Initializer>();
