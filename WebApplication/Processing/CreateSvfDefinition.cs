@@ -56,50 +56,30 @@ namespace WebApplication.Processing
             };
 
         /// <summary>
-        /// Get arguments for workitem.
+        /// Constructor.
         /// </summary>
-        public override Dictionary<string, IArgument> WorkItemArgs =>
-            new Dictionary<string, IArgument>
-            {
-                {
-                    Parameters.InventorDoc,
-                    new XrefTreeArgument
-                    {
-                        Url = "!!! CHANGE ME !!!"
-                    }
-                },
-                {
-                    Parameters.OutputZip,
-                    new XrefTreeArgument
-                    {
-                        Verb = Verb.Put,
-                        Url = "!!! CHANGE ME !!!"
-                    }
-                }
-            };
+        public CreateSvfDefinition(Publisher publisher) : base(publisher) {}
 
-        public async Task ProcessIPT(Publisher publisher, string url, string outputUrl)
+        /// <summary>
+        /// Process IPT file.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="outputUrl"></param>
+        public Task ProcessIPT(string url, string outputUrl)
         {
             var args = new Dictionary<string, IArgument>
                             {
                                 {
                                     Parameters.InventorDoc,
-                                    new XrefTreeArgument
-                                    {
-                                        Url = url
-                                    }
+                                    new XrefTreeArgument { Url = url }
                                 },
                                 {
                                     Parameters.OutputZip,
-                                    new XrefTreeArgument
-                                    {
-                                        Verb = Verb.Put,
-                                        Url = outputUrl
-                                    }
+                                    new XrefTreeArgument { Verb = Verb.Put, Url = outputUrl }
                                 }
                             };
 
-            await publisher.RunWorkItemAsync(args);
+            return Run(args);
         }
     }
 }

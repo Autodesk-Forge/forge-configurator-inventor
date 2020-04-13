@@ -3,16 +3,16 @@ using Autodesk.Forge.Core;
 using Autodesk.Forge.DesignAutomation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using WebApplication;
 using WebApplication.Processing;
+using WebApplication.Utilities;
 
-namespace IoConfigDemo
+namespace WebApplication
 {
     public class Startup
     {
@@ -39,9 +39,9 @@ namespace IoConfigDemo
             // NOTE: eventually we might want to use `AddForgeService()`, but right now it might break existing stuff
             // https://github.com/Autodesk-Forge/forge-api-dotnet-core/blob/master/src/Autodesk.Forge.Core/ServiceCollectionExtensions.cs
             services.Configure<ForgeConfiguration>(Configuration.GetSection(ForgeSectionKey));
-            services.AddSingleton<BucketNameProvider>();
-            services.AddSingleton<IForge, Forge>(); // ER: TODO: this works, but is it correct???
-            services.AddSingleton<FDAStuff>();
+            services.AddSingleton<ResourceProvider>();
+            services.AddSingleton<IForge, Forge>(); // ER: TODO: this will fail on token expiration, need extra work to refresh token
+            services.AddSingleton<FdaClient>();
             services.AddTransient<Initializer>();
             services.AddSingleton<DesignAutomationClient>(provider =>
                                     {
@@ -53,23 +53,27 @@ namespace IoConfigDemo
                                         var forgeService = new ForgeService(new HttpClient(httpMessageHandler));
                                         return new DesignAutomationClient(forgeService);
                                     });
+            services.AddSingleton<Publisher>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Initializer initializer)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Initializer initializer, ILogger<Startup> logger)
         {
             if(Configuration.GetValue<bool>("clear"))
             {
+                logger.LogInformation("-- Clean up --");
                 initializer.Clear().Wait();
             }
 
             if(Configuration.GetValue<bool>("initialize"))
             {
+                logger.LogInformation("-- Initialization --");
                 initializer.Initialize().Wait();
             }
 
             if (env.IsDevelopment())
             {
+                logger.LogInformation("In Development environment");
                 app.UseDeveloperExceptionPage();
             }
             else

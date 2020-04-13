@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
-namespace IoConfigDemo
+namespace WebApplication
 {
     public class Program
     {

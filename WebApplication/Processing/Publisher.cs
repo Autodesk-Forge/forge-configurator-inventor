@@ -7,36 +7,32 @@ using System.Threading.Tasks;
 using Autodesk.Forge.DesignAutomation;
 using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.Extensions.Logging;
+using WebApplication.Utilities;
 
 namespace WebApplication.Processing
 {
     public class Publisher
     {
-        private readonly ForgeAppConfigBase _appConfig;
-        private readonly string _nickname;
-
+        private readonly ResourceProvider _resourceProvider;
         private readonly DesignAutomationClient _client;
-        private readonly ILogger _logger;
-
-        private string FullActivityId => $"{_nickname}.{_appConfig.ActivityId}+{_appConfig.ActivityLabel}";
+        private readonly ILogger<Publisher> _logger;
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Publisher(ForgeAppConfigBase appConfig, DesignAutomationClient client, ILogger logger, string nickname)
+        public Publisher(DesignAutomationClient client, ILogger<Publisher> logger, ResourceProvider resourceProvider)
         {
-            _appConfig = appConfig;
             _client = client;
             _logger = logger;
-            _nickname = nickname;
+            _resourceProvider = resourceProvider;
         }
 
-        public async Task RunWorkItemAsync(Dictionary<string, IArgument> workItemArgs)
+        public async Task RunWorkItemAsync(Dictionary<string, IArgument> workItemArgs, ForgeAppConfigBase config)
         {
             // create work item
             var wi = new WorkItem
             {
-                ActivityId = FullActivityId,
+                ActivityId = await GetFullActivityId(config),
                 Arguments = workItemArgs
             };
 
@@ -54,13 +50,13 @@ namespace WebApplication.Processing
             Trace($"{status.ReportUrl}");
         }
 
-        protected async Task PostAppBundleAsync(string packagePathname)
+        protected async Task PostAppBundleAsync(string packagePathname, ForgeAppConfigBase config)
         {
             if (!File.Exists(packagePathname))
                 throw new Exception("App Bundle with package is not found.");
 
-            Trace($"Posting app bundle '{_appConfig.Bundle}'.");
-            await _client.CreateAppBundleAsync(_appConfig.Bundle, _appConfig.Label, packagePathname);
+            Trace($"Posting app bundle '{config.Bundle}'.");
+            await _client.CreateAppBundleAsync(config.Bundle, config.Label, packagePathname);
         }
 
 
@@ -68,41 +64,43 @@ namespace WebApplication.Processing
         /// Create new activity.
         /// Throws an exception if the activity exists already.
         /// </summary>
-        /// <returns></returns>
-        protected async Task PublishActivityAsync()
+        protected async Task PublishActivityAsync(ForgeAppConfigBase config)
         {
             // prepare activity definition
+            var nickname = await _resourceProvider.GetNicknameAsync();
+
             var activity = new Activity
             {
-                Appbundles = new List<string> { $"{_nickname}.{_appConfig.Id}+{_appConfig.Label}" },
-                Id = _appConfig.ActivityId,
-                Engine = _appConfig.Engine,
-                Description = _appConfig.Description,
-                CommandLine = _appConfig.ActivityCommandLine,
-                Parameters = _appConfig.ActivityParams
+                Appbundles = new List<string> { $"{nickname}.{config.Id}+{config.Label}" },
+                Id = config.ActivityId,
+                Engine = config.Engine,
+                Description = config.Description,
+                CommandLine = config.ActivityCommandLine,
+                Parameters = config.ActivityParams
             };
 
-            Trace($"Creating activity '{_appConfig.ActivityId}'");
-            await _client.CreateActivityAsync(activity, _appConfig.ActivityLabel);
+            Trace($"Creating activity '{config.ActivityId}'");
+            await _client.CreateActivityAsync(activity, config.ActivityLabel);
         }
 
         /// <summary>
         /// Create app bundle and activity.
         /// </summary>
         /// <param name="packagePathname">Pathname to ZIP with app bundle.</param>
-        public async Task Initialize(string packagePathname)
+        /// <param name="config"></param>
+        public async Task Initialize(string packagePathname, ForgeAppConfigBase config)
         {
-            await PostAppBundleAsync(packagePathname);
-            await PublishActivityAsync();
+            await PostAppBundleAsync(packagePathname, config);
+            await PublishActivityAsync(config);
         }
 
         /// <summary>
         /// Delete app bundle and activity.
         /// </summary>
-        public async Task CleanUpAsync()
+        public async Task CleanUpAsync(ForgeAppConfigBase config)
         {
-            var bundleId = _appConfig.Bundle.Id;
-            var shortBundleId = $"{_appConfig.Bundle.Id}+{_appConfig.Label}";
+            var bundleId = config.Bundle.Id;
+            var shortBundleId = $"{config.Bundle.Id}+{config.Label}";
 
             //check app bundle exists already
             var appResponse = await _client.AppBundlesApi.GetAppBundleAsync(shortBundleId, throwOnError: false);
@@ -118,8 +116,9 @@ namespace WebApplication.Processing
             }
 
             //check activity exists already
-            var activityId = _appConfig.ActivityId;
-            var activityResponse = await _client.ActivitiesApi.GetActivityAsync(FullActivityId, throwOnError: false);
+            var activityId = config.ActivityId;
+            var fullActivityId = await GetFullActivityId(config);
+            var activityResponse = await _client.ActivitiesApi.GetActivityAsync(fullActivityId, throwOnError: false);
             if (activityResponse.HttpResponse.StatusCode == HttpStatusCode.OK)
             {
                 //remove existed activity
@@ -130,6 +129,12 @@ namespace WebApplication.Processing
             {
                 Trace($"The activity {activityId} does not exist.");
             }
+        }
+
+        private async Task<string> GetFullActivityId(ForgeAppConfigBase config)
+        {
+            var nickname = await _resourceProvider.GetNicknameAsync();
+            return $"{nickname}.{config.ActivityId}+{config.ActivityLabel}";
         }
 
         private void Trace(string message)

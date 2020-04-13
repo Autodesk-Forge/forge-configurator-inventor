@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Autodesk.Forge.DesignAutomation.Model;
 
 namespace WebApplication.Processing
@@ -38,6 +39,43 @@ namespace WebApplication.Processing
         public string ActivityId => Id;
         public string ActivityLabel => Label;
 
+        protected Publisher Publisher { get; }
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        protected ForgeAppConfigBase(Publisher publisher)
+        {
+            Publisher = publisher;
+        }
+
+        /// <summary>
+        /// Initialize app bundle and activity.
+        /// </summary>
+        /// <param name="packagePathname">Pathname to the package.</param>
+        public Task Initialize(string packagePathname)
+        {
+            return Publisher.Initialize(packagePathname, this);
+        }
+
+        /// <summary>
+        /// Remove app bundle and activity.
+        /// </summary>
+        /// <returns></returns>
+        public Task CleanUp()
+        {
+            return Publisher.CleanUpAsync(this);
+        }
+
+        /// <summary>
+        /// Run work items.
+        /// </summary>
+        /// <param name="args">Work item arguments.</param>
+        protected Task Run(Dictionary<string, IArgument> args)
+        {
+            return Publisher.RunWorkItemAsync(args, this);
+        }
+
         /// <summary>
         /// Command line for activity.
         /// </summary>
@@ -47,10 +85,5 @@ namespace WebApplication.Processing
         /// Activity parameters.
         /// </summary>
         public abstract Dictionary<string, Parameter> ActivityParams { get; }
-
-        /// <summary>
-        /// Arguments for workitem.
-        /// </summary>
-        public abstract Dictionary<string, IArgument> WorkItemArgs { get; }
     }
 }

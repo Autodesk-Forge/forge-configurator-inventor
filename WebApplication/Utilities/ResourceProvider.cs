@@ -2,11 +2,10 @@ using System.Threading.Tasks;
 using Autodesk.Forge.Core;
 using Autodesk.Forge.DesignAutomation;
 using Microsoft.Extensions.Options;
-using SalesDemoToolApp.Utilities;
 
-namespace IoConfigDemo
+namespace WebApplication.Utilities
 {
-    public class BucketNameProvider
+    public class ResourceProvider
     {
         public string BucketName
         {
@@ -28,7 +27,7 @@ namespace IoConfigDemo
         private readonly ForgeConfiguration _configuration;
         private readonly DesignAutomationClient _client;
 
-        public BucketNameProvider(IOptions<ForgeConfiguration> optionsAccessor, DesignAutomationClient client)
+        public ResourceProvider(IOptions<ForgeConfiguration> optionsAccessor, DesignAutomationClient client)
         {
             _configuration = optionsAccessor.Value.Validate();
             _client = client;
@@ -36,7 +35,7 @@ namespace IoConfigDemo
 
         public async Task<string> GetNicknameAsync()
         {
-            if (_nickname == null)
+            if (_nickname == null) // TODO: wrap it into Lazy (or something similar)
             {
                 _nickname = await _client.GetNicknameAsync("me");
             }

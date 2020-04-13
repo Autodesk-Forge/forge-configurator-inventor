@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using Autodesk.Forge;
 using Autodesk.Forge.Core;
 using Autodesk.Forge.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using SalesDemoToolApp.Utilities;
-using System.IO;
+using Microsoft.Extensions.Options;
+using WebApplication.Utilities;
 
-namespace IoConfigDemo
+namespace WebApplication
 {
     /// <summary>
     /// Class to work with Forge APIs.
@@ -108,13 +108,38 @@ namespace IoConfigDemo
             await api.DeleteBucketAsync(bucketName);
         }
 
-        public async Task CreateEmptyObject(string bucketKey, string objectName) {
-            ObjectsApi objectsApi = new ObjectsApi{ Configuration = { AccessToken = await GetTwoLeggedAccessToken() }};
-            
+        public async Task CreateEmptyObject(string bucketKey, string objectName)
+        {
+            await CreateEmptyObjectInner(bucketKey, objectName, await GetObjectsApi());
+        }
+
+        /// <summary>
+        /// Create an empty object at OSS and generate a signed URL to it.
+        /// </summary>
+        /// <returns>Signed URL</returns>
+        public async Task<string> CreateDestinationUrl(string bucketKey, string objectName)
+        {
+            ObjectsApi objectsApi = await GetObjectsApi();
+
+            // create empty object
+            await CreateEmptyObjectInner(bucketKey, objectName, objectsApi);
+
+            // and get URL to it
+            dynamic result = await objectsApi.CreateSignedResourceAsync(bucketKey, objectName, new PostBucketsSigned(30), "write");
+            return result.signedUrl;
+        }
+
+        private static async Task CreateEmptyObjectInner(string bucketKey, string objectName, IObjectsApi objectsApi)
+        {
             using(var stream = new MemoryStream())
             {
                 await objectsApi.UploadObjectAsync(bucketKey, objectName, 0, stream);
             }
+        }
+
+        private async Task<ObjectsApi> GetObjectsApi()
+        {
+            return new ObjectsApi{ Configuration = { AccessToken = await GetTwoLeggedAccessToken() }}; // TODO: ER: cache? Or is it lightweight operation?
         }
     }
 }
