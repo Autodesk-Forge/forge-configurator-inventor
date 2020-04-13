@@ -1,13 +1,13 @@
 using System.Net.Http;
 using Autodesk.Forge.Core;
 using Autodesk.Forge.DesignAutomation;
-using IoConfigDemo;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WebApplication.Processing;
 using WebApplication.Utilities;
@@ -56,20 +56,23 @@ namespace WebApplication
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Initializer initializer)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Initializer initializer, ILogger<Startup> logger)
         {
             if(Configuration.GetValue<bool>("clear"))
             {
+                logger.LogInformation("-- Clean up --");
                 initializer.Clear().Wait();
             }
 
             if(Configuration.GetValue<bool>("initialize"))
             {
+                logger.LogInformation("-- Initialization --");
                 initializer.Initialize().Wait();
             }
 
             if (env.IsDevelopment())
             {
+                logger.LogInformation("In Development environment");
                 app.UseDeveloperExceptionPage();
             }
             else
