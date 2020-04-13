@@ -55,7 +55,17 @@ namespace WebApplication.Processing
                 }
             };
 
-        public async Task ProcessIPT(Publisher publisher, string url, string outputUrl)
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public CreateSvfDefinition(Publisher publisher) : base(publisher) {}
+
+        /// <summary>
+        /// Process IPT file.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="outputUrl"></param>
+        public Task ProcessIPT(string url, string outputUrl)
         {
             var args = new Dictionary<string, IArgument>
                             {
@@ -69,7 +79,7 @@ namespace WebApplication.Processing
                                 }
                             };
 
-            await publisher.RunWorkItemAsync(args, this);
+            return Run(args);
         }
     }
 }

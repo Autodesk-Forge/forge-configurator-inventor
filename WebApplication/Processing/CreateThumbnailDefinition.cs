@@ -14,5 +14,7 @@ namespace WebApplication.Processing
 
         public override List<string> ActivityCommandLine => throw new NotImplementedException();
         public override Dictionary<string, Parameter> ActivityParams => throw new NotImplementedException();
+
+        public CreateThumbnailDefinition(Publisher publisher) : base(publisher) {}
     }
 }
