@@ -108,13 +108,38 @@ namespace WebApplication
             await api.DeleteBucketAsync(bucketName);
         }
 
-        public async Task CreateEmptyObject(string bucketKey, string objectName) {
-            ObjectsApi objectsApi = new ObjectsApi{ Configuration = { AccessToken = await GetTwoLeggedAccessToken() }};
-            
+        public async Task CreateEmptyObject(string bucketKey, string objectName)
+        {
+            await CreateEmptyObjectInner(bucketKey, objectName, await GetObjectsApi());
+        }
+
+        /// <summary>
+        /// Create an empty object at OSS and generate a signed URL to it.
+        /// </summary>
+        /// <returns>Signed URL</returns>
+        public async Task<string> CreateDestinationUrl(string bucketKey, string objectName)
+        {
+            ObjectsApi objectsApi = await GetObjectsApi();
+
+            // create empty object
+            await CreateEmptyObjectInner(bucketKey, objectName, objectsApi);
+
+            // and get URL to it
+            dynamic result = await objectsApi.CreateSignedResourceAsync(bucketKey, objectName, new PostBucketsSigned(30), "write");
+            return result.signedUrl;
+        }
+
+        private static async Task CreateEmptyObjectInner(string bucketKey, string objectName, IObjectsApi objectsApi)
+        {
             using(var stream = new MemoryStream())
             {
                 await objectsApi.UploadObjectAsync(bucketKey, objectName, 0, stream);
             }
+        }
+
+        private async Task<ObjectsApi> GetObjectsApi()
+        {
+            return new ObjectsApi{ Configuration = { AccessToken = await GetTwoLeggedAccessToken() }}; // TODO: ER: cache? Or is it lightweight operation?
         }
     }
 }

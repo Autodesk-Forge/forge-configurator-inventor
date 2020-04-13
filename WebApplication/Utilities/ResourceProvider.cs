@@ -35,7 +35,7 @@ namespace WebApplication.Utilities
 
         public async Task<string> GetNicknameAsync()
         {
-            if (_nickname == null)
+            if (_nickname == null) // TODO: wrap it into Lazy (or something similar)
             {
                 _nickname = await _client.GetNicknameAsync("me");
             }

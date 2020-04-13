@@ -40,7 +40,7 @@ namespace WebApplication
             // https://github.com/Autodesk-Forge/forge-api-dotnet-core/blob/master/src/Autodesk.Forge.Core/ServiceCollectionExtensions.cs
             services.Configure<ForgeConfiguration>(Configuration.GetSection(ForgeSectionKey));
             services.AddSingleton<ResourceProvider>();
-            services.AddSingleton<IForge, Forge>(); // ER: TODO: this works, but is it correct???
+            services.AddSingleton<IForge, Forge>(); // ER: TODO: this will fail on token expiration, need extra work to refresh token
             services.AddSingleton<FdaClient>();
             services.AddTransient<Initializer>();
             services.AddSingleton<DesignAutomationClient>(provider =>

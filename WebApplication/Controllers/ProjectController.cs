@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Autodesk.Forge.Model;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +33,7 @@ namespace WebApplication.Controllers
             // ER: TODO: remove after completion
 #if false
             string inventorDocUrl = "http://testipt.s3-us-west-2.amazonaws.com/PictureInFormTest.ipt";
-            string outputUrl = "https://developer.api.autodesk.com/oss/v2/signedresources/c36c4b69-50a0-4b83-bf1d-b35843115db1?region=US"; // TODO: generate it
+            string outputUrl = await _forge.CreateDestinationUrl(_resourceProvider.BucketName, $"{Guid.NewGuid():N}.json");
             await _fda.GenerateSVF(inventorDocUrl, outputUrl);
 #endif
 
