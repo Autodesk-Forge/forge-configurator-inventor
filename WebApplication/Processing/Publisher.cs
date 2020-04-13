@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 using Autodesk.Forge.DesignAutomation;
 using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.Extensions.Logging;
+using WebApplication.Utilities;
 
 namespace WebApplication.Processing
 {
     internal class Publisher
     {
-        private readonly string _nickname;
+        private readonly ResourceProvider _resourceProvider;
 
         private readonly DesignAutomationClient _client;
         private readonly ILogger _logger;
@@ -20,11 +21,11 @@ namespace WebApplication.Processing
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Publisher(DesignAutomationClient client, ILogger logger, string nickname)
+        public Publisher(DesignAutomationClient client, ILogger logger, ResourceProvider resourceProvider)
         {
             _client = client;
             _logger = logger;
-            _nickname = nickname;
+            _resourceProvider = resourceProvider;
         }
 
         public async Task RunWorkItemAsync(Dictionary<string, IArgument> workItemArgs, ForgeAppConfigBase config)
@@ -32,7 +33,7 @@ namespace WebApplication.Processing
             // create work item
             var wi = new WorkItem
             {
-                ActivityId = GetFullActivityId(config),
+                ActivityId = await GetFullActivityId(config),
                 Arguments = workItemArgs
             };
 
@@ -67,9 +68,11 @@ namespace WebApplication.Processing
         protected async Task PublishActivityAsync(ForgeAppConfigBase config)
         {
             // prepare activity definition
+            var nickname = await _resourceProvider.GetNicknameAsync();
+
             var activity = new Activity
             {
-                Appbundles = new List<string> { $"{_nickname}.{config.Id}+{config.Label}" },
+                Appbundles = new List<string> { $"{nickname}.{config.Id}+{config.Label}" },
                 Id = config.ActivityId,
                 Engine = config.Engine,
                 Description = config.Description,
@@ -115,7 +118,8 @@ namespace WebApplication.Processing
 
             //check activity exists already
             var activityId = config.ActivityId;
-            var activityResponse = await _client.ActivitiesApi.GetActivityAsync(GetFullActivityId(config), throwOnError: false);
+            var fullActivityId = await GetFullActivityId(config);
+            var activityResponse = await _client.ActivitiesApi.GetActivityAsync(fullActivityId, throwOnError: false);
             if (activityResponse.HttpResponse.StatusCode == HttpStatusCode.OK)
             {
                 //remove existed activity
@@ -128,9 +132,10 @@ namespace WebApplication.Processing
             }
         }
 
-        private string GetFullActivityId(ForgeAppConfigBase config)
+        private async Task<string> GetFullActivityId(ForgeAppConfigBase config)
         {
-            return $"{_nickname}.{config.ActivityId}+{config.ActivityLabel}";
+            var nickname = await _resourceProvider.GetNicknameAsync();
+            return $"{nickname}.{config.ActivityId}+{config.ActivityLabel}";
         }
 
         private void Trace(string message)
