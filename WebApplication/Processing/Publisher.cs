@@ -11,17 +11,16 @@ using WebApplication.Utilities;
 
 namespace WebApplication.Processing
 {
-    internal class Publisher
+    public class Publisher
     {
         private readonly ResourceProvider _resourceProvider;
-
         private readonly DesignAutomationClient _client;
-        private readonly ILogger _logger;
+        private readonly ILogger<Publisher> _logger;
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Publisher(DesignAutomationClient client, ILogger logger, ResourceProvider resourceProvider)
+        public Publisher(DesignAutomationClient client, ILogger<Publisher> logger, ResourceProvider resourceProvider)
         {
             _client = client;
             _logger = logger;

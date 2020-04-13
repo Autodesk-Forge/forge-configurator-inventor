@@ -53,6 +53,7 @@ namespace WebApplication
                                         var forgeService = new ForgeService(new HttpClient(httpMessageHandler));
                                         return new DesignAutomationClient(forgeService);
                                     });
+            services.AddSingleton<Publisher>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
