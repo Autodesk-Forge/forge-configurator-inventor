@@ -35,7 +35,7 @@ namespace IoConfigDemo.Controllers
                 projectDTOs.Add(new ProjectDTO { 
                     Id = project.Name,
                     Label = project.Name,
-                    Image = project.Thumbnail }); // temporary icon to verify control
+                    Image = project.Thumbnail });
             }
             return projectDTOs;
         }
