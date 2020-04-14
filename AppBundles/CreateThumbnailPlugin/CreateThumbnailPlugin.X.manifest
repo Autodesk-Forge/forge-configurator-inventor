@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+  <assemblyIdentity name="CreateThumbnailPlugin" version="1.0.0.0"></assemblyIdentity>
+  <clrClass clsid="{9779EFBE-3CA7-45A6-AE90-DA85485DD674}" progid="CreateThumbnailPlugin.PluginServer" threadingModel="Both" name="CreateThumbnailPlugin.PluginServer"></clrClass>
+  <file name="CreateThumbnailPlugin.dll" hashalg="SHA1"></file>
+</assembly>

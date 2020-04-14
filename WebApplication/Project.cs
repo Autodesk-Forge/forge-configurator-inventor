@@ -1,13 +1,15 @@
 using System;
+using WebApplication.Utilities;
 
-namespace IoConfigDemo
+namespace WebApplication
 {
     public class Project
     {
         public Project(string projectName) 
         {
-            if(Name == string.Empty) {
-                throw new Exception("Initializing Project with empty name");
+            if(Name == string.Empty)
+            {
+                throw new ArgumentException("Initializing Project with empty name", nameof(projectName));
             }
 
             Name = projectName; 
@@ -16,8 +18,10 @@ namespace IoConfigDemo
             HrefThumbnail = "bike.png"; // temporary icon
         }
 
-        static public Project FromObjectKey(string objectKey) {
-            if(!objectKey.StartsWith($"{ONC.projectsFolder}-")) {
+        public static Project FromObjectKey(string objectKey)
+        {
+            if(!objectKey.StartsWith($"{ONC.projectsFolder}-"))
+            {
                 throw new Exception("Initializing Project from invalid bucket key: " + objectKey);
             }
 
@@ -25,10 +29,10 @@ namespace IoConfigDemo
             return new Project(projectName);
         }
 
-        public string Name { get; private set; }
-        public string OSSSourceModel {get; private set; }
-        public string OSSThumbnail { get; private set; }
-        public string HrefThumbnail { get; private set; }
+        public string Name { get; }
+        public string OSSSourceModel {get; }
+        public string OSSThumbnail { get; }
+        public string HrefThumbnail { get; }
 
         public OSSObjectKeyProvider KeyProvider(string hash) => new OSSObjectKeyProvider(Name, hash);
     }

@@ -4,18 +4,25 @@ using System.Threading.Tasks;
 using Autodesk.Forge.Core;
 using Autodesk.Forge.Model;
 
-namespace IoConfigDemo
+namespace WebApplication
 {
     public interface IForge
     {
+        /// <summary>
+        /// Forge configuration.
+        /// </summary>
+        ForgeConfiguration Configuration { get; }
+
         Task<List<ObjectDetails>> GetBucketObjects(string bucketKey, string beginsWith = null);
         Task CreateBucket(string name);
         Task DeleteBucket(string name);
         Task CreateEmptyObject(string bucketKey, string objectName);
         Task UploadObject(string bucketKey, Stream stream, string objectName);
+
         /// <summary>
-        /// Forge configuration.
+        /// Create an empty object at OSS and generate a signed URL to it.
         /// </summary>
-        ForgeConfiguration Configuration { get; }
+        /// <returns>Signed URL</returns>
+        Task<string> CreateDestinationUrl(string bucketKey, string objectName);
     }
 }
