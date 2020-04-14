@@ -1,4 +1,7 @@
 version: 0.2
+env:
+  variables:
+    AWS_DEFAULT_REGION: "us-west-2"
 phases:
   install:
     commands:
@@ -7,9 +10,7 @@ phases:
   pre_build:
     commands:
       - echo "Logging in to Amazon ECR..."
-      - echo $IMAGE_REPO_NAME
-      - echo $IMAGE_TAG
-      - echo $CODEBUILD_RESOLVED_SOURCE_VERSION
+      - dir env:
       - aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION
   build:
     commands:
