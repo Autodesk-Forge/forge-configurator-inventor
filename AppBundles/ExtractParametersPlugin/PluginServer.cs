@@ -38,7 +38,7 @@ namespace ExtractParametersPlugin
 
             // Initialize AddIn members.
             _inventorServer = addInSiteObject.InventorServer;
-            Automation = new SampleAutomation(_inventorServer);
+            Automation = new ExtractParametersAutomation(_inventorServer);
         }
 
         public void Deactivate()

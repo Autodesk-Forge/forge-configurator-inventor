@@ -15,6 +15,7 @@ namespace WebApplication.Tests
     {
         public DesignAutomationClient FdaClient { get; private set; }
         public ForgeOSS OSSClient { get; private set; }
+        public ForgeConfiguration Configuration { get; private set; }
 
         public Forge()
         {
@@ -27,7 +28,8 @@ namespace WebApplication.Tests
                 .Build();
 
             FdaClient = CreateDesignAutomationClient(configuration);
-            OSSClient = new ForgeOSS(configuration.GetSection("Forge").Get<ForgeConfiguration>());
+            Configuration = configuration.GetSection("Forge").Get<ForgeConfiguration>();
+            OSSClient = new ForgeOSS(Configuration);
         }
 
         private DesignAutomationClient CreateDesignAutomationClient(IConfiguration configuration)

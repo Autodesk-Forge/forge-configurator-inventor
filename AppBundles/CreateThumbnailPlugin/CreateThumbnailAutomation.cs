@@ -19,24 +19,62 @@ namespace CreateThumbnailPlugin
 
         public void Run(Document doc)
         {
-            Trace.TraceInformation("Run called with {0}", doc.DisplayName);
-            RunWithArguments(doc, null);
+            try
+            {
+                LogTrace("Processing " + doc.FullFileName);
+                dynamic invDoc = doc;
+                string thumbnailsFolder = Path.Combine(Directory.GetCurrentDirectory(), "ThumbnailImages");
+                string fileName = "thumbnail.png";
+                string filePath = System.IO.Path.Combine(thumbnailsFolder, fileName);
+                Camera cam = inventorApplication.TransientObjects.CreateCamera();
+                cam.SceneObject = invDoc.ComponentDefinition;
+                cam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation;
+                cam.Fit();
+                cam.ApplyWithoutTransition();
+                cam.SaveAsBitmap(filePath, 30, 30, Type.Missing, Type.Missing);
+                LogTrace($"Saved thumbnail as {filePath}");
+            }
+            catch (Exception e)
+            {
+                LogError("Processing failed. " + e.ToString());
+            }
+
         }
 
-        public void RunWithArguments(Document doc, NameValueMap map)
+        #region Logging utilities
+
+        /// <summary>
+        /// Log message with 'trace' log level.
+        /// </summary>
+        private static void LogTrace(string format, params object[] args)
         {
-            Trace.TraceInformation("Processing " + doc.FullFileName);
-            dynamic invDoc = doc;
-            string thumbnailsFolder = Path.Combine(Directory.GetCurrentDirectory(), "ThumbnailImages");
-            string fileName = "thumbnail.png";
-            string filePath = System.IO.Path.Combine(thumbnailsFolder, fileName);
-            Camera cam = inventorApplication.TransientObjects.CreateCamera();
-            cam.SceneObject = invDoc.ComponentDefinition;
-            cam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation;
-            cam.Fit();
-            cam.ApplyWithoutTransition();
-            cam.SaveAsBitmap(filePath, 30, 30, Type.Missing, Type.Missing);
-            Trace.TraceInformation($"Saved thumbnail as {filePath}");
+            Trace.TraceInformation(format, args);
         }
+
+        /// <summary>
+        /// Log message with 'trace' log level.
+        /// </summary>
+        private static void LogTrace(string message)
+        {
+            Trace.TraceInformation(message);
+        }
+
+        /// <summary>
+        /// Log message with 'error' log level.
+        /// </summary>
+        private static void LogError(string format, params object[] args)
+        {
+            Trace.TraceError(format, args);
+        }
+
+        /// <summary>
+        /// Log message with 'error' log level.
+        /// </summary>
+        private static void LogError(string message)
+        {
+            Trace.TraceError(message);
+        }
+
+        #endregion
     }
 }

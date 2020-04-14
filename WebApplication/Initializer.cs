@@ -58,8 +58,5 @@ namespace WebApplication
             // delete bundles and activities
             await _fdaClient.CleanUp();
         }
-
-        private Publisher GetSvfPublisher() => new Publisher(new CreateSvfDefinition(), DesignAutomationClient);
-        private Publisher GetThumbnailPublisher() => new Publisher(new CreateThumbnailDefinition(string.Empty, string.Empty), DesignAutomationClient);
     }
 }

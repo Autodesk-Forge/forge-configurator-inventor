@@ -27,7 +27,7 @@ namespace WebApplication.Processing
             _resourceProvider = resourceProvider;
         }
 
-        public async Task RunWorkItemAsync(Dictionary<string, IArgument> workItemArgs, ForgeAppConfigBase config)
+        public async Task<WorkItemStatus> RunWorkItemAsync(Dictionary<string, IArgument> workItemArgs, ForgeAppConfigBase config)
         {
             // create work item
             var wi = new WorkItem
@@ -48,6 +48,7 @@ namespace WebApplication.Processing
 
             Trace($"WI {status.Id} completed with {status.Status}");
             Trace($"{status.ReportUrl}");
+            return status;
         }
 
         protected async Task PostAppBundleAsync(string packagePathname, ForgeAppConfigBase config)
