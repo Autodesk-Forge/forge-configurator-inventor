@@ -66,13 +66,13 @@ namespace WebApplication
             return response.Data;
         }
 
-        public async Task<List<ObjectDetails>> GetBucketObjects(string bucketKey)
+        public async Task<List<ObjectDetails>> GetBucketObjects(string bucketKey, string beginsWith = null)
         {
             ObjectsApi objectsApi = new ObjectsApi{ Configuration = { AccessToken = await GetTwoLeggedAccessToken() }};
 
             var objects = new List<ObjectDetails>();
 
-            dynamic objectsList = await objectsApi.GetObjectsAsync(bucketKey);
+            dynamic objectsList = await objectsApi.GetObjectsAsync(bucketKey, null, beginsWith);
             foreach (KeyValuePair<string, dynamic> objInfo in new DynamicDictionaryItems(objectsList.items))
             {
                 var details = new ObjectDetails
@@ -140,6 +140,13 @@ namespace WebApplication
         private async Task<ObjectsApi> GetObjectsApi()
         {
             return new ObjectsApi{ Configuration = { AccessToken = await GetTwoLeggedAccessToken() }}; // TODO: ER: cache? Or is it lightweight operation?
+        }
+
+        public async Task UploadObject(string bucketKey, Stream stream, string objectName)
+        {
+            ObjectsApi objectsApi = new ObjectsApi { Configuration = { AccessToken = await GetTwoLeggedAccessToken() } };
+
+            await objectsApi.UploadObjectAsync(bucketKey, objectName, 0, stream);
         }
     }
 }
