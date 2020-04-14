@@ -39,7 +39,7 @@ namespace WebApplication.Controllers
 
             // TODO move to projects repository?
 
-            List<ObjectDetails> objects = await _forge.GetBucketObjects(_bucketNameProvider.BucketName, $"{ONC.projectsFolder}-");
+            List<ObjectDetails> objects = await _forge.GetBucketObjects(_resourceProvider.BucketName, $"{ONC.projectsFolder}-");
             var projectDTOs = new List<ProjectDTO>();
             foreach(ObjectDetails objDetails in objects)
             {

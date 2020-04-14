@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -33,24 +32,33 @@ namespace WebApplication
 
         public async Task Initialize()
         {
-            _logger.LogInformation($"Initializing base data");
-            await _forge.CreateBucket(_bucketNameProvider.BucketName);
-            _logger.LogInformation($"Bucket {_bucketNameProvider.BucketName} created");
+            _logger.LogInformation("Initializing base data");
+
+            await _forge.CreateBucket(_resourceProvider.BucketName);
+            _logger.LogInformation($"Bucket {_resourceProvider.BucketName} created");
 
             // download default project files from the public location
             // specified by the appsettings.json
-            var client = new HttpClient();
-            string[] defaultProjects = _configuration.GetSection("DefaultProjects:Files").Get<string[]>();
-            foreach (var projectUrl in defaultProjects)
+            using (var client = new HttpClient())
             {
-                HttpResponseMessage response = await client.GetAsync(projectUrl);
-                response.EnsureSuccessStatusCode();
-                Stream stream = await response.Content.ReadAsStreamAsync();
-                string[] urlParts = projectUrl.Split("/");
-                string projectName = urlParts[urlParts.Length - 1];
-                await _forge.UploadObject(_bucketNameProvider.BucketName, stream, new Project(projectName).SourceModel);
+                string[] defaultProjects = _configuration.GetSection("DefaultProjects:Files").Get<string[]>();
+                foreach (var projectUrl in defaultProjects)
+                {
+                    _logger.LogInformation($"Download {projectUrl}");
+
+                    HttpResponseMessage response = await client.GetAsync(projectUrl);
+                    response.EnsureSuccessStatusCode();
+
+                    _logger.LogInformation("Upload to the app bucket");
+
+                    Stream stream = await response.Content.ReadAsStreamAsync();
+                    string[] urlParts = projectUrl.Split("/");
+                    string projectName = urlParts[urlParts.Length - 1];
+                    await _forge.UploadObject(_resourceProvider.BucketName, stream, new Project(projectName).SourceModel);
+                }
             }
-            _logger.LogInformation($"Added default projects.");
+
+            _logger.LogInformation("Added default projects.");
 
             // create bundles and activities
             await _fdaClient.Initialize();

@@ -1,4 +1,4 @@
-namespace IoConfigDemo
+namespace WebApplication.Utilities
 {  
     public static class ONC // aka ObjectNameConstants
     {
