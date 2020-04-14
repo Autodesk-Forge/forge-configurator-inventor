@@ -13,8 +13,9 @@ namespace WebApplication
             }
 
             Name = projectName; 
-            SourceModel = $"{ONC.projectsFolder}-{projectName}";
-            Thumbnail = $"{ONC.cacheFolder}-{projectName}-original-thumbnail.svg";
+            OSSSourceModel = $"{ONC.projectsFolder}-{projectName}";
+            OSSThumbnail = $"{ONC.cacheFolder}-{projectName}-original-thumbnail.svg";
+            HrefThumbnail = "bike.png"; // temporary icon
         }
 
         public static Project FromObjectKey(string objectKey)
@@ -28,9 +29,10 @@ namespace WebApplication
             return new Project(projectName);
         }
 
-        public string Name { get; }
-        public string SourceModel {get; }
-        public string Thumbnail { get; }
+        public string Name { get; private set; }
+        public string OSSSourceModel {get; private set; }
+        public string OSSThumbnail { get; private set; }
+        public string HrefThumbnail { get; private set; }
 
         public OSSObjectKeyProvider KeyProvider(string hash) => new OSSObjectKeyProvider(Name, hash);
     }

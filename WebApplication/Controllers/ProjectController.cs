@@ -47,7 +47,7 @@ namespace WebApplication.Controllers
                 projectDTOs.Add(new ProjectDTO { 
                     Id = project.Name,
                     Label = project.Name,
-                    Image = project.Thumbnail });
+                    Image = project.HrefThumbnail });
             }
             return projectDTOs;
         }

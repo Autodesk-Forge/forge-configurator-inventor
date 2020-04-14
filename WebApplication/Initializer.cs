@@ -54,7 +54,7 @@ namespace WebApplication
                     Stream stream = await response.Content.ReadAsStreamAsync();
                     string[] urlParts = projectUrl.Split("/");
                     string projectName = urlParts[urlParts.Length - 1];
-                    await _forge.UploadObject(_resourceProvider.BucketName, stream, new Project(projectName).SourceModel);
+                    await _forge.UploadObject(_resourceProvider.BucketName, stream, new Project(projectName).OSSSourceModel);
                 }
             }
 
