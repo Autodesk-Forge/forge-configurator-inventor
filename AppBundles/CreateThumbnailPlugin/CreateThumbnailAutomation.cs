@@ -23,9 +23,8 @@ namespace CreateThumbnailPlugin
             {
                 LogTrace("Processing " + doc.FullFileName);
                 dynamic invDoc = doc;
-                string thumbnailsFolder = Path.Combine(Directory.GetCurrentDirectory(), "ThumbnailImages");
                 string fileName = "thumbnail.png";
-                string filePath = System.IO.Path.Combine(thumbnailsFolder, fileName);
+                string filePath = Path.Combine(Directory.GetCurrentDirectory(), fileName);
                 Camera cam = inventorApplication.TransientObjects.CreateCamera();
                 cam.SceneObject = invDoc.ComponentDefinition;
                 cam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation;
@@ -38,7 +37,6 @@ namespace CreateThumbnailPlugin
             {
                 LogError("Processing failed. " + e.ToString());
             }
-
         }
 
         #region Logging utilities
