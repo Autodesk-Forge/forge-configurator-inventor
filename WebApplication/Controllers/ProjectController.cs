@@ -31,7 +31,7 @@ namespace IoConfigDemo.Controllers
             var projectDTOs = new List<ProjectDTO>();
             foreach(ObjectDetails objDetails in objects)
             {
-                var project = Project.FromBucketKey(objDetails.ObjectKey);
+                var project = Project.FromObjectKey(objDetails.ObjectKey);
                 projectDTOs.Add(new ProjectDTO { 
                     Id = project.Name,
                     Label = project.Name,

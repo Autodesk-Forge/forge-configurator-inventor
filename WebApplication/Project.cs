@@ -9,18 +9,18 @@ namespace IoConfigDemo
             if(Name == string.Empty) {
                 throw new Exception("Initializing Project with empty name");
             }
-            
+
             Name = projectName; 
             SourceModel = $"{ONC.projectsFolder}-{projectName}";
             Thumbnail = $"{ONC.cacheFolder}-{projectName}-original-thumbnail.svg";
         }
 
-        static public Project FromBucketKey(string bucketKey) {
-            if(!bucketKey.StartsWith($"{ONC.projectsFolder}-")) {
-                throw new Exception("Initializing Project from invalid bucket key: " + bucketKey);
+        static public Project FromObjectKey(string objectKey) {
+            if(!objectKey.StartsWith($"{ONC.projectsFolder}-")) {
+                throw new Exception("Initializing Project from invalid bucket key: " + objectKey);
             }
 
-            var projectName = bucketKey.Substring(ONC.projectsFolder.Length+1);
+            var projectName = objectKey.Substring(ONC.projectsFolder.Length+1);
             return new Project(projectName);
         }
 
