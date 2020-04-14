@@ -71,7 +71,7 @@ namespace WebApplication.Processing
         /// Run work items.
         /// </summary>
         /// <param name="args">Work item arguments.</param>
-        protected Task Run(Dictionary<string, IArgument> args)
+        protected Task<WorkItemStatus> Run(Dictionary<string, IArgument> args)
         {
             return Publisher.RunWorkItemAsync(args, this);
         }

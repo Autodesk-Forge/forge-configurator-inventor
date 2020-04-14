@@ -28,7 +28,7 @@ namespace WebApplication.Controllers
         }
 
         [HttpGet("")]
-        public async Task<IEnumerable<Project>> List()
+        public async Task<IEnumerable<ProjectDTO>> List()
         {
             // ER: TODO: remove after completion
 #if false
@@ -39,16 +39,17 @@ namespace WebApplication.Controllers
 
             // TODO move to projects repository?
 
-            List<ObjectDetails> objects = await _forge.GetBucketObjects(_resourceProvider.BucketName);
-            var projects = new List<Project>();
+            List<ObjectDetails> objects = await _forge.GetBucketObjects(_resourceProvider.BucketName, $"{ONC.projectsFolder}-");
+            var projectDTOs = new List<ProjectDTO>();
             foreach(ObjectDetails objDetails in objects)
             {
-                projects.Add(new Project { 
-                    Id = objDetails.ObjectKey,
-                    Label = objDetails.ObjectKey,
-                    Image = "./bike.png" }); // temporary icon to verify control
+                var project = Project.FromObjectKey(objDetails.ObjectKey);
+                projectDTOs.Add(new ProjectDTO { 
+                    Id = project.Name,
+                    Label = project.Name,
+                    Image = project.HrefThumbnail });
             }
-            return projects;
+            return projectDTOs;
         }
     }
 }

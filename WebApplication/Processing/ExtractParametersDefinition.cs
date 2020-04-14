@@ -5,23 +5,23 @@ using Autodesk.Forge.DesignAutomation.Model;
 
 namespace WebApplication.Processing
 {
-    public class CreateThumbnailDefinition : ForgeAppConfigBase
+    public class ExtractParametersDefinition : ForgeAppConfigBase
     {
         public override int EngineVersion => 24;
 
-        public override string Id => "CreateThumbnail";
+        public override string Id => "ExtractParameters";
         public override string Label => "alpha";
-        public override string Description => "Generate thumbnail from Inventor document";
+        public override string Description => "Extract Parameters from Inventor document";
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        public CreateThumbnailDefinition(Publisher publisher) : base(publisher) { }
+        public ExtractParametersDefinition(Publisher publisher) : base(publisher) { }
 
         internal static class Parameters
         {
             public static string InventorDoc = nameof(InventorDoc);
-            public static string OutputThumbnail = nameof(OutputThumbnail);
+            public static string OutputJson = nameof(OutputJson);
         }
 
         public override List<string> ActivityCommandLine =>
@@ -42,12 +42,12 @@ namespace WebApplication.Processing
                     }
                 },
                 {
-                    Parameters.OutputThumbnail,
+                    Parameters.OutputJson,
                     new Parameter
                     {
                         Verb = Verb.Put,
-                        LocalName = "thumbnail.png",
-                        Description = "Resulting thumbnail",
+                        LocalName = "documentParams.json",
+                        Description = "Resulting JSON",
                         Ondemand = false,
                         Required = false
                     }
@@ -68,7 +68,7 @@ namespace WebApplication.Processing
                                     new XrefTreeArgument { Url = url }
                                 },
                                 {
-                                    Parameters.OutputThumbnail,
+                                    Parameters.OutputJson,
                                     new XrefTreeArgument { Verb = Verb.Put, Url = outputUrl }
                                 }
                             };
