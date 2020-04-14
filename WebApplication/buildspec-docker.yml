@@ -10,7 +10,7 @@ phases:
   pre_build:
     commands:
       - echo "Logging in to Amazon ECR..."
-      - dir env:
+      - dir env:\
       - aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION
   build:
     commands:
