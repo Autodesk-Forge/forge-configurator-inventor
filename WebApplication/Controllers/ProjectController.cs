@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Autodesk.Forge.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using SalesDemoToolApp.Utilities;
 
 namespace IoConfigDemo.Controllers
 {
@@ -24,20 +23,21 @@ namespace IoConfigDemo.Controllers
         }
 
         [HttpGet("")]
-        public async Task<IEnumerable<Project>> List()
+        public async Task<IEnumerable<ProjectDTO>> List()
         {
             // TODO move to projects repository?
 
-            List<ObjectDetails> objects = await _forge.GetBucketObjects(_bucketNameProvider.BucketName);
-            var projects = new List<Project>();
+            List<ObjectDetails> objects = await _forge.GetBucketObjects(_bucketNameProvider.BucketName, $"{ONC.projectsFolder}-");
+            var projectDTOs = new List<ProjectDTO>();
             foreach(ObjectDetails objDetails in objects)
             {
-                projects.Add(new Project { 
-                    Id = objDetails.ObjectKey,
-                    Label = objDetails.ObjectKey,
-                    Image = "./bike.png" }); // temporary icon to verify control
+                var project = Project.FromObjectKey(objDetails.ObjectKey);
+                projectDTOs.Add(new ProjectDTO { 
+                    Id = project.Name,
+                    Label = project.Name,
+                    Image = project.Thumbnail });
             }
-            return projects;
+            return projectDTOs;
         }
     }
 }

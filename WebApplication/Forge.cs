@@ -67,13 +67,13 @@ namespace IoConfigDemo
             return response.Data;
         }
 
-        public async Task<List<ObjectDetails>> GetBucketObjects(string bucketKey)
+        public async Task<List<ObjectDetails>> GetBucketObjects(string bucketKey, string beginsWith = null)
         {
             ObjectsApi objectsApi = new ObjectsApi{ Configuration = { AccessToken = await GetTwoLeggedAccessToken() }};
 
             var objects = new List<ObjectDetails>();
 
-            dynamic objectsList = await objectsApi.GetObjectsAsync(bucketKey);
+            dynamic objectsList = await objectsApi.GetObjectsAsync(bucketKey, null, beginsWith);
             foreach (KeyValuePair<string, dynamic> objInfo in new DynamicDictionaryItems(objectsList.items))
             {
                 var details = new ObjectDetails
