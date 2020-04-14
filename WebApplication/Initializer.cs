@@ -40,7 +40,7 @@ namespace IoConfigDemo
                 Stream stream = await response.Content.ReadAsStreamAsync();
                 string[] urlParts = projectUrl.Split("/");
                 string projectName = urlParts[urlParts.Length - 1];
-                await _forge.UploadObject(_bucketNameProvider.BucketName, stream, new Project(projectName).SourceModel);
+                await _forge.UploadObject(_bucketNameProvider.BucketName, stream, new Project(projectName).OSSSourceModel);
             }
             _logger.LogInformation($"Added default projects.");
         }

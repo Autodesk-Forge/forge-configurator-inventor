@@ -11,8 +11,9 @@ namespace IoConfigDemo
             }
 
             Name = projectName; 
-            SourceModel = $"{ONC.projectsFolder}-{projectName}";
-            Thumbnail = $"{ONC.cacheFolder}-{projectName}-original-thumbnail.svg";
+            OSSSourceModel = $"{ONC.projectsFolder}-{projectName}";
+            OSSThumbnail = $"{ONC.cacheFolder}-{projectName}-original-thumbnail.svg";
+            HrefThumbnail = "bike.png"; // temporary icon
         }
 
         static public Project FromObjectKey(string objectKey) {
@@ -25,8 +26,9 @@ namespace IoConfigDemo
         }
 
         public string Name { get; private set; }
-        public string SourceModel {get; private set; }
-        public string Thumbnail { get; private set; }
+        public string OSSSourceModel {get; private set; }
+        public string OSSThumbnail { get; private set; }
+        public string HrefThumbnail { get; private set; }
 
         public OSSObjectKeyProvider KeyProvider(string hash) => new OSSObjectKeyProvider(Name, hash);
     }
