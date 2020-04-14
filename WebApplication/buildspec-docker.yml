@@ -9,7 +9,7 @@ phases:
       - echo $IMAGE_REPO_NAME
       - echo $IMAGE_TAG
       - echo $CODEBUILD_RESOLVED_SOURCE_VERSION
-	  - choco install docker-cli
+      - choco install docker-cli
       - docker --version
       - aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION
   build:
