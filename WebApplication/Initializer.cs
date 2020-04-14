@@ -1,7 +1,10 @@
 using System;
+using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Autodesk.Forge.Client;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace IoConfigDemo
@@ -11,11 +14,13 @@ namespace IoConfigDemo
         private readonly IForge _forge;
         private readonly BucketNameProvider _bucketNameProvider;
         private readonly ILogger<Initializer> _logger;
-        public Initializer(IForge forge, BucketNameProvider bucketNameProvider, ILogger<Initializer> logger)
+        private readonly IConfiguration _configuration;
+        public Initializer(IForge forge, BucketNameProvider bucketNameProvider, ILogger<Initializer> logger, IConfiguration configuration)
         {
             _forge = forge;
             _bucketNameProvider = bucketNameProvider;
             _logger = logger;
+            _configuration = configuration;
         }
 
         public async Task Initialize()
@@ -23,13 +28,21 @@ namespace IoConfigDemo
             _logger.LogInformation($"Initializing base data");
             await _forge.CreateBucket(_bucketNameProvider.BucketName);
             _logger.LogInformation($"Bucket {_bucketNameProvider.BucketName} created");
-            
-            await Task.WhenAll(
-                _forge.CreateEmptyObject(_bucketNameProvider.BucketName, new Project("Project1.zip").SourceModel),
-                _forge.CreateEmptyObject(_bucketNameProvider.BucketName, new Project("Project2.zip").SourceModel),
-                _forge.CreateEmptyObject(_bucketNameProvider.BucketName, new Project("Project3.ipt").SourceModel)
-            );
-            _logger.LogInformation($"Added empty projects.");
+
+            // download default project files from the public location
+            // specified by the appsettings.json
+            var client = new HttpClient();
+            string[] defaultProjects = _configuration.GetSection("DefaultProjects:Files").Get<string[]>();
+            foreach (var projectUrl in defaultProjects)
+            {
+                HttpResponseMessage response = await client.GetAsync(projectUrl);
+                response.EnsureSuccessStatusCode();
+                Stream stream = await response.Content.ReadAsStreamAsync();
+                string[] urlParts = projectUrl.Split("/");
+                string projectName = urlParts[urlParts.Length - 1];
+                await _forge.UploadObject(_bucketNameProvider.BucketName, stream, new Project(projectName).SourceModel);
+            }
+            _logger.LogInformation($"Added default projects.");
         }
 
         public async Task Clear()
