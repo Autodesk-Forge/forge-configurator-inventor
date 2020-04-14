@@ -117,5 +117,11 @@ namespace IoConfigDemo
                 await objectsApi.UploadObjectAsync(bucketKey, objectName, 0, stream);
             }
         }
+        public async Task UploadObject(string bucketKey, Stream stream, string objectName)
+        {
+            ObjectsApi objectsApi = new ObjectsApi { Configuration = { AccessToken = await GetTwoLeggedAccessToken() } };
+
+            await objectsApi.UploadObjectAsync(bucketKey, objectName, 0, stream);
+        }
     }
 }
