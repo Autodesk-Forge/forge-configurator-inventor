@@ -29,10 +29,10 @@ namespace WebApplication
             return new Project(projectName);
         }
 
-        public string Name { get; private set; }
-        public string OSSSourceModel {get; private set; }
-        public string OSSThumbnail { get; private set; }
-        public string HrefThumbnail { get; private set; }
+        public string Name { get; }
+        public string OSSSourceModel {get; }
+        public string OSSThumbnail { get; }
+        public string HrefThumbnail { get; }
 
         public OSSObjectKeyProvider KeyProvider(string hash) => new OSSObjectKeyProvider(Name, hash);
     }
