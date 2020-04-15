@@ -55,5 +55,10 @@ namespace WebApplication.Processing
             var all = _definitions.Select(def => def.ToIamArguments(url, pathInZip, outputUrl));
             return Collections.MergeDictionaries(all);
         }
+
+        public override List<string> GetBundles(string nickname)
+        {
+            return _definitions.SelectMany(def => def.GetBundles(nickname)).ToList();
+        }
     }
 }

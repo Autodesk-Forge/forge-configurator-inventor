@@ -111,7 +111,7 @@ namespace WebApplication.Processing
         /// </summary>
         /// <param name="nickname"></param>
         /// <returns></returns>
-        public List<string> GetBundles(string nickname)
+        public virtual List<string> GetBundles(string nickname)
         {
             return new List<string> { $"{nickname}.{Id}+{Label}" };
         }
