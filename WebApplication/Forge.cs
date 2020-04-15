@@ -109,7 +109,12 @@ namespace WebApplication
 
         public async Task CreateEmptyObject(string bucketKey, string objectName)
         {
-            await CreateEmptyObjectInner(bucketKey, objectName, await GetObjectsApi());
+            ObjectsApi objectsApi = await GetObjectsApi();
+
+            using (var stream = new MemoryStream())
+            {
+                await ((IObjectsApi) objectsApi).UploadObjectAsync(bucketKey, objectName, 0, stream);
+            }
         }
 
         /// <summary>
@@ -120,20 +125,9 @@ namespace WebApplication
         {
             ObjectsApi objectsApi = await GetObjectsApi();
 
-            // create empty object
-            await CreateEmptyObjectInner(bucketKey, objectName, objectsApi);
-
             // and get URL to it
             dynamic result = await objectsApi.CreateSignedResourceAsync(bucketKey, objectName, new PostBucketsSigned(30), "write");
             return result.signedUrl;
-        }
-
-        private static async Task CreateEmptyObjectInner(string bucketKey, string objectName, IObjectsApi objectsApi)
-        {
-            using(var stream = new MemoryStream())
-            {
-                await objectsApi.UploadObjectAsync(bucketKey, objectName, 0, stream);
-            }
         }
 
         private async Task<ObjectsApi> GetObjectsApi()
@@ -143,7 +137,7 @@ namespace WebApplication
 
         public async Task UploadObject(string bucketKey, Stream stream, string objectName)
         {
-            ObjectsApi objectsApi = new ObjectsApi { Configuration = { AccessToken = await GetTwoLeggedAccessToken() } };
+            ObjectsApi objectsApi = await GetObjectsApi();
 
             await objectsApi.UploadObjectAsync(bucketKey, objectName, 0, stream);
         }

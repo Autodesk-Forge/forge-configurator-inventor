@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -45,8 +46,17 @@ namespace WebApplication
             using (var client = new HttpClient())
             {
                 string[] defaultProjects = _configuration.GetSection("DefaultProjects:Files").Get<string[]>();
-                foreach (var projectUrl in defaultProjects)
+                string[] tlaFilenames = _configuration.GetSection("DefaultProjects:TopLevelAssemblies").Get<string[]>();
+                if (defaultProjects.Length != tlaFilenames.Length)
                 {
+                    throw new Exception("Default projects are not in sync with TLA names");
+                }
+
+                for (var i = 0; i < defaultProjects.Length; i++)
+                {
+                    var projectUrl = defaultProjects[i];
+                    var tlaFilename = tlaFilenames[i];
+
                     _logger.LogInformation($"Download {projectUrl}");
 
                     using HttpResponseMessage response = await client.GetAsync(projectUrl).ConfigureAwait(false);
@@ -61,7 +71,10 @@ namespace WebApplication
 
                     await _forge.UploadObject(_resourceProvider.BucketName, stream, project.OSSSourceModel);
 
-                    //project.OSSThumbnail
+#if false // not ready
+                    string ossUrl = await _forge.CreateDestinationUrl(_resourceProvider.BucketName, project.OSSSourceModel);
+                    await _fdaClient.Adopt(ossUrl, tlaFilename, project);
+#endif
                 }
             }
 
