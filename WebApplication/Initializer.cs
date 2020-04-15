@@ -93,15 +93,15 @@ namespace WebApplication
 
                     var projectUrls = new AdoptionData // TODO: check - can do it in parallel?
                     {
-                        InputUrl = await _forge.CreateSignedUrl(_resourceProvider.BucketName, project.OSSSourceModel),
-                        ThumbnailUrl = await _forge.CreateSignedUrl(_resourceProvider.BucketName, project.OSSThumbnail),
-                        SvfUrl = await _forge.CreateSignedUrl(_resourceProvider.BucketName, project.OriginalSvfZip),
-                        ParametersJsonUrl = await _forge.CreateSignedUrl(_resourceProvider.BucketName, project.ParametersJson),
+                        InputUrl = await _forge.CreateSignedUrl(_resourceProvider.BucketName, project.OSSSourceModel, "read"),
+                        ThumbnailUrl = await _forge.CreateSignedUrl(_resourceProvider.BucketName, project.OSSThumbnail, "write"),
+                        SvfUrl = await _forge.CreateSignedUrl(_resourceProvider.BucketName, project.OriginalSvfZip, "write"),
+                        ParametersJsonUrl = await _forge.CreateSignedUrl(_resourceProvider.BucketName, project.ParametersJson, "write"),
                         TLA = tlaFilename
                     };
 
                     var status = await _fdaClient.Adopt(projectUrls);
-                    _logger.LogInformation(System.Text.Json.JsonSerializer.Serialize(status, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
+                    //_logger.LogInformation(System.Text.Json.JsonSerializer.Serialize(status, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
 #endif
                 }
             }

@@ -120,13 +120,14 @@ namespace WebApplication
         /// <summary>
         /// Create an empty object at OSS and generate a signed URL to it.
         /// </summary>
+        /// <param name="access">read, write or readwrite</param> // TODO: make as enum?
         /// <returns>Signed URL</returns>
-        public async Task<string> CreateSignedUrl(string bucketKey, string objectName)
+        public async Task<string> CreateSignedUrl(string bucketKey, string objectName, string access)
         {
             ObjectsApi objectsApi = await GetObjectsApi();
 
             // and get URL to it
-            dynamic result = await objectsApi.CreateSignedResourceAsync(bucketKey, objectName, new PostBucketsSigned(30), "write");
+            dynamic result = await objectsApi.CreateSignedResourceAsync(bucketKey, objectName, new PostBucketsSigned(30), access);
             return result.signedUrl;
         }
 

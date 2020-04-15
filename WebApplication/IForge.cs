@@ -24,6 +24,6 @@ namespace WebApplication
         /// NOTE: An empty object created if not exists.
         /// </summary>
         /// <returns>Signed URL</returns>
-        Task<string> CreateSignedUrl(string bucketKey, string objectName);
+        Task<string> CreateSignedUrl(string bucketKey, string objectName, string access);
     }
 }

@@ -31,9 +31,9 @@ namespace WebApplication.Processing
 
             var allArgs = new[]
             {
-                svf.ToIamArguments(projectData.InputUrl, projectData.InputUrl, projectData.SvfUrl),
-                thumb.ToIamArguments(projectData.InputUrl, projectData.InputUrl, projectData.ThumbnailUrl),
-                parameters.ToIamArguments(projectData.InputUrl, projectData.InputUrl, projectData.ParametersJsonUrl),
+                svf.ToIamArguments(projectData.InputUrl, projectData.TLA, projectData.SvfUrl),
+                thumb.ToIamArguments(projectData.InputUrl, projectData.TLA, projectData.ThumbnailUrl),
+                parameters.ToIamArguments(projectData.InputUrl, projectData.TLA, projectData.ParametersJsonUrl),
             };
 
             var merged = Collections.MergeDictionaries(allArgs);
