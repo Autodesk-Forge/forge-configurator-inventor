@@ -11,6 +11,23 @@ using WebApplication.Utilities;
 
 namespace WebApplication
 {
+    /// <summary>
+    /// All data required for project adoption.
+    /// </summary>
+    public class AdoptionData
+    {
+        public string InputUrl { get; set; }
+
+        /// <summary>
+        /// Relative path to top level assembly in ZIP with assembly.
+        /// </summary>
+        public string TLA { get; set; }
+
+        public string ThumbnailUrl { get; set; }
+        public string SvfUrl { get; set; }
+        public string ParametersJsonUrl { get; set; }
+    }
+
     public class Initializer
     {
         private readonly IForge _forge;
@@ -71,9 +88,20 @@ namespace WebApplication
 
                     await _forge.UploadObject(_resourceProvider.BucketName, stream, project.OSSSourceModel);
 
-#if false // not ready
-                    string ossUrl = await _forge.CreateDestinationUrl(_resourceProvider.BucketName, project.OSSSourceModel);
-                    await _fdaClient.Adopt(ossUrl, tlaFilename, project);
+#if true // not ready
+                    _logger.LogInformation("Adopt the project");
+
+                    var projectUrls = new AdoptionData // TODO: check - can do it in parallel?
+                    {
+                        InputUrl = await _forge.CreateSignedUrl(_resourceProvider.BucketName, project.OSSSourceModel),
+                        ThumbnailUrl = await _forge.CreateSignedUrl(_resourceProvider.BucketName, project.OSSThumbnail),
+                        SvfUrl = await _forge.CreateSignedUrl(_resourceProvider.BucketName, project.OriginalSvfZip),
+                        ParametersJsonUrl = await _forge.CreateSignedUrl(_resourceProvider.BucketName, project.ParametersJson),
+                        TLA = tlaFilename
+                    };
+
+                    var status = await _fdaClient.Adopt(projectUrls);
+                    _logger.LogInformation(System.Text.Json.JsonSerializer.Serialize(status, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
 #endif
                 }
             }

@@ -20,9 +20,10 @@ namespace WebApplication
         Task UploadObject(string bucketKey, Stream stream, string objectName);
 
         /// <summary>
-        /// Create an empty object at OSS and generate a signed URL to it.
+        /// Generate a signed URL to OSS object.
+        /// NOTE: An empty object created if not exists.
         /// </summary>
         /// <returns>Signed URL</returns>
-        Task<string> CreateDestinationUrl(string bucketKey, string objectName);
+        Task<string> CreateSignedUrl(string bucketKey, string objectName);
     }
 }

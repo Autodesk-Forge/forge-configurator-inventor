@@ -11,13 +11,14 @@ namespace WebApplication.Processing
     /// </summary>
     public abstract class AggregatedDefinition : ForgeAppBase
     {
-        private readonly List<ForgeAppBase> _definitions;
+        protected ForgeAppBase[] Definitions => _definitions;
+        private readonly ForgeAppBase[] _definitions;
 
         protected AggregatedDefinition(Publisher publisher, params ForgeAppBase[] items) : base(publisher)
         {
             if (items.Length == 0) throw new ArgumentException("Value cannot be an empty collection.", nameof(items));
 
-            _definitions = new List<ForgeAppBase>(items);
+            _definitions = items;
         }
 
         public override int EngineVersion => _definitions[0].EngineVersion;

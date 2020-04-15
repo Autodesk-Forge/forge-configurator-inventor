@@ -30,13 +30,6 @@ namespace WebApplication.Controllers
         [HttpGet("")]
         public async Task<IEnumerable<ProjectDTO>> List()
         {
-            // ER: TODO: remove after completion
-#if false
-            string inventorDocUrl = "http://testipt.s3-us-west-2.amazonaws.com/PictureInFormTest.ipt";
-            string outputUrl = await _forge.CreateDestinationUrl(_resourceProvider.BucketName, $"{Guid.NewGuid():N}.json");
-            await _fda.GenerateSVF(inventorDocUrl, outputUrl);
-#endif
-
             // TODO move to projects repository?
 
             List<ObjectDetails> objects = await _forge.GetBucketObjects(_resourceProvider.BucketName, $"{ONC.projectsFolder}-");

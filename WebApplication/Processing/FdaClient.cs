@@ -41,9 +41,9 @@ namespace WebApplication.Processing
             return _svfWork.ProcessIpt(inventorDocUrl, outputUrl);
         }
 
-        public Task<WorkItemStatus> Adopt(string url, string tlaPathname, Project project)
+        public Task<WorkItemStatus> Adopt(AdoptionData projectData)
         {
-            return _adoptWork.ProcessZippedIam(url, tlaPathname, null);
+            return _adoptWork.DoIAM(projectData);
         }
     }
 }

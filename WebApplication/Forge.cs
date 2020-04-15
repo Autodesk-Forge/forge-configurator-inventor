@@ -121,7 +121,7 @@ namespace WebApplication
         /// Create an empty object at OSS and generate a signed URL to it.
         /// </summary>
         /// <returns>Signed URL</returns>
-        public async Task<string> CreateDestinationUrl(string bucketKey, string objectName)
+        public async Task<string> CreateSignedUrl(string bucketKey, string objectName)
         {
             ObjectsApi objectsApi = await GetObjectsApi();
 
