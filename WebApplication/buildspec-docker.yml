@@ -1,7 +1,7 @@
 version: 0.2
 env:
   variables:
-    IMAGE_REPO_NAME:"io-configurator-app"
+    IMAGE_REPO_NAME: "io-configurator-app"
     IMAGE_TAG: "latest"
     AWS_ACCOUNT_ID: "624240287035"
 phases:
