@@ -32,6 +32,9 @@ namespace WebApplication
 
         public async Task Initialize()
         {
+            // create bundles and activities
+            await _fdaClient.Initialize();
+
             _logger.LogInformation("Initializing base data");
 
             await _forge.CreateBucket(_resourceProvider.BucketName);
@@ -46,22 +49,23 @@ namespace WebApplication
                 {
                     _logger.LogInformation($"Download {projectUrl}");
 
-                    HttpResponseMessage response = await client.GetAsync(projectUrl);
+                    using HttpResponseMessage response = await client.GetAsync(projectUrl).ConfigureAwait(false);
                     response.EnsureSuccessStatusCode();
 
                     _logger.LogInformation("Upload to the app bucket");
 
                     Stream stream = await response.Content.ReadAsStreamAsync();
                     string[] urlParts = projectUrl.Split("/");
-                    string projectName = urlParts[urlParts.Length - 1];
-                    await _forge.UploadObject(_resourceProvider.BucketName, stream, new Project(projectName).OSSSourceModel);
+                    string projectName = urlParts[^1];
+                    var project = new Project(projectName);
+
+                    await _forge.UploadObject(_resourceProvider.BucketName, stream, project.OSSSourceModel);
+
+                    //project.OSSThumbnail
                 }
             }
 
             _logger.LogInformation("Added default projects.");
-
-            // create bundles and activities
-            await _fdaClient.Initialize();
         }
 
         public async Task Clear()

@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Autodesk.Forge.DesignAutomation.Model;
 
 namespace WebApplication.Processing
 {
@@ -31,10 +32,9 @@ namespace WebApplication.Processing
             await _parametersWork.CleanUp();
         }
 
-        public async Task GenerateSVF(string inventorDocUrl, string outputUrl)
+        public Task<WorkItemStatus> GenerateSVF(string inventorDocUrl, string outputUrl)
         {
-            // TODO handle assemblies
-            await _svfWork.ProcessIpt(inventorDocUrl, outputUrl);
+            return _svfWork.ProcessIpt(inventorDocUrl, outputUrl);
         }
     }
 }

@@ -17,6 +17,11 @@ namespace WebApplication.Processing
         public abstract string Label { get; }
         public abstract string Description { get; }
 
+        /// <summary>
+        /// Set to <c>false</c> for aggregated activity, which uses external bundles.
+        /// </summary>
+        public virtual bool HasBundle => true;
+
         public AppBundle Bundle
         {
             get
@@ -77,6 +82,41 @@ namespace WebApplication.Processing
         }
 
         /// <summary>
+        /// Process IPT file.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="outputUrl"></param>
+        public Task<WorkItemStatus> ProcessIpt(string url, string outputUrl)
+        {
+            var args = ToIptArguments(url, outputUrl);
+
+            return Run(args);
+        }
+
+        /// <summary>
+        /// Process Zipped IAM file.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="pathInZip"></param>
+        /// <param name="outputUrl"></param>
+        public Task<WorkItemStatus> ProcessZippedIam(string url, string pathInZip, string outputUrl)
+        {
+            var args = ToIamArguments(url, pathInZip, outputUrl);
+
+            return Run(args);
+        }
+
+        /// <summary>
+        /// Get list of bundles referenced by the activity.
+        /// </summary>
+        /// <param name="nickname"></param>
+        /// <returns></returns>
+        public List<string> GetBundles(string nickname)
+        {
+            return new List<string> { $"{nickname}.{Id}+{Label}" };
+        }
+
+        /// <summary>
         /// Command line for activity.
         /// </summary>
         public abstract List<string> ActivityCommandLine { get; }
@@ -86,8 +126,19 @@ namespace WebApplication.Processing
         /// </summary>
         public abstract Dictionary<string, Parameter> ActivityParams { get; }
 
-        public abstract Task<WorkItemStatus> ProcessIpt(string url, string outputUrl);
+        /// <summary>
+        /// Get arguments for IPT processing.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="outputUrl"></param>
+        protected abstract Dictionary<string, IArgument> ToIptArguments(string url, string outputUrl);
 
-        public abstract Task<WorkItemStatus> ProcessZippedIam(string url, string pathInZip, string outputUrl);
+        /// <summary>
+        /// Get arguments for IAM processing.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="pathInZip"></param>
+        /// <param name="outputUrl"></param>
+        protected abstract Dictionary<string, IArgument> ToIamArguments(string url, string pathInZip, string outputUrl);
     }
 }

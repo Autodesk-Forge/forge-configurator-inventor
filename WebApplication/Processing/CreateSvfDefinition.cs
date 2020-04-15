@@ -38,7 +38,7 @@ namespace WebApplication.Processing
                     new Parameter
                     {
                         Verb = Verb.Get,
-                        Description = "IPT file to process"
+                        Description = "IPT or IAM (in ZIP) file to process"
                     }
                 },
                 {
@@ -60,50 +60,34 @@ namespace WebApplication.Processing
         /// </summary>
         public CreateSvfDefinition(Publisher publisher) : base(publisher) {}
 
-        /// <summary>
-        /// Process IPT file.
-        /// </summary>
-        /// <param name="url"></param>
-        /// <param name="outputUrl"></param>
-        public override Task<WorkItemStatus> ProcessIpt(string url, string outputUrl)
+        protected override Dictionary<string, IArgument> ToIptArguments(string url, string outputUrl)
         {
-            var args = new Dictionary<string, IArgument>
-                            {
-                                {
-                                    Parameters.InventorDoc,
-                                    new XrefTreeArgument { Url = url }
-                                },
-                                {
-                                    Parameters.OutputZip,
-                                    new XrefTreeArgument { Verb = Verb.Put, Url = outputUrl }
-                                }
-                            };
-
-            return Run(args);
+            return new Dictionary<string, IArgument>
+            {
+                {
+                    Parameters.InventorDoc,
+                    new XrefTreeArgument { Url = url }
+                },
+                {
+                    Parameters.OutputZip,
+                    new XrefTreeArgument { Verb = Verb.Put, Url = outputUrl }
+                }
+            };
         }
 
-
-        /// <summary>
-        /// Process Zipped IAM file.
-        /// </summary>
-        /// <param name="url"></param>
-        /// <parm name="pathInZip"></param>
-        /// <param name="outputUrl"></param>
-        public override Task<WorkItemStatus> ProcessZippedIam(string url, string pathInZip, string outputUrl)
+        protected override Dictionary<string, IArgument> ToIamArguments(string url, string pathInZip, string outputUrl)
         {
-            var args = new Dictionary<string, IArgument>
-                            {
-                                {
-                                    Parameters.InventorDoc,
-                                    new XrefTreeArgument { PathInZip = pathInZip, LocalName = "zippedIam.zip", Url = url }
-                                },
-                                {
-                                    Parameters.OutputZip,
-                                    new XrefTreeArgument { Verb = Verb.Put, Url = outputUrl }
-                                }
-                            };
-
-            return Run(args);
+            return new Dictionary<string, IArgument>
+            {
+                {
+                    Parameters.InventorDoc,
+                    new XrefTreeArgument {PathInZip = pathInZip, LocalName = "zippedIam.zip", Url = url}
+                },
+                {
+                    Parameters.OutputZip,
+                    new XrefTreeArgument {Verb = Verb.Put, Url = outputUrl}
+                }
+            };
         }
     }
 }

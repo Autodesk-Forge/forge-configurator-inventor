@@ -47,7 +47,7 @@ namespace WebApplication.Tests
 
     public class PublisherTest : IClassFixture<PublisherFixture>
     {
-        PublisherFixture fixture;
+        readonly PublisherFixture fixture;
         string testIptUrl = "http://testipt.s3-us-west-2.amazonaws.com/PictureInFormTest.ipt";
         string testZippedIamUrl = "http://testipt.s3-us-west-2.amazonaws.com/Basic.zip";
         string testIamPathInZip = "iLogicBasic1.iam";

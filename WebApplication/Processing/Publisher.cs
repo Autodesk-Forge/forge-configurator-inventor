@@ -53,6 +53,8 @@ namespace WebApplication.Processing
 
         protected async Task PostAppBundleAsync(string packagePathname, ForgeAppConfigBase config)
         {
+            if (! config.HasBundle) return;
+
             if (!File.Exists(packagePathname))
                 throw new Exception("App Bundle with package is not found.");
 
@@ -72,7 +74,7 @@ namespace WebApplication.Processing
 
             var activity = new Activity
             {
-                Appbundles = new List<string> { $"{nickname}.{config.Id}+{config.Label}" },
+                Appbundles = config.GetBundles(nickname),
                 Id = config.ActivityId,
                 Engine = config.Engine,
                 Description = config.Description,
@@ -100,6 +102,32 @@ namespace WebApplication.Processing
         /// </summary>
         public async Task CleanUpAsync(ForgeAppConfigBase config)
         {
+            await DeleteAppBundleAsync(config);
+            await DeleteActivityAsync(config);
+        }
+
+        private async Task DeleteActivityAsync(ForgeAppConfigBase config)
+        {
+            //check activity exists already
+            var activityId = config.ActivityId;
+            var fullActivityId = await GetFullActivityId(config);
+            var activityResponse = await _client.ActivitiesApi.GetActivityAsync(fullActivityId, throwOnError: false);
+            if (activityResponse.HttpResponse.StatusCode == HttpStatusCode.OK)
+            {
+                //remove existed activity
+                Trace($"Removing existing activity. Deleting {activityId}...");
+                await _client.ActivitiesApi.DeleteActivityAsync(activityId);
+            }
+            else
+            {
+                Trace($"The activity {activityId} does not exist.");
+            }
+        }
+
+        private async Task DeleteAppBundleAsync(ForgeAppConfigBase config)
+        {
+            if (! config.HasBundle) return;
+
             var bundleId = config.Bundle.Id;
             var shortBundleId = $"{config.Bundle.Id}+{config.Label}";
 
@@ -114,21 +142,6 @@ namespace WebApplication.Processing
             else
             {
                 Trace($"The app bundle {bundleId} does not exist.");
-            }
-
-            //check activity exists already
-            var activityId = config.ActivityId;
-            var fullActivityId = await GetFullActivityId(config);
-            var activityResponse = await _client.ActivitiesApi.GetActivityAsync(fullActivityId, throwOnError: false);
-            if (activityResponse.HttpResponse.StatusCode == HttpStatusCode.OK)
-            {
-                //remove existed activity
-                Trace($"Removing existing activity. Deleting {activityId}...");
-                await _client.ActivitiesApi.DeleteActivityAsync(activityId);
-            }
-            else
-            {
-                Trace($"The activity {activityId} does not exist.");
             }
         }
 

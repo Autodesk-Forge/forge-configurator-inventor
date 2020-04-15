@@ -1,11 +1,13 @@
 namespace WebApplication.Utilities
-{  
+{
+    /// <summary>
+    /// Object Name Constants
+    /// </summary>
     public static class ONC // aka ObjectNameConstants
     {
         public const string projectsFolder = "projects";
         public const string cacheFolder = "cache";
         public const string downloadsFolder = "downloads";
-
     }
 
     public class OSSObjectKeyProvider

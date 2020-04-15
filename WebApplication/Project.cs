@@ -14,7 +14,7 @@ namespace WebApplication
 
             Name = projectName; 
             OSSSourceModel = $"{ONC.projectsFolder}-{projectName}";
-            OSSThumbnail = $"{ONC.cacheFolder}-{projectName}-original-thumbnail.svg";
+            OSSThumbnail = $"{ONC.cacheFolder}-{projectName}-original-thumbnail.png";
             HrefThumbnail = "bike.png"; // temporary icon
         }
 
