@@ -85,5 +85,9 @@ namespace WebApplication.Processing
         /// Activity parameters.
         /// </summary>
         public abstract Dictionary<string, Parameter> ActivityParams { get; }
+
+        public abstract Task<WorkItemStatus> ProcessIpt(string url, string outputUrl);
+
+        public abstract Task<WorkItemStatus> ProcessZippedIam(string url, string pathInZip, string outputUrl);
     }
 }

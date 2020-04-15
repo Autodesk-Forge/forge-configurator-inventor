@@ -33,7 +33,8 @@ namespace WebApplication.Processing
 
         public async Task GenerateSVF(string inventorDocUrl, string outputUrl)
         {
-            await _svfWork.ProcessIPT(inventorDocUrl, outputUrl);
+            // TODO handle assemblies
+            await _svfWork.ProcessIpt(inventorDocUrl, outputUrl);
         }
     }
 }

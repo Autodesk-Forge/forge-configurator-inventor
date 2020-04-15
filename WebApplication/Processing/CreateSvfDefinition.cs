@@ -4,7 +4,7 @@ using Autodesk.Forge.DesignAutomation.Model;
 
 namespace WebApplication.Processing
 {
-    internal class CreateSvfDefinition : ForgeAppConfigBase
+    public class CreateSvfDefinition : ForgeAppConfigBase
     {
         public override int EngineVersion => 24;
 
@@ -65,13 +65,37 @@ namespace WebApplication.Processing
         /// </summary>
         /// <param name="url"></param>
         /// <param name="outputUrl"></param>
-        public Task ProcessIPT(string url, string outputUrl)
+        public override Task<WorkItemStatus> ProcessIpt(string url, string outputUrl)
         {
             var args = new Dictionary<string, IArgument>
                             {
                                 {
                                     Parameters.InventorDoc,
                                     new XrefTreeArgument { Url = url }
+                                },
+                                {
+                                    Parameters.OutputZip,
+                                    new XrefTreeArgument { Verb = Verb.Put, Url = outputUrl }
+                                }
+                            };
+
+            return Run(args);
+        }
+
+
+        /// <summary>
+        /// Process Zipped IAM file.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <parm name="pathInZip"></param>
+        /// <param name="outputUrl"></param>
+        public override Task<WorkItemStatus> ProcessZippedIam(string url, string pathInZip, string outputUrl)
+        {
+            var args = new Dictionary<string, IArgument>
+                            {
+                                {
+                                    Parameters.InventorDoc,
+                                    new XrefTreeArgument { PathInZip = pathInZip, LocalName = "zippedIam.zip", Url = url }
                                 },
                                 {
                                     Parameters.OutputZip,

@@ -25,6 +25,8 @@ namespace CreateThumbnailPlugin
                 dynamic invDoc = doc;
                 string fileName = "thumbnail.png";
                 string filePath = Path.Combine(Directory.GetCurrentDirectory(), fileName);
+
+                inventorApplication.DisplayOptions.Show3DIndicator = false;
                 Camera cam = inventorApplication.TransientObjects.CreateCamera();
                 cam.SceneObject = invDoc.ComponentDefinition;
                 cam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation;
