@@ -59,13 +59,36 @@ namespace WebApplication.Processing
         /// </summary>
         /// <param name="url"></param>
         /// <param name="outputUrl"></param>
-        public Task<WorkItemStatus> ProcessDocument(string url, string outputUrl)
+        public override Task<WorkItemStatus> ProcessIpt(string url, string outputUrl)
         {
             var args = new Dictionary<string, IArgument>
                             {
                                 {
                                     Parameters.InventorDoc,
                                     new XrefTreeArgument { Url = url }
+                                },
+                                {
+                                    Parameters.OutputJson,
+                                    new XrefTreeArgument { Verb = Verb.Put, Url = outputUrl }
+                                }
+                            };
+
+            return Run(args);
+        }
+
+        /// <summary>
+        /// Process Zipped IAM file.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <parm name="pathInZip"></param>
+        /// <param name="outputUrl"></param>
+        public override Task<WorkItemStatus> ProcessZippedIam(string url, string pathInZip, string outputUrl)
+        {
+            var args = new Dictionary<string, IArgument>
+                            {
+                                {
+                                    Parameters.InventorDoc,
+                                    new XrefTreeArgument { PathInZip = pathInZip, LocalName = "zippedIam.zip", Url = url }
                                 },
                                 {
                                     Parameters.OutputJson,
