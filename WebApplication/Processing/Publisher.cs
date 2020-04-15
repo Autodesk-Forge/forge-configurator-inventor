@@ -27,7 +27,7 @@ namespace WebApplication.Processing
             _resourceProvider = resourceProvider;
         }
 
-        public async Task<WorkItemStatus> RunWorkItemAsync(Dictionary<string, IArgument> workItemArgs, ForgeAppConfigBase config)
+        public async Task<WorkItemStatus> RunWorkItemAsync(Dictionary<string, IArgument> workItemArgs, ForgeAppBase config)
         {
             // create work item
             var wi = new WorkItem
@@ -51,7 +51,7 @@ namespace WebApplication.Processing
             return status;
         }
 
-        protected async Task PostAppBundleAsync(string packagePathname, ForgeAppConfigBase config)
+        protected async Task PostAppBundleAsync(string packagePathname, ForgeAppBase config)
         {
             if (! config.HasBundle) return;
 
@@ -67,7 +67,7 @@ namespace WebApplication.Processing
         /// Create new activity.
         /// Throws an exception if the activity exists already.
         /// </summary>
-        protected async Task PublishActivityAsync(ForgeAppConfigBase config)
+        protected async Task PublishActivityAsync(ForgeAppBase config)
         {
             // prepare activity definition
             var nickname = await _resourceProvider.GetNicknameAsync();
@@ -91,7 +91,7 @@ namespace WebApplication.Processing
         /// </summary>
         /// <param name="packagePathname">Pathname to ZIP with app bundle.</param>
         /// <param name="config"></param>
-        public async Task Initialize(string packagePathname, ForgeAppConfigBase config)
+        public async Task Initialize(string packagePathname, ForgeAppBase config)
         {
             await PostAppBundleAsync(packagePathname, config);
             await PublishActivityAsync(config);
@@ -100,13 +100,13 @@ namespace WebApplication.Processing
         /// <summary>
         /// Delete app bundle and activity.
         /// </summary>
-        public async Task CleanUpAsync(ForgeAppConfigBase config)
+        public async Task CleanUpAsync(ForgeAppBase config)
         {
             await DeleteAppBundleAsync(config);
             await DeleteActivityAsync(config);
         }
 
-        private async Task DeleteActivityAsync(ForgeAppConfigBase config)
+        private async Task DeleteActivityAsync(ForgeAppBase config)
         {
             //check activity exists already
             var activityId = config.ActivityId;
@@ -124,7 +124,7 @@ namespace WebApplication.Processing
             }
         }
 
-        private async Task DeleteAppBundleAsync(ForgeAppConfigBase config)
+        private async Task DeleteAppBundleAsync(ForgeAppBase config)
         {
             if (! config.HasBundle) return;
 
@@ -145,7 +145,7 @@ namespace WebApplication.Processing
             }
         }
 
-        private async Task<string> GetFullActivityId(ForgeAppConfigBase config)
+        private async Task<string> GetFullActivityId(ForgeAppBase config)
         {
             var nickname = await _resourceProvider.GetNicknameAsync();
             return $"{nickname}.{config.ActivityId}+{config.ActivityLabel}";

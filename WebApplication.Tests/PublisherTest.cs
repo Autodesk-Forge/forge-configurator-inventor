@@ -84,7 +84,7 @@ namespace WebApplication.Tests
             }
         }
 
-        private async Task WorkItemTest(WorkItemTestType testType, string outputFileName, ForgeAppConfigBase definition, string expectedResultFileName)
+        private async Task WorkItemTest(WorkItemTestType testType, string outputFileName, ForgeAppBase definition, string expectedResultFileName)
         {
             string outputUrl = await fixture.Forge.OSSClient.CreateSignedResourceAsync(fixture.BucketName, outputFileName);
 
@@ -115,7 +115,7 @@ namespace WebApplication.Tests
         public async Task CreateThumbnailIptTestAsync()
         {
             var publisher = new Publisher(fixture.Forge.FdaClient, new NullLogger<Publisher>(), fixture.ResourceProvider);
-            var definition = new CreateThumbnailDefinition(publisher);
+            var definition = new CreateThumbnail(publisher);
             string testComparisonFilePath = await DownloadTestComparisonFile("http://testipt.s3-us-west-2.amazonaws.com/pictureInFormIptThumbnail.png", "pictureInFormIptThumbnail.png");
             await WorkItemTest(WorkItemTestType.IPT, "Thumbnail.png", definition, testComparisonFilePath);
         }
@@ -124,7 +124,7 @@ namespace WebApplication.Tests
         public async Task CreateThumbnailZippedIamTestAsync()
         {
             var publisher = new Publisher(fixture.Forge.FdaClient, new NullLogger<Publisher>(), fixture.ResourceProvider);
-            var definition = new CreateThumbnailDefinition(publisher);
+            var definition = new CreateThumbnail(publisher);
             string testComparisonFilePath = await DownloadTestComparisonFile("http://testipt.s3-us-west-2.amazonaws.com/iLogicBasic1IamThumbnail.png", "iLogicBasic1IamThumbnail.png");
             await WorkItemTest(WorkItemTestType.IAM, "Thumbnail.png", definition, testComparisonFilePath);
         }
@@ -133,7 +133,7 @@ namespace WebApplication.Tests
         public async Task ExtractParametersIptTestAsync()
         {
             var publisher = new Publisher(fixture.Forge.FdaClient, new NullLogger<Publisher>(), fixture.ResourceProvider);
-            var definition = new ExtractParametersDefinition(publisher);
+            var definition = new ExtractParameters(publisher);
             string testComparisonFilePath = await DownloadTestComparisonFile("http://testipt.s3-us-west-2.amazonaws.com/pictureInFormIptDocumentParams.json", "pictureInFormIptDocumentParams.json");
             await WorkItemTest(WorkItemTestType.IPT, "documentParams.json", definition, testComparisonFilePath);
         }
@@ -142,7 +142,7 @@ namespace WebApplication.Tests
         public async Task ExtractParametersZippedIamTestAsync()
         {
             var publisher = new Publisher(fixture.Forge.FdaClient, new NullLogger<Publisher>(), fixture.ResourceProvider);
-            var definition = new ExtractParametersDefinition(publisher);
+            var definition = new ExtractParameters(publisher);
             string testComparisonFilePath = await DownloadTestComparisonFile("http://testipt.s3-us-west-2.amazonaws.com/iLogicBasic1IamDocumentParams.json", "iLogicBasic1IamDocumentParams.json");
             await WorkItemTest(WorkItemTestType.IAM, "documentParams.json", definition, testComparisonFilePath);
         }
@@ -151,7 +151,7 @@ namespace WebApplication.Tests
         public async Task CreateSvfIptTestAsync()
         {
             var publisher = new Publisher(fixture.Forge.FdaClient, new NullLogger<Publisher>(), fixture.ResourceProvider);
-            var definition = new CreateSvfDefinition(publisher);
+            var definition = new CreateSVF(publisher);
             string testComparisonFilePath = await DownloadTestComparisonFile("http://testipt.s3-us-west-2.amazonaws.com/pictureInFormIptSvf.zip", "pictureInFormIptSvf.zip");
             await WorkItemTest(WorkItemTestType.IPT, "pictureInFormIptSvf.zip", definition, testComparisonFilePath);
         }
@@ -160,7 +160,7 @@ namespace WebApplication.Tests
         public async Task CreateSvfZippedIamTestAsync()
         {
             var publisher = new Publisher(fixture.Forge.FdaClient, new NullLogger<Publisher>(), fixture.ResourceProvider);
-            var definition = new CreateSvfDefinition(publisher);
+            var definition = new CreateSVF(publisher);
             string testComparisonFilePath = await DownloadTestComparisonFile("http://testipt.s3-us-west-2.amazonaws.com/iLogicBasic1IamSvf.zip", "iLogicBasic1IamSvf.zip");
             await WorkItemTest(WorkItemTestType.IAM, "iLogicBasic1IamSvf.zip", definition, testComparisonFilePath);
         }

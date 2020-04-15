@@ -8,7 +8,7 @@ namespace WebApplication.Processing
     /// Abstract class for Forge App definition.
     /// Override the class and provide data which is specific for your forge app.
     /// </summary>
-    public abstract class ForgeAppConfigBase
+    public abstract class ForgeAppBase
     {
         public abstract int EngineVersion { get; }
         public string Engine => $"Autodesk.Inventor+{EngineVersion}";
@@ -49,7 +49,7 @@ namespace WebApplication.Processing
         /// <summary>
         /// Constructor.
         /// </summary>
-        protected ForgeAppConfigBase(Publisher publisher)
+        protected ForgeAppBase(Publisher publisher)
         {
             Publisher = publisher;
         }
@@ -131,7 +131,7 @@ namespace WebApplication.Processing
         /// </summary>
         /// <param name="url"></param>
         /// <param name="outputUrl"></param>
-        protected abstract Dictionary<string, IArgument> ToIptArguments(string url, string outputUrl);
+        public abstract Dictionary<string, IArgument> ToIptArguments(string url, string outputUrl);
 
         /// <summary>
         /// Get arguments for IAM processing.
@@ -139,6 +139,6 @@ namespace WebApplication.Processing
         /// <param name="url"></param>
         /// <param name="pathInZip"></param>
         /// <param name="outputUrl"></param>
-        protected abstract Dictionary<string, IArgument> ToIamArguments(string url, string pathInZip, string outputUrl);
+        public abstract Dictionary<string, IArgument> ToIamArguments(string url, string pathInZip, string outputUrl);
     }
 }

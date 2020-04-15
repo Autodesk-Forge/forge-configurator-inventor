@@ -1,27 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Autodesk.Forge.DesignAutomation.Model;
 
 namespace WebApplication.Processing
 {
-    public class ExtractParametersDefinition : ForgeAppConfigBase
+    public class CreateThumbnail : ForgeAppBase
     {
         public override int EngineVersion => 24;
-
-        public override string Id => "ExtractParameters";
+        public override string Id => nameof(CreateThumbnail);
         public override string Label => "alpha";
-        public override string Description => "Extract Parameters from Inventor document";
+        public override string Description => "Generate thumbnail from Inventor document";
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        public ExtractParametersDefinition(Publisher publisher) : base(publisher) { }
+        public CreateThumbnail(Publisher publisher) : base(publisher) { }
 
         internal static class Parameters
         {
             public static string InventorDoc = nameof(InventorDoc);
-            public static string OutputJson = nameof(OutputJson);
+            public static string OutputThumbnail = nameof(OutputThumbnail);
         }
 
         public override List<string> ActivityCommandLine =>
@@ -42,44 +39,44 @@ namespace WebApplication.Processing
                     }
                 },
                 {
-                    Parameters.OutputJson,
+                    Parameters.OutputThumbnail,
                     new Parameter
                     {
                         Verb = Verb.Put,
-                        LocalName = "documentParams.json",
-                        Description = "Resulting JSON",
+                        LocalName = "thumbnail.png",
+                        Description = "Resulting thumbnail",
                         Ondemand = false,
                         Required = false
                     }
                 }
             };
 
-        protected override Dictionary<string, IArgument> ToIptArguments(string url, string outputUrl)
+        public override Dictionary<string, IArgument> ToIptArguments(string url, string outputUrl)
         {
             return new Dictionary<string, IArgument>
             {
                 {
                     Parameters.InventorDoc,
-                    new XrefTreeArgument { Url = url }
+                    new XrefTreeArgument {Url = url}
                 },
                 {
-                    Parameters.OutputJson,
-                    new XrefTreeArgument { Verb = Verb.Put, Url = outputUrl }
+                    Parameters.OutputThumbnail,
+                    new XrefTreeArgument {Verb = Verb.Put, Url = outputUrl}
                 }
             };
         }
 
-        protected override Dictionary<string, IArgument> ToIamArguments(string url, string pathInZip, string outputUrl)
+        public override Dictionary<string, IArgument> ToIamArguments(string url, string pathInZip, string outputUrl)
         {
             return new Dictionary<string, IArgument>
             {
                 {
                     Parameters.InventorDoc,
-                    new XrefTreeArgument { PathInZip = pathInZip, LocalName = "zippedIam.zip", Url = url }
+                    new XrefTreeArgument {PathInZip = pathInZip, LocalName = "zippedIam.zip", Url = url}
                 },
                 {
-                    Parameters.OutputJson,
-                    new XrefTreeArgument { Verb = Verb.Put, Url = outputUrl }
+                    Parameters.OutputThumbnail,
+                    new XrefTreeArgument {Verb = Verb.Put, Url = outputUrl}
                 }
             };
         }

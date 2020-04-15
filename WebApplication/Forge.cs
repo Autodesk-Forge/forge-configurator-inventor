@@ -33,7 +33,6 @@ namespace WebApplication
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="optionsAccessor"></param>
         public Forge(IOptions<ForgeConfiguration> optionsAccessor, ILogger<Forge> logger)
         {
             _logger = logger;
@@ -42,7 +41,7 @@ namespace WebApplication
 
         private async Task<string> GetTwoLeggedAccessToken()
         {
-            if (_twoLeggedAccessToken == null)
+            if (_twoLeggedAccessToken == null) // TODO: need "async lazy"
             {
                 dynamic bearer = await _2leggedAsync();
                 _twoLeggedAccessToken = bearer.access_token;
@@ -68,7 +67,7 @@ namespace WebApplication
 
         public async Task<List<ObjectDetails>> GetBucketObjects(string bucketKey, string beginsWith = null)
         {
-            ObjectsApi objectsApi = new ObjectsApi{ Configuration = { AccessToken = await GetTwoLeggedAccessToken() }};
+            ObjectsApi objectsApi = await GetObjectsApi();
 
             var objects = new List<ObjectDetails>();
 
