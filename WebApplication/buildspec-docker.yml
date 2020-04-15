@@ -7,7 +7,7 @@ env:
 phases:
   install:
     commands:
-      - choco install -y docker-cli
+      - choco install -y docker-desktop
       - docker --version
   pre_build:
     commands:
