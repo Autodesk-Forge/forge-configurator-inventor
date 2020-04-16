@@ -47,24 +47,18 @@ namespace WebApplication.Tests
     public class ForgeOSS
     {
         private ForgeConfiguration _configuration;
-        private string _twoLeggedAccessToken;
+        private readonly Lazy<Task<string>> _twoLeggedAccessToken;
+        public Task<string> TwoLeggedAccessToken => _twoLeggedAccessToken.Value;
         private static readonly TwoLeggedApi _twoLeggedApi = new TwoLeggedApi();
         private static readonly Scope[] _scope = { Scope.DataRead, Scope.DataWrite, Scope.BucketCreate, Scope.BucketDelete, Scope.BucketRead };
 
         public ForgeOSS(ForgeConfiguration configuration)
         {
             _configuration = configuration;
-        }
-
-        private async Task<string> GetTwoLeggedAccessToken()
-        {
-            if (_twoLeggedAccessToken == null)
+            _twoLeggedAccessToken = new Lazy<Task<string>>(async () =>
             {
-                dynamic bearer = await _2leggedAsync();
-                _twoLeggedAccessToken = bearer.access_token;
-            }
-
-            return _twoLeggedAccessToken;
+                return await _2leggedAsync();
+            });
         }
 
         private async Task<dynamic> _2leggedAsync()
@@ -76,12 +70,13 @@ namespace WebApplication.Tests
                 throw new Exception("Request failed! (with HTTP response " + response.StatusCode + ")");
             }
 
-            return response.Data;
+            dynamic bearer = response.Data;
+            return bearer.access_token;
         }
 
         public async Task CreateBucketAsync(string bucketName)
         {
-            BucketsApi bucketsApi = new BucketsApi { Configuration = { AccessToken = await GetTwoLeggedAccessToken() } };
+            BucketsApi bucketsApi = new BucketsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } };
             var bucketPayload = new PostBucketsPayload(bucketName, null, PostBucketsPayload.PolicyKeyEnum.Transient);
             await bucketsApi.CreateBucketAsync(bucketPayload, "US");
         }
@@ -89,7 +84,7 @@ namespace WebApplication.Tests
         public async Task<string> CreateSignedResourceAsync(string bucketKey, string objectName)
         {
             string signedLocation = "";
-            ObjectsApi objectsApi = new ObjectsApi { Configuration = { AccessToken = await GetTwoLeggedAccessToken() } };
+            ObjectsApi objectsApi = new ObjectsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } };
             var createOutputSignedResourceResult = await objectsApi.CreateSignedResourceAsyncWithHttpInfo(bucketKey, objectName, new PostBucketsSigned(60), "readwrite");
             signedLocation = createOutputSignedResourceResult.Data.signedUrl;
             return signedLocation;
@@ -97,7 +92,7 @@ namespace WebApplication.Tests
 
         public void DeleteBucket(string bucketName)
         {
-            BucketsApi bucketsApi = new BucketsApi { Configuration = { AccessToken = GetTwoLeggedAccessToken().Result } };
+            BucketsApi bucketsApi = new BucketsApi { Configuration = { AccessToken = TwoLeggedAccessToken.Result } };
             bucketsApi.DeleteBucket(bucketName);
         }
     }

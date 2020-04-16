@@ -70,7 +70,7 @@ namespace WebApplication.Processing
         protected async Task PublishActivityAsync(ForgeAppBase config)
         {
             // prepare activity definition
-            var nickname = await _resourceProvider.GetNicknameAsync();
+            var nickname = await _resourceProvider.Nickname;
 
             var activity = new Activity
             {
@@ -147,7 +147,7 @@ namespace WebApplication.Processing
 
         private async Task<string> GetFullActivityId(ForgeAppBase config)
         {
-            var nickname = await _resourceProvider.GetNicknameAsync();
+            var nickname = await _resourceProvider.Nickname;
             return $"{nickname}.{config.ActivityId}+{config.ActivityLabel}";
         }
 
