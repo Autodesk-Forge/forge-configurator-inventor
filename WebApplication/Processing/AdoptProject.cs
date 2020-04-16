@@ -17,5 +17,9 @@
 
         public override string Id => nameof(AdoptProject);
         public override string Description => "Adopt Inventor project";
+        protected override string OutputUrl(AdoptionData projectData)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

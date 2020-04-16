@@ -10,8 +10,8 @@ namespace WebApplication.Processing
     /// </summary>
     public abstract class ForgeAppBase
     {
-        public const string Engine = "Autodesk.Inventor+24"; // use version 24
-        public const string Label = "alpha";
+        public readonly string Engine = "Autodesk.Inventor+24"; // use version 24
+        public readonly string Label = "alpha";
 
         public abstract string Id { get; }
         public abstract string Description { get; }
@@ -19,7 +19,7 @@ namespace WebApplication.Processing
         /// <summary>
         /// Set to <c>false</c> for aggregated activity, which uses external bundles.
         /// </summary>
-        public abstract bool HasBundle { get; }
+        public virtual bool HasBundle => true;
 
         public AppBundle Bundle
         {
@@ -126,7 +126,11 @@ namespace WebApplication.Processing
         /// <summary>
         /// Command line for activity.
         /// </summary>
-        public abstract List<string> ActivityCommandLine { get; }
+        public virtual List<string> ActivityCommandLine =>
+            new List<string>
+            {
+                $"$(engine.path)\\InventorCoreConsole.exe /al $(appbundles[{ActivityId}].path) /i $(args[{InputParameterName}].path)"
+            };
 
         /// <summary>
         /// Activity parameters.
@@ -134,14 +138,9 @@ namespace WebApplication.Processing
         public abstract Dictionary<string, Parameter> ActivityParams { get; }
 
         /// <summary>
-        /// Get arguments for IPT processing.
+        /// Pick required output URL from the adoption data (which contains everything).
         /// </summary>
-        public abstract Dictionary<string, IArgument> ToIptArguments(AdoptionData projectData);
-
-        /// <summary>
-        /// Get arguments for IAM processing.
-        /// </summary>
-        public abstract Dictionary<string, IArgument> ToIamArguments(AdoptionData projectData);
+        protected abstract string OutputUrl(AdoptionData projectData);
 
         public Dictionary<string, IArgument> ToIptArguments(string url, string outputUrl)
         {
@@ -181,6 +180,16 @@ namespace WebApplication.Processing
         /// <summary>
         /// Name of the output parameter.
         /// </summary>
-        public abstract string OutputParameterName { get; }
+        public string OutputParameterName => Id + "Output";
+
+        public virtual Dictionary<string, IArgument> ToIptArguments(AdoptionData projectData)
+        {
+            return ToIptArguments(projectData.InputUrl, OutputUrl(projectData));
+        }
+
+        public virtual Dictionary<string, IArgument> ToIamArguments(AdoptionData projectData)
+        {
+            return ToIamArguments(projectData.InputUrl, projectData.TLA, OutputUrl(projectData));
+        }
     }
 }

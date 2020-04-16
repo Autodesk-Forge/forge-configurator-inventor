@@ -21,7 +21,6 @@ namespace WebApplication.Processing
         }
 
         public override bool HasBundle => false;
-        public override string OutputParameterName => throw new Exception("Should not be used");
 
         public override List<string> ActivityCommandLine
         {

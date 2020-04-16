@@ -3,7 +3,7 @@ using Autodesk.Forge.DesignAutomation.Model;
 
 namespace WebApplication.Processing
 {
-    public class CreateThumbnail : SimpleDocProcessing
+    public class CreateThumbnail : ForgeAppBase
     {
         public override string Id => nameof(CreateThumbnail);
         public override string Description => "Generate thumbnail from Inventor document";

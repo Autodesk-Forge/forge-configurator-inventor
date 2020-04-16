@@ -3,7 +3,7 @@ using Autodesk.Forge.DesignAutomation.Model;
 
 namespace WebApplication.Processing
 {
-    public class ExtractParameters : SimpleDocProcessing
+    public class ExtractParameters : ForgeAppBase
     {
         public override string Id => nameof(ExtractParameters);
         public override string Description => "Extract Parameters from Inventor document";

@@ -3,7 +3,7 @@ using Autodesk.Forge.DesignAutomation.Model;
 
 namespace WebApplication.Processing
 {
-    public class CreateSVF : SimpleDocProcessing
+    public class CreateSVF : ForgeAppBase
     {
         public override string Id => nameof(CreateSVF);
         public override string Description => "Generate SVF from Inventor document";
