@@ -23,7 +23,8 @@ namespace WebApplication
         // Initialize the 2-legged oAuth 2.0 client.
         private static readonly TwoLeggedApi _twoLeggedApi = new TwoLeggedApi();
 
-        private string _twoLeggedAccessToken;
+        private readonly Lazy<Task<string>> _twoLeggedAccessToken;
+        public Task<string> TwoLeggedAccessToken => _twoLeggedAccessToken.Value;
 
         /// <summary>
         /// Forge configuration.
@@ -37,17 +38,10 @@ namespace WebApplication
         {
             _logger = logger;
             Configuration = optionsAccessor.Value.Validate();
-        }
-
-        private async Task<string> GetTwoLeggedAccessToken()
-        {
-            if (_twoLeggedAccessToken == null)
+            _twoLeggedAccessToken = new Lazy<Task<string>>(async () =>
             {
-                dynamic bearer = await _2leggedAsync();
-                _twoLeggedAccessToken = bearer.access_token;
-            }
-
-            return _twoLeggedAccessToken;
+                return await _2leggedAsync();
+            });
         }
 
         private async Task<dynamic> _2leggedAsync()
@@ -62,7 +56,8 @@ namespace WebApplication
             }
 
             // The JSON response from the oAuth server is the Data variable and has already been parsed into a DynamicDictionary object.
-            return response.Data;
+            dynamic bearer = response.Data;
+            return bearer.access_token;
         }
 
         public async Task<List<ObjectDetails>> GetBucketObjects(string bucketKey, string beginsWith = null)
@@ -95,7 +90,7 @@ namespace WebApplication
         /// <param name="bucketName">The bucket name.</param>
         public async Task CreateBucket(string bucketName)
         {
-            var api = new BucketsApi { Configuration = { AccessToken = await GetTwoLeggedAccessToken() }};
+            var api = new BucketsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } };
 
             var payload = new PostBucketsPayload(bucketName, /*allow*/null, PostBucketsPayload.PolicyKeyEnum.Persistent);
             await api.CreateBucketAsync(payload, /* use default (US region) */ null);
@@ -103,7 +98,7 @@ namespace WebApplication
 
         public async Task DeleteBucket(string bucketName)
         {
-            var api = new BucketsApi { Configuration = { AccessToken = await GetTwoLeggedAccessToken() }};
+            var api = new BucketsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } };
             await api.DeleteBucketAsync(bucketName);
         }
 
@@ -113,7 +108,7 @@ namespace WebApplication
 
             using (var stream = new MemoryStream())
             {
-                await ((IObjectsApi) objectsApi).UploadObjectAsync(bucketKey, objectName, 0, stream);
+                await ((IObjectsApi)objectsApi).UploadObjectAsync(bucketKey, objectName, 0, stream);
             }
         }
 
@@ -136,7 +131,7 @@ namespace WebApplication
 
         private async Task<ObjectsApi> GetObjectsApi()
         {
-            return new ObjectsApi { Configuration = { AccessToken = await GetTwoLeggedAccessToken() }}; // TODO: ER: cache? Or is it lightweight operation?
+            return new ObjectsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } }; // TODO: ER: cache? Or is it lightweight operation?
         }
 
         public async Task UploadObject(string bucketKey, Stream stream, string objectName)
