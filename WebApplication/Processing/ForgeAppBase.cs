@@ -20,7 +20,7 @@ namespace WebApplication.Processing
         /// <summary>
         /// Set to <c>false</c> for aggregated activity, which uses external bundles.
         /// </summary>
-        public virtual bool HasBundle => true;
+        public abstract bool HasBundle { get; }
 
         public AppBundle Bundle
         {
@@ -144,17 +144,12 @@ namespace WebApplication.Processing
         /// </summary>
         public abstract Dictionary<string, IArgument> ToIamArguments(AdoptionData projectData);
 
-        /// <summary>
-        /// Name of the output parameter.
-        /// </summary>
-        public abstract string OutputParameterName { get; }
-
         public Dictionary<string, IArgument> ToIptArguments(string url, string outputUrl)
         {
             return new Dictionary<string, IArgument>
             {
                 {
-                    Parameters.InventorDoc,
+                    InputParameterName,
                     new XrefTreeArgument { Url = url }
                 },
                 {
@@ -169,20 +164,24 @@ namespace WebApplication.Processing
             return new Dictionary<string, IArgument>
             {
                 {
-                    Parameters.InventorDoc,
+                    InputParameterName,
                     new XrefTreeArgument { PathInZip = pathInZip, LocalName = "zippedIam.zip", Url = url }
                 },
                 {
                     OutputParameterName,
-                    new XrefTreeArgument { Verb = Verb.Put, Url = url }
+                    new XrefTreeArgument { Verb = Verb.Put, Url = outputUrl }
                 }
             };
         }
 
-        internal static class Parameters
-        {
-            public static string InventorDoc = nameof(InventorDoc);
-            public static string OutputZip = nameof(OutputZip);
-        }
+        /// <summary>
+        /// Name of the input parameter.
+        /// </summary>
+        public const string InputParameterName = "InventorDoc";
+
+        /// <summary>
+        /// Name of the output parameter.
+        /// </summary>
+        public abstract string OutputParameterName { get; }
     }
 }

@@ -11,7 +11,6 @@ namespace WebApplication.Processing
     /// </summary>
     public abstract class AggregatedDefinition : ForgeAppBase
     {
-        protected ForgeAppBase[] Definitions => _definitions;
         private readonly ForgeAppBase[] _definitions;
 
         protected AggregatedDefinition(Publisher publisher, params ForgeAppBase[] items) : base(publisher)
