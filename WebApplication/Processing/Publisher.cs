@@ -58,7 +58,7 @@ namespace WebApplication.Processing
             if (!File.Exists(packagePathname))
                 throw new Exception("App Bundle with package is not found.");
 
-            Trace($"Posting app bundle '{config.Bundle}'.");
+            Trace($"Posting app bundle '{config.Bundle.Id}'.");
             await _client.CreateAppBundleAsync(config.Bundle, config.Label, packagePathname);
         }
 
@@ -91,7 +91,7 @@ namespace WebApplication.Processing
         /// </summary>
         /// <param name="packagePathname">Pathname to ZIP with app bundle.</param>
         /// <param name="config"></param>
-        public async Task Initialize(string packagePathname, ForgeAppBase config)
+        public async Task InitializeAsync(string packagePathname, ForgeAppBase config)
         {
             await PostAppBundleAsync(packagePathname, config);
             await PublishActivityAsync(config);

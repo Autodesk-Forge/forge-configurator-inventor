@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using Autodesk.Forge.DesignAutomation.Model;
-
-namespace WebApplication.Processing
+﻿namespace WebApplication.Processing
 {
+    /// <summary>
+    /// Extract parameters from Inventor document.
+    /// </summary>
     public class ExtractParameters : ForgeAppBase
     {
         public override string Id => nameof(ExtractParameters);
@@ -13,33 +13,11 @@ namespace WebApplication.Processing
             return projectData.ParametersJsonUrl;
         }
 
+        protected override string OutputName => "documentParams.json";
+
         /// <summary>
         /// Constructor.
         /// </summary>
         public ExtractParameters(Publisher publisher) : base(publisher) { }
-
-        public override Dictionary<string, Parameter> ActivityParams =>
-            new Dictionary<string, Parameter>
-            {
-                {
-                    InputParameterName,
-                    new Parameter
-                    {
-                        Verb = Verb.Get,
-                        Description = "Inventor document file to process"
-                    }
-                },
-                {
-                    OutputParameterName,
-                    new Parameter
-                    {
-                        Verb = Verb.Put,
-                        LocalName = "documentParams.json",
-                        Description = "Resulting JSON",
-                        Ondemand = false,
-                        Required = false
-                    }
-                }
-            };
     }
 }

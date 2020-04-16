@@ -1,8 +1,8 @@
-using System.Collections.Generic;
-using Autodesk.Forge.DesignAutomation.Model;
-
 namespace WebApplication.Processing
 {
+    /// <summary>
+    /// SVF generator from Inventor document.
+    /// </summary>
     public class CreateSVF : ForgeAppBase
     {
         public override string Id => nameof(CreateSVF);
@@ -13,31 +13,8 @@ namespace WebApplication.Processing
             return projectData.SvfUrl;
         }
 
-        /// <summary>
-        /// Get activity parameters.
-        /// </summary>
-        public override Dictionary<string, Parameter> ActivityParams =>
-            new Dictionary<string, Parameter>
-            {
-                {
-                    InputParameterName,
-                    new Parameter
-                    {
-                        Verb = Verb.Get,
-                        Description = "IPT or IAM (in ZIP) file to process"
-                    }
-                },
-                {
-                    OutputParameterName, 
-                    new Parameter
-                    {
-                        Verb = Verb.Put,
-                        LocalName = "SvfOutput",
-                        Description = "Resulting files with SVF",
-                        Zip = true
-                    }
-                }
-            };
+        protected override string OutputName => "SvfOutput";
+        protected override bool IsOutputZip => true;
 
         /// <summary>
         /// Constructor.

@@ -37,10 +37,11 @@ namespace WebApplication.Processing
             {
                 // merge parameters into a single dictionary
                 var all = _definitions.Select(def => def.ActivityParams);
-
                 return Collections.MergeDictionaries(all);
             }
         }
+
+        protected override string OutputName => throw new NotImplementedException();
 
         public override Dictionary<string, IArgument> ToIptArguments(AdoptionData projectData)
         {
@@ -57,6 +58,11 @@ namespace WebApplication.Processing
         public override List<string> GetBundles(string nickname)
         {
             return _definitions.SelectMany(def => def.GetBundles(nickname)).ToList();
+        }
+
+        protected override string OutputUrl(AdoptionData projectData)
+        {
+            throw new NotImplementedException();
         }
     }
 }

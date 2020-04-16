@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using Autodesk.Forge.DesignAutomation.Model;
-
-namespace WebApplication.Processing
+﻿namespace WebApplication.Processing
 {
+    /// <summary>
+    /// Generate PNG thumbnail for Inventor document.
+    /// </summary>
     public class CreateThumbnail : ForgeAppBase
     {
         public override string Id => nameof(CreateThumbnail);
@@ -13,33 +13,11 @@ namespace WebApplication.Processing
             return projectData.SvfUrl;
         }
 
+        protected override string OutputName => "thumbnail.png";
+
         /// <summary>
         /// Constructor.
         /// </summary>
         public CreateThumbnail(Publisher publisher) : base(publisher) { }
-
-        public override Dictionary<string, Parameter> ActivityParams =>
-            new Dictionary<string, Parameter>
-            {
-                {
-                    InputParameterName,
-                    new Parameter
-                    {
-                        Verb = Verb.Get,
-                        Description = "Inventor document file to process"
-                    }
-                },
-                {
-                    OutputParameterName,
-                    new Parameter
-                    {
-                        Verb = Verb.Put,
-                        LocalName = "thumbnail.png",
-                        Description = "Resulting thumbnail",
-                        Ondemand = false,
-                        Required = false
-                    }
-                }
-            };
     }
 }

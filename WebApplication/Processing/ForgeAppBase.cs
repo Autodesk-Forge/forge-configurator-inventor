@@ -59,7 +59,7 @@ namespace WebApplication.Processing
         /// <param name="packagePathname">Pathname to the package.</param>
         public Task Initialize(string packagePathname)
         {
-            return Publisher.Initialize(packagePathname, this);
+            return Publisher.InitializeAsync(packagePathname, this);
         }
 
         /// <summary>
@@ -93,8 +93,6 @@ namespace WebApplication.Processing
         /// <summary>
         /// Process IPT file.
         /// </summary>
-        /// <param name="url"></param>
-        /// <param name="outputUrl"></param>
         public Task<WorkItemStatus> ProcessIpt(string url, string outputUrl)
         {
             var args = ToIptArguments(url, outputUrl);
@@ -104,9 +102,6 @@ namespace WebApplication.Processing
         /// <summary>
         /// Process Zipped IAM file.
         /// </summary>
-        /// <param name="url"></param>
-        /// <param name="pathInZip"></param>
-        /// <param name="outputUrl"></param>
         public Task<WorkItemStatus> ProcessZippedIam(string url, string pathInZip, string outputUrl)
         {
             var args = ToIamArguments(url, pathInZip, outputUrl);
@@ -131,11 +126,6 @@ namespace WebApplication.Processing
             {
                 $"$(engine.path)\\InventorCoreConsole.exe /al $(appbundles[{ActivityId}].path) /i $(args[{InputParameterName}].path)"
             };
-
-        /// <summary>
-        /// Activity parameters.
-        /// </summary>
-        public abstract Dictionary<string, Parameter> ActivityParams { get; }
 
         /// <summary>
         /// Pick required output URL from the adoption data (which contains everything).
@@ -172,6 +162,16 @@ namespace WebApplication.Processing
             };
         }
 
+        public virtual Dictionary<string, IArgument> ToIptArguments(AdoptionData projectData)
+        {
+            return ToIptArguments(projectData.InputUrl, OutputUrl(projectData));
+        }
+
+        public virtual Dictionary<string, IArgument> ToIamArguments(AdoptionData projectData)
+        {
+            return ToIamArguments(projectData.InputUrl, projectData.TLA, OutputUrl(projectData));
+        }
+
         /// <summary>
         /// Name of the input parameter.
         /// </summary>
@@ -182,14 +182,41 @@ namespace WebApplication.Processing
         /// </summary>
         public string OutputParameterName => Id + "Output";
 
-        public virtual Dictionary<string, IArgument> ToIptArguments(AdoptionData projectData)
-        {
-            return ToIptArguments(projectData.InputUrl, OutputUrl(projectData));
-        }
 
-        public virtual Dictionary<string, IArgument> ToIamArguments(AdoptionData projectData)
-        {
-            return ToIamArguments(projectData.InputUrl, projectData.TLA, OutputUrl(projectData));
-        }
+
+        /// <summary>
+        /// Activity parameters.
+        /// </summary>
+        public virtual Dictionary<string, Parameter> ActivityParams =>
+            new Dictionary<string, Parameter>
+            {
+                {
+                    InputParameterName,
+                    new Parameter
+                    {
+                        Verb = Verb.Get,
+                        Description = "IPT or IAM (in ZIP) file to process"
+                    }
+                },
+                {
+                    OutputParameterName,
+                    new Parameter
+                    {
+                        Verb = Verb.Put,
+                        LocalName = OutputName,
+                        Zip = IsOutputZip
+                    }
+                }
+            };
+
+        /// <summary>
+        /// Filename of output (processing result of Inventor add-on).
+        /// </summary>
+        protected abstract string OutputName { get; }
+
+        /// <summary>
+        /// If output should be compressed as ZIP.
+        /// </summary>
+        protected virtual bool IsOutputZip => false;
     }
 }
