@@ -93,10 +93,10 @@ namespace WebApplication
 
                     var projectUrls = new AdoptionData // TODO: check - can do it in parallel?
                     {
-                        InputUrl = await _forge.CreateSignedUrl(_resourceProvider.BucketName, project.OSSSourceModel, "read"),
-                        ThumbnailUrl = await _forge.CreateSignedUrl(_resourceProvider.BucketName, project.OSSThumbnail, "write"),
-                        SvfUrl = await _forge.CreateSignedUrl(_resourceProvider.BucketName, project.OriginalSvfZip, "write"),
-                        ParametersJsonUrl = await _forge.CreateSignedUrl(_resourceProvider.BucketName, project.ParametersJson, "write"),
+                        InputUrl = await _forge.CreateSignedUrl(_resourceProvider.BucketName, project.OSSSourceModel, ObjectAccess.Read),
+                        ThumbnailUrl = await _forge.CreateSignedUrl(_resourceProvider.BucketName, project.OSSThumbnail, ObjectAccess.Write),
+                        SvfUrl = await _forge.CreateSignedUrl(_resourceProvider.BucketName, project.OriginalSvfZip, ObjectAccess.Write),
+                        ParametersJsonUrl = await _forge.CreateSignedUrl(_resourceProvider.BucketName, project.ParametersJson, ObjectAccess.Write),
                         TLA = tlaFilename
                     };
 

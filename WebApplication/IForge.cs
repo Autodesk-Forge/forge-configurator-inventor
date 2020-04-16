@@ -6,6 +6,13 @@ using Autodesk.Forge.Model;
 
 namespace WebApplication
 {
+    public enum ObjectAccess
+    {
+        Read,
+        Write,
+        ReadWrite
+    }
+
     public interface IForge
     {
         /// <summary>
@@ -23,7 +30,11 @@ namespace WebApplication
         /// Generate a signed URL to OSS object.
         /// NOTE: An empty object created if not exists.
         /// </summary>
+        /// <param name="bucketKey">Bucket key.</param>
+        /// <param name="objectName">Object name.</param>
+        /// <param name="minutesExpiration">Minutes while the URL is valid. Default is 30 minutes.</param>
+        /// <param name="access">Access to the URL</param>
         /// <returns>Signed URL</returns>
-        Task<string> CreateSignedUrl(string bucketKey, string objectName, string access);
+        Task<string> CreateSignedUrl(string bucketKey, string objectName, ObjectAccess access = ObjectAccess.Read, int minutesExpiration = 30);
     }
 }

@@ -120,20 +120,22 @@ namespace WebApplication
         /// <summary>
         /// Create an empty object at OSS and generate a signed URL to it.
         /// </summary>
-        /// <param name="access">read, write or readwrite</param> // TODO: make as enum?
+        /// <param name="bucketKey">Bucket key.</param>
+        /// <param name="objectName">Object name.</param>
+        /// <param name="access">Object access via the URL</param>
+        /// <param name="minutesExpiration">Minutes while the URL is valid. Default is 30 minutes.</param>
         /// <returns>Signed URL</returns>
-        public async Task<string> CreateSignedUrl(string bucketKey, string objectName, string access)
+        public async Task<string> CreateSignedUrl(string bucketKey, string objectName, ObjectAccess access = ObjectAccess.Read, int minutesExpiration = 30)
         {
             ObjectsApi objectsApi = await GetObjectsApi();
 
-            // and get URL to it
-            dynamic result = await objectsApi.CreateSignedResourceAsync(bucketKey, objectName, new PostBucketsSigned(30), access);
+            dynamic result = await objectsApi.CreateSignedResourceAsync(bucketKey, objectName, new PostBucketsSigned(minutesExpiration), AsString(access));
             return result.signedUrl;
         }
 
         private async Task<ObjectsApi> GetObjectsApi()
         {
-            return new ObjectsApi{ Configuration = { AccessToken = await GetTwoLeggedAccessToken() }}; // TODO: ER: cache? Or is it lightweight operation?
+            return new ObjectsApi { Configuration = { AccessToken = await GetTwoLeggedAccessToken() }}; // TODO: ER: cache? Or is it lightweight operation?
         }
 
         public async Task UploadObject(string bucketKey, Stream stream, string objectName)
@@ -141,6 +143,11 @@ namespace WebApplication
             ObjectsApi objectsApi = await GetObjectsApi();
 
             await objectsApi.UploadObjectAsync(bucketKey, objectName, 0, stream);
+        }
+
+        private static string AsString(ObjectAccess access)
+        {
+            return access.ToString().ToLowerInvariant();
         }
     }
 }
