@@ -93,10 +93,9 @@ namespace WebApplication
 
                     await _forge.UploadObject(_resourceProvider.BucketName, stream, project.OSSSourceModel);
 
-#if true // not ready
                     _logger.LogInformation("Adopt the project");
 
-                    var projectUrls = new AdoptionData // TODO: check - can do it in parallel?
+                    var projectUrls = new AdoptionData // TODO: check - can URLs be generated in parallel?
                     {
                         InputUrl = await _forge.CreateSignedUrl(_resourceProvider.BucketName, project.OSSSourceModel, ObjectAccess.Read),
                         ThumbnailUrl = await _forge.CreateSignedUrl(_resourceProvider.BucketName, project.OSSThumbnail, ObjectAccess.Write),
@@ -107,7 +106,6 @@ namespace WebApplication
 
                     var status = await _fdaClient.Adopt(projectUrls);
                     //_logger.LogInformation(System.Text.Json.JsonSerializer.Serialize(status, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
-#endif
                 }
             }
 

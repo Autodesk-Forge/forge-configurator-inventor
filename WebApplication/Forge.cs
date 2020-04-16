@@ -41,7 +41,7 @@ namespace WebApplication
 
         private async Task<string> GetTwoLeggedAccessToken()
         {
-            if (_twoLeggedAccessToken == null) // TODO: need "async lazy"
+            if (_twoLeggedAccessToken == null)
             {
                 dynamic bearer = await _2leggedAsync();
                 _twoLeggedAccessToken = bearer.access_token;
@@ -118,11 +118,12 @@ namespace WebApplication
         }
 
         /// <summary>
-        /// Create an empty object at OSS and generate a signed URL to it.
+        /// Generate a signed URL to OSS object.
+        /// NOTE: An empty object created if not exists.
         /// </summary>
         /// <param name="bucketKey">Bucket key.</param>
         /// <param name="objectName">Object name.</param>
-        /// <param name="access">Object access via the URL</param>
+        /// <param name="access">Requested access to the object.</param>
         /// <param name="minutesExpiration">Minutes while the URL is valid. Default is 30 minutes.</param>
         /// <returns>Signed URL</returns>
         public async Task<string> CreateSignedUrl(string bucketKey, string objectName, ObjectAccess access = ObjectAccess.Read, int minutesExpiration = 30)
