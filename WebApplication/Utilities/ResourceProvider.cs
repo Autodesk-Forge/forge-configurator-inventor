@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Autodesk.Forge.Core;
 using Autodesk.Forge.DesignAutomation;
@@ -22,7 +23,8 @@ namespace WebApplication.Utilities
         }
         private string _bucketName;
 
-        private string _nickname;
+        private readonly Lazy<Task<string>> _nickname;
+        public Task<string> Nickname => _nickname.Value;
 
         private readonly ForgeConfiguration _configuration;
         private readonly DesignAutomationClient _client;
@@ -31,16 +33,7 @@ namespace WebApplication.Utilities
         {
             _configuration = optionsAccessor.Value.Validate();
             _client = client;
-        }
-
-        public async Task<string> GetNicknameAsync()
-        {
-            if (_nickname == null) // TODO: wrap it into Lazy (or something similar)
-            {
-                _nickname = await _client.GetNicknameAsync("me");
-            }
-
-            return _nickname;
+            _nickname = new Lazy<Task<string>>(async () => await _client.GetNicknameAsync("me"));
         }
     }
 }

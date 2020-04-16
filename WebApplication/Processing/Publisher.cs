@@ -27,7 +27,7 @@ namespace WebApplication.Processing
             _resourceProvider = resourceProvider;
         }
 
-        public async Task<WorkItemStatus> RunWorkItemAsync(Dictionary<string, IArgument> workItemArgs, ForgeAppConfigBase config)
+        public async Task<WorkItemStatus> RunWorkItemAsync(Dictionary<string, IArgument> workItemArgs, ForgeAppBase config)
         {
             // create work item
             var wi = new WorkItem
@@ -51,12 +51,14 @@ namespace WebApplication.Processing
             return status;
         }
 
-        protected async Task PostAppBundleAsync(string packagePathname, ForgeAppConfigBase config)
+        protected async Task PostAppBundleAsync(string packagePathname, ForgeAppBase config)
         {
+            if (! config.HasBundle) return;
+
             if (!File.Exists(packagePathname))
                 throw new Exception("App Bundle with package is not found.");
 
-            Trace($"Posting app bundle '{config.Bundle}'.");
+            Trace($"Posting app bundle '{config.Bundle.Id}'.");
             await _client.CreateAppBundleAsync(config.Bundle, config.Label, packagePathname);
         }
 
@@ -65,14 +67,14 @@ namespace WebApplication.Processing
         /// Create new activity.
         /// Throws an exception if the activity exists already.
         /// </summary>
-        protected async Task PublishActivityAsync(ForgeAppConfigBase config)
+        protected async Task PublishActivityAsync(ForgeAppBase config)
         {
             // prepare activity definition
-            var nickname = await _resourceProvider.GetNicknameAsync();
+            var nickname = await _resourceProvider.Nickname;
 
             var activity = new Activity
             {
-                Appbundles = new List<string> { $"{nickname}.{config.Id}+{config.Label}" },
+                Appbundles = config.GetBundles(nickname),
                 Id = config.ActivityId,
                 Engine = config.Engine,
                 Description = config.Description,
@@ -89,7 +91,7 @@ namespace WebApplication.Processing
         /// </summary>
         /// <param name="packagePathname">Pathname to ZIP with app bundle.</param>
         /// <param name="config"></param>
-        public async Task Initialize(string packagePathname, ForgeAppConfigBase config)
+        public async Task InitializeAsync(string packagePathname, ForgeAppBase config)
         {
             await PostAppBundleAsync(packagePathname, config);
             await PublishActivityAsync(config);
@@ -98,24 +100,14 @@ namespace WebApplication.Processing
         /// <summary>
         /// Delete app bundle and activity.
         /// </summary>
-        public async Task CleanUpAsync(ForgeAppConfigBase config)
+        public async Task CleanUpAsync(ForgeAppBase config)
         {
-            var bundleId = config.Bundle.Id;
-            var shortBundleId = $"{config.Bundle.Id}+{config.Label}";
+            await DeleteAppBundleAsync(config);
+            await DeleteActivityAsync(config);
+        }
 
-            //check app bundle exists already
-            var appResponse = await _client.AppBundlesApi.GetAppBundleAsync(shortBundleId, throwOnError: false);
-            if (appResponse.HttpResponse.StatusCode == HttpStatusCode.OK)
-            {
-                //remove existed app bundle 
-                Trace($"Removing existing app bundle. Deleting {bundleId}...");
-                await _client.AppBundlesApi.DeleteAppBundleAsync(bundleId);
-            }
-            else
-            {
-                Trace($"The app bundle {bundleId} does not exist.");
-            }
-
+        private async Task DeleteActivityAsync(ForgeAppBase config)
+        {
             //check activity exists already
             var activityId = config.ActivityId;
             var fullActivityId = await GetFullActivityId(config);
@@ -132,9 +124,30 @@ namespace WebApplication.Processing
             }
         }
 
-        private async Task<string> GetFullActivityId(ForgeAppConfigBase config)
+        private async Task DeleteAppBundleAsync(ForgeAppBase config)
         {
-            var nickname = await _resourceProvider.GetNicknameAsync();
+            if (! config.HasBundle) return;
+
+            var bundleId = config.Bundle.Id;
+            var shortBundleId = $"{config.Bundle.Id}+{config.Label}";
+
+            //check app bundle exists already
+            var appResponse = await _client.AppBundlesApi.GetAppBundleAsync(shortBundleId, throwOnError: false);
+            if (appResponse.HttpResponse.StatusCode == HttpStatusCode.OK)
+            {
+                //remove existed app bundle 
+                Trace($"Removing existing app bundle. Deleting {bundleId}...");
+                await _client.AppBundlesApi.DeleteAppBundleAsync(bundleId);
+            }
+            else
+            {
+                Trace($"The app bundle {bundleId} does not exist.");
+            }
+        }
+
+        private async Task<string> GetFullActivityId(ForgeAppBase config)
+        {
+            var nickname = await _resourceProvider.Nickname;
             return $"{nickname}.{config.ActivityId}+{config.ActivityLabel}";
         }
 

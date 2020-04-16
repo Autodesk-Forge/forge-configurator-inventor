@@ -47,7 +47,7 @@ namespace WebApplication.Tests
 
     public class PublisherTest : IClassFixture<PublisherFixture>
     {
-        PublisherFixture fixture;
+        readonly PublisherFixture fixture;
         string testIptUrl = "http://testipt.s3-us-west-2.amazonaws.com/PictureInFormTest.ipt";
         string testZippedIamUrl = "http://testipt.s3-us-west-2.amazonaws.com/Basic.zip";
         string testIamPathInZip = "iLogicBasic1.iam";
@@ -84,7 +84,7 @@ namespace WebApplication.Tests
             }
         }
 
-        private async Task WorkItemTest(WorkItemTestType testType, string outputFileName, ForgeAppConfigBase definition, string expectedResultFileName)
+        private async Task WorkItemTest(WorkItemTestType testType, string outputFileName, ForgeAppBase forgeApp, string expectedResultFileName)
         {
             string outputUrl = await fixture.Forge.OSSClient.CreateSignedResourceAsync(fixture.BucketName, outputFileName);
 
@@ -92,11 +92,11 @@ namespace WebApplication.Tests
             WorkItemStatus status = null;
             if (testType == WorkItemTestType.IPT)
             {
-                status = await definition.ProcessIpt(testIptUrl, outputUrl);
+                status = await forgeApp.ProcessIpt(testIptUrl, outputUrl);
             }
             else if (testType == WorkItemTestType.IAM)
             {
-                status = await definition.ProcessZippedIam(testZippedIamUrl, testIamPathInZip, outputUrl);
+                status = await forgeApp.ProcessZippedIam(testZippedIamUrl, testIamPathInZip, outputUrl);
             }
 
             // get report
@@ -115,54 +115,54 @@ namespace WebApplication.Tests
         public async Task CreateThumbnailIptTestAsync()
         {
             var publisher = new Publisher(fixture.Forge.FdaClient, new NullLogger<Publisher>(), fixture.ResourceProvider);
-            var definition = new CreateThumbnailDefinition(publisher);
+            var createThumbnail = new CreateThumbnail(publisher);
             string testComparisonFilePath = await DownloadTestComparisonFile("http://testipt.s3-us-west-2.amazonaws.com/pictureInFormIptThumbnail.png", "pictureInFormIptThumbnail.png");
-            await WorkItemTest(WorkItemTestType.IPT, "Thumbnail.png", definition, testComparisonFilePath);
+            await WorkItemTest(WorkItemTestType.IPT, "Thumbnail.png", createThumbnail, testComparisonFilePath);
         }
 
         [Fact]
         public async Task CreateThumbnailZippedIamTestAsync()
         {
             var publisher = new Publisher(fixture.Forge.FdaClient, new NullLogger<Publisher>(), fixture.ResourceProvider);
-            var definition = new CreateThumbnailDefinition(publisher);
+            var createThumbnail = new CreateThumbnail(publisher);
             string testComparisonFilePath = await DownloadTestComparisonFile("http://testipt.s3-us-west-2.amazonaws.com/iLogicBasic1IamThumbnail.png", "iLogicBasic1IamThumbnail.png");
-            await WorkItemTest(WorkItemTestType.IAM, "Thumbnail.png", definition, testComparisonFilePath);
+            await WorkItemTest(WorkItemTestType.IAM, "Thumbnail.png", createThumbnail, testComparisonFilePath);
         }
 
         [Fact]
         public async Task ExtractParametersIptTestAsync()
         {
             var publisher = new Publisher(fixture.Forge.FdaClient, new NullLogger<Publisher>(), fixture.ResourceProvider);
-            var definition = new ExtractParametersDefinition(publisher);
+            var extractParameters = new ExtractParameters(publisher);
             string testComparisonFilePath = await DownloadTestComparisonFile("http://testipt.s3-us-west-2.amazonaws.com/pictureInFormIptDocumentParams.json", "pictureInFormIptDocumentParams.json");
-            await WorkItemTest(WorkItemTestType.IPT, "documentParams.json", definition, testComparisonFilePath);
+            await WorkItemTest(WorkItemTestType.IPT, "documentParams.json", extractParameters, testComparisonFilePath);
         }
 
         [Fact]
         public async Task ExtractParametersZippedIamTestAsync()
         {
             var publisher = new Publisher(fixture.Forge.FdaClient, new NullLogger<Publisher>(), fixture.ResourceProvider);
-            var definition = new ExtractParametersDefinition(publisher);
+            var extractParameters = new ExtractParameters(publisher);
             string testComparisonFilePath = await DownloadTestComparisonFile("http://testipt.s3-us-west-2.amazonaws.com/iLogicBasic1IamDocumentParams.json", "iLogicBasic1IamDocumentParams.json");
-            await WorkItemTest(WorkItemTestType.IAM, "documentParams.json", definition, testComparisonFilePath);
+            await WorkItemTest(WorkItemTestType.IAM, "documentParams.json", extractParameters, testComparisonFilePath);
         }
 
         [Fact]
         public async Task CreateSvfIptTestAsync()
         {
             var publisher = new Publisher(fixture.Forge.FdaClient, new NullLogger<Publisher>(), fixture.ResourceProvider);
-            var definition = new CreateSvfDefinition(publisher);
+            var createSVF = new CreateSVF(publisher);
             string testComparisonFilePath = await DownloadTestComparisonFile("http://testipt.s3-us-west-2.amazonaws.com/pictureInFormIptSvf.zip", "pictureInFormIptSvf.zip");
-            await WorkItemTest(WorkItemTestType.IPT, "pictureInFormIptSvf.zip", definition, testComparisonFilePath);
+            await WorkItemTest(WorkItemTestType.IPT, "pictureInFormIptSvf.zip", createSVF, testComparisonFilePath);
         }
 
         [Fact]
         public async Task CreateSvfZippedIamTestAsync()
         {
             var publisher = new Publisher(fixture.Forge.FdaClient, new NullLogger<Publisher>(), fixture.ResourceProvider);
-            var definition = new CreateSvfDefinition(publisher);
+            var createSVF = new CreateSVF(publisher);
             string testComparisonFilePath = await DownloadTestComparisonFile("http://testipt.s3-us-west-2.amazonaws.com/iLogicBasic1IamSvf.zip", "iLogicBasic1IamSvf.zip");
-            await WorkItemTest(WorkItemTestType.IAM, "iLogicBasic1IamSvf.zip", definition, testComparisonFilePath);
+            await WorkItemTest(WorkItemTestType.IAM, "iLogicBasic1IamSvf.zip", createSVF, testComparisonFilePath);
         }
     }
 }

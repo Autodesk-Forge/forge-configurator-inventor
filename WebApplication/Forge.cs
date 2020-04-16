@@ -23,7 +23,8 @@ namespace WebApplication
         // Initialize the 2-legged oAuth 2.0 client.
         private static readonly TwoLeggedApi _twoLeggedApi = new TwoLeggedApi();
 
-        private string _twoLeggedAccessToken;
+        private readonly Lazy<Task<string>> _twoLeggedAccessToken;
+        public Task<string> TwoLeggedAccessToken => _twoLeggedAccessToken.Value;
 
         /// <summary>
         /// Forge configuration.
@@ -33,22 +34,14 @@ namespace WebApplication
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="optionsAccessor"></param>
         public Forge(IOptions<ForgeConfiguration> optionsAccessor, ILogger<Forge> logger)
         {
             _logger = logger;
             Configuration = optionsAccessor.Value.Validate();
-        }
-
-        private async Task<string> GetTwoLeggedAccessToken()
-        {
-            if (_twoLeggedAccessToken == null)
+            _twoLeggedAccessToken = new Lazy<Task<string>>(async () =>
             {
-                dynamic bearer = await _2leggedAsync();
-                _twoLeggedAccessToken = bearer.access_token;
-            }
-
-            return _twoLeggedAccessToken;
+                return await _2leggedAsync();
+            });
         }
 
         private async Task<dynamic> _2leggedAsync()
@@ -63,12 +56,13 @@ namespace WebApplication
             }
 
             // The JSON response from the oAuth server is the Data variable and has already been parsed into a DynamicDictionary object.
-            return response.Data;
+            dynamic bearer = response.Data;
+            return bearer.access_token;
         }
 
         public async Task<List<ObjectDetails>> GetBucketObjects(string bucketKey, string beginsWith = null)
         {
-            ObjectsApi objectsApi = new ObjectsApi{ Configuration = { AccessToken = await GetTwoLeggedAccessToken() }};
+            ObjectsApi objectsApi = await GetObjectsApi();
 
             var objects = new List<ObjectDetails>();
 
@@ -96,7 +90,7 @@ namespace WebApplication
         /// <param name="bucketName">The bucket name.</param>
         public async Task CreateBucket(string bucketName)
         {
-            var api = new BucketsApi { Configuration = { AccessToken = await GetTwoLeggedAccessToken() }};
+            var api = new BucketsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } };
 
             var payload = new PostBucketsPayload(bucketName, /*allow*/null, PostBucketsPayload.PolicyKeyEnum.Persistent);
             await api.CreateBucketAsync(payload, /* use default (US region) */ null);
@@ -104,49 +98,52 @@ namespace WebApplication
 
         public async Task DeleteBucket(string bucketName)
         {
-            var api = new BucketsApi { Configuration = { AccessToken = await GetTwoLeggedAccessToken() }};
+            var api = new BucketsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } };
             await api.DeleteBucketAsync(bucketName);
         }
 
         public async Task CreateEmptyObject(string bucketKey, string objectName)
         {
-            await CreateEmptyObjectInner(bucketKey, objectName, await GetObjectsApi());
+            ObjectsApi objectsApi = await GetObjectsApi();
+
+            using (var stream = new MemoryStream())
+            {
+                await ((IObjectsApi)objectsApi).UploadObjectAsync(bucketKey, objectName, 0, stream);
+            }
         }
 
         /// <summary>
-        /// Create an empty object at OSS and generate a signed URL to it.
+        /// Generate a signed URL to OSS object.
+        /// NOTE: An empty object created if not exists.
         /// </summary>
+        /// <param name="bucketKey">Bucket key.</param>
+        /// <param name="objectName">Object name.</param>
+        /// <param name="access">Requested access to the object.</param>
+        /// <param name="minutesExpiration">Minutes while the URL is valid. Default is 30 minutes.</param>
         /// <returns>Signed URL</returns>
-        public async Task<string> CreateDestinationUrl(string bucketKey, string objectName)
+        public async Task<string> CreateSignedUrl(string bucketKey, string objectName, ObjectAccess access = ObjectAccess.Read, int minutesExpiration = 30)
         {
             ObjectsApi objectsApi = await GetObjectsApi();
 
-            // create empty object
-            await CreateEmptyObjectInner(bucketKey, objectName, objectsApi);
-
-            // and get URL to it
-            dynamic result = await objectsApi.CreateSignedResourceAsync(bucketKey, objectName, new PostBucketsSigned(30), "write");
+            dynamic result = await objectsApi.CreateSignedResourceAsync(bucketKey, objectName, new PostBucketsSigned(minutesExpiration), AsString(access));
             return result.signedUrl;
-        }
-
-        private static async Task CreateEmptyObjectInner(string bucketKey, string objectName, IObjectsApi objectsApi)
-        {
-            using(var stream = new MemoryStream())
-            {
-                await objectsApi.UploadObjectAsync(bucketKey, objectName, 0, stream);
-            }
         }
 
         private async Task<ObjectsApi> GetObjectsApi()
         {
-            return new ObjectsApi{ Configuration = { AccessToken = await GetTwoLeggedAccessToken() }}; // TODO: ER: cache? Or is it lightweight operation?
+            return new ObjectsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } }; // TODO: ER: cache? Or is it lightweight operation?
         }
 
         public async Task UploadObject(string bucketKey, Stream stream, string objectName)
         {
-            ObjectsApi objectsApi = new ObjectsApi { Configuration = { AccessToken = await GetTwoLeggedAccessToken() } };
+            ObjectsApi objectsApi = await GetObjectsApi();
 
             await objectsApi.UploadObjectAsync(bucketKey, objectName, 0, stream);
+        }
+
+        private static string AsString(ObjectAccess access)
+        {
+            return access.ToString().ToLowerInvariant();
         }
     }
 }

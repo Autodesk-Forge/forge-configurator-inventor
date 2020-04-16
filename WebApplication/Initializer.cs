@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -10,6 +11,28 @@ using WebApplication.Utilities;
 
 namespace WebApplication
 {
+    /// <summary>
+    /// All data required for project adoption.
+    /// </summary>
+    public class AdoptionData
+    {
+        public string InputUrl { get; set; }
+
+        /// <summary>
+        /// Relative path to top level assembly in ZIP with assembly.
+        /// </summary>
+        public string TLA { get; set; }
+
+        public string ThumbnailUrl { get; set; }
+        public string SvfUrl { get; set; }
+        public string ParametersJsonUrl { get; set; }
+
+        /// <summary>
+        /// If job data contains assembly.
+        /// </summary>
+        public bool IsAssembly => ! string.IsNullOrEmpty(TLA);
+    }
+
     public class Initializer
     {
         private readonly IForge _forge;
@@ -32,6 +55,9 @@ namespace WebApplication
 
         public async Task Initialize()
         {
+            // create bundles and activities
+            await _fdaClient.Initialize();
+
             _logger.LogInformation("Initializing base data");
 
             await _forge.CreateBucket(_resourceProvider.BucketName);
@@ -42,26 +68,48 @@ namespace WebApplication
             using (var client = new HttpClient())
             {
                 string[] defaultProjects = _configuration.GetSection("DefaultProjects:Files").Get<string[]>();
-                foreach (var projectUrl in defaultProjects)
+                string[] tlaFilenames = _configuration.GetSection("DefaultProjects:TopLevelAssemblies").Get<string[]>();
+                if (defaultProjects.Length != tlaFilenames.Length)
                 {
+                    throw new Exception("Default projects are not in sync with TLA names");
+                }
+
+                for (var i = 0; i < defaultProjects.Length; i++)
+                {
+                    var projectUrl = defaultProjects[i];
+                    var tlaFilename = tlaFilenames[i];
+
                     _logger.LogInformation($"Download {projectUrl}");
 
-                    HttpResponseMessage response = await client.GetAsync(projectUrl);
+                    using HttpResponseMessage response = await client.GetAsync(projectUrl).ConfigureAwait(false);
                     response.EnsureSuccessStatusCode();
 
                     _logger.LogInformation("Upload to the app bucket");
 
                     Stream stream = await response.Content.ReadAsStreamAsync();
                     string[] urlParts = projectUrl.Split("/");
-                    string projectName = urlParts[urlParts.Length - 1];
-                    await _forge.UploadObject(_resourceProvider.BucketName, stream, new Project(projectName).OSSSourceModel);
+                    string projectName = urlParts[^1];
+                    var project = new Project(projectName);
+
+                    await _forge.UploadObject(_resourceProvider.BucketName, stream, project.OSSSourceModel);
+
+                    _logger.LogInformation("Adopt the project");
+
+                    var projectUrls = new AdoptionData // TODO: check - can URLs be generated in parallel?
+                    {
+                        InputUrl = await _forge.CreateSignedUrl(_resourceProvider.BucketName, project.OSSSourceModel, ObjectAccess.Read),
+                        ThumbnailUrl = await _forge.CreateSignedUrl(_resourceProvider.BucketName, project.OSSThumbnail, ObjectAccess.Write),
+                        SvfUrl = await _forge.CreateSignedUrl(_resourceProvider.BucketName, project.OriginalSvfZip, ObjectAccess.Write),
+                        ParametersJsonUrl = await _forge.CreateSignedUrl(_resourceProvider.BucketName, project.ParametersJson, ObjectAccess.Write),
+                        TLA = tlaFilename
+                    };
+
+                    var status = await _fdaClient.Adopt(projectUrls);
+                    //_logger.LogInformation(System.Text.Json.JsonSerializer.Serialize(status, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
                 }
             }
 
             _logger.LogInformation("Added default projects.");
-
-            // create bundles and activities
-            await _fdaClient.Initialize();
         }
 
         public async Task Clear()
