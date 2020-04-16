@@ -33,10 +33,7 @@ namespace WebApplication.Utilities
         {
             _configuration = optionsAccessor.Value.Validate();
             _client = client;
-            _nickname = new Lazy<Task<string>>(async () =>
-            {
-                return await _client.GetNicknameAsync("me");
-            });
+            _nickname = new Lazy<Task<string>>(async () => await _client.GetNicknameAsync("me"));
         }
     }
 }

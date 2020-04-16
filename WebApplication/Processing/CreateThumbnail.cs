@@ -10,7 +10,7 @@
 
         protected override string OutputUrl(AdoptionData projectData)
         {
-            return projectData.SvfUrl;
+            return projectData.ThumbnailUrl;
         }
 
         protected override string OutputName => "thumbnail.png";
