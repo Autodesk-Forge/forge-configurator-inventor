@@ -10,11 +10,10 @@ namespace WebApplication.Processing
     /// </summary>
     public abstract class ForgeAppBase
     {
-        public abstract int EngineVersion { get; }
-        public string Engine => $"Autodesk.Inventor+{EngineVersion}";
+        public const string Engine = "Autodesk.Inventor+24"; // use version 24
+        public const string Label = "alpha";
 
         public abstract string Id { get; }
-        public abstract string Label { get; }
         public abstract string Description { get; }
 
         /// <summary>

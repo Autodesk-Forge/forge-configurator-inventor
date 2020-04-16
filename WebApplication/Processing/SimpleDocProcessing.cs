@@ -8,8 +8,6 @@ namespace WebApplication.Processing
     /// </summary>
     public abstract class SimpleDocProcessing : ForgeAppBase
     {
-        public override int EngineVersion => 24;
-        public override string Label => "alpha";
         public override string OutputParameterName => Id + "Output";
         public override bool HasBundle => true;
 

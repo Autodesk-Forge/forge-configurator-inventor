@@ -20,8 +20,6 @@ namespace WebApplication.Processing
             _definitions = items;
         }
 
-        public override int EngineVersion => _definitions[0].EngineVersion;
-        public override string Label => _definitions[0].Label;
         public override bool HasBundle => false;
         public override string OutputParameterName => throw new Exception("Should not be used");
 
