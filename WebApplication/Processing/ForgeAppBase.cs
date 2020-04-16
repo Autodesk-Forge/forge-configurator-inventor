@@ -82,6 +82,16 @@ namespace WebApplication.Processing
         }
 
         /// <summary>
+        /// Process IPT or Zipped IAM file.
+        /// </summary>
+        public Task<WorkItemStatus> Process(AdoptionData projectData)
+        {
+            var args = projectData.IsAssembly ? ToIamArguments(projectData) : ToIptArguments(projectData);
+
+            return Run(args);
+        }
+
+        /// <summary>
         /// Process IPT file.
         /// </summary>
         /// <param name="url"></param>
@@ -89,7 +99,6 @@ namespace WebApplication.Processing
         public Task<WorkItemStatus> ProcessIpt(string url, string outputUrl)
         {
             var args = ToIptArguments(url, outputUrl);
-
             return Run(args);
         }
 
@@ -102,7 +111,6 @@ namespace WebApplication.Processing
         public Task<WorkItemStatus> ProcessZippedIam(string url, string pathInZip, string outputUrl)
         {
             var args = ToIamArguments(url, pathInZip, outputUrl);
-
             return Run(args);
         }
 
@@ -129,16 +137,52 @@ namespace WebApplication.Processing
         /// <summary>
         /// Get arguments for IPT processing.
         /// </summary>
-        /// <param name="url"></param>
-        /// <param name="outputUrl"></param>
-        public abstract Dictionary<string, IArgument> ToIptArguments(string url, string outputUrl);
+        public abstract Dictionary<string, IArgument> ToIptArguments(AdoptionData projectData);
 
         /// <summary>
         /// Get arguments for IAM processing.
         /// </summary>
-        /// <param name="url"></param>
-        /// <param name="pathInZip"></param>
-        /// <param name="outputUrl"></param>
-        public abstract Dictionary<string, IArgument> ToIamArguments(string url, string pathInZip, string outputUrl);
+        public abstract Dictionary<string, IArgument> ToIamArguments(AdoptionData projectData);
+
+        /// <summary>
+        /// Name of the output parameter.
+        /// </summary>
+        public abstract string OutputParameterName { get; }
+
+        public Dictionary<string, IArgument> ToIptArguments(string url, string outputUrl)
+        {
+            return new Dictionary<string, IArgument>
+            {
+                {
+                    Parameters.InventorDoc,
+                    new XrefTreeArgument { Url = url }
+                },
+                {
+                    OutputParameterName,
+                    new XrefTreeArgument { Verb = Verb.Put, Url = outputUrl }
+                }
+            };
+        }
+
+        public Dictionary<string, IArgument> ToIamArguments(string url, string pathInZip, string outputUrl)
+        {
+            return new Dictionary<string, IArgument>
+            {
+                {
+                    Parameters.InventorDoc,
+                    new XrefTreeArgument { PathInZip = pathInZip, LocalName = "zippedIam.zip", Url = url }
+                },
+                {
+                    OutputParameterName,
+                    new XrefTreeArgument { Verb = Verb.Put, Url = url }
+                }
+            };
+        }
+
+        internal static class Parameters
+        {
+            public static string InventorDoc = nameof(InventorDoc);
+            public static string OutputZip = nameof(OutputZip);
+        }
     }
 }

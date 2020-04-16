@@ -1,8 +1,4 @@
-﻿using System.Threading.Tasks;
-using Autodesk.Forge.DesignAutomation.Model;
-using WebApplication.Utilities;
-
-namespace WebApplication.Processing
+﻿namespace WebApplication.Processing
 {
     /// <summary>
     /// Preprocess incoming project:
@@ -21,23 +17,5 @@ namespace WebApplication.Processing
 
         public override string Id => nameof(AdoptProject);
         public override string Description => "Adopt Inventor project";
-
-        public Task<WorkItemStatus> DoIAM(AdoptionData projectData)
-        {
-            // TODO: yuck! very ugly... TO REWRITE!
-            var svf = (CreateSVF) Definitions[0];
-            var thumb = (CreateThumbnail)Definitions[1];
-            var parameters = (ExtractParameters) Definitions[2];
-
-            var allArgs = new[]
-            {
-                svf.ToIamArguments(projectData.InputUrl, projectData.TLA, projectData.SvfUrl),
-                thumb.ToIamArguments(projectData.InputUrl, projectData.TLA, projectData.ThumbnailUrl),
-                parameters.ToIamArguments(projectData.InputUrl, projectData.TLA, projectData.ParametersJsonUrl),
-            };
-
-            var merged = Collections.MergeDictionaries(allArgs);
-            return Run(merged);
-        }
     }
 }

@@ -24,6 +24,7 @@ namespace WebApplication.Processing
         public override int EngineVersion => _definitions[0].EngineVersion;
         public override string Label => _definitions[0].Label;
         public override bool HasBundle => false;
+        public override string OutputParameterName => throw new Exception("Should not be used");
 
         public override List<string> ActivityCommandLine
         {
@@ -45,15 +46,15 @@ namespace WebApplication.Processing
             }
         }
 
-        public override Dictionary<string, IArgument> ToIptArguments(string url, string outputUrl)
+        public override Dictionary<string, IArgument> ToIptArguments(AdoptionData projectData)
         {
-            var all = _definitions.Select(def => def.ToIptArguments(url, outputUrl));
+            var all = _definitions.Select(def => def.ToIptArguments(projectData));
             return Collections.MergeDictionaries(all);
         }
 
-        public override Dictionary<string, IArgument> ToIamArguments(string url, string pathInZip, string outputUrl)
+        public override Dictionary<string, IArgument> ToIamArguments(AdoptionData projectData)
         {
-            var all = _definitions.Select(def => def.ToIamArguments(url, pathInZip, outputUrl));
+            var all = _definitions.Select(def => def.ToIamArguments(projectData));
             return Collections.MergeDictionaries(all);
         }
 

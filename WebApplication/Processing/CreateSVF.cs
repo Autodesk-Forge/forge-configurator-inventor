@@ -11,11 +11,7 @@ namespace WebApplication.Processing
         public override string Label => "alpha";
         public override string Description => "Generate SVF from Inventor document";
 
-        internal static class Parameters
-        {
-            public static string InventorDoc = nameof(InventorDoc);
-            public static string OutputZip = nameof(OutputZip);
-        }
+        public override string OutputParameterName => "OutputZip";
 
         /// <summary>
         /// Get command line for activity.
@@ -41,7 +37,7 @@ namespace WebApplication.Processing
                     }
                 },
                 {
-                    Parameters.OutputZip,
+                    OutputParameterName, 
                     new Parameter
                     {
                         Verb = Verb.Put,
@@ -59,34 +55,14 @@ namespace WebApplication.Processing
         /// </summary>
         public CreateSVF(Publisher publisher) : base(publisher) {}
 
-        public override Dictionary<string, IArgument> ToIptArguments(string url, string outputUrl)
+        public override Dictionary<string, IArgument> ToIptArguments(AdoptionData projectData)
         {
-            return new Dictionary<string, IArgument>
-            {
-                {
-                    Parameters.InventorDoc,
-                    new XrefTreeArgument { Url = url }
-                },
-                {
-                    Parameters.OutputZip,
-                    new XrefTreeArgument { Verb = Verb.Put, Url = outputUrl }
-                }
-            };
+            return ToIptArguments(projectData.InputUrl, projectData.SvfUrl);
         }
 
-        public override Dictionary<string, IArgument> ToIamArguments(string url, string pathInZip, string outputUrl)
+        public override Dictionary<string, IArgument> ToIamArguments(AdoptionData projectData)
         {
-            return new Dictionary<string, IArgument>
-            {
-                {
-                    Parameters.InventorDoc,
-                    new XrefTreeArgument {PathInZip = pathInZip, LocalName = "zippedIam.zip", Url = url}
-                },
-                {
-                    Parameters.OutputZip,
-                    new XrefTreeArgument {Verb = Verb.Put, Url = outputUrl}
-                }
-            };
+            return ToIamArguments(projectData.InputUrl, projectData.TLA, projectData.SvfUrl);
         }
     }
 }

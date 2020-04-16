@@ -9,17 +9,12 @@ namespace WebApplication.Processing
         public override string Id => nameof(CreateThumbnail);
         public override string Label => "alpha";
         public override string Description => "Generate thumbnail from Inventor document";
+        public override string OutputParameterName => "OutputThumbnail";
 
         /// <summary>
         /// Constructor.
         /// </summary>
         public CreateThumbnail(Publisher publisher) : base(publisher) { }
-
-        internal static class Parameters
-        {
-            public static string InventorDoc = nameof(InventorDoc);
-            public static string OutputThumbnail = nameof(OutputThumbnail);
-        }
 
         public override List<string> ActivityCommandLine =>
             new List<string>
@@ -39,7 +34,7 @@ namespace WebApplication.Processing
                     }
                 },
                 {
-                    Parameters.OutputThumbnail,
+                    OutputParameterName,
                     new Parameter
                     {
                         Verb = Verb.Put,
@@ -51,34 +46,14 @@ namespace WebApplication.Processing
                 }
             };
 
-        public override Dictionary<string, IArgument> ToIptArguments(string url, string outputUrl)
+        public override Dictionary<string, IArgument> ToIptArguments(AdoptionData projectData)
         {
-            return new Dictionary<string, IArgument>
-            {
-                {
-                    Parameters.InventorDoc,
-                    new XrefTreeArgument {Url = url}
-                },
-                {
-                    Parameters.OutputThumbnail,
-                    new XrefTreeArgument {Verb = Verb.Put, Url = outputUrl}
-                }
-            };
+            return ToIptArguments(projectData.InputUrl, projectData.ThumbnailUrl);
         }
 
-        public override Dictionary<string, IArgument> ToIamArguments(string url, string pathInZip, string outputUrl)
+        public override Dictionary<string, IArgument> ToIamArguments(AdoptionData projectData)
         {
-            return new Dictionary<string, IArgument>
-            {
-                {
-                    Parameters.InventorDoc,
-                    new XrefTreeArgument {PathInZip = pathInZip, LocalName = "zippedIam.zip", Url = url}
-                },
-                {
-                    Parameters.OutputThumbnail,
-                    new XrefTreeArgument {Verb = Verb.Put, Url = outputUrl}
-                }
-            };
+            return ToIamArguments(projectData.InputUrl, projectData.TLA, projectData.ThumbnailUrl);
         }
     }
 }

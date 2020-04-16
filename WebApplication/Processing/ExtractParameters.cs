@@ -10,17 +10,12 @@ namespace WebApplication.Processing
         public override string Id => nameof(ExtractParameters);
         public override string Label => "alpha";
         public override string Description => "Extract Parameters from Inventor document";
+        public override string OutputParameterName => "OutputJson";
 
         /// <summary>
         /// Constructor.
         /// </summary>
         public ExtractParameters(Publisher publisher) : base(publisher) { }
-
-        internal static class Parameters
-        {
-            public static string InventorDoc = nameof(InventorDoc);
-            public static string OutputJson = nameof(OutputJson);
-        }
 
         public override List<string> ActivityCommandLine =>
             new List<string>
@@ -40,7 +35,7 @@ namespace WebApplication.Processing
                     }
                 },
                 {
-                    Parameters.OutputJson,
+                    OutputParameterName,
                     new Parameter
                     {
                         Verb = Verb.Put,
@@ -52,34 +47,14 @@ namespace WebApplication.Processing
                 }
             };
 
-        public override Dictionary<string, IArgument> ToIptArguments(string url, string outputUrl)
+        public override Dictionary<string, IArgument> ToIptArguments(AdoptionData projectData)
         {
-            return new Dictionary<string, IArgument>
-            {
-                {
-                    Parameters.InventorDoc,
-                    new XrefTreeArgument { Url = url }
-                },
-                {
-                    Parameters.OutputJson,
-                    new XrefTreeArgument { Verb = Verb.Put, Url = outputUrl }
-                }
-            };
+            return ToIptArguments(projectData.InputUrl, projectData.ParametersJsonUrl);
         }
 
-        public override Dictionary<string, IArgument> ToIamArguments(string url, string pathInZip, string outputUrl)
+        public override Dictionary<string, IArgument> ToIamArguments(AdoptionData projectData)
         {
-            return new Dictionary<string, IArgument>
-            {
-                {
-                    Parameters.InventorDoc,
-                    new XrefTreeArgument { PathInZip = pathInZip, LocalName = "zippedIam.zip", Url = url }
-                },
-                {
-                    Parameters.OutputJson,
-                    new XrefTreeArgument { Verb = Verb.Put, Url = outputUrl }
-                }
-            };
+            return ToIamArguments(projectData.InputUrl, projectData.TLA, projectData.ParametersJsonUrl);
         }
     }
 }

@@ -26,6 +26,11 @@ namespace WebApplication
         public string ThumbnailUrl { get; set; }
         public string SvfUrl { get; set; }
         public string ParametersJsonUrl { get; set; }
+
+        /// <summary>
+        /// If job data contains assembly.
+        /// </summary>
+        public bool IsAssembly => ! string.IsNullOrEmpty(TLA);
     }
 
     public class Initializer

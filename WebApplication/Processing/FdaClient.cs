@@ -36,14 +36,9 @@ namespace WebApplication.Processing
             await _adoptWork.CleanUp();
         }
 
-        public Task<WorkItemStatus> GenerateSVF(string inventorDocUrl, string outputUrl)
-        {
-            return _svfWork.ProcessIpt(inventorDocUrl, outputUrl);
-        }
-
         public Task<WorkItemStatus> Adopt(AdoptionData projectData)
         {
-            return _adoptWork.DoIAM(projectData);
+            return _adoptWork.Process(projectData);
         }
     }
 }
