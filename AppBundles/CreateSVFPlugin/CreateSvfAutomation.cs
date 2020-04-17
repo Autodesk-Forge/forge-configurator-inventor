@@ -58,7 +58,6 @@ namespace CreateSVFPlugin
 
         private void SaveAsSVF(Document Doc)
         {
-            using (new HeartBeat())
             {
                 LogTrace("** Saving SVF");
 
