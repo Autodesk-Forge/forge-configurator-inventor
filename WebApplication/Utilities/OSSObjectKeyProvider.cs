@@ -5,25 +5,38 @@ namespace WebApplication.Utilities
     /// </summary>
     public static class ONC // aka ObjectNameConstants
     {
-        public const string projectsFolder = "projects";
-        public const string cacheFolder = "cache";
-        public const string downloadsFolder = "downloads";
+        public const string ProjectsFolder = "projects";
+        public const string CacheFolder = "cache";
+        public const string DownloadsFolder = "downloads";
     }
 
     public class OSSObjectKeyProvider
     {
+        private readonly string _hashDir;
+
         public OSSObjectKeyProvider(string projectName, string parametersHash)
         {
-            CurrentModel = $"{ONC.cacheFolder}-{projectName}-{parametersHash}-model.zip";
-            ModelView = $"{ONC.cacheFolder}-{projectName}-{parametersHash}-model-view.svf";
-            DownloadsPath = $"{ONC.cacheFolder}-{projectName}-{parametersHash}-{ONC.downloadsFolder}";
+            _hashDir = $"{ONC.CacheFolder}-{projectName}-{parametersHash}model.zip";
         }
 
-        // bucket object names
-        public string CurrentModel { get; }
-        public string ModelView { get; }
+        /// <summary>
+        /// ZIP with current model state.
+        /// </summary>
+        public string CurrentModel => ToFullName("model.zip");
+        
+        /// <summary>
+        /// ZIP with SVF model.
+        /// </summary>
+        public string ModelView => ToFullName("model-view.svf");
 
-        // bucket object prefixes
-        public string DownloadsPath { get; }
+        public string DownloadsPath => ToFullName(ONC.DownloadsFolder);
+
+        /// <summary>
+        /// Generate full relative name for the filename.
+        /// </summary>
+        public string ToFullName(string fileName)
+        {
+            return _hashDir + "-" + fileName;
+        }
     }
 }

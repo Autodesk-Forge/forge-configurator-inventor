@@ -14,27 +14,27 @@ namespace WebApplication
 
             Name = projectName; 
 
-            OSSSourceModel = $"{ONC.projectsFolder}-{projectName}";
-            OSSThumbnail = $"{ONC.cacheFolder}-{projectName}-original-thumbnail.png";
+            OSSSourceModel = $"{ONC.ProjectsFolder}-{projectName}";
+            OSSThumbnail = $"{ONC.CacheFolder}-{projectName}-original-thumbnail.png";
             HrefThumbnail = "bike.png"; // temporary icon
         }
 
         public static Project FromObjectKey(string objectKey)
         {
-            if(!objectKey.StartsWith($"{ONC.projectsFolder}-"))
+            if(!objectKey.StartsWith($"{ONC.ProjectsFolder}-"))
             {
                 throw new Exception("Initializing Project from invalid bucket key: " + objectKey);
             }
 
-            var projectName = objectKey.Substring(ONC.projectsFolder.Length+1);
+            var projectName = objectKey.Substring(ONC.ProjectsFolder.Length+1);
             return new Project(projectName);
         }
 
         public string Name { get; }
         public string OSSSourceModel {get; }
         public string OSSThumbnail { get; }
-        public string OriginalSvfZip => $"{ONC.cacheFolder}-{Name}-model.zip"; // TODO: ???
-        public string ParametersJson => $"{ONC.cacheFolder}-{Name}-parameters.json"; // TODO: ???
+        public string OriginalSvfZip => $"{ONC.CacheFolder}-{Name}-model.zip"; // TODO: ???
+        public string ParametersJson => $"{ONC.CacheFolder}-{Name}-parameters.json"; // TODO: ???
         public string HrefThumbnail { get; }
 
         public OSSObjectKeyProvider KeyProvider(string hash) => new OSSObjectKeyProvider(Name, hash);
