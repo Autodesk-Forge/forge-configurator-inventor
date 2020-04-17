@@ -1,22 +1,28 @@
 using System;
+using WebApplication.Utilities;
 
-namespace IoConfigDemo
+namespace WebApplication
 {
     public class Project
     {
         public Project(string projectName) 
         {
-            if(Name == string.Empty) {
-                throw new Exception("Initializing Project with empty name");
+            if(Name == string.Empty)
+            {
+                throw new ArgumentException("Initializing Project with empty name", nameof(projectName));
             }
 
             Name = projectName; 
-            SourceModel = $"{ONC.projectsFolder}-{projectName}";
-            Thumbnail = $"{ONC.cacheFolder}-{projectName}-original-thumbnail.svg";
+
+            OSSSourceModel = $"{ONC.projectsFolder}-{projectName}";
+            OSSThumbnail = $"{ONC.cacheFolder}-{projectName}-original-thumbnail.png";
+            HrefThumbnail = "bike.png"; // temporary icon
         }
 
-        static public Project FromObjectKey(string objectKey) {
-            if(!objectKey.StartsWith($"{ONC.projectsFolder}-")) {
+        public static Project FromObjectKey(string objectKey)
+        {
+            if(!objectKey.StartsWith($"{ONC.projectsFolder}-"))
+            {
                 throw new Exception("Initializing Project from invalid bucket key: " + objectKey);
             }
 
@@ -24,9 +30,12 @@ namespace IoConfigDemo
             return new Project(projectName);
         }
 
-        public string Name { get; private set; }
-        public string SourceModel {get; private set; }
-        public string Thumbnail { get; private set; }
+        public string Name { get; }
+        public string OSSSourceModel {get; }
+        public string OSSThumbnail { get; }
+        public string OriginalSvfZip => $"{ONC.cacheFolder}-{Name}-model.zip"; // TODO: ???
+        public string ParametersJson => $"{ONC.cacheFolder}-{Name}-parameters.json"; // TODO: ???
+        public string HrefThumbnail { get; }
 
         public OSSObjectKeyProvider KeyProvider(string hash) => new OSSObjectKeyProvider(Name, hash);
     }

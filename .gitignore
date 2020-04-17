@@ -232,3 +232,4 @@ _Pvt_Extensions
 .fake/
 
 appsettings.Local.json
+Output/

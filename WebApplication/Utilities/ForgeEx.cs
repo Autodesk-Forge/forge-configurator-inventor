@@ -3,7 +3,7 @@ using System.Text;
 using Autodesk.Forge.Core;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
-namespace SalesDemoToolApp.Utilities
+namespace WebApplication.Utilities
 {
     /// <summary>
     /// Extensions for Forge stuff.

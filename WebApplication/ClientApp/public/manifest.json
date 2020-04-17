@@ -1,6 +1,6 @@
 {
-  "short_name": "IoConfigDemo",
-  "name": "IoConfigDemo",
+  "short_name": "forge-configurator-inventor",
+  "name": "forge-configurator-inventor",
   "icons": [
     {
       "src": "favicon.ico",
