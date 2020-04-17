@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Autodesk.Forge;
 using Autodesk.Forge.Core;
@@ -129,16 +130,29 @@ namespace WebApplication
             return result.signedUrl;
         }
 
-        private async Task<ObjectsApi> GetObjectsApi()
-        {
-            return new ObjectsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } }; // TODO: ER: cache? Or is it lightweight operation?
-        }
-
         public async Task UploadObject(string bucketKey, Stream stream, string objectName)
         {
             ObjectsApi objectsApi = await GetObjectsApi();
-
             await objectsApi.UploadObjectAsync(bucketKey, objectName, 0, stream);
+        }
+
+        /// <summary>
+        /// Rename object.
+        /// </summary>
+        /// <param name="bucketKey">Bucket key.</param>
+        /// <param name="oldName">Old object name.</param>
+        /// <param name="newName">New object name.</param>
+        public async Task RenameObject(string bucketKey, string oldName, string newName)
+        {
+            // OSS does not support renaming, so emulate it with more ineffective operations
+            ObjectsApi objectsApi = await GetObjectsApi();
+            await objectsApi.CopyToAsync(bucketKey, oldName, newName);
+            await objectsApi.DeleteObjectAsync(bucketKey, oldName);
+        }
+
+        private async Task<ObjectsApi> GetObjectsApi()
+        {
+            return new ObjectsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } }; // TODO: ER: cache? Or is it lightweight operation?
         }
 
         private static string AsString(ObjectAccess access)

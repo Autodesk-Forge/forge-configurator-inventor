@@ -22,8 +22,8 @@ namespace WebApplication.Utilities
         /// <returns>Byte array with hash.</returns>
         public static byte[] GenerateFileHash(string filePath)
         {
-            using var stream2 = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-            return _sha256.ComputeHash(stream2);
+            using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            return _sha256.ComputeHash(stream);
         }
 
         /// <summary>
@@ -34,6 +34,15 @@ namespace WebApplication.Utilities
         {
             var bytes = GenerateFileHash(filePath);
             return BytesToString(bytes);
+        }
+
+        /// <summary>
+        /// Generate hash for stream.
+        /// </summary>
+        /// <returns>Hash string.</returns>
+        public static string GenerateStreamHashString(Stream stream)
+        {
+            return BytesToString(_sha256.ComputeHash(stream));
         }
     }
 }

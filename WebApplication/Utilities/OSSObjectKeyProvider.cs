@@ -20,14 +20,19 @@ namespace WebApplication.Utilities
         }
 
         /// <summary>
-        /// ZIP with current model state.
+        /// Filename for ZIP with current model state.
         /// </summary>
         public string CurrentModel => ToFullName("model.zip");
         
         /// <summary>
-        /// ZIP with SVF model.
+        /// Filename for ZIP with SVF model.
         /// </summary>
         public string ModelView => ToFullName("model-view.svf");
+
+        /// <summary>
+        /// Filename for JSON with Inventor document parameters.
+        /// </summary>
+        public string Parameters => ToFullName("parameters.json");
 
         public string DownloadsPath => ToFullName(ONC.DownloadsFolder);
 

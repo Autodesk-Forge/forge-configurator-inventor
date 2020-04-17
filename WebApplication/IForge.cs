@@ -36,5 +36,13 @@ namespace WebApplication
         /// <param name="minutesExpiration">Minutes while the URL is valid. Default is 30 minutes.</param>
         /// <returns>Signed URL</returns>
         Task<string> CreateSignedUrl(string bucketKey, string objectName, ObjectAccess access = ObjectAccess.Read, int minutesExpiration = 30);
+
+        /// <summary>
+        /// Rename object.
+        /// </summary>
+        /// <param name="bucketKey">Bucket key.</param>
+        /// <param name="oldName">Old object name.</param>
+        /// <param name="newName">New object name.</param>
+        Task RenameObject(string bucketKey, string oldName, string newName);
     }
 }
