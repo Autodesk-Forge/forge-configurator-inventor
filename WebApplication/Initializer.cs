@@ -3,6 +3,7 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Autodesk.Forge.Client;
+using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -11,28 +12,6 @@ using WebApplication.Utilities;
 
 namespace WebApplication
 {
-    /// <summary>
-    /// All data required for project adoption.
-    /// </summary>
-    public class AdoptionData
-    {
-        public string InputUrl { get; set; }
-
-        /// <summary>
-        /// Relative path to top level assembly in ZIP with assembly.
-        /// </summary>
-        public string TLA { get; set; }
-
-        public string ThumbnailUrl { get; set; }
-        public string SvfUrl { get; set; }
-        public string ParametersJsonUrl { get; set; }
-
-        /// <summary>
-        /// If job data contains assembly.
-        /// </summary>
-        public bool IsAssembly => ! string.IsNullOrEmpty(TLA);
-    }
-
     public class Initializer
     {
         private readonly IForge _forge;
@@ -55,6 +34,8 @@ namespace WebApplication
 
         public async Task Initialize()
         {
+            using var scope = _logger.BeginScope("Init");
+
             // create bundles and activities
             await _fdaClient.Initialize();
 
@@ -74,38 +55,45 @@ namespace WebApplication
                     throw new Exception("Default projects are not in sync with TLA names");
                 }
 
+                var bucketKey = _resourceProvider.BucketName;
+
                 for (var i = 0; i < defaultProjects.Length; i++)
                 {
                     var projectUrl = defaultProjects[i];
                     var tlaFilename = tlaFilenames[i];
 
-                    _logger.LogInformation($"Download {projectUrl}");
-
-                    using HttpResponseMessage response = await client.GetAsync(projectUrl).ConfigureAwait(false);
-                    response.EnsureSuccessStatusCode();
-
-                    _logger.LogInformation("Upload to the app bucket");
-
-                    Stream stream = await response.Content.ReadAsStreamAsync();
                     string[] urlParts = projectUrl.Split("/");
                     string projectName = urlParts[^1];
                     var project = new Project(projectName);
 
-                    await _forge.UploadObject(_resourceProvider.BucketName, stream, project.OSSSourceModel);
+                    _logger.LogInformation($"Download {projectUrl}");
+                    using (HttpResponseMessage response = await client.GetAsync(projectUrl).ConfigureAwait(false))
+                    {
+                        response.EnsureSuccessStatusCode();
+
+                        _logger.LogInformation("Upload to the app bucket");
+
+                        Stream stream = await response.Content.ReadAsStreamAsync();
+                        await _forge.UploadObject(bucketKey, stream, project.OSSSourceModel);
+                    }
+
+                    var documentUrl = await _forge.CreateSignedUrl(bucketKey, project.OSSSourceModel);
 
                     _logger.LogInformation("Adopt the project");
+                    var arranger = new Arranger(_forge, bucketKey);
 
-                    var projectUrls = new AdoptionData // TODO: check - can URLs be generated in parallel?
+                    var adoptionData = await arranger.ForAdoption(documentUrl, tlaFilename);
+
+                    var status = await _fdaClient.Adopt(adoptionData); // ER: think - it's a business logic, so it might not deal with low-level WI and status
+                    if (status.Status != Status.Success)
                     {
-                        InputUrl = await _forge.CreateSignedUrl(_resourceProvider.BucketName, project.OSSSourceModel, ObjectAccess.Read),
-                        ThumbnailUrl = await _forge.CreateSignedUrl(_resourceProvider.BucketName, project.OSSThumbnail, ObjectAccess.Write),
-                        SvfUrl = await _forge.CreateSignedUrl(_resourceProvider.BucketName, project.OriginalSvfZip, ObjectAccess.Write),
-                        ParametersJsonUrl = await _forge.CreateSignedUrl(_resourceProvider.BucketName, project.ParametersJson, ObjectAccess.Write),
-                        TLA = tlaFilename
-                    };
-
-                    var status = await _fdaClient.Adopt(projectUrls);
-                    //_logger.LogInformation(System.Text.Json.JsonSerializer.Serialize(status, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
+                        _logger.LogError($"Failed to adopt {projectUrl}");
+                    }
+                    else
+                    {
+                        // rearrange generated data according to the parameters hash
+                        await arranger.Do(project);
+                    }
                 }
             }
 

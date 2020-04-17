@@ -16,7 +16,7 @@ namespace WebApplication.Utilities
 
         public OSSObjectKeyProvider(string projectName, string parametersHash)
         {
-            _hashDir = $"{ONC.CacheFolder}-{projectName}-{parametersHash}model.zip";
+            _hashDir = $"{ONC.CacheFolder}-{projectName}-{parametersHash}";
         }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace WebApplication.Utilities
         /// <summary>
         /// Filename for ZIP with SVF model.
         /// </summary>
-        public string ModelView => ToFullName("model-view.svf");
+        public string ModelView => ToFullName("model-view.zip");
 
         /// <summary>
         /// Filename for JSON with Inventor document parameters.

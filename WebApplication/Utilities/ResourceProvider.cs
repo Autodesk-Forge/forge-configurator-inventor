@@ -27,13 +27,11 @@ namespace WebApplication.Utilities
         public Task<string> Nickname => _nickname.Value;
 
         private readonly ForgeConfiguration _configuration;
-        private readonly DesignAutomationClient _client;
 
         public ResourceProvider(IOptions<ForgeConfiguration> optionsAccessor, DesignAutomationClient client)
         {
             _configuration = optionsAccessor.Value.Validate();
-            _client = client;
-            _nickname = new Lazy<Task<string>>(async () => await _client.GetNicknameAsync("me"));
+            _nickname = new Lazy<Task<string>>(async () => await client.GetNicknameAsync("me"));
         }
     }
 }
