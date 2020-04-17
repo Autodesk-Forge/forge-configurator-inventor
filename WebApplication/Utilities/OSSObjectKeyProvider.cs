@@ -5,25 +5,69 @@ namespace WebApplication.Utilities
     /// </summary>
     public static class ONC // aka ObjectNameConstants
     {
-        public const string projectsFolder = "projects";
-        public const string cacheFolder = "cache";
-        public const string downloadsFolder = "downloads";
+        public const string ProjectsFolder = "projects";
+        public const string CacheFolder = "cache";
+        public const string DownloadsFolder = "downloads";
+        public const string AttributesFolder = "attributes";
     }
 
-    public class OSSObjectKeyProvider
+    public class BaseNameProvider
     {
-        public OSSObjectKeyProvider(string projectName, string parametersHash)
+        private readonly string _baseDir;
+
+        public BaseNameProvider(string baseDir)
         {
-            CurrentModel = $"{ONC.cacheFolder}-{projectName}-{parametersHash}-model.zip";
-            ModelView = $"{ONC.cacheFolder}-{projectName}-{parametersHash}-model-view.svf";
-            DownloadsPath = $"{ONC.cacheFolder}-{projectName}-{parametersHash}-{ONC.downloadsFolder}";
+            _baseDir = baseDir;
         }
 
-        // bucket object names
-        public string CurrentModel { get; }
-        public string ModelView { get; }
+        /// <summary>
+        /// Generate full relative name for the filename.
+        /// </summary>
+        public string ToFullName(string fileName)
+        {
+            return _baseDir + "-" + fileName;
+        }
+    }
 
-        // bucket object prefixes
-        public string DownloadsPath { get; }
+    /// <summary>
+    /// Project owned filenames under "parameters hash" directory.
+    /// </summary>
+    public class OSSObjectKeyProvider : BaseNameProvider
+    {
+        public OSSObjectKeyProvider(string projectName, string parametersHash) : 
+                base($"{ONC.CacheFolder}-{projectName}-{parametersHash}") {}
+
+        /// <summary>
+        /// Filename for ZIP with current model state.
+        /// </summary>
+        public string CurrentModel => ToFullName("model.zip");
+        
+        /// <summary>
+        /// Filename for ZIP with SVF model.
+        /// </summary>
+        public string ModelView => ToFullName("model-view.zip");
+
+        /// <summary>
+        /// Filename for JSON with Inventor document parameters.
+        /// </summary>
+        public string Parameters => ToFullName("parameters.json");
+
+        public string DownloadsPath => ToFullName(ONC.DownloadsFolder);
+    }
+
+    /// <summary>
+    /// Project owned filenames in Attributes directory.
+    /// </summary>
+    public class AttributesNameProvider : BaseNameProvider
+    {
+        /// <summary>
+        /// Filename for thumbnail image.
+        /// </summary>
+        public string Thumbnail => ToFullName("thumbnail.png");
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public AttributesNameProvider(string projectName) : base($"{ONC.AttributesFolder}-{projectName}") {}
     }
 }
