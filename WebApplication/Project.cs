@@ -15,8 +15,9 @@ namespace WebApplication
             Name = projectName; 
 
             OSSSourceModel = $"{ONC.ProjectsFolder}-{projectName}";
-            OSSThumbnail = $"{ONC.CacheFolder}-{projectName}-original-thumbnail.png";
             HrefThumbnail = "bike.png"; // temporary icon
+
+            Attributes = new AttributesNameProvider(projectName);
         }
 
         public static Project FromObjectKey(string objectKey)
@@ -32,11 +33,9 @@ namespace WebApplication
 
         public string Name { get; }
         public string OSSSourceModel {get; }
-        public string OSSThumbnail { get; }
-        public string OriginalSvfZip => $"{ONC.CacheFolder}-{Name}-model.zip"; // TODO: ???
-        public string ParametersJson => $"{ONC.CacheFolder}-{Name}-parameters.json"; // TODO: ???
         public string HrefThumbnail { get; }
 
         public OSSObjectKeyProvider KeyProvider(string hash) => new OSSObjectKeyProvider(Name, hash);
+        public AttributesNameProvider Attributes { get; }
     }
 }

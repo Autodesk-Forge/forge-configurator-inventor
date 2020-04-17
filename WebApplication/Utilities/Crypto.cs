@@ -6,7 +6,7 @@ namespace WebApplication.Utilities
 {
     public class Crypto
     {
-        private static readonly SHA256 _sha256 = SHA256.Create();
+        private static readonly SHA1 _sha1 = SHA1.Create(); // chosen because it's shorter
 
         /// <summary>
         /// Generate hex string from the bytes.
@@ -23,7 +23,7 @@ namespace WebApplication.Utilities
         public static byte[] GenerateFileHash(string filePath)
         {
             using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-            return _sha256.ComputeHash(stream);
+            return _sha1.ComputeHash(stream);
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace WebApplication.Utilities
         /// <returns>Hash string.</returns>
         public static string GenerateStreamHashString(Stream stream)
         {
-            return BytesToString(_sha256.ComputeHash(stream));
+            return BytesToString(_sha1.ComputeHash(stream));
         }
     }
 }

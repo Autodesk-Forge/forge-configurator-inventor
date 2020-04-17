@@ -8,16 +8,34 @@ namespace WebApplication.Utilities
         public const string ProjectsFolder = "projects";
         public const string CacheFolder = "cache";
         public const string DownloadsFolder = "downloads";
+        public const string AttributesFolder = "attributes";
     }
 
-    public class OSSObjectKeyProvider
+    public class BaseNameProvider
     {
-        private readonly string _hashDir;
+        private readonly string _baseDir;
 
-        public OSSObjectKeyProvider(string projectName, string parametersHash)
+        public BaseNameProvider(string baseDir)
         {
-            _hashDir = $"{ONC.CacheFolder}-{projectName}-{parametersHash}";
+            _baseDir = baseDir;
         }
+
+        /// <summary>
+        /// Generate full relative name for the filename.
+        /// </summary>
+        public string ToFullName(string fileName)
+        {
+            return _baseDir + "-" + fileName;
+        }
+    }
+
+    /// <summary>
+    /// Project owned filenames under "parameters hash" directory.
+    /// </summary>
+    public class OSSObjectKeyProvider : BaseNameProvider
+    {
+        public OSSObjectKeyProvider(string projectName, string parametersHash) : 
+                base($"{ONC.CacheFolder}-{projectName}-{parametersHash}") {}
 
         /// <summary>
         /// Filename for ZIP with current model state.
@@ -35,13 +53,21 @@ namespace WebApplication.Utilities
         public string Parameters => ToFullName("parameters.json");
 
         public string DownloadsPath => ToFullName(ONC.DownloadsFolder);
+    }
+
+    /// <summary>
+    /// Project owned filenames in Attributes directory.
+    /// </summary>
+    public class AttributesNameProvider : BaseNameProvider
+    {
+        /// <summary>
+        /// Filename for thumbnail image.
+        /// </summary>
+        public string Thumbnail => ToFullName("thumbnail.png");
 
         /// <summary>
-        /// Generate full relative name for the filename.
+        /// Constructor.
         /// </summary>
-        public string ToFullName(string fileName)
-        {
-            return _hashDir + "-" + fileName;
-        }
+        public AttributesNameProvider(string projectName) : base($"{ONC.AttributesFolder}-{projectName}") {}
     }
 }
