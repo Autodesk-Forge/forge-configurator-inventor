@@ -12,5 +12,4 @@ phases:
 artifacts:
   files:
     - '**/*'
-  base-directory: .\AppBundles\Output 
   
