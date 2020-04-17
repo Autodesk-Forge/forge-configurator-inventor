@@ -1,0 +1,14 @@
+version: 0.2
+phases:
+  install:
+    commands:
+      - echo "Install"
+  build:
+    commands:
+      - echo "Build started on $(Get-Date)"
+      - msbuild
+artifacts:
+  files:
+    - '**/*'
+  base-directory: ./output
+  
