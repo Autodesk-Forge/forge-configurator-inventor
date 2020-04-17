@@ -25,7 +25,6 @@ namespace ExtractParametersPlugin
 
             try
             {
-                using (new HeartBeat())
                 {
                     dynamic dynDoc = doc;
                     string parameters = getParamsAsJson(dynDoc.ComponentDefinition.Parameters.UserParameters);
