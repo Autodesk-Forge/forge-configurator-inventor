@@ -16,9 +16,9 @@ namespace WebApplication
     /// <summary>
     /// Class to work with Forge APIs.
     /// </summary>
-    class Forge : IForge
+    public class ForgeOSS : IForgeOSS
     {
-        private readonly ILogger<Forge> _logger;
+        private readonly ILogger<ForgeOSS> _logger;
         private static readonly Scope[] _scope = { Scope.DataRead, Scope.DataWrite, Scope.BucketCreate, Scope.BucketDelete, Scope.BucketRead };
 
         // Initialize the 2-legged oAuth 2.0 client.
@@ -35,7 +35,7 @@ namespace WebApplication
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Forge(IOptions<ForgeConfiguration> optionsAccessor, ILogger<Forge> logger)
+        public ForgeOSS(IOptions<ForgeConfiguration> optionsAccessor, ILogger<ForgeOSS> logger)
         {
             _logger = logger;
             Configuration = optionsAccessor.Value.Validate();
@@ -83,6 +83,11 @@ namespace WebApplication
             }
 
             return objects;
+        }
+
+        private async Task<BucketsApi> GetBucketsApi()
+        {
+            return new BucketsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } };
         }
 
         /// <summary>

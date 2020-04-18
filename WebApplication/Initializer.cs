@@ -7,6 +7,7 @@ using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using WebApplication.Processing;
 using WebApplication.Utilities;
 
@@ -14,22 +15,22 @@ namespace WebApplication
 {
     public class Initializer
     {
-        private readonly IForge _forge;
+        private readonly IForgeOSS _forge;
         private readonly ResourceProvider _resourceProvider;
         private readonly ILogger<Initializer> _logger;
-        private readonly IConfiguration _configuration;
+        private readonly DefaultProjectsConfiguration _defaultProjectsConfiguration;
         private readonly FdaClient _fdaClient;
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Initializer(IForge forge, ResourceProvider resourceProvider, ILogger<Initializer> logger, FdaClient fdaClient, IConfiguration configuration)
+        public Initializer(IForgeOSS forge, ResourceProvider resourceProvider, ILogger<Initializer> logger, FdaClient fdaClient, IOptions<DefaultProjectsConfiguration> optionsAccessor)
         {
             _forge = forge;
             _resourceProvider = resourceProvider;
             _logger = logger;
             _fdaClient = fdaClient;
-            _configuration = configuration;
+            _defaultProjectsConfiguration = optionsAccessor.Value;
         }
 
         public async Task Initialize()
@@ -50,17 +51,10 @@ namespace WebApplication
             // specified by the appsettings.json
             using (var client = new HttpClient())
             {
-                string[] defaultProjects = _configuration.GetSection("DefaultProjects:Files").Get<string[]>();
-                string[] tlaFilenames = _configuration.GetSection("DefaultProjects:TopLevelAssemblies").Get<string[]>();
-                if (defaultProjects.Length != tlaFilenames.Length)
+                foreach (DefaultProjectConfiguration defaultProjectConfig in _defaultProjectsConfiguration.Projects)
                 {
-                    throw new Exception("Default projects are not in sync with TLA names");
-                }
-
-                for (var i = 0; i < defaultProjects.Length; i++)
-                {
-                    var projectUrl = defaultProjects[i];
-                    var tlaFilename = tlaFilenames[i];
+                    var projectUrl = defaultProjectConfig.Url;
+                    var tlaFilename = defaultProjectConfig.TopLevelAssembly;
 
                     string[] urlParts = projectUrl.Split("/");
                     string projectName = urlParts[^1];

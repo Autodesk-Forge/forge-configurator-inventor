@@ -14,12 +14,12 @@ namespace WebApplication.Controllers
     public class ProjectController : ControllerBase
     {
         private readonly ILogger<ProjectController> _logger;
-        private readonly IForge _forge;
+        private readonly IForgeOSS _forge;
 
         private readonly ResourceProvider _resourceProvider;
         private readonly FdaClient _fda;
 
-        public ProjectController(ILogger<ProjectController> logger, IForge forge, ResourceProvider resourceProvider, FdaClient fda)
+        public ProjectController(ILogger<ProjectController> logger, IForgeOSS forge, ResourceProvider resourceProvider, FdaClient fda)
         {
             _logger = logger;
             _forge = forge;

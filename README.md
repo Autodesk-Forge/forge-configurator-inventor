@@ -46,6 +46,7 @@ Demo application showcasing Configuration with Design Automation for Inventor
 
 ## Run/Debug Tests
 ### Backend
+* Note that running the tests clears initialization data, so you will either need to change forge credentials before running them, or run the initializer again afterward. See [Clear and load initial data...](#clear-and-load-initial-data-during-app-launch-time)
 1. From Visual Studio 2019
     * Open Test Explorer and select tests to run or debug
 1. From Visual Studo Code
@@ -55,7 +56,6 @@ Demo application showcasing Configuration with Design Automation for Inventor
 * Note that the server needs to be running for integration tests
 1. In Visual Studio Code, on the Run tab, select the `Debug Jest All` configuration and click the "Start Debugging" (arrow) button
 1. Alternatively, using the command line go to WebApplication/ClientApp and execute `npm run test`
-    
 
 # Additional Information
 ## Specify Forge credentials
