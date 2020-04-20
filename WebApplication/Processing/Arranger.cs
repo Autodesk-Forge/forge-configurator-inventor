@@ -38,9 +38,9 @@ namespace WebApplication.Processing
             return new AdoptionData // TODO: check - can URLs be generated in parallel?
             {
                 InputUrl = docUrl,
-                ThumbnailUrl = await _forge.CreateSignedUrl(_bucketKey, Thumbnail, ObjectAccess.Write),
-                SvfUrl = await _forge.CreateSignedUrl(_bucketKey, SVF, ObjectAccess.Write),
-                ParametersJsonUrl = await _forge.CreateSignedUrl(_bucketKey, Parameters, ObjectAccess.Write),
+                ThumbnailUrl = await _forge.CreateSignedUrlAsync(_bucketKey, Thumbnail, ObjectAccess.Write),
+                SvfUrl = await _forge.CreateSignedUrlAsync(_bucketKey, SVF, ObjectAccess.Write),
+                ParametersJsonUrl = await _forge.CreateSignedUrlAsync(_bucketKey, Parameters, ObjectAccess.Write),
                 TLA = tlaFilename
             };
         }
@@ -54,8 +54,8 @@ namespace WebApplication.Processing
             using var client = new HttpClient(); // TODO: should we have cache for it?
 
             // rearrange generated data according to the parameters hash
-            var url = await _forge.CreateSignedUrl(_bucketKey, Parameters);
-            using var response = await client.GetAsync(url).ConfigureAwait(false);
+            var url = await _forge.CreateSignedUrlAsync(_bucketKey, Parameters);
+            using var response = await client.GetAsync(url);
             response.EnsureSuccessStatusCode();
 
             // generate hash for parameters
@@ -64,11 +64,11 @@ namespace WebApplication.Processing
 
             // move data to expected places
             // TODO: check - can it be done in parallel?
-            await _forge.RenameObject(_bucketKey, Thumbnail, project.Attributes.Thumbnail);
+            await _forge.RenameObjectAsync(_bucketKey, Thumbnail, project.Attributes.Thumbnail);
 
             var keyProvider = project.KeyProvider(hashString);
-            await _forge.RenameObject(_bucketKey, SVF, keyProvider.ModelView);
-            await _forge.RenameObject(_bucketKey, Parameters, keyProvider.Parameters);
+            await _forge.RenameObjectAsync(_bucketKey, SVF, keyProvider.ModelView);
+            await _forge.RenameObjectAsync(_bucketKey, Parameters, keyProvider.Parameters);
         }
     }
 }

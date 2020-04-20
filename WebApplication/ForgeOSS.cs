@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Autodesk.Forge;
 using Autodesk.Forge.Core;
@@ -39,10 +38,7 @@ namespace WebApplication
         {
             _logger = logger;
             Configuration = optionsAccessor.Value.Validate();
-            _twoLeggedAccessToken = new Lazy<Task<string>>(async () =>
-            {
-                return await _2leggedAsync();
-            });
+            _twoLeggedAccessToken = new Lazy<Task<string>>(async () => await _2leggedAsync());
         }
 
         private async Task<dynamic> _2leggedAsync()
@@ -61,9 +57,9 @@ namespace WebApplication
             return bearer.access_token;
         }
 
-        public async Task<List<ObjectDetails>> GetBucketObjects(string bucketKey, string beginsWith = null)
+        public async Task<List<ObjectDetails>> GetBucketObjectsAsync(string bucketKey, string beginsWith = null)
         {
-            ObjectsApi objectsApi = await GetObjectsApi();
+            ObjectsApi objectsApi = await GetObjectsApiAsync();
 
             var objects = new List<ObjectDetails>();
 
@@ -85,32 +81,27 @@ namespace WebApplication
             return objects;
         }
 
-        private async Task<BucketsApi> GetBucketsApi()
-        {
-            return new BucketsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } };
-        }
 
         /// <summary>
         /// Create bucket with given name
         /// </summary>
         /// <param name="bucketName">The bucket name.</param>
-        public async Task CreateBucket(string bucketName)
+        public async Task CreateBucketAsync(string bucketName)
         {
-            var api = new BucketsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } };
-
+            var api = await GetBucketsApiAsync();
             var payload = new PostBucketsPayload(bucketName, /*allow*/null, PostBucketsPayload.PolicyKeyEnum.Persistent);
             await api.CreateBucketAsync(payload, /* use default (US region) */ null);
         }
 
-        public async Task DeleteBucket(string bucketName)
+        public async Task DeleteBucketAsync(string bucketName)
         {
-            var api = new BucketsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } };
+            var api = await GetBucketsApiAsync();
             await api.DeleteBucketAsync(bucketName);
         }
 
-        public async Task CreateEmptyObject(string bucketKey, string objectName)
+        public async Task CreateEmptyObjectAsync(string bucketKey, string objectName)
         {
-            ObjectsApi objectsApi = await GetObjectsApi();
+            ObjectsApi objectsApi = await GetObjectsApiAsync();
 
             using (var stream = new MemoryStream())
             {
@@ -127,17 +118,16 @@ namespace WebApplication
         /// <param name="access">Requested access to the object.</param>
         /// <param name="minutesExpiration">Minutes while the URL is valid. Default is 30 minutes.</param>
         /// <returns>Signed URL</returns>
-        public async Task<string> CreateSignedUrl(string bucketKey, string objectName, ObjectAccess access = ObjectAccess.Read, int minutesExpiration = 30)
+        public async Task<string> CreateSignedUrlAsync(string bucketKey, string objectName, ObjectAccess access = ObjectAccess.Read, int minutesExpiration = 30)
         {
-            ObjectsApi objectsApi = await GetObjectsApi();
-
+            ObjectsApi objectsApi = await GetObjectsApiAsync();
             dynamic result = await objectsApi.CreateSignedResourceAsync(bucketKey, objectName, new PostBucketsSigned(minutesExpiration), AsString(access));
             return result.signedUrl;
         }
 
-        public async Task UploadObject(string bucketKey, Stream stream, string objectName)
+        public async Task UploadObjectAsync(string bucketKey, Stream stream, string objectName)
         {
-            ObjectsApi objectsApi = await GetObjectsApi();
+            ObjectsApi objectsApi = await GetObjectsApiAsync();
             await objectsApi.UploadObjectAsync(bucketKey, objectName, 0, stream);
         }
 
@@ -147,17 +137,22 @@ namespace WebApplication
         /// <param name="bucketKey">Bucket key.</param>
         /// <param name="oldName">Old object name.</param>
         /// <param name="newName">New object name.</param>
-        public async Task RenameObject(string bucketKey, string oldName, string newName)
+        public async Task RenameObjectAsync(string bucketKey, string oldName, string newName)
         {
             // OSS does not support renaming, so emulate it with more ineffective operations
-            ObjectsApi objectsApi = await GetObjectsApi();
+            ObjectsApi objectsApi = await GetObjectsApiAsync();
             await objectsApi.CopyToAsync(bucketKey, oldName, newName);
             await objectsApi.DeleteObjectAsync(bucketKey, oldName);
         }
 
-        private async Task<ObjectsApi> GetObjectsApi()
+        private async Task<ObjectsApi> GetObjectsApiAsync()
         {
             return new ObjectsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } }; // TODO: ER: cache? Or is it lightweight operation?
+        }
+
+        private async Task<BucketsApi> GetBucketsApiAsync()
+        {
+            return new BucketsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } };
         }
 
         private static string AsString(ObjectAccess access)

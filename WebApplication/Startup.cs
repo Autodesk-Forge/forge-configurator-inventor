@@ -68,13 +68,13 @@ namespace WebApplication
             if(Configuration.GetValue<bool>("clear"))
             {
                 logger.LogInformation("-- Clean up --");
-                initializer.Clear().Wait();
+                initializer.ClearAsync().Wait();
             }
 
             if(Configuration.GetValue<bool>("initialize"))
             {
                 logger.LogInformation("-- Initialization --");
-                initializer.Initialize().Wait();
+                initializer.InitializeAsync().Wait();
             }
 
             if (env.IsDevelopment())
