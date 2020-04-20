@@ -18,16 +18,20 @@ namespace WebApplication
         private readonly ILogger<Initializer> _logger;
         private readonly DefaultProjectsConfiguration _defaultProjectsConfiguration;
         private readonly FdaClient _fdaClient;
+        private readonly IHttpClientFactory _clientFactory;
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Initializer(IForgeOSS forge, ResourceProvider resourceProvider, ILogger<Initializer> logger, FdaClient fdaClient, IOptions<DefaultProjectsConfiguration> optionsAccessor)
+        public Initializer(IForgeOSS forge, ResourceProvider resourceProvider, ILogger<Initializer> logger,
+                            FdaClient fdaClient, IOptions<DefaultProjectsConfiguration> optionsAccessor,
+                            IHttpClientFactory clientFactory)
         {
             _forge = forge;
             _resourceProvider = resourceProvider;
             _logger = logger;
             _fdaClient = fdaClient;
+            _clientFactory = clientFactory;
             _defaultProjectsConfiguration = optionsAccessor.Value;
         }
 
@@ -43,35 +47,34 @@ namespace WebApplication
             await _forge.CreateBucketAsync(_resourceProvider.BucketName);
             _logger.LogInformation($"Bucket {_resourceProvider.BucketName} created");
 
-            var arranger = new Arranger(_forge, _resourceProvider.BucketName);
+            var arranger = new Arranger(_forge, _resourceProvider.BucketName, _clientFactory);
 
             // download default project files from the public location
             // specified by the appsettings.json
-            using (var client = new HttpClient())
+            var client = _clientFactory.CreateClient();
+
+            foreach (DefaultProjectConfiguration defaultProjectConfig in _defaultProjectsConfiguration.Projects)
             {
-                foreach (DefaultProjectConfiguration defaultProjectConfig in _defaultProjectsConfiguration.Projects)
+                var projectUrl = defaultProjectConfig.Url;
+                var tlaFilename = defaultProjectConfig.TopLevelAssembly;
+
+                string[] urlParts = projectUrl.Split("/");
+                string projectName = urlParts[^1];
+                var project = new Project(projectName);
+
+                _logger.LogInformation($"Download {projectUrl}");
+                using (HttpResponseMessage response = await client.GetAsync(projectUrl))
                 {
-                    var projectUrl = defaultProjectConfig.Url;
-                    var tlaFilename = defaultProjectConfig.TopLevelAssembly;
+                    response.EnsureSuccessStatusCode();
 
-                    string[] urlParts = projectUrl.Split("/");
-                    string projectName = urlParts[^1];
-                    var project = new Project(projectName);
+                    _logger.LogInformation("Upload to the app bucket");
 
-                    _logger.LogInformation($"Download {projectUrl}");
-                    using (HttpResponseMessage response = await client.GetAsync(projectUrl))
-                    {
-                        response.EnsureSuccessStatusCode();
-
-                        _logger.LogInformation("Upload to the app bucket");
-
-                        Stream stream = await response.Content.ReadAsStreamAsync();
-                        await _forge.UploadObjectAsync(_resourceProvider.BucketName, stream, project.OSSSourceModel);
-                    }
-
-                    _logger.LogInformation("Adopt the project");
-                    await AdoptAsync(arranger, project, tlaFilename);
+                    Stream stream = await response.Content.ReadAsStreamAsync();
+                    await _forge.UploadObjectAsync(_resourceProvider.BucketName, stream, project.OSSSourceModel);
                 }
+
+                _logger.LogInformation("Adopt the project");
+                await AdoptAsync(arranger, project, tlaFilename);
             }
 
             _logger.LogInformation("Added default projects.");

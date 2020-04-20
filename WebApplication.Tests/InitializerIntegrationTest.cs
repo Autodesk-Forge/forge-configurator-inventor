@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using WebApplication.Processing;
 using WebApplication.Utilities;
 using Xunit;
@@ -20,11 +21,11 @@ namespace WebApplication.Tests
         const string testZippedIamUrl = "http://testipt.s3-us-west-2.amazonaws.com/Basic.zip";
         const string testIamPathInZip = "iLogicBasic1.iam";
 
-        ForgeOSS forgeOSS;
-        string projectsBucketKey;
-        Initializer initializer;
-        DirectoryInfo testFileDirectory;
-        HttpClient httpClient;
+        readonly ForgeOSS forgeOSS;
+        readonly string projectsBucketKey;
+        readonly Initializer initializer;
+        readonly DirectoryInfo testFileDirectory;
+        readonly HttpClient httpClient;
 
         public InitializerIntegrationTest()
         {
@@ -35,6 +36,10 @@ namespace WebApplication.Tests
                 .AddEnvironmentVariables()
                 .AddForgeAlternativeEnvironmentVariables()
                 .Build();
+
+            IServiceCollection services = new ServiceCollection();
+            services.AddHttpClient();
+            var serviceProvider = services.BuildServiceProvider();
 
             ForgeConfiguration forgeConfiguration = configuration.GetSection("Forge").Get<ForgeConfiguration>();
             IOptions<ForgeConfiguration> forgeConfigOptions = Options.Create(forgeConfiguration);
@@ -55,7 +60,7 @@ namespace WebApplication.Tests
             var resourceProvider = new ResourceProvider(projectsBucketOptions, forgeConfigOptions, designAutomationClient);
             var publisher = new Publisher(designAutomationClient, new NullLogger<Publisher>(), resourceProvider);
 
-            AppBundleZipPaths appBundleZipPathsConfiguration = new AppBundleZipPaths()
+            AppBundleZipPaths appBundleZipPathsConfiguration = new AppBundleZipPaths
             {
                 CreateSVF = "..\\..\\..\\..\\AppBundles\\Output\\CreateSVFPlugin.bundle.zip",
                 CreateThumbnail = "..\\..\\..\\..\\AppBundles\\Output\\CreateThumbnailPlugin.bundle.zip",
@@ -69,7 +74,8 @@ namespace WebApplication.Tests
                 Projects = new [] { new DefaultProjectConfiguration { Url = testZippedIamUrl, TopLevelAssembly = testIamPathInZip } }
             };
             IOptions<DefaultProjectsConfiguration> defaultProjectsOptions = Options.Create(defaultProjectsConfiguration);
-            initializer = new Initializer(forgeOSS, resourceProvider, new NullLogger<Initializer>(), fdaClient, defaultProjectsOptions);
+            initializer = new Initializer(forgeOSS, resourceProvider, new NullLogger<Initializer>(), fdaClient, 
+                                            defaultProjectsOptions, serviceProvider.GetRequiredService<IHttpClientFactory>());
 
             testFileDirectory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()));
             httpClient = new HttpClient();

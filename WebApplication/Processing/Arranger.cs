@@ -13,6 +13,7 @@ namespace WebApplication.Processing
     {
         private readonly IForgeOSS _forge;
         private readonly string _bucketKey;
+        private readonly IHttpClientFactory _clientFactory;
 
         // generate unique names for files. The files will be moved to correct places after hash generation.
         public readonly string Parameters = $"{Guid.NewGuid():N}.json";
@@ -22,10 +23,11 @@ namespace WebApplication.Processing
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Arranger(IForgeOSS forge, string bucketKey)
+        public Arranger(IForgeOSS forge, string bucketKey, IHttpClientFactory clientFactory)
         {
             _forge = forge;
             _bucketKey = bucketKey;
+            _clientFactory = clientFactory;
         }
 
         /// <summary>
@@ -55,7 +57,7 @@ namespace WebApplication.Processing
         /// </summary>
         public async Task Do(Project project)
         {
-            using var client = new HttpClient(); // TODO: should we have cache for it?
+            var client = _clientFactory.CreateClient();
 
             // rearrange generated data according to the parameters hash
             var url = await _forge.CreateSignedUrlAsync(_bucketKey, Parameters);
