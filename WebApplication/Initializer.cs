@@ -44,10 +44,10 @@ namespace WebApplication
 
             _logger.LogInformation("Initializing base data");
 
-            await _forge.CreateBucketAsync(_resourceProvider.BucketName);
-            _logger.LogInformation($"Bucket {_resourceProvider.BucketName} created");
+            await _forge.CreateBucketAsync(_resourceProvider.BucketKey);
+            _logger.LogInformation($"Bucket {_resourceProvider.BucketKey} created");
 
-            var arranger = new Arranger(_forge, _resourceProvider.BucketName, _clientFactory);
+            var arranger = new Arranger(_forge, _clientFactory, _resourceProvider);
 
             // download default project files from the public location
             // specified by the appsettings.json
@@ -70,7 +70,7 @@ namespace WebApplication
                     _logger.LogInformation("Upload to the app bucket");
 
                     Stream stream = await response.Content.ReadAsStreamAsync();
-                    await _forge.UploadObjectAsync(_resourceProvider.BucketName, stream, project.OSSSourceModel);
+                    await _forge.UploadObjectAsync(_resourceProvider.BucketKey, stream, project.OSSSourceModel);
                 }
 
                 _logger.LogInformation("Adopt the project");
@@ -84,13 +84,13 @@ namespace WebApplication
         {
             try
             {
-                await _forge.DeleteBucketAsync(_resourceProvider.BucketName);
+                await _forge.DeleteBucketAsync(_resourceProvider.BucketKey);
                 // We need to wait because server needs some time to settle it down. If we would go and create bucket immediately again we would receive conflict.
                 await Task.Delay(4000);
             }
             catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
             {
-                _logger.LogInformation($"Nothing to delete because bucket {_resourceProvider.BucketName} does not exists yet");
+                _logger.LogInformation($"Nothing to delete because bucket {_resourceProvider.BucketKey} does not exists yet");
             }
 
             // delete bundles and activities
@@ -102,7 +102,7 @@ namespace WebApplication
         /// </summary>
         private async Task AdoptAsync(Arranger arranger, Project project, string tlaFilename)
         {
-            var inputDocUrl = await _forge.CreateSignedUrlAsync(_resourceProvider.BucketName, project.OSSSourceModel);
+            var inputDocUrl = await _forge.CreateSignedUrlAsync(_resourceProvider.BucketKey, project.OSSSourceModel);
 
             var adoptionData = await arranger.ForAdoption(inputDocUrl, tlaFilename);
 

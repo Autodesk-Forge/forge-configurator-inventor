@@ -23,10 +23,10 @@ namespace WebApplication.Processing
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Arranger(IForgeOSS forge, string bucketKey, IHttpClientFactory clientFactory)
+        public Arranger(IForgeOSS forge, IHttpClientFactory clientFactory, ResourceProvider resourceProvider)
         {
             _forge = forge;
-            _bucketKey = bucketKey;
+            _bucketKey = resourceProvider.BucketKey;
             _clientFactory = clientFactory;
         }
 
