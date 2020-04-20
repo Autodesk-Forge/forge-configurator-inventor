@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Autodesk.Forge.DesignAutomation.Model;
+using Microsoft.Extensions.Options;
 
 namespace WebApplication.Processing
 {
@@ -9,21 +10,23 @@ namespace WebApplication.Processing
         private readonly CreateThumbnail _thumbnailWork;
         private readonly ExtractParameters _parametersWork;
         private readonly AdoptProject _adoptWork;
+        private readonly AppBundleZipPaths _paths;
 
-        public FdaClient(Publisher publisher)
+        public FdaClient(Publisher publisher, IOptions<AppBundleZipPaths> appBundleZipPathsOptionsAccessor)
         {
             _svfWork = new CreateSVF(publisher);
             _thumbnailWork = new CreateThumbnail(publisher);
             _parametersWork = new ExtractParameters(publisher);
             _adoptWork = new AdoptProject(publisher);
+            _paths = appBundleZipPathsOptionsAccessor.Value;
         }
 
         public async Task Initialize()
         {
             // create bundles and activities
-            await _svfWork.Initialize(@"..\AppBundles\Output\CreateSVFPlugin.bundle.zip"); // TODO: move pathname to configuration?
-            await _thumbnailWork.Initialize(@"..\AppBundles\Output\CreateThumbnailPlugin.bundle.zip"); // TODO: move pathname to configuration?
-            await _parametersWork.Initialize(@"..\AppBundles\Output\ExtractParametersPlugin.bundle.zip"); // TODO: move pathname to configuration?
+            await _svfWork.Initialize(_paths.CreateSVF);
+            await _thumbnailWork.Initialize(_paths.CreateThumbnail);
+            await _parametersWork.Initialize(_paths.ExtractParameters);
             await _adoptWork.Initialize(null /* does not matter */);
         }
 

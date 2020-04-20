@@ -11,7 +11,7 @@ namespace WebApplication.Processing
     /// </summary>
     public class Arranger
     {
-        private readonly IForge _forge;
+        private readonly IForgeOSS _forge;
         private readonly string _bucketKey;
 
         // generate unique names for files. The files will be moved to correct places after hash generation.
@@ -22,7 +22,7 @@ namespace WebApplication.Processing
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Arranger(IForge forge, string bucketKey)
+        public Arranger(IForgeOSS forge, string bucketKey)
         {
             _forge = forge;
             _bucketKey = bucketKey;

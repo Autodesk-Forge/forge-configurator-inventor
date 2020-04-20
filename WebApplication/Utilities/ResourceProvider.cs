@@ -12,7 +12,7 @@ namespace WebApplication.Utilities
         {
             get
             {
-                if (_bucketName == null)
+                if (string.IsNullOrEmpty(_bucketName))
                 {
                     // bucket name generated as "project-<three first chars from client ID>-<hash of client ID>"
                     _bucketName = $"projects-{_configuration.ClientId.Substring(0, 3)}-{_configuration.HashString()}".ToLowerInvariant();
@@ -28,9 +28,10 @@ namespace WebApplication.Utilities
 
         private readonly ForgeConfiguration _configuration;
 
-        public ResourceProvider(IOptions<ForgeConfiguration> optionsAccessor, DesignAutomationClient client)
+        public ResourceProvider(IOptions<ProjectsBucket> projectsBucketOptionsAccessor, IOptions<ForgeConfiguration> forgeConfigOptionsAccessor, DesignAutomationClient client)
         {
-            _configuration = optionsAccessor.Value.Validate();
+            _bucketName = projectsBucketOptionsAccessor.Value.Name;
+            _configuration = forgeConfigOptionsAccessor.Value.Validate();
             _nickname = new Lazy<Task<string>>(async () => await client.GetNicknameAsync("me"));
         }
     }

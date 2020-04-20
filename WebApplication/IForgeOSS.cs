@@ -13,7 +13,7 @@ namespace WebApplication
         ReadWrite
     }
 
-    public interface IForge
+    public interface IForgeOSS
     {
         /// <summary>
         /// Forge configuration.
