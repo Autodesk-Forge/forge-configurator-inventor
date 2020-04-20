@@ -8,20 +8,20 @@ namespace WebApplication.Utilities
 {
     public class ResourceProvider
     {
-        public string BucketName
+        public string BucketKey
         {
             get
             {
-                if (string.IsNullOrEmpty(_bucketName))
+                if (string.IsNullOrEmpty(_bucketKey))
                 {
                     // bucket name generated as "project-<three first chars from client ID>-<hash of client ID>"
-                    _bucketName = $"projects-{_configuration.ClientId.Substring(0, 3)}-{_configuration.HashString()}".ToLowerInvariant();
+                    _bucketKey = $"projects-{_configuration.ClientId.Substring(0, 3)}-{_configuration.HashString()}".ToLowerInvariant();
                 }
 
-                return _bucketName;
+                return _bucketKey;
             }
         }
-        private string _bucketName;
+        private string _bucketKey;
 
         private readonly Lazy<Task<string>> _nickname;
         public Task<string> Nickname => _nickname.Value;
@@ -30,7 +30,7 @@ namespace WebApplication.Utilities
 
         public ResourceProvider(IOptions<ProjectsBucket> projectsBucketOptionsAccessor, IOptions<ForgeConfiguration> forgeConfigOptionsAccessor, DesignAutomationClient client)
         {
-            _bucketName = projectsBucketOptionsAccessor.Value.Name;
+            _bucketKey = projectsBucketOptionsAccessor.Value.Name;
             _configuration = forgeConfigOptionsAccessor.Value.Validate();
             _nickname = new Lazy<Task<string>>(async () => await client.GetNicknameAsync("me"));
         }
