@@ -49,10 +49,8 @@ namespace WebApplication.Tests
             DesignAutomationClient designAutomationClient = new DesignAutomationClient(forgeService);
 
             projectsBucketKey = Guid.NewGuid().ToString();
-            ProjectsBucket projectsBucket = new ProjectsBucket { Name = projectsBucketKey };
-            IOptions<ProjectsBucket> projectsBucketOptions = Options.Create(projectsBucket);
-
-            var resourceProvider = new ResourceProvider(projectsBucketOptions, forgeConfigOptions, designAutomationClient);
+            
+            var resourceProvider = new ResourceProvider(forgeConfigOptions, designAutomationClient, projectsBucketKey);
             var publisher = new Publisher(designAutomationClient, new NullLogger<Publisher>(), resourceProvider);
 
             AppBundleZipPaths appBundleZipPathsConfiguration = new AppBundleZipPaths()
@@ -132,7 +130,7 @@ namespace WebApplication.Tests
             objects = await forgeOSS.GetBucketObjects(projectsBucketKey, "cache-Basic.zip-DE160BCE36BA38F7D3778C588F3C4D69C50902D3-model-view.zip");
             Assert.Single(objects);
 
-            await initializer.Clear();
+            //await initializer.Clear();
         }
     }
 }
