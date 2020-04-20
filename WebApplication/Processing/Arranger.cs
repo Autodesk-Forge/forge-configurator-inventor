@@ -35,13 +35,17 @@ namespace WebApplication.Processing
         /// <param name="tlaFilename">Top level assembly in the ZIP. (if any)</param>
         public async Task<AdoptionData> ForAdoption(string docUrl, string tlaFilename)
         {
-            return new AdoptionData // TODO: check - can URLs be generated in parallel?
+            var urls = await Task.WhenAll(_forge.CreateSignedUrlAsync(_bucketKey, Thumbnail, ObjectAccess.Write), 
+                                            _forge.CreateSignedUrlAsync(_bucketKey, SVF, ObjectAccess.Write), 
+                                            _forge.CreateSignedUrlAsync(_bucketKey, Parameters, ObjectAccess.Write));
+
+            return new AdoptionData
             {
-                InputUrl = docUrl,
-                ThumbnailUrl = await _forge.CreateSignedUrlAsync(_bucketKey, Thumbnail, ObjectAccess.Write),
-                SvfUrl = await _forge.CreateSignedUrlAsync(_bucketKey, SVF, ObjectAccess.Write),
-                ParametersJsonUrl = await _forge.CreateSignedUrlAsync(_bucketKey, Parameters, ObjectAccess.Write),
-                TLA = tlaFilename
+                InputUrl          = docUrl,
+                ThumbnailUrl      = urls[0],
+                SvfUrl            = urls[1],
+                ParametersJsonUrl = urls[2],
+                TLA               = tlaFilename
             };
         }
 
@@ -62,13 +66,12 @@ namespace WebApplication.Processing
             Stream stream = await response.Content.ReadAsStreamAsync();
             var hashString = Crypto.GenerateStreamHashString(stream);
 
-            // move data to expected places
-            // TODO: check - can it be done in parallel?
-            await _forge.RenameObjectAsync(_bucketKey, Thumbnail, project.Attributes.Thumbnail);
-
             var keyProvider = project.KeyProvider(hashString);
-            await _forge.RenameObjectAsync(_bucketKey, SVF, keyProvider.ModelView);
-            await _forge.RenameObjectAsync(_bucketKey, Parameters, keyProvider.Parameters);
+
+            // move data to expected places
+            await Task.WhenAll(_forge.RenameObjectAsync(_bucketKey, Thumbnail, project.Attributes.Thumbnail),
+                                _forge.RenameObjectAsync(_bucketKey, SVF, keyProvider.ModelView),
+                                _forge.RenameObjectAsync(_bucketKey, Parameters, keyProvider.Parameters));
         }
     }
 }
