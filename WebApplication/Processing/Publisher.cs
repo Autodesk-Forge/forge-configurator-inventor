@@ -111,17 +111,10 @@ namespace WebApplication.Processing
             //check activity exists already
             var activityId = config.ActivityId;
             var fullActivityId = await GetFullActivityId(config);
-            var activityResponse = await _client.ActivitiesApi.GetActivityAsync(fullActivityId, throwOnError: false);
-            if (activityResponse.HttpResponse.StatusCode == HttpStatusCode.OK)
-            {
-                //remove existed activity
-                Trace($"Removing existing activity. Deleting {activityId}...");
-                await _client.ActivitiesApi.DeleteActivityAsync(activityId);
-            }
-            else
-            {
-                Trace($"The activity {activityId} does not exist.");
-            }
+            
+            //remove activity
+            Trace($"Trying  to remove existing activity. Deleting {activityId}...");
+            await _client.ActivitiesApi.DeleteActivityAsync(activityId, null, null, false);
         }
 
         private async Task DeleteAppBundleAsync(ForgeAppBase config)

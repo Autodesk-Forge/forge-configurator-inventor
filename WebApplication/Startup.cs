@@ -42,7 +42,6 @@ namespace WebApplication
             // NOTE: eventually we might want to use `AddForgeService()`, but right now it might break existing stuff
             // https://github.com/Autodesk-Forge/forge-api-dotnet-core/blob/master/src/Autodesk.Forge.Core/ServiceCollectionExtensions.cs
             services.Configure<ForgeConfiguration>(Configuration.GetSection(ForgeSectionKey));
-            services.Configure<ProjectsBucket>(Configuration.GetSection(ProjectsBucketKey));
             services.AddSingleton<ResourceProvider>();
             services.AddSingleton<IForgeOSS, ForgeOSS>(); // ER: TODO: this will fail on token expiration, need extra work to refresh token
             services.Configure<AppBundleZipPaths>(Configuration.GetSection(AppBundleZipPathsKey));

@@ -9,11 +9,6 @@
         public string ExtractParameters { get; set; }
     }
 
-    public class ProjectsBucket
-    {
-        public string Name { get; set; }
-    }
-
     public class DefaultProjectsConfiguration
     {
         public DefaultProjectConfiguration[] Projects { get; set; }
