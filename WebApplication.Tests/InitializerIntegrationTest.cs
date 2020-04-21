@@ -16,7 +16,7 @@ using Xunit;
 
 namespace WebApplication.Tests
 {
-    public class InitializerIntegrationTest : IDisposable
+    public class InitializerIntegrationTest : IAsyncLifetime
     {
         const string testZippedIamUrl = "http://testipt.s3-us-west-2.amazonaws.com/Basic.zip";
         const string testIamPathInZip = "iLogicBasic1.iam";
@@ -54,10 +54,8 @@ namespace WebApplication.Tests
             DesignAutomationClient designAutomationClient = new DesignAutomationClient(forgeService);
 
             projectsBucketKey = Guid.NewGuid().ToString();
-            ProjectsBucket projectsBucket = new ProjectsBucket { Name = projectsBucketKey };
-            IOptions<ProjectsBucket> projectsBucketOptions = Options.Create(projectsBucket);
-
-            var resourceProvider = new ResourceProvider(projectsBucketOptions, forgeConfigOptions, designAutomationClient);
+            
+            var resourceProvider = new ResourceProvider(forgeConfigOptions, designAutomationClient, projectsBucketKey);
             var publisher = new Publisher(designAutomationClient, new NullLogger<Publisher>(), resourceProvider);
 
             AppBundleZipPaths appBundleZipPathsConfiguration = new AppBundleZipPaths
@@ -81,10 +79,16 @@ namespace WebApplication.Tests
             httpClient = new HttpClient();
         }
 
-        public void Dispose()
+        public async Task InitializeAsync()
+        {
+            await initializer.ClearAsync();
+        }
+
+        public async Task DisposeAsync()
         {
             testFileDirectory.Delete(true);
             httpClient.Dispose();
+            await initializer.ClearAsync();
         }
 
         private async Task<string> DownloadTestComparisonFile(string url, string name)
@@ -117,7 +121,6 @@ namespace WebApplication.Tests
         [Fact]
         public async Task InitializeTestAsync()
         {
-            await initializer.ClearAsync();
             await initializer.InitializeAsync();
 
             // check thumbnail generated
@@ -137,8 +140,6 @@ namespace WebApplication.Tests
             // check model view generated with hashed name (zip of SVF size/content varies slightly each time so we can only check if it was created)
             objects = await forgeOSS.GetBucketObjectsAsync(projectsBucketKey, "cache-Basic.zip-DE160BCE36BA38F7D3778C588F3C4D69C50902D3-model-view.zip");
             Assert.Single(objects);
-
-            await initializer.ClearAsync();
         }
     }
 }
