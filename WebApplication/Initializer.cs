@@ -105,7 +105,7 @@ namespace WebApplication
         {
             var inputDocUrl = await _forge.CreateSignedUrlAsync(_resourceProvider.BucketKey, project.OSSSourceModel);
 
-            var adoptionData = await _arranger.ForAdoption(inputDocUrl, tlaFilename);
+            var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, tlaFilename);
 
             var status = await _fdaClient.AdoptAsync(adoptionData); // ER: think: it's a business logic, so it might not deal with low-level WI and status
             if (status.Status != Status.Success)
@@ -115,7 +115,7 @@ namespace WebApplication
             else
             {
                 // rearrange generated data according to the parameters hash
-                await _arranger.Do(project);
+                await _arranger.DoAsync(project);
             }
         }
     }
