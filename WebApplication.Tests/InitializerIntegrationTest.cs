@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using WebApplication.Processing;
 using WebApplication.Utilities;
 using Xunit;
@@ -20,11 +21,11 @@ namespace WebApplication.Tests
         const string testZippedIamUrl = "http://testipt.s3-us-west-2.amazonaws.com/Basic.zip";
         const string testIamPathInZip = "iLogicBasic1.iam";
 
-        ForgeOSS forgeOSS;
-        string projectsBucketKey;
-        Initializer initializer;
-        DirectoryInfo testFileDirectory;
-        HttpClient httpClient;
+        readonly ForgeOSS forgeOSS;
+        readonly string projectsBucketKey;
+        readonly Initializer initializer;
+        readonly DirectoryInfo testFileDirectory;
+        readonly HttpClient httpClient;
 
         public InitializerIntegrationTest()
         {
@@ -35,6 +36,10 @@ namespace WebApplication.Tests
                 .AddEnvironmentVariables()
                 .AddForgeAlternativeEnvironmentVariables()
                 .Build();
+
+            IServiceCollection services = new ServiceCollection();
+            services.AddHttpClient();
+            var serviceProvider = services.BuildServiceProvider();
 
             ForgeConfiguration forgeConfiguration = configuration.GetSection("Forge").Get<ForgeConfiguration>();
             IOptions<ForgeConfiguration> forgeConfigOptions = Options.Create(forgeConfiguration);
@@ -53,7 +58,7 @@ namespace WebApplication.Tests
             var resourceProvider = new ResourceProvider(forgeConfigOptions, designAutomationClient, projectsBucketKey);
             var publisher = new Publisher(designAutomationClient, new NullLogger<Publisher>(), resourceProvider);
 
-            AppBundleZipPaths appBundleZipPathsConfiguration = new AppBundleZipPaths()
+            AppBundleZipPaths appBundleZipPathsConfiguration = new AppBundleZipPaths
             {
                 CreateSVF = "..\\..\\..\\..\\AppBundles\\Output\\CreateSVFPlugin.bundle.zip",
                 CreateThumbnail = "..\\..\\..\\..\\AppBundles\\Output\\CreateThumbnailPlugin.bundle.zip",
@@ -64,10 +69,11 @@ namespace WebApplication.Tests
             var fdaClient = new FdaClient(publisher, appBundleZipPathsOptions);
             DefaultProjectsConfiguration defaultProjectsConfiguration = new DefaultProjectsConfiguration
             {
-                Projects = new DefaultProjectConfiguration[] { new DefaultProjectConfiguration { Url = testZippedIamUrl, TopLevelAssembly = testIamPathInZip } }
+                Projects = new [] { new DefaultProjectConfiguration { Url = testZippedIamUrl, TopLevelAssembly = testIamPathInZip } }
             };
             IOptions<DefaultProjectsConfiguration> defaultProjectsOptions = Options.Create(defaultProjectsConfiguration);
-            initializer = new Initializer(forgeOSS, resourceProvider, new NullLogger<Initializer>(), fdaClient, defaultProjectsOptions);
+            initializer = new Initializer(forgeOSS, resourceProvider, new NullLogger<Initializer>(), fdaClient, 
+                                            defaultProjectsOptions, serviceProvider.GetRequiredService<IHttpClientFactory>());
 
             testFileDirectory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()));
             httpClient = new HttpClient();
@@ -75,14 +81,14 @@ namespace WebApplication.Tests
 
         public async Task InitializeAsync()
         {
-            await initializer.Clear();
+            await initializer.ClearAsync();
         }
 
         public async Task DisposeAsync()
         {
             testFileDirectory.Delete(true);
             httpClient.Dispose();
-            await initializer.Clear();
+            await initializer.ClearAsync();
         }
 
         private async Task<string> DownloadTestComparisonFile(string url, string name)
@@ -115,24 +121,24 @@ namespace WebApplication.Tests
         [Fact]
         public async Task InitializeTestAsync()
         {
-            await initializer.Initialize();
+            await initializer.InitializeAsync();
 
             // check thumbnail generated
-            List<ObjectDetails> objects = await forgeOSS.GetBucketObjects(projectsBucketKey, "attributes-Basic.zip-thumbnail.png");
+            List<ObjectDetails> objects = await forgeOSS.GetBucketObjectsAsync(projectsBucketKey, "attributes-Basic.zip-thumbnail.png");
             Assert.Single(objects);
-            string signedOssUrl = await forgeOSS.CreateSignedUrl(projectsBucketKey, objects[0].ObjectKey);
+            string signedOssUrl = await forgeOSS.CreateSignedUrlAsync(projectsBucketKey, objects[0].ObjectKey);
             string testComparisonFilePath = await DownloadTestComparisonFile("http://testipt.s3-us-west-2.amazonaws.com/iLogicBasic1IamThumbnail.png", "iLogicBasic1IamThumbnail.png");
             await CompareOutputFileBytes(testComparisonFilePath, signedOssUrl);
 
             // check parameters generated with hashed name
-            objects = await forgeOSS.GetBucketObjects(projectsBucketKey, "cache-Basic.zip-DE160BCE36BA38F7D3778C588F3C4D69C50902D3-parameters.json");
+            objects = await forgeOSS.GetBucketObjectsAsync(projectsBucketKey, "cache-Basic.zip-DE160BCE36BA38F7D3778C588F3C4D69C50902D3-parameters.json");
             Assert.Single(objects);
-            signedOssUrl = await forgeOSS.CreateSignedUrl(projectsBucketKey, objects[0].ObjectKey);
+            signedOssUrl = await forgeOSS.CreateSignedUrlAsync(projectsBucketKey, objects[0].ObjectKey);
             testComparisonFilePath = await DownloadTestComparisonFile("http://testipt.s3-us-west-2.amazonaws.com/iLogicBasic1IamDocumentParams.json", "iLogicBasic1IamDocumentParams.json");
             await CompareOutputFileBytes(testComparisonFilePath, signedOssUrl);
 
             // check model view generated with hashed name (zip of SVF size/content varies slightly each time so we can only check if it was created)
-            objects = await forgeOSS.GetBucketObjects(projectsBucketKey, "cache-Basic.zip-DE160BCE36BA38F7D3778C588F3C4D69C50902D3-model-view.zip");
+            objects = await forgeOSS.GetBucketObjectsAsync(projectsBucketKey, "cache-Basic.zip-DE160BCE36BA38F7D3778C588F3C4D69C50902D3-model-view.zip");
             Assert.Single(objects);
         }
     }

@@ -13,6 +13,7 @@ namespace WebApplication.Processing
     {
         private readonly IForgeOSS _forge;
         private readonly string _bucketKey;
+        private readonly IHttpClientFactory _clientFactory;
 
         // generate unique names for files. The files will be moved to correct places after hash generation.
         public readonly string Parameters = $"{Guid.NewGuid():N}.json";
@@ -22,10 +23,11 @@ namespace WebApplication.Processing
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Arranger(IForgeOSS forge, string bucketKey)
+        public Arranger(IForgeOSS forge, IHttpClientFactory clientFactory, ResourceProvider resourceProvider)
         {
             _forge = forge;
-            _bucketKey = bucketKey;
+            _bucketKey = resourceProvider.BucketKey;
+            _clientFactory = clientFactory;
         }
 
         /// <summary>
@@ -35,13 +37,17 @@ namespace WebApplication.Processing
         /// <param name="tlaFilename">Top level assembly in the ZIP. (if any)</param>
         public async Task<AdoptionData> ForAdoption(string docUrl, string tlaFilename)
         {
-            return new AdoptionData // TODO: check - can URLs be generated in parallel?
+            var urls = await Task.WhenAll(_forge.CreateSignedUrlAsync(_bucketKey, Thumbnail, ObjectAccess.Write), 
+                                            _forge.CreateSignedUrlAsync(_bucketKey, SVF, ObjectAccess.Write), 
+                                            _forge.CreateSignedUrlAsync(_bucketKey, Parameters, ObjectAccess.Write));
+
+            return new AdoptionData
             {
-                InputUrl = docUrl,
-                ThumbnailUrl = await _forge.CreateSignedUrl(_bucketKey, Thumbnail, ObjectAccess.Write),
-                SvfUrl = await _forge.CreateSignedUrl(_bucketKey, SVF, ObjectAccess.Write),
-                ParametersJsonUrl = await _forge.CreateSignedUrl(_bucketKey, Parameters, ObjectAccess.Write),
-                TLA = tlaFilename
+                InputUrl          = docUrl,
+                ThumbnailUrl      = urls[0],
+                SvfUrl            = urls[1],
+                ParametersJsonUrl = urls[2],
+                TLA               = tlaFilename
             };
         }
 
@@ -51,24 +57,23 @@ namespace WebApplication.Processing
         /// </summary>
         public async Task Do(Project project)
         {
-            using var client = new HttpClient(); // TODO: should we have cache for it?
+            var client = _clientFactory.CreateClient();
 
             // rearrange generated data according to the parameters hash
-            var url = await _forge.CreateSignedUrl(_bucketKey, Parameters);
-            using var response = await client.GetAsync(url).ConfigureAwait(false);
+            var url = await _forge.CreateSignedUrlAsync(_bucketKey, Parameters);
+            using var response = await client.GetAsync(url);
             response.EnsureSuccessStatusCode();
 
             // generate hash for parameters
             Stream stream = await response.Content.ReadAsStreamAsync();
             var hashString = Crypto.GenerateStreamHashString(stream);
 
-            // move data to expected places
-            // TODO: check - can it be done in parallel?
-            await _forge.RenameObject(_bucketKey, Thumbnail, project.Attributes.Thumbnail);
-
             var keyProvider = project.KeyProvider(hashString);
-            await _forge.RenameObject(_bucketKey, SVF, keyProvider.ModelView);
-            await _forge.RenameObject(_bucketKey, Parameters, keyProvider.Parameters);
+
+            // move data to expected places
+            await Task.WhenAll(_forge.RenameObjectAsync(_bucketKey, Thumbnail, project.Attributes.Thumbnail),
+                                _forge.RenameObjectAsync(_bucketKey, SVF, keyProvider.ModelView),
+                                _forge.RenameObjectAsync(_bucketKey, Parameters, keyProvider.Parameters));
         }
     }
 }
