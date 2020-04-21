@@ -50,6 +50,7 @@ namespace WebApplication
             services.AddSingleton<FdaClient>();
             services.Configure<DefaultProjectsConfiguration>(Configuration.GetSection(DefaultProjectsSectionKey));
             services.AddTransient<Initializer>();
+            services.AddTransient<Arranger>();
             services.AddSingleton<DesignAutomationClient>(provider =>
                                     {
                                         var forge = provider.GetService<IForgeOSS>();

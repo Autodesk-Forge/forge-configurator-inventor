@@ -51,14 +51,14 @@ namespace WebApplication.Tests
                 InnerHandler = new HttpClientHandler()
             };
             var forgeService = new ForgeService(new HttpClient(httpMessageHandler));
-            DesignAutomationClient designAutomationClient = new DesignAutomationClient(forgeService);
+            var designAutomationClient = new DesignAutomationClient(forgeService);
 
             projectsBucketKey = Guid.NewGuid().ToString();
             
             var resourceProvider = new ResourceProvider(forgeConfigOptions, designAutomationClient, projectsBucketKey);
             var publisher = new Publisher(designAutomationClient, new NullLogger<Publisher>(), resourceProvider);
 
-            AppBundleZipPaths appBundleZipPathsConfiguration = new AppBundleZipPaths
+            var appBundleZipPathsConfiguration = new AppBundleZipPaths
             {
                 CreateSVF = "..\\..\\..\\..\\AppBundles\\Output\\CreateSVFPlugin.bundle.zip",
                 CreateThumbnail = "..\\..\\..\\..\\AppBundles\\Output\\CreateThumbnailPlugin.bundle.zip",
@@ -67,13 +67,15 @@ namespace WebApplication.Tests
             IOptions<AppBundleZipPaths> appBundleZipPathsOptions = Options.Create(appBundleZipPathsConfiguration);
 
             var fdaClient = new FdaClient(publisher, appBundleZipPathsOptions);
-            DefaultProjectsConfiguration defaultProjectsConfiguration = new DefaultProjectsConfiguration
+            var defaultProjectsConfiguration = new DefaultProjectsConfiguration
             {
                 Projects = new [] { new DefaultProjectConfiguration { Url = testZippedIamUrl, TopLevelAssembly = testIamPathInZip } }
             };
             IOptions<DefaultProjectsConfiguration> defaultProjectsOptions = Options.Create(defaultProjectsConfiguration);
+            var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
+            var arranger = new Arranger(forgeOSS, httpClientFactory, resourceProvider);
             initializer = new Initializer(forgeOSS, resourceProvider, new NullLogger<Initializer>(), fdaClient, 
-                                            defaultProjectsOptions, serviceProvider.GetRequiredService<IHttpClientFactory>());
+                                            defaultProjectsOptions, httpClientFactory, arranger);
 
             testFileDirectory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()));
             httpClient = new HttpClient();
