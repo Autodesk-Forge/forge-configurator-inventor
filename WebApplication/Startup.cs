@@ -19,7 +19,6 @@ namespace WebApplication
     {
         private const string ForgeSectionKey = "Forge";
         private const string AppBundleZipPathsKey = "AppBundleZipPaths";
-        private const string ProjectsBucketKey = "ProjectsBucket";
         private const string DefaultProjectsSectionKey = "DefaultProjects";
 
         public Startup(IConfiguration configuration)

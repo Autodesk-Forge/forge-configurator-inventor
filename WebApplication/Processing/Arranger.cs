@@ -78,7 +78,7 @@ namespace WebApplication.Processing
             await Task.WhenAll(_forge.RenameObjectAsync(_bucketKey, Thumbnail, project.Attributes.Thumbnail),
                                 _forge.RenameObjectAsync(_bucketKey, SVF, keyProvider.ModelView),
                                 _forge.RenameObjectAsync(_bucketKey, Parameters, keyProvider.Parameters),
-                                _forge.UploadObjectAsync(_bucketKey, attributesStream, project.Attributes.Attributes));
+                                _forge.UploadObjectAsync(_bucketKey, attributesStream, project.Attributes.Metadata));
         }
 
         /// <summary>

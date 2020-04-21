@@ -56,7 +56,7 @@ namespace WebApplication.Utilities
     }
 
     /// <summary>
-    /// Project owned filenames in Attributes directory.
+    /// Project owned filenames in Metadata directory.
     /// </summary>
     public class AttributesNameProvider : BaseNameProvider
     {
@@ -66,9 +66,9 @@ namespace WebApplication.Utilities
         public string Thumbnail => ToFullName("thumbnail.png");
 
         /// <summary>
-        /// Filename of JSON file with project attributes.
+        /// Filename of JSON file with project metadata.
         /// </summary>
-        public string Attributes => ToFullName("attributes.json");
+        public string Metadata => ToFullName("metadata.json");
 
         /// <summary>
         /// Constructor.
