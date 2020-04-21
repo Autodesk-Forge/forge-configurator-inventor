@@ -58,10 +58,7 @@ namespace WebApplication.Processing
         public async Task DoAsync(Project project)
         {
             var hashString = await GenerateParametersHashAsync();
-
             var attributes = new ProjectAttributes { Hash = hashString };
-
-            // serialize the attributes as JSON to memory stream
             var keyProvider = project.KeyProvider(hashString);
 
             // move data to expected places
