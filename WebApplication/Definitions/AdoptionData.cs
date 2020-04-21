@@ -1,4 +1,4 @@
-namespace WebApplication.Processing
+namespace WebApplication.Definitions
 {
     /// <summary>
     /// All data required for project adoption.

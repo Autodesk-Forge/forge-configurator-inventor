@@ -1,4 +1,4 @@
-namespace WebApplication
+namespace WebApplication.Definitions
 {
     public class ProjectDTO
     {

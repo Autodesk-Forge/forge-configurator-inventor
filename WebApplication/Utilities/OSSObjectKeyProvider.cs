@@ -66,6 +66,11 @@ namespace WebApplication.Utilities
         public string Thumbnail => ToFullName("thumbnail.png");
 
         /// <summary>
+        /// Filename of JSON file with project attributes.
+        /// </summary>
+        public string Attributes => ToFullName("attributes.json");
+
+        /// <summary>
         /// Constructor.
         /// </summary>
         public AttributesNameProvider(string projectName) : base($"{ONC.AttributesFolder}-{projectName}") {}

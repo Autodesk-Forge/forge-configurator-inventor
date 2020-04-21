@@ -1,13 +1,15 @@
 using System;
 using System.IO;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
+using WebApplication.Definitions;
 using WebApplication.Utilities;
 
 namespace WebApplication.Processing
 {
     /// <summary>
-    /// Class to place generated data files to expected place.
+    /// Class to place generated data files to expected places.
     /// </summary>
     public class Arranger
     {
@@ -19,6 +21,7 @@ namespace WebApplication.Processing
         public readonly string Parameters = $"{Guid.NewGuid():N}.json";
         public readonly string Thumbnail = $"{Guid.NewGuid():N}.png";
         public readonly string SVF = $"{Guid.NewGuid():N}.zip";
+        private static readonly JsonSerializerOptions SerializerOptions = new JsonSerializerOptions { WriteIndented = true };
 
         /// <summary>
         /// Constructor.
@@ -57,6 +60,33 @@ namespace WebApplication.Processing
         /// </summary>
         public async Task Do(Project project)
         {
+            var hashString = await GenerateParametersHash();
+
+            var attributes = new ProjectAttributes { Hash = hashString };
+
+            // serialize the attributes as JSON to memory stream
+            await using var attributesStream = new MemoryStream();
+            using (var jsonWriter = new Utf8JsonWriter(attributesStream))
+            {
+                JsonSerializer.Serialize(jsonWriter, attributes, typeof(ProjectAttributes), SerializerOptions);
+            }
+            attributesStream.Position = 0;
+
+            var keyProvider = project.KeyProvider(hashString);
+
+            // move data to expected places
+            await Task.WhenAll(_forge.RenameObjectAsync(_bucketKey, Thumbnail, project.Attributes.Thumbnail),
+                                _forge.RenameObjectAsync(_bucketKey, SVF, keyProvider.ModelView),
+                                _forge.RenameObjectAsync(_bucketKey, Parameters, keyProvider.Parameters),
+                                _forge.UploadObjectAsync(_bucketKey, attributesStream, project.Attributes.Attributes));
+        }
+
+        /// <summary>
+        /// Generate hash string for the _temporary_ parameters json.
+        /// </summary>
+        /// <returns></returns>
+        private async Task<string> GenerateParametersHash()
+        {
             var client = _clientFactory.CreateClient();
 
             // rearrange generated data according to the parameters hash
@@ -65,15 +95,8 @@ namespace WebApplication.Processing
             response.EnsureSuccessStatusCode();
 
             // generate hash for parameters
-            Stream stream = await response.Content.ReadAsStreamAsync();
-            var hashString = Crypto.GenerateStreamHashString(stream);
-
-            var keyProvider = project.KeyProvider(hashString);
-
-            // move data to expected places
-            await Task.WhenAll(_forge.RenameObjectAsync(_bucketKey, Thumbnail, project.Attributes.Thumbnail),
-                                _forge.RenameObjectAsync(_bucketKey, SVF, keyProvider.ModelView),
-                                _forge.RenameObjectAsync(_bucketKey, Parameters, keyProvider.Parameters));
+            var stream = await response.Content.ReadAsStreamAsync();
+            return Crypto.GenerateStreamHashString(stream);
         }
     }
 }

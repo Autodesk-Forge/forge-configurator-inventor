@@ -1,4 +1,6 @@
-﻿namespace WebApplication.Processing
+﻿using WebApplication.Definitions;
+
+namespace WebApplication.Processing
 {
     /// <summary>
     /// Extract parameters from Inventor document.

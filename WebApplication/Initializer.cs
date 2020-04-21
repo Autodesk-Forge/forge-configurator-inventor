@@ -6,6 +6,7 @@ using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using WebApplication.Definitions;
 using WebApplication.Processing;
 using WebApplication.Utilities;
 
@@ -51,7 +52,7 @@ namespace WebApplication
 
             // download default project files from the public location
             // specified by the appsettings.json
-            var client = _httpClientFactory.CreateClient();
+            var httpClient = _httpClientFactory.CreateClient();
 
             foreach (DefaultProjectConfiguration defaultProjectConfig in _defaultProjectsConfiguration.Projects)
             {
@@ -63,7 +64,7 @@ namespace WebApplication
                 var project = new Project(projectName);
 
                 _logger.LogInformation($"Download {projectUrl}");
-                using (HttpResponseMessage response = await client.GetAsync(projectUrl))
+                using (HttpResponseMessage response = await httpClient.GetAsync(projectUrl))
                 {
                     response.EnsureSuccessStatusCode();
 
