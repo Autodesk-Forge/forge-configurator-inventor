@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -64,14 +65,59 @@ namespace WebApplication
                 var project = new Project(projectName);
 
                 _logger.LogInformation($"Download {projectUrl}");
-                using (HttpResponseMessage response = await httpClient.GetAsync(projectUrl))
+                using (HttpResponseMessage response = await httpClient.GetAsync(projectUrl, HttpCompletionOption.ResponseHeadersRead))
                 {
                     response.EnsureSuccessStatusCode();
 
                     _logger.LogInformation("Upload to the app bucket");
 
-                    Stream stream = await response.Content.ReadAsStreamAsync();
-                    await _forge.UploadObjectAsync(_resourceProvider.BucketKey, stream, project.OSSSourceModel);
+                    // store project localy
+                    string path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+
+                    using (FileStream fs = new FileStream(path, FileMode.CreateNew))
+                    {
+                        await response.Content.CopyToAsync(fs);
+
+                        // determine if we need to upload in chunks or in the one piece
+                        long sizeToUpload = fs.Length;
+                        long chunkMBSize = 5;
+                        long chunkSize = chunkMBSize * 1024 * 1024; // 2MB is minimal
+
+                        // use chunks for all files greater then chunk size
+                        if (sizeToUpload > chunkSize)
+                        {
+                            long chunksCnt = (long)((sizeToUpload + chunkSize - 1) / chunkSize);
+
+                            _logger.LogInformation($"Uploading in {chunksCnt} x {chunkMBSize}MB chunks");
+
+                            string sessionId = Guid.NewGuid().ToString();
+                            long begin = 0;
+                            long end = chunkSize - 1;
+
+                            for (int idx = 0; idx < chunksCnt; idx++)
+                            {
+                                long count = chunkSize;
+                                byte[] buffer = new byte[count];
+                                // jump to requested position
+                                fs.Seek(begin, SeekOrigin.Begin);
+                                fs.Read(buffer, 0, (int)count);
+                                using (MemoryStream chunkStream = new MemoryStream(buffer))
+                                {
+                                    string contentRange = string.Format($"bytes {begin}-{end}/{sizeToUpload}");
+                                    await _forge.UploadChunkAsync(_resourceProvider.BucketKey, chunkStream, project.OSSSourceModel, contentRange, sessionId);
+                                }
+                                begin = end + 1;
+                                chunkSize = ((begin + chunkSize > sizeToUpload) ? sizeToUpload - begin : chunkSize);
+                                end = begin + chunkSize - 1;
+                            }
+                        }
+                        else
+                        {
+                            // jump to begin
+                            fs.Seek(0, SeekOrigin.Begin);
+                            await _forge.UploadObjectAsync(_resourceProvider.BucketKey, fs, project.OSSSourceModel);
+                        }
+                    }
                 }
 
                 _logger.LogInformation("Adopt the project");
