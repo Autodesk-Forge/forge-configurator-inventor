@@ -13,18 +13,18 @@ namespace WebApplication
         ReadWrite
     }
 
-    public interface IForge
+    public interface IForgeOSS
     {
         /// <summary>
         /// Forge configuration.
         /// </summary>
         ForgeConfiguration Configuration { get; }
 
-        Task<List<ObjectDetails>> GetBucketObjects(string bucketKey, string beginsWith = null);
-        Task CreateBucket(string name);
-        Task DeleteBucket(string name);
-        Task CreateEmptyObject(string bucketKey, string objectName);
-        Task UploadObject(string bucketKey, Stream stream, string objectName);
+        Task<List<ObjectDetails>> GetBucketObjectsAsync(string bucketKey, string beginsWith = null);
+        Task CreateBucketAsync(string name);
+        Task DeleteBucketAsync(string name);
+        Task CreateEmptyObjectAsync(string bucketKey, string objectName);
+        Task UploadObjectAsync(string bucketKey, Stream stream, string objectName);
 
         /// <summary>
         /// Generate a signed URL to OSS object.
@@ -35,6 +35,14 @@ namespace WebApplication
         /// <param name="access">Requested access to the object.</param>
         /// <param name="minutesExpiration">Minutes while the URL is valid. Default is 30 minutes.</param>
         /// <returns>Signed URL</returns>
-        Task<string> CreateSignedUrl(string bucketKey, string objectName, ObjectAccess access = ObjectAccess.Read, int minutesExpiration = 30);
+        Task<string> CreateSignedUrlAsync(string bucketKey, string objectName, ObjectAccess access = ObjectAccess.Read, int minutesExpiration = 30);
+
+        /// <summary>
+        /// Rename object.
+        /// </summary>
+        /// <param name="bucketKey">Bucket key.</param>
+        /// <param name="oldName">Old object name.</param>
+        /// <param name="newName">New object name.</param>
+        Task RenameObjectAsync(string bucketKey, string oldName, string newName);
     }
 }

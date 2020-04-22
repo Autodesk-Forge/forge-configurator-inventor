@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Autodesk.Forge.DesignAutomation.Model;
+using WebApplication.Definitions;
 
 namespace WebApplication.Processing
 {
@@ -57,7 +58,7 @@ namespace WebApplication.Processing
         /// Initialize app bundle and activity.
         /// </summary>
         /// <param name="packagePathname">Pathname to the package.</param>
-        public Task Initialize(string packagePathname)
+        public Task InitializeAsync(string packagePathname)
         {
             return Publisher.InitializeAsync(packagePathname, this);
         }
@@ -66,7 +67,7 @@ namespace WebApplication.Processing
         /// Remove app bundle and activity.
         /// </summary>
         /// <returns></returns>
-        public Task CleanUp()
+        public Task CleanUpAsync()
         {
             return Publisher.CleanUpAsync(this);
         }
@@ -75,7 +76,7 @@ namespace WebApplication.Processing
         /// Run work items.
         /// </summary>
         /// <param name="args">Work item arguments.</param>
-        protected Task<WorkItemStatus> Run(Dictionary<string, IArgument> args)
+        protected Task<WorkItemStatus> RunAsync(Dictionary<string, IArgument> args)
         {
             return Publisher.RunWorkItemAsync(args, this);
         }
@@ -83,29 +84,11 @@ namespace WebApplication.Processing
         /// <summary>
         /// Process IPT or Zipped IAM file.
         /// </summary>
-        public Task<WorkItemStatus> Process(AdoptionData projectData)
+        public Task<WorkItemStatus> ProcessAsync(AdoptionData projectData)
         {
             var args = projectData.IsAssembly ? ToIamArguments(projectData) : ToIptArguments(projectData);
 
-            return Run(args);
-        }
-
-        /// <summary>
-        /// Process IPT file.
-        /// </summary>
-        public Task<WorkItemStatus> ProcessIpt(string url, string outputUrl)
-        {
-            var args = ToIptArguments(url, outputUrl);
-            return Run(args);
-        }
-
-        /// <summary>
-        /// Process Zipped IAM file.
-        /// </summary>
-        public Task<WorkItemStatus> ProcessZippedIam(string url, string pathInZip, string outputUrl)
-        {
-            var args = ToIamArguments(url, pathInZip, outputUrl);
-            return Run(args);
+            return RunAsync(args);
         }
 
         /// <summary>
@@ -181,8 +164,6 @@ namespace WebApplication.Processing
         /// Name of the output parameter.
         /// </summary>
         public string OutputParameterName => Id + "Output";
-
-
 
         /// <summary>
         /// Activity parameters.

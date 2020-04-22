@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using WebApplication.Definitions;
 using WebApplication.Processing;
 using WebApplication.Utilities;
 
@@ -17,6 +18,8 @@ namespace WebApplication
     public class Startup
     {
         private const string ForgeSectionKey = "Forge";
+        private const string AppBundleZipPathsKey = "AppBundleZipPaths";
+        private const string DefaultProjectsSectionKey = "DefaultProjects";
 
         public Startup(IConfiguration configuration)
         {
@@ -36,16 +39,21 @@ namespace WebApplication
                 configuration.RootPath = "ClientApp/build";
             });
 
+            services.AddHttpClient();
+
             // NOTE: eventually we might want to use `AddForgeService()`, but right now it might break existing stuff
             // https://github.com/Autodesk-Forge/forge-api-dotnet-core/blob/master/src/Autodesk.Forge.Core/ServiceCollectionExtensions.cs
             services.Configure<ForgeConfiguration>(Configuration.GetSection(ForgeSectionKey));
             services.AddSingleton<ResourceProvider>();
-            services.AddSingleton<IForge, Forge>(); // ER: TODO: this will fail on token expiration, need extra work to refresh token
+            services.AddSingleton<IForgeOSS, ForgeOSS>(); // ER: TODO: this will fail on token expiration, need extra work to refresh token
+            services.Configure<AppBundleZipPaths>(Configuration.GetSection(AppBundleZipPathsKey));
             services.AddSingleton<FdaClient>();
+            services.Configure<DefaultProjectsConfiguration>(Configuration.GetSection(DefaultProjectsSectionKey));
             services.AddTransient<Initializer>();
+            services.AddTransient<Arranger>();
             services.AddSingleton<DesignAutomationClient>(provider =>
                                     {
-                                        var forge = provider.GetService<IForge>();
+                                        var forge = provider.GetService<IForgeOSS>();
                                         var httpMessageHandler = new ForgeHandler(Options.Create(forge.Configuration))
                                         {
                                             InnerHandler = new HttpClientHandler()
@@ -62,13 +70,13 @@ namespace WebApplication
             if(Configuration.GetValue<bool>("clear"))
             {
                 logger.LogInformation("-- Clean up --");
-                initializer.Clear().Wait();
+                initializer.ClearAsync().Wait();
             }
 
             if(Configuration.GetValue<bool>("initialize"))
             {
                 logger.LogInformation("-- Initialization --");
-                initializer.Initialize().Wait();
+                initializer.InitializeAsync().Wait();
             }
 
             if (env.IsDevelopment())

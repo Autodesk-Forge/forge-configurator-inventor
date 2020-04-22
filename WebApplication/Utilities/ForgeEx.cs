@@ -35,7 +35,7 @@ namespace WebApplication.Utilities
         public static string HashString(this ForgeConfiguration configuration)
         {
             var hashBytes = configuration.Hash();
-            return BitConverter.ToString(hashBytes).Replace("-", "");
+            return Crypto.BytesToString(hashBytes);
         }
     }
 }
