@@ -40,15 +40,13 @@ namespace WebApplication.Controllers
             foreach(ObjectDetails objDetails in objects)
             {
                 var project = Project.FromObjectKey(objDetails.ObjectKey);
-                await _localStorage.Prepare(project, _forge, httpClient, _resourceProvider.BucketKey);
+                await _localStorage.EnsureLocalAsync(project, httpClient);
                 
                 projectDTOs.Add(new ProjectDTO { 
                                     Id = project.Name,
                                     Label = project.Name,
                                     Image = project.HrefThumbnail
                                 });
-
-                
             }
             return projectDTOs;
         }

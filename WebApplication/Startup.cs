@@ -65,7 +65,7 @@ namespace WebApplication
                                         return new DesignAutomationClient(forgeService);
                                     });
             services.AddSingleton<Publisher>();
-            services.AddSingleton<LocalStorage>(_ => new LocalStorage(Directory.GetCurrentDirectory()));
+            services.AddSingleton<LocalStorage>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
