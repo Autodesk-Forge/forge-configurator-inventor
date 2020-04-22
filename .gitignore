@@ -233,4 +233,7 @@ _Pvt_Extensions
 
 appsettings.Local.json
 Output/
-WebApplication/LocalCache/
+
+# preserve `LocalCache` dir
+WebApplication/LocalCache/*
+!WebApplication/LocalCache/placeholder.txt
