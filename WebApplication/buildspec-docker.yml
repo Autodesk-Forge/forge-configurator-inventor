@@ -10,8 +10,9 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - echo Building Docker test image...
+      - echo Getting AppBundles Zips
       - aws s3 cp --recursive s3://sdra-build/AppBundles/ ./WebApplication/AppBundles
+      - echo Building Docker test image...
       - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG --build-arg COMMIT_ID=$CODEBUILD_RESOLVED_SOURCE_VERSION WebApplication/
       - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
   post_build:

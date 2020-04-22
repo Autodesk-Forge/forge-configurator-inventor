@@ -14,6 +14,7 @@ RUN dotnet publish -c Release
 
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
 COPY --from=build /app/bin/Release/netcoreapp3.1/publish/ app/
+COPY --from=build /app/AppBundles/ app/AppBundles/
 WORKDIR /app
 
 COPY --from=build amazon-cloudwatch-agent.deb .
