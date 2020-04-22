@@ -233,3 +233,4 @@ _Pvt_Extensions
 
 appsettings.Local.json
 Output/
+WebApplication/LocalCache/
