@@ -36,6 +36,7 @@ namespace WebApplication
         public string HrefThumbnail { get; }
 
         public OSSObjectKeyProvider KeyProvider(string hash) => new OSSObjectKeyProvider(Name, hash);
+
         public AttributesNameProvider Attributes { get; }
     }
 }

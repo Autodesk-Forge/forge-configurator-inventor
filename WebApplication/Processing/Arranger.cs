@@ -1,13 +1,13 @@
 using System;
-using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using WebApplication.Definitions;
 using WebApplication.Utilities;
 
 namespace WebApplication.Processing
 {
     /// <summary>
-    /// Class to place generated data files to expected place.
+    /// Class to place generated data files to expected places.
     /// </summary>
     public class Arranger
     {
@@ -35,7 +35,7 @@ namespace WebApplication.Processing
         /// </summary>
         /// <param name="docUrl">URL to the input Inventor document (IPT or zipped IAM)</param>
         /// <param name="tlaFilename">Top level assembly in the ZIP. (if any)</param>
-        public async Task<AdoptionData> ForAdoption(string docUrl, string tlaFilename)
+        public async Task<AdoptionData> ForAdoptionAsync(string docUrl, string tlaFilename)
         {
             var urls = await Task.WhenAll(_forge.CreateSignedUrlAsync(_bucketKey, Thumbnail, ObjectAccess.Write), 
                                             _forge.CreateSignedUrlAsync(_bucketKey, SVF, ObjectAccess.Write), 
@@ -55,7 +55,24 @@ namespace WebApplication.Processing
         /// Move OSS objects to correct places.
         /// NOTE: it's expected that the data is generated already.
         /// </summary>
-        public async Task Do(Project project)
+        public async Task DoAsync(Project project)
+        {
+            var hashString = await GenerateParametersHashAsync();
+            var attributes = new ProjectAttributes { Hash = hashString };
+            var keyProvider = project.KeyProvider(hashString);
+
+            // move data to expected places
+            await Task.WhenAll(_forge.RenameObjectAsync(_bucketKey, Thumbnail, project.Attributes.Thumbnail),
+                _forge.RenameObjectAsync(_bucketKey, SVF, keyProvider.ModelView),
+                _forge.RenameObjectAsync(_bucketKey, Parameters, keyProvider.Parameters),
+                _forge.UploadObjectAsync(_bucketKey, Json.ToStream(attributes), project.Attributes.Metadata));
+        }
+
+
+        /// <summary>
+        /// Generate hash string for the _temporary_ parameters json.
+        /// </summary>
+        private async Task<string> GenerateParametersHashAsync()
         {
             var client = _clientFactory.CreateClient();
 
@@ -65,15 +82,8 @@ namespace WebApplication.Processing
             response.EnsureSuccessStatusCode();
 
             // generate hash for parameters
-            Stream stream = await response.Content.ReadAsStreamAsync();
-            var hashString = Crypto.GenerateStreamHashString(stream);
-
-            var keyProvider = project.KeyProvider(hashString);
-
-            // move data to expected places
-            await Task.WhenAll(_forge.RenameObjectAsync(_bucketKey, Thumbnail, project.Attributes.Thumbnail),
-                                _forge.RenameObjectAsync(_bucketKey, SVF, keyProvider.ModelView),
-                                _forge.RenameObjectAsync(_bucketKey, Parameters, keyProvider.Parameters));
+            var stream = await response.Content.ReadAsStreamAsync();
+            return Crypto.GenerateStreamHashString(stream);
         }
     }
 }

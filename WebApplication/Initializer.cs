@@ -6,6 +6,7 @@ using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using WebApplication.Definitions;
 using WebApplication.Processing;
 using WebApplication.Utilities;
 
@@ -18,20 +19,22 @@ namespace WebApplication
         private readonly ILogger<Initializer> _logger;
         private readonly DefaultProjectsConfiguration _defaultProjectsConfiguration;
         private readonly FdaClient _fdaClient;
-        private readonly IHttpClientFactory _clientFactory;
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly Arranger _arranger;
 
         /// <summary>
         /// Constructor.
         /// </summary>
         public Initializer(IForgeOSS forge, ResourceProvider resourceProvider, ILogger<Initializer> logger,
                             FdaClient fdaClient, IOptions<DefaultProjectsConfiguration> optionsAccessor,
-                            IHttpClientFactory clientFactory)
+                            IHttpClientFactory httpClientFactory, Arranger arranger)
         {
             _forge = forge;
             _resourceProvider = resourceProvider;
             _logger = logger;
             _fdaClient = fdaClient;
-            _clientFactory = clientFactory;
+            _httpClientFactory = httpClientFactory;
+            _arranger = arranger;
             _defaultProjectsConfiguration = optionsAccessor.Value;
         }
 
@@ -47,11 +50,9 @@ namespace WebApplication
             await _forge.CreateBucketAsync(_resourceProvider.BucketKey);
             _logger.LogInformation($"Bucket {_resourceProvider.BucketKey} created");
 
-            var arranger = new Arranger(_forge, _clientFactory, _resourceProvider);
-
             // download default project files from the public location
             // specified by the appsettings.json
-            var client = _clientFactory.CreateClient();
+            var httpClient = _httpClientFactory.CreateClient();
 
             foreach (DefaultProjectConfiguration defaultProjectConfig in _defaultProjectsConfiguration.Projects)
             {
@@ -63,7 +64,7 @@ namespace WebApplication
                 var project = new Project(projectName);
 
                 _logger.LogInformation($"Download {projectUrl}");
-                using (HttpResponseMessage response = await client.GetAsync(projectUrl))
+                using (HttpResponseMessage response = await httpClient.GetAsync(projectUrl))
                 {
                     response.EnsureSuccessStatusCode();
 
@@ -74,7 +75,7 @@ namespace WebApplication
                 }
 
                 _logger.LogInformation("Adopt the project");
-                await AdoptAsync(arranger, project, tlaFilename);
+                await AdoptAsync(project, tlaFilename);
             }
 
             _logger.LogInformation("Added default projects.");
@@ -100,11 +101,11 @@ namespace WebApplication
         /// <summary>
         /// Adapt the project.
         /// </summary>
-        private async Task AdoptAsync(Arranger arranger, Project project, string tlaFilename)
+        private async Task AdoptAsync(Project project, string tlaFilename)
         {
             var inputDocUrl = await _forge.CreateSignedUrlAsync(_resourceProvider.BucketKey, project.OSSSourceModel);
 
-            var adoptionData = await arranger.ForAdoption(inputDocUrl, tlaFilename);
+            var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, tlaFilename);
 
             var status = await _fdaClient.AdoptAsync(adoptionData); // ER: think: it's a business logic, so it might not deal with low-level WI and status
             if (status.Status != Status.Success)
@@ -114,7 +115,7 @@ namespace WebApplication
             else
             {
                 // rearrange generated data according to the parameters hash
-                await arranger.Do(project);
+                await _arranger.DoAsync(project);
             }
         }
     }

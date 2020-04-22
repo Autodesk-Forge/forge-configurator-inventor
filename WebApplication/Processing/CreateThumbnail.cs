@@ -1,4 +1,6 @@
-﻿namespace WebApplication.Processing
+﻿using WebApplication.Definitions;
+
+namespace WebApplication.Processing
 {
     /// <summary>
     /// Generate PNG thumbnail for Inventor document.

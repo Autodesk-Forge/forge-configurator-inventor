@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using WebApplication.Definitions;
 using WebApplication.Processing;
 using WebApplication.Utilities;
 
@@ -18,7 +19,6 @@ namespace WebApplication
     {
         private const string ForgeSectionKey = "Forge";
         private const string AppBundleZipPathsKey = "AppBundleZipPaths";
-        private const string ProjectsBucketKey = "ProjectsBucket";
         private const string DefaultProjectsSectionKey = "DefaultProjects";
 
         public Startup(IConfiguration configuration)
@@ -50,6 +50,7 @@ namespace WebApplication
             services.AddSingleton<FdaClient>();
             services.Configure<DefaultProjectsConfiguration>(Configuration.GetSection(DefaultProjectsSectionKey));
             services.AddTransient<Initializer>();
+            services.AddTransient<Arranger>();
             services.AddSingleton<DesignAutomationClient>(provider =>
                                     {
                                         var forge = provider.GetService<IForgeOSS>();

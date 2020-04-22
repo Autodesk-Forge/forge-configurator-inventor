@@ -1,4 +1,4 @@
-﻿namespace WebApplication
+﻿namespace WebApplication.Definitions
 {
     // Strongly typed classes for settings defined in appsettings.json to be deserialized to
 
