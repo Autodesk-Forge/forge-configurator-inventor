@@ -11,5 +11,5 @@ phases:
       - msbuild
 artifacts:
   files:
-    - '**/*'
+    - '*'
   
