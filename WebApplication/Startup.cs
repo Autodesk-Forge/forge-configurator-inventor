@@ -65,10 +65,11 @@ namespace WebApplication
                                         return new DesignAutomationClient(forgeService);
                                     });
             services.AddSingleton<Publisher>();
+            services.AddSingleton<LocalStorage>(_ => new LocalStorage(Directory.GetCurrentDirectory()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Initializer initializer, ILogger<Startup> logger)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Initializer initializer, ILogger<Startup> logger, LocalStorage localStorage)
         {
             if(Configuration.GetValue<bool>("clear"))
             {
@@ -97,11 +98,10 @@ namespace WebApplication
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
-            // expose 'LocalCache' dir as 'data' virtual dir to serve locally cached OSS files
-            var localDir = Path.Combine(Directory.GetCurrentDirectory(), "LocalCache");
+            // expose local cache dir as 'data' virtual dir to serve locally cached OSS files
             app.UseStaticFiles(new StaticFileOptions
             {
-                FileProvider = new PhysicalFileProvider(localDir),
+                FileProvider = new PhysicalFileProvider(localStorage.LocalDir),
                 RequestPath = new PathString("/data")
             });
 

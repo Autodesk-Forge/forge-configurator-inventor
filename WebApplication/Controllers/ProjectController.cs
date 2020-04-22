@@ -18,13 +18,15 @@ namespace WebApplication.Controllers
         private readonly IForgeOSS _forge;
         private readonly ResourceProvider _resourceProvider;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly LocalStorage _localStorage;
 
-        public ProjectController(ILogger<ProjectController> logger, IForgeOSS forge, ResourceProvider resourceProvider, IHttpClientFactory httpClientFactory)
+        public ProjectController(ILogger<ProjectController> logger, IForgeOSS forge, ResourceProvider resourceProvider, IHttpClientFactory httpClientFactory, LocalStorage localStorage)
         {
             _logger = logger;
             _forge = forge;
             _resourceProvider = resourceProvider;
             _httpClientFactory = httpClientFactory;
+            _localStorage = localStorage;
         }
 
         [HttpGet("")]
@@ -38,14 +40,15 @@ namespace WebApplication.Controllers
             foreach(ObjectDetails objDetails in objects)
             {
                 var project = Project.FromObjectKey(objDetails.ObjectKey);
+                await _localStorage.Prepare(project, _forge, httpClient, _resourceProvider.BucketKey);
+                
                 projectDTOs.Add(new ProjectDTO { 
-                    Id = project.Name,
-                    Label = project.Name,
-                    Image = project.HrefThumbnail });
+                                    Id = project.Name,
+                                    Label = project.Name,
+                                    Image = project.HrefThumbnail
+                                });
 
-                var thumbnailUrl = await _forge.CreateSignedUrlAsync(_resourceProvider.BucketKey, project.Attributes.Thumbnail);
-                var localFile = Path.Combine(Directory.GetCurrentDirectory(), "LocalCache", project.Attributes.Thumbnail);
-                await httpClient.Download(thumbnailUrl, localFile);
+                
             }
             return projectDTOs;
         }
