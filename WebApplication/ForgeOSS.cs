@@ -85,18 +85,18 @@ namespace WebApplication
         /// <summary>
         /// Create bucket with given name
         /// </summary>
-        /// <param name="bucketName">The bucket name.</param>
-        public async Task CreateBucketAsync(string bucketName)
+        /// <param name="bucketKey">The bucket name.</param>
+        public async Task CreateBucketAsync(string bucketKey)
         {
             var api = await GetBucketsApiAsync();
-            var payload = new PostBucketsPayload(bucketName, /*allow*/null, PostBucketsPayload.PolicyKeyEnum.Persistent);
+            var payload = new PostBucketsPayload(bucketKey, /*allow*/null, PostBucketsPayload.PolicyKeyEnum.Persistent);
             await api.CreateBucketAsync(payload, /* use default (US region) */ null);
         }
 
-        public async Task DeleteBucketAsync(string bucketName)
+        public async Task DeleteBucketAsync(string bucketKey)
         {
             var api = await GetBucketsApiAsync();
-            await api.DeleteBucketAsync(bucketName);
+            await api.DeleteBucketAsync(bucketKey);
         }
 
         public async Task CreateEmptyObjectAsync(string bucketKey, string objectName)
@@ -131,6 +131,11 @@ namespace WebApplication
             await objectsApi.UploadObjectAsync(bucketKey, objectName, 0, stream);
         }
 
+        public async Task UploadChunkAsync(string bucketKey, Stream stream, string objectName, string contentRange, string sessionId)
+        {
+            ObjectsApi objectsApi = await GetObjectsApiAsync();
+            await objectsApi.UploadChunkAsync(bucketKey, objectName, (int)stream.Length, contentRange, sessionId, stream);
+        }
         /// <summary>
         /// Rename object.
         /// </summary>
