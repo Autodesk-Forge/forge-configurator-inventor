@@ -71,19 +71,19 @@ namespace WebApplication
 
                     _logger.LogInformation("Upload to the app bucket");
 
-                    // store project localy
+                    // store project locally
                     string path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
                     using (FileStream fs = new FileStream(path, FileMode.CreateNew))
                     {
                         await response.Content.CopyToAsync(fs);
 
-                        // determine if we need to upload in chunks or in the one piece
+                        // determine if we need to upload in chunks or in one piece
                         long sizeToUpload = fs.Length;
                         long chunkMBSize = 5;
                         long chunkSize = chunkMBSize * 1024 * 1024; // 2MB is minimal
 
-                        // use chunks for all files greater then chunk size
+                        // use chunks for all files greater than chunk size
                         if (sizeToUpload > chunkSize)
                         {
                             long chunksCnt = (long)((sizeToUpload + chunkSize - 1) / chunkSize);
@@ -113,7 +113,7 @@ namespace WebApplication
                         }
                         else
                         {
-                            // jump to begin
+                            // jump to beginning
                             fs.Seek(0, SeekOrigin.Begin);
                             await _forge.UploadObjectAsync(_resourceProvider.BucketKey, fs, project.OSSSourceModel);
                         }
