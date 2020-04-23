@@ -99,6 +99,8 @@ namespace WebApplication
 
             // expose 'LocalCache' dir as 'data' virtual dir to serve locally cached OSS files
             var localDir = Path.Combine(Directory.GetCurrentDirectory(), "LocalCache");
+            // make sure that directory exists
+            System.IO.Directory.CreateDirectory(localDir);
             app.UseStaticFiles(new StaticFileOptions
             {
                 FileProvider = new PhysicalFileProvider(localDir),
