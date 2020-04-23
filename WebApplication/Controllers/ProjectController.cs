@@ -40,7 +40,7 @@ namespace WebApplication.Controllers
             foreach(ObjectDetails objDetails in objects)
             {
                 var project = Project.FromObjectKey(objDetails.ObjectKey);
-                await _localStorage.EnsureLocalAsync(project, httpClient);
+                //await _localStorage.EnsureLocalAsync(httpClient, project);
                 
                 projectDTOs.Add(new ProjectDTO { 
                                     Id = project.Name,

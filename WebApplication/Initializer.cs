@@ -22,13 +22,14 @@ namespace WebApplication
         private readonly FdaClient _fdaClient;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly Arranger _arranger;
+        private readonly LocalStorage _localStorage;
 
         /// <summary>
         /// Constructor.
         /// </summary>
         public Initializer(IForgeOSS forge, ResourceProvider resourceProvider, ILogger<Initializer> logger,
                             FdaClient fdaClient, IOptions<DefaultProjectsConfiguration> optionsAccessor,
-                            IHttpClientFactory httpClientFactory, Arranger arranger)
+                            IHttpClientFactory httpClientFactory, Arranger arranger, LocalStorage localStorage)
         {
             _forge = forge;
             _resourceProvider = resourceProvider;
@@ -36,6 +37,7 @@ namespace WebApplication
             _fdaClient = fdaClient;
             _httpClientFactory = httpClientFactory;
             _arranger = arranger;
+            _localStorage = localStorage;
             _defaultProjectsConfiguration = optionsAccessor.Value;
         }
 
@@ -131,7 +133,7 @@ namespace WebApplication
                 }
 
                 _logger.LogInformation("Adopt the project");
-                await AdoptAsync(project, tlaFilename);
+                await AdoptAsync(httpClient, project, tlaFilename);
             }
 
             _logger.LogInformation("Added default projects.");
@@ -157,7 +159,7 @@ namespace WebApplication
         /// <summary>
         /// Adapt the project.
         /// </summary>
-        private async Task AdoptAsync(Project project, string tlaFilename)
+        private async Task AdoptAsync(HttpClient httpClient, Project project, string tlaFilename)
         {
             var inputDocUrl = await _forge.CreateSignedUrlAsync(_resourceProvider.BucketKey, project.OSSSourceModel);
 
@@ -172,6 +174,9 @@ namespace WebApplication
             {
                 // rearrange generated data according to the parameters hash
                 await _arranger.DoAsync(project);
+
+                // and now cache the generate stuff locally
+                await _localStorage.EnsureLocalAsync(httpClient, project);
             }
         }
     }
