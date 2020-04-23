@@ -93,11 +93,11 @@ namespace WebApplication
                             string sessionId = Guid.NewGuid().ToString();
                             long begin = 0;
                             long end = chunkSize - 1;
+                            long count = chunkSize;
+                            byte[] buffer = new byte[count];
 
                             for (int idx = 0; idx < chunksCnt; idx++)
                             {
-                                long count = chunkSize;
-                                byte[] buffer = new byte[count];
                                 // jump to requested position
                                 fs.Seek(begin, SeekOrigin.Begin);
                                 fs.Read(buffer, 0, (int)count);
@@ -108,6 +108,14 @@ namespace WebApplication
                                 }
                                 begin = end + 1;
                                 chunkSize = ((begin + chunkSize > sizeToUpload) ? sizeToUpload - begin : chunkSize);
+                                // for the last chunk there should be smaller count of bytes to read
+                                if (chunkSize > 0 && chunkSize != count)
+                                {
+                                    // reset to the new size for the LAST chunk
+                                    count = chunkSize;
+                                    buffer = new byte[count];
+                                }
+
                                 end = begin + chunkSize - 1;
                             }
                         }
@@ -118,6 +126,8 @@ namespace WebApplication
                             await _forge.UploadObjectAsync(_resourceProvider.BucketKey, fs, project.OSSSourceModel);
                         }
                     }
+                    // delete local temporary file
+                    File.Delete(path);
                 }
 
                 _logger.LogInformation("Adopt the project");
