@@ -1,11 +1,14 @@
+using System.IO;
 using System.Net.Http;
 using Autodesk.Forge.Core;
 using Autodesk.Forge.DesignAutomation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -93,6 +96,15 @@ namespace WebApplication
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
+            // expose 'LocalCache' dir as 'data' virtual dir to serve locally cached OSS files
+            var localDir = Path.Combine(Directory.GetCurrentDirectory(), "LocalCache");
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(localDir),
+                RequestPath = new PathString("/data")
+            });
+
             app.UseSpaStaticFiles();
 
             app.UseRouting();
