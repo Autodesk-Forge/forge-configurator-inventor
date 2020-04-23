@@ -14,20 +14,20 @@ namespace WebApplication
     /// </summary>
     public class LocalStorage
     {
-        private readonly IForgeOSS _forge;
         private readonly Project _project;
+        private readonly ResourceProvider _resourceProvider;
         private readonly string _baseDir;
         private readonly INameProvider _localNames;
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        public LocalStorage(IForgeOSS forge, Project project, string rootDir)
+        public LocalStorage(Project project, ResourceProvider resourceProvider)
         {
-            _forge = forge;
             _project = project;
+            _resourceProvider = resourceProvider;
 
-            _baseDir = Path.Combine(rootDir, _project.Name);
+            _baseDir = Path.Combine(resourceProvider.LocalRootName, _project.Name);
             Directory.CreateDirectory(_baseDir);
 
             _localNames = _project.LocalNames(_baseDir);
@@ -36,24 +36,26 @@ namespace WebApplication
         /// <summary>
         /// Ensure the project is cached locally.
         /// </summary>
-        public async Task EnsureLocalAsync(HttpClient httpClient, string bucketKey)
+        public async Task EnsureLocalAsync(HttpClient httpClient)
         {
             // get thumbnail
-            await DownloadFileAsync(httpClient, bucketKey, _project.Attributes, LocalName.Thumbnail);
+            var thumbnailUrl = await GetUrlAsync(_project.Attributes.Thumbnail);
+            await DownloadFileAsync(httpClient, LocalName.Thumbnail, thumbnailUrl);
 
             // get metadata and extract project attributes
-            var metadataFile = await DownloadFileAsync(httpClient, bucketKey, _project.Attributes, LocalName.Metadata);
+            var metadataUrl = await GetUrlAsync(_project.Attributes.Metadata);
+            var metadataFile = await DownloadFileAsync(httpClient, LocalName.Metadata, metadataUrl);
 
             var fileContent = await File.ReadAllTextAsync(metadataFile, Encoding.UTF8);
             var projectAttributes = JsonSerializer.Deserialize<ProjectAttributes>(fileContent);
 
             // download ZIP with SVF model
-            var paramsHash = projectAttributes.Hash;
-            var keyProvider = _project.KeyProvider(paramsHash);
-            var svfModelZip = await DownloadFileAsync(httpClient, bucketKey, keyProvider, LocalName.ModelView);
+            var keyProvider = _project.KeyProvider(projectAttributes.Hash);
+            var svfUrl = await GetUrlAsync(keyProvider.ModelView);
+            var svfModelZip = await DownloadFileAsync(httpClient, LocalName.ModelView, svfUrl);
 
             // extract SVF from the archive
-            var svfDir = Path.Combine(_baseDir, "svf", paramsHash);
+            var svfDir = Path.Combine(_baseDir, "svf", projectAttributes.Hash);
             ZipFile.ExtractToDirectory(svfModelZip, svfDir, overwriteFiles: true); // TODO: non-default encoding is not supported
 
             File.Delete(svfModelZip);
@@ -61,12 +63,20 @@ namespace WebApplication
             // TODO: write marker file
         }
 
-        private async Task<string> DownloadFileAsync(HttpClient httpClient, string bucketKey, INameProvider ossNames, string localFile)
+        private Task<string> GetUrlAsync(INameProvider nameProvider, string fileName)
         {
-            var signedUrl = await _forge.CreateSignedUrlAsync(bucketKey, ossNames.ToFullName(localFile));
+            return _resourceProvider.CreateSignedUrlAsync(nameProvider.ToFullName(fileName));
+        }
 
+        private Task<string> GetUrlAsync(string fileName)
+        {
+            return _resourceProvider.CreateSignedUrlAsync(fileName);
+        }
+
+        private async Task<string> DownloadFileAsync(HttpClient httpClient, string localFile, string url)
+        {
             var localFullName = _localNames.ToFullName(localFile);
-            await httpClient.DownloadAsync(signedUrl, localFullName);
+            await httpClient.DownloadAsync(url, localFullName);
             return localFullName;
         }
     }

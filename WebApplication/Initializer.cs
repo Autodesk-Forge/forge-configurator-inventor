@@ -174,8 +174,8 @@ namespace WebApplication
                 await _arranger.DoAsync(project);
 
                 // and now cache the generate stuff locally
-                var projectLocalStorage = new LocalStorage(_forge, _resourceProvider, project, _resourceProvider.LocalRootName);
-                await projectLocalStorage.EnsureLocalAsync(httpClient, _resourceProvider.BucketKey);
+                var projectLocalStorage = new LocalStorage(project, _resourceProvider);
+                await projectLocalStorage.EnsureLocalAsync(httpClient);
             }
         }
     }
