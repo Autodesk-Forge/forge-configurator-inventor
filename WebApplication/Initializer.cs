@@ -101,7 +101,7 @@ namespace WebApplication
                                 // jump to requested position
                                 fs.Seek(begin, SeekOrigin.Begin);
                                 fs.Read(buffer, 0, (int)count);
-                                using (MemoryStream chunkStream = new MemoryStream(buffer))
+                                using (MemoryStream chunkStream = new MemoryStream(buffer, 0, (int)count))
                                 {
                                     string contentRange = string.Format($"bytes {begin}-{end}/{sizeToUpload}");
                                     await _forge.UploadChunkAsync(_resourceProvider.BucketKey, chunkStream, project.OSSSourceModel, contentRange, sessionId);
@@ -113,7 +113,6 @@ namespace WebApplication
                                 {
                                     // reset to the new size for the LAST chunk
                                     count = chunkSize;
-                                    buffer = new byte[count];
                                 }
 
                                 end = begin + chunkSize - 1;
