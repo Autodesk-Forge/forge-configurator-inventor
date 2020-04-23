@@ -96,7 +96,7 @@ namespace WebApplication.Tests
 
         private async Task<string> DownloadTestComparisonFile(string url, string name)
         {
-            HttpResponseMessage response = await httpClient.GetAsync(url);
+            HttpResponseMessage response = await httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
             string path = Path.Combine(testFileDirectory.FullName, name);
             using (var fs = new FileStream(path, FileMode.CreateNew))
             {

@@ -45,7 +45,7 @@ namespace WebApplication.Controllers
 
                 var thumbnailUrl = await _forge.CreateSignedUrlAsync(_resourceProvider.BucketKey, project.Attributes.Thumbnail);
                 var localFile = Path.Combine(Directory.GetCurrentDirectory(), "LocalCache", project.Attributes.Thumbnail);
-                await httpClient.Download(thumbnailUrl, localFile);
+                await httpClient.DownloadAsync(thumbnailUrl, localFile);
             }
             return projectDTOs;
         }
