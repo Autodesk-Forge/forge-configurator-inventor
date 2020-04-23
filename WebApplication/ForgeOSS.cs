@@ -131,6 +131,11 @@ namespace WebApplication
             await objectsApi.UploadObjectAsync(bucketKey, objectName, 0, stream);
         }
 
+        public async Task UploadChunkAsync(string bucketKey, Stream stream, string objectName, string contentRange, string sessionId)
+        {
+            ObjectsApi objectsApi = await GetObjectsApiAsync();
+            await objectsApi.UploadChunkAsync(bucketKey, objectName, (int)stream.Length, contentRange, sessionId, stream);
+        }
         /// <summary>
         /// Rename object.
         /// </summary>

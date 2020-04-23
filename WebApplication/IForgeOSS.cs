@@ -25,6 +25,7 @@ namespace WebApplication
         Task DeleteBucketAsync(string bucketKey);
         Task CreateEmptyObjectAsync(string bucketKey, string objectName);
         Task UploadObjectAsync(string bucketKey, Stream stream, string objectName);
+        Task UploadChunkAsync(string bucketKey, Stream stream, string objectName, string contentRange, string sessionId);
 
         /// <summary>
         /// Generate a signed URL to OSS object.
