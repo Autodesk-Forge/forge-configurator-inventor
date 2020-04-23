@@ -159,7 +159,7 @@ namespace WebApplication
         /// </summary>
         private async Task AdoptAsync(HttpClient httpClient, Project project, string tlaFilename)
         {
-            var inputDocUrl = await _forge.CreateSignedUrlAsync(_resourceProvider.BucketKey, project.OSSSourceModel);
+            var inputDocUrl = await _resourceProvider.CreateSignedUrlAsync(project.OSSSourceModel);
 
             var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, tlaFilename);
 
@@ -174,7 +174,7 @@ namespace WebApplication
                 await _arranger.DoAsync(project);
 
                 // and now cache the generate stuff locally
-                var projectLocalStorage = new LocalStorage(project, _resourceProvider);
+                var projectLocalStorage = new ProjectStorage(project, _resourceProvider);
                 await projectLocalStorage.EnsureLocalAsync(httpClient);
             }
         }

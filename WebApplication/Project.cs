@@ -36,8 +36,17 @@ namespace WebApplication
         public string HrefThumbnail { get; }
 
         public OSSObjectKeyProvider KeyProvider(string hash) => new OSSObjectKeyProvider(Name, hash);
-        public INameProvider LocalNames(string baseDir) => new LocalNameProvider(baseDir);
 
+        /// <summary>
+        /// Get local names converted for the given base dir.
+        /// </summary>
+        /// <param name="baseDir"></param>
+        /// <returns></returns>
+        public LocalNameConverter LocalNames(string baseDir) => new LocalNameConverter(baseDir, Name);
+
+        /// <summary>
+        /// Filename converter for project attributes (metadata, thumbnails, etc.)
+        /// </summary>
         public AttributesNameProvider Attributes { get; }
     }
 }

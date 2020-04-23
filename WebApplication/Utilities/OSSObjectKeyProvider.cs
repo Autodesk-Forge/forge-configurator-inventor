@@ -21,6 +21,11 @@ namespace WebApplication.Utilities
         /// ZIP archive with SVF model.
         /// </summary>
         public const string ModelView = "model-view.zip";
+
+        /// <summary>
+        /// Marker file, serves as a flag that project is locally cached.
+        /// </summary>
+        internal const string Marker = "__marker";
     }
 
     /// <summary>
@@ -34,7 +39,10 @@ namespace WebApplication.Utilities
         public const string AttributesFolder = "attributes";
     }
 
-    public interface INameProvider
+    /// <summary>
+    /// Convert filename to full name.
+    /// </summary>
+    public interface INameConverter
     {
         /// <summary>
         /// Generate full name for the filename.
@@ -43,13 +51,13 @@ namespace WebApplication.Utilities
     }
 
     /// <summary>
-    /// OSS does not support directories, so emulate them with long file OssNameProviderBasenames.
+    /// OSS does not support directories, so emulate folders with long file names.
     /// </summary>
-    public class OssNameProvider : INameProvider
+    public class OssNameConverter : INameConverter
     {
         private readonly string _namePrefix;
 
-        public OssNameProvider(string namePrefix)
+        public OssNameConverter(string namePrefix)
         {
             _namePrefix = namePrefix;
         }
@@ -63,13 +71,16 @@ namespace WebApplication.Utilities
         }
     }
 
-    public class LocalNameProvider : INameProvider
+    /// <summary>
+    /// Convert relative filenames to fullnames.
+    /// </summary>
+    public class LocalNameConverter : INameConverter
     {
-        private readonly string _baseDir;
+        public string BaseDir { get; }
 
-        public LocalNameProvider(string baseDir)
+        public LocalNameConverter(string rootDir, string projectDir)
         {
-            _baseDir = baseDir;
+            BaseDir = Path.Combine(rootDir, projectDir);
         }
 
         /// <summary>
@@ -77,14 +88,14 @@ namespace WebApplication.Utilities
         /// </summary>
         public virtual string ToFullName(string fileName)
         {
-            return Path.Combine(_baseDir, fileName);
+            return Path.Combine(BaseDir, fileName);
         }
     }
 
     /// <summary>
     /// Project owned filenames under "parameters hash" directory.
     /// </summary>
-    public class OSSObjectKeyProvider : OssNameProvider
+    public class OSSObjectKeyProvider : OssNameConverter
     {
         public OSSObjectKeyProvider(string projectName, string parametersHash) : 
                 base($"{ONC.CacheFolder}-{projectName}-{parametersHash}") {}
@@ -110,7 +121,7 @@ namespace WebApplication.Utilities
     /// <summary>
     /// Project owned filenames in Attributes directory at OSS.
     /// </summary>
-    public class AttributesNameProvider : OssNameProvider
+    public class AttributesNameConverter : OssNameConverter
     {
         /// <summary>
         /// Filename for thumbnail image.
@@ -125,6 +136,6 @@ namespace WebApplication.Utilities
         /// <summary>
         /// Constructor.
         /// </summary>
-        public AttributesNameProvider(string projectName) : base($"{ONC.AttributesFolder}-{projectName}") {}
+        public AttributesNameConverter(string projectName) : base($"{ONC.AttributesFolder}-{projectName}") {}
     }
 }
