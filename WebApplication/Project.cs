@@ -5,7 +5,7 @@ namespace WebApplication
 {
     public class Project
     {
-        public Project(string projectName) 
+        public Project(string projectName)
         {
             if(Name == string.Empty)
             {
@@ -32,10 +32,11 @@ namespace WebApplication
         }
 
         public string Name { get; }
-        public string OSSSourceModel {get; }
+        public string OSSSourceModel { get; }
         public string HrefThumbnail { get; }
 
         public OSSObjectKeyProvider KeyProvider(string hash) => new OSSObjectKeyProvider(Name, hash);
+        public INameProvider LocalNames(string baseDir) => new LocalNameProvider(baseDir);
 
         public AttributesNameProvider Attributes { get; }
     }

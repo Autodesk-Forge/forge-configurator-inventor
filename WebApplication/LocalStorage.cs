@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.IO.Compression;
 using System.Net.Http;
 using System.Text;
@@ -42,38 +41,41 @@ namespace WebApplication
         /// <summary>
         /// Ensure the project is cached locally.
         /// </summary>
-        public async Task EnsureLocalAsync(Project project, HttpClient httpClient)
+        public async Task EnsureLocalAsync(HttpClient httpClient, Project project)
         {
             string baseDir = Path.Combine(LocalDir, project.Name);
             Directory.CreateDirectory(baseDir);
 
+            var localNames = project.LocalNames(baseDir);
+
             // get thumbnail
-            await DownloadFileAsync(httpClient, baseDir, project.Attributes.Thumbnail);
+            await DownloadFileAsync(httpClient, project.Attributes, localNames, LocalName.Thumbnail);
 
             // get metadata and extract project attributes
-            var metadataFile = await DownloadFileAsync(httpClient, baseDir, project.Attributes.Metadata);
+            var metadataFile = await DownloadFileAsync(httpClient, project.Attributes, localNames, LocalName.Metadata);
 
             var fileContent = await File.ReadAllTextAsync(metadataFile, Encoding.UTF8);
             var projectAttributes = JsonSerializer.Deserialize<ProjectAttributes>(fileContent);
 
-            // download SVF model
+            // download ZIP with SVF model
             var paramsHash = projectAttributes.Hash;
             var keyProvider = project.KeyProvider(paramsHash);
-            var svfModelZip = await DownloadFileAsync(httpClient, baseDir, keyProvider.ModelView);
+            var svfModelZip = await DownloadFileAsync(httpClient, keyProvider, localNames, LocalName.ModelView);
 
+            // extract SVF from the archive
             var svfDir = Path.Combine(baseDir, "svf", paramsHash);
             ZipFile.ExtractToDirectory(svfModelZip, svfDir, overwriteFiles: true); // TODO: non-default encoding is not supported
 
             File.Delete(svfModelZip);
         }
 
-        private async Task<string> DownloadFileAsync(HttpClient httpClient, string baseDir, string relativeFile)
+        private async Task<string> DownloadFileAsync(HttpClient httpClient, INameProvider ossNames, INameProvider localNames, string localFile)
         {
-            var signedUrl = await _forge.CreateSignedUrlAsync(_resourceProvider.BucketKey, relativeFile);
+            var signedUrl = await _forge.CreateSignedUrlAsync(_resourceProvider.BucketKey, ossNames.ToFullName(localFile));
 
-            var localFile = Path.Combine(baseDir, relativeFile);
-            await httpClient.DownloadAsync(signedUrl, localFile);
-            return localFile;
+            var localFullName = localNames.ToFullName(localFile);
+            await httpClient.DownloadAsync(signedUrl, localFullName);
+            return localFullName;
         }
     }
 }
