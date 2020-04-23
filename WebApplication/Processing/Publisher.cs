@@ -55,7 +55,7 @@ namespace WebApplication.Processing
         {
             if (! config.HasBundle) return;
 
-            Trace($"looking for bundle '{packagePathname}'. Current Directory is '{Directory.GetCurrentDirectory()}'. Dir: '{string.Join("", Directory.GetDirectories(Directory.GetCurrentDirectory()))}'");
+            Trace($"Looking for bundle '{packagePathname}'");
 
             if (!File.Exists(packagePathname))
                 throw new Exception("App Bundle with package is not found.");
