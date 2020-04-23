@@ -39,20 +39,17 @@ namespace WebApplication
         public async Task EnsureLocalAsync(HttpClient httpClient)
         {
             // get thumbnail
-            var thumbnailUrl = await GetUrlAsync(_project.Attributes.Thumbnail);
-            await DownloadFileAsync(httpClient, LocalName.Thumbnail, thumbnailUrl);
+            await DownloadFileAsync(httpClient, _project.Attributes, LocalName.Thumbnail);
 
             // get metadata and extract project attributes
-            var metadataUrl = await GetUrlAsync(_project.Attributes.Metadata);
-            var metadataFile = await DownloadFileAsync(httpClient, LocalName.Metadata, metadataUrl);
+            var metadataFile = await DownloadFileAsync(httpClient, _project.Attributes, LocalName.Metadata);
 
             var fileContent = await File.ReadAllTextAsync(metadataFile, Encoding.UTF8);
             var projectAttributes = JsonSerializer.Deserialize<ProjectAttributes>(fileContent);
 
             // download ZIP with SVF model
             var keyProvider = _project.KeyProvider(projectAttributes.Hash);
-            var svfUrl = await GetUrlAsync(keyProvider.ModelView);
-            var svfModelZip = await DownloadFileAsync(httpClient, LocalName.ModelView, svfUrl);
+            var svfModelZip = await DownloadFileAsync(httpClient, keyProvider, LocalName.ModelView);
 
             // extract SVF from the archive
             var svfDir = Path.Combine(_baseDir, "svf", projectAttributes.Hash);
@@ -63,19 +60,15 @@ namespace WebApplication
             // TODO: write marker file
         }
 
-        private Task<string> GetUrlAsync(INameProvider nameProvider, string fileName)
+        private async Task<string> DownloadFileAsync(HttpClient httpClient, INameProvider nameProvider, string localFile)
         {
-            return _resourceProvider.CreateSignedUrlAsync(nameProvider.ToFullName(fileName));
-        }
+            // generate filename for destination file
+            string localFullName = _localNames.ToFullName(localFile);
 
-        private Task<string> GetUrlAsync(string fileName)
-        {
-            return _resourceProvider.CreateSignedUrlAsync(fileName);
-        }
+            // generate signed URL to the OSS object
+            string url = await _resourceProvider.CreateSignedUrlAsync(nameProvider.ToFullName(localFile));
 
-        private async Task<string> DownloadFileAsync(HttpClient httpClient, string localFile, string url)
-        {
-            var localFullName = _localNames.ToFullName(localFile);
+            // and download the file
             await httpClient.DownloadAsync(url, localFullName);
             return localFullName;
         }
