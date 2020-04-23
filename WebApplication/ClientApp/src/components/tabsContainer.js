@@ -17,8 +17,10 @@ export class TabsContainer extends Component {
     }
 
     render() {
-        var currentProject = this.props.projectList.projects.find(proj => proj.id === this.props.projectList.activeProjectId);
-        var viewableUrn = `/data/${currentProject.currentHash}/svf/bubble.json`;
+        var currentHash = this.props.projectList.projects?.find(proj => proj.id === this.props.projectList.activeProjectId)?.currentHash;
+        var viewableUrn = currentHash ? `/data/${currentHash}/svf/bubble.json` : null;
+
+        console.log(`viewableUrn: ${viewableUrn}`);
 
         return (
             <div className="tabsContainer">
