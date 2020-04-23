@@ -22,14 +22,13 @@ namespace WebApplication
         private readonly FdaClient _fdaClient;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly Arranger _arranger;
-        private readonly LocalStorage _localStorage;
 
         /// <summary>
         /// Constructor.
         /// </summary>
         public Initializer(IForgeOSS forge, ResourceProvider resourceProvider, ILogger<Initializer> logger,
                             FdaClient fdaClient, IOptions<DefaultProjectsConfiguration> optionsAccessor,
-                            IHttpClientFactory httpClientFactory, Arranger arranger, LocalStorage localStorage)
+                            IHttpClientFactory httpClientFactory, Arranger arranger)
         {
             _forge = forge;
             _resourceProvider = resourceProvider;
@@ -37,7 +36,6 @@ namespace WebApplication
             _fdaClient = fdaClient;
             _httpClientFactory = httpClientFactory;
             _arranger = arranger;
-            _localStorage = localStorage;
             _defaultProjectsConfiguration = optionsAccessor.Value;
         }
 
@@ -176,7 +174,8 @@ namespace WebApplication
                 await _arranger.DoAsync(project);
 
                 // and now cache the generate stuff locally
-                await _localStorage.EnsureLocalAsync(httpClient, project);
+                var projectLocalStorage = new LocalStorage(_forge, _resourceProvider, project, _resourceProvider.LocalRootName);
+                await projectLocalStorage.EnsureLocalAsync(httpClient, _resourceProvider.BucketKey);
             }
         }
     }
