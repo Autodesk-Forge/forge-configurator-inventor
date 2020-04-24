@@ -121,7 +121,7 @@ namespace WebApplication.Utilities
     /// <summary>
     /// Project owned filenames in Attributes directory at OSS.
     /// </summary>
-    public class AttributesNameConverter : OssNameConverter
+    public class AttributesNameProvider : OssNameConverter
     {
         /// <summary>
         /// Filename for thumbnail image.
@@ -136,6 +136,6 @@ namespace WebApplication.Utilities
         /// <summary>
         /// Constructor.
         /// </summary>
-        public AttributesNameConverter(string projectName) : base($"{ONC.AttributesFolder}-{projectName}") {}
+        public AttributesNameProvider(string projectName) : base($"{ONC.AttributesFolder}-{projectName}") {}
     }
 }

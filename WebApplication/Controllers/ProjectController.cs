@@ -38,7 +38,7 @@ namespace WebApplication.Controllers
                                     Id = project.Name,
                                     Label = project.Name,
                                     Image = project.HrefThumbnail,
-                                    Hash = projectStorage.Attributes.Hash
+                                    Hash = projectStorage.Metadata.Hash
                                 });
             }
             return projectDTOs;

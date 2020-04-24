@@ -15,6 +15,10 @@ namespace WebApplication
     {
         private readonly Project _project;
         private readonly ResourceProvider _resourceProvider;
+
+        /// <summary>
+        /// Converter from a filename to a fullpath name.
+        /// </summary>
         private readonly LocalNameConverter _localNames;
 
         /// <summary>
@@ -62,14 +66,14 @@ namespace WebApplication
             // ensure the directory exists
             Directory.CreateDirectory(_localNames.BaseDir);
 
+            // get 'filename to OSS attribute name' converter
+            var ossAttributeConverter = _project.Attributes;
 
-            var ossAttributes = _project.Attributes;
-
-            // get metadata
-            await DownloadFileAsync(httpClient, ossAttributes, LocalName.Metadata);
-
-            // get thumbnail
-            await DownloadFileAsync(httpClient, ossAttributes, LocalName.Thumbnail);
+            // download metadata and thumbnail
+            await Task.WhenAll(
+                                DownloadFileAsync(httpClient, ossAttributeConverter, LocalName.Metadata),
+                                DownloadFileAsync(httpClient, ossAttributeConverter, LocalName.Thumbnail)
+                            );
 
             // download ZIP with SVF model
             // NOTE: this step is impossible without having project metadata,
@@ -86,6 +90,13 @@ namespace WebApplication
             await File.WriteAllTextAsync(MarkerFile, "done");
         }
 
+        /// <summary>
+        /// Downloads OSS file locally.
+        ///
+        /// The same file has different names locally and at OSS (to overcome situation that OSS does not support directories),
+        /// so it's enough to have a "short" filename, which can be converted to long OSS object name (by <paramref name="ossNameConverter"/>),
+        /// or fullpath for local file (by <see cref="_localNames"/> converter).
+        /// </summary>
         private async Task<string> DownloadFileAsync(HttpClient httpClient, INameConverter ossNameConverter, string fileName)
         {
             // generate fullname for destination file
