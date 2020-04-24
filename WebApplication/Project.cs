@@ -5,9 +5,9 @@ namespace WebApplication
 {
     public class Project
     {
-        public Project(string projectName)
+        public Project(string projectName, string rootDir)
         {
-            if(Name == string.Empty)
+            if (string.IsNullOrEmpty(projectName))
             {
                 throw new ArgumentException("Initializing Project with empty name", nameof(projectName));
             }
@@ -17,10 +17,12 @@ namespace WebApplication
             OSSSourceModel = $"{ONC.ProjectsFolder}-{projectName}";
             HrefThumbnail = "bike.png"; // temporary icon
 
-            Attributes = new AttributesNameProvider(projectName);
+            OssAttributes = new OssAttributes(projectName);
+
+            LocalAttributes = new LocalAttributes(rootDir, Name);
         }
 
-        public static Project FromObjectKey(string objectKey)
+        public static Project FromObjectKey(string objectKey, string rootDir)
         {
             if(!objectKey.StartsWith($"{ONC.ProjectsFolder}-"))
             {
@@ -28,25 +30,24 @@ namespace WebApplication
             }
 
             var projectName = objectKey.Substring(ONC.ProjectsFolder.Length+1);
-            return new Project(projectName);
+            return new Project(projectName, rootDir);
         }
 
         public string Name { get; }
         public string OSSSourceModel { get; }
         public string HrefThumbnail { get; }
 
-        public OSSObjectKeyProvider KeyProvider(string hash) => new OSSObjectKeyProvider(Name, hash);
+        public OSSObjectNameProvider OssNameProvider(string hash) => new OSSObjectNameProvider(Name, hash);
+        public LocalNameProvider LocalNameProvider(string hash) => new LocalNameProvider(LocalAttributes.BaseDir, hash);
 
         /// <summary>
-        /// Get local names converted for the given base dir.
+        /// Full local names for project attribute files.
         /// </summary>
-        /// <param name="baseDir"></param>
-        /// <returns></returns>
-        public LocalNameConverter LocalNames(string baseDir) => new LocalNameConverter(baseDir, Name);
+        public LocalAttributes LocalAttributes { get; }
 
         /// <summary>
-        /// Filename converter for project attributes (metadata, thumbnails, etc.)
+        /// Full names for project attributes files (metadata, thumbnails, etc.) at OSS.
         /// </summary>
-        public AttributesNameProvider Attributes { get; }
+        public OssAttributes OssAttributes { get; }
     }
 }

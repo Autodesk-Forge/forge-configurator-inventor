@@ -61,13 +61,13 @@ namespace WebApplication.Processing
         {
             var hashString = await GenerateParametersHashAsync();
             var attributes = new ProjectMetadata { Hash = hashString };
-            var keyProvider = project.KeyProvider(hashString);
+            var keyProvider = project.OssNameProvider(hashString);
 
             // move data to expected places
-            await Task.WhenAll(_forge.RenameObjectAsync(_bucketKey, Thumbnail, project.Attributes.Thumbnail),
+            await Task.WhenAll(_forge.RenameObjectAsync(_bucketKey, Thumbnail, project.OssAttributes.Thumbnail),
                                 _forge.RenameObjectAsync(_bucketKey, SVF, keyProvider.ModelView),
                                 _forge.RenameObjectAsync(_bucketKey, Parameters, keyProvider.Parameters),
-                                _forge.UploadObjectAsync(_bucketKey, Json.ToStream(attributes), project.Attributes.Metadata));
+                                _forge.UploadObjectAsync(_bucketKey, Json.ToStream(attributes), project.OssAttributes.Metadata));
         }
 
 

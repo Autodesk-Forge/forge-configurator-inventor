@@ -62,7 +62,7 @@ namespace WebApplication
 
                 string[] urlParts = projectUrl.Split("/");
                 string projectName = urlParts[^1];
-                var project = new Project(projectName);
+                var project = new Project(projectName, _resourceProvider.LocalRootName);
 
                 _logger.LogInformation($"Download {projectUrl}");
                 using (HttpResponseMessage response = await httpClient.GetAsync(projectUrl, HttpCompletionOption.ResponseHeadersRead))
@@ -151,6 +151,9 @@ namespace WebApplication
 
             // delete bundles and activities
             await _fdaClient.CleanUpAsync();
+
+            // cleanup locally cached files
+            Directory.Delete(_resourceProvider.LocalRootName, true);
         }
 
         /// <summary>

@@ -5,8 +5,10 @@ namespace WebApplication.Utilities
     /// <summary>
     /// Names for local files.
     /// </summary>
-    public static class LocalName
+    internal static class LocalName
     {
+        public const string SvfDir = "SVF";
+
         /// <summary>
         /// Project metadata.
         /// </summary>
@@ -25,7 +27,7 @@ namespace WebApplication.Utilities
         /// <summary>
         /// Marker file, serves as a flag that project is locally cached.
         /// </summary>
-        internal const string Marker = "__marker";
+        public const string Marker = "__marker";
     }
 
     /// <summary>
@@ -40,20 +42,9 @@ namespace WebApplication.Utilities
     }
 
     /// <summary>
-    /// Convert filename to full name.
-    /// </summary>
-    public interface INameConverter
-    {
-        /// <summary>
-        /// Generate full name for the filename.
-        /// </summary>
-        public string ToFullName(string fileName);
-    }
-
-    /// <summary>
     /// OSS does not support directories, so emulate folders with long file names.
     /// </summary>
-    public class OssNameConverter : INameConverter
+    public class OssNameConverter
     {
         private readonly string _namePrefix;
 
@@ -65,39 +56,18 @@ namespace WebApplication.Utilities
         /// <summary>
         /// Generate full OSS name for the filename.
         /// </summary>
-        public virtual string ToFullName(string fileName)
+        protected string ToFullName(string fileName)
         {
             return _namePrefix + "-" + fileName;
         }
     }
 
     /// <summary>
-    /// Convert relative filenames to fullnames.
+    /// Project owned filenames under "parameters hash" directory at OSS.
     /// </summary>
-    public class LocalNameConverter : INameConverter
+    public class OSSObjectNameProvider : OssNameConverter
     {
-        public string BaseDir { get; }
-
-        public LocalNameConverter(string rootDir, string projectDir)
-        {
-            BaseDir = Path.Combine(rootDir, projectDir);
-        }
-
-        /// <summary>
-        /// Generate full local name for the filename.
-        /// </summary>
-        public virtual string ToFullName(string fileName)
-        {
-            return Path.Combine(BaseDir, fileName);
-        }
-    }
-
-    /// <summary>
-    /// Project owned filenames under "parameters hash" directory.
-    /// </summary>
-    public class OSSObjectKeyProvider : OssNameConverter
-    {
-        public OSSObjectKeyProvider(string projectName, string parametersHash) : 
+        public OSSObjectNameProvider(string projectName, string parametersHash) : 
                 base($"{ONC.CacheFolder}-{projectName}-{parametersHash}") {}
 
         /// <summary>
@@ -121,10 +91,10 @@ namespace WebApplication.Utilities
     /// <summary>
     /// Project owned filenames in Attributes directory at OSS.
     /// </summary>
-    public class AttributesNameProvider : OssNameConverter
+    public class OssAttributes : OssNameConverter
     {
         /// <summary>
-        /// Filename for thumbnail image.
+        /// Filename for thumbnail image.`
         /// </summary>
         public string Thumbnail => ToFullName(LocalName.Thumbnail);
 
@@ -136,6 +106,61 @@ namespace WebApplication.Utilities
         /// <summary>
         /// Constructor.
         /// </summary>
-        public AttributesNameProvider(string projectName) : base($"{ONC.AttributesFolder}-{projectName}") {}
+        public OssAttributes(string projectName) : base($"{ONC.AttributesFolder}-{projectName}") {}
+    }
+
+    /// <summary>
+    /// Convert relative filenames to fullnames.
+    /// </summary>
+    public class LocalNameConverter
+    {
+        public string BaseDir { get; }
+
+        public LocalNameConverter(string baseDir)
+        {
+            BaseDir = baseDir;
+        }
+
+        /// <summary>
+        /// Generate full local name for the filename.
+        /// </summary>
+        protected string ToFullName(string fileName)
+        {
+            return Path.Combine(BaseDir, fileName);
+        }
+    }
+
+    /// <summary>
+    /// Local attribute files.
+    /// </summary>
+    public class LocalAttributes : LocalNameConverter
+    {
+        /// <summary>
+        /// Filename for thumbnail image.
+        /// </summary>
+        public string Thumbnail => ToFullName(LocalName.Thumbnail);
+
+        /// <summary>
+        /// Filename of JSON file with project metadata.
+        /// </summary>
+        public string Metadata => ToFullName(LocalName.Metadata);
+
+        public string Marker => ToFullName(LocalName.Marker);
+
+        public LocalAttributes(string rootDir, string projectDir) : base(Path.Combine(rootDir, projectDir))
+        {
+        }
+    }
+
+    public class LocalNameProvider : LocalNameConverter
+    {
+        /// <summary>
+        /// Fullname of directory with SVF data.
+        /// </summary>
+        public string SvfDir => ToFullName(LocalName.SvfDir);
+
+        public LocalNameProvider(string projectDir, string hash) : base(Path.Combine(projectDir, hash))
+        {
+        }
     }
 }

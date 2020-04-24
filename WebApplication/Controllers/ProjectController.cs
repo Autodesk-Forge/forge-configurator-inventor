@@ -31,7 +31,7 @@ namespace WebApplication.Controllers
             var projectDTOs = new List<ProjectDTO>();
             foreach(ObjectDetails objDetails in objects)
             {
-                var project = Project.FromObjectKey(objDetails.ObjectKey);
+                var project = Project.FromObjectKey(objDetails.ObjectKey, _resourceProvider.LocalRootName);
                 var projectStorage = new ProjectStorage(project, _resourceProvider);
                 
                 projectDTOs.Add(new ProjectDTO { 
