@@ -16,7 +16,7 @@ namespace WebApplication.Utilities
         public ResourceProvider(IOptions<ForgeConfiguration> forgeConfigOptionsAccessor, DesignAutomationClient client, string bucketKey = null)
         {
             var configuration = forgeConfigOptionsAccessor.Value.Validate();
-            BucketKey = bucketKey ?? $"projects-{configuration.ClientId.Substring(0, 4)}-{configuration.HashString()}".ToLowerInvariant();
+            BucketKey = bucketKey ?? $"projects-{configuration.ClientId.Substring(0, 4)}-{configuration.HashString()}{Environment.GetEnvironmentVariable("BucketKeySuffix")}".ToLowerInvariant();
             _nickname = new Lazy<Task<string>>(async () => await client.GetNicknameAsync("me"));
         }
     }

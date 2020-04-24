@@ -55,6 +55,8 @@ namespace WebApplication.Processing
         {
             if (! config.HasBundle) return;
 
+            Trace($"Looking for bundle '{packagePathname}'");
+
             if (!File.Exists(packagePathname))
                 throw new Exception("App Bundle with package is not found.");
 
