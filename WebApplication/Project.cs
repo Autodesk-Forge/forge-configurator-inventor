@@ -13,9 +13,7 @@ namespace WebApplication
             }
 
             Name = projectName; 
-
             OSSSourceModel = $"{ONC.ProjectsFolder}-{projectName}";
-            HrefThumbnail = "bike.png"; // temporary icon
 
             OssAttributes = new OssAttributes(projectName);
 
@@ -35,7 +33,6 @@ namespace WebApplication
 
         public string Name { get; }
         public string OSSSourceModel { get; }
-        public string HrefThumbnail { get; }
 
         public OSSObjectNameProvider OssNameProvider(string hash) => new OSSObjectNameProvider(Name, hash);
         public LocalNameProvider LocalNameProvider(string hash) => new LocalNameProvider(LocalAttributes.BaseDir, hash);
