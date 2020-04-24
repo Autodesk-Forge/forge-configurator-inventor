@@ -1,27 +1,12 @@
 import React, { Component } from 'react';
 import Tabs, { Tab } from "@hig/tabs";
 import ProjectList from './projectList';
-import {connect} from 'react-redux';  
-import ForgeViewer from 'react-forge-viewer';
-import ViewerHadlers from '../actions/viewerActions'
+import ForgeView from './forgeView';
 import './tabs.css'
 
-export class TabsContainer extends Component {
-
-    constructor(props){
-      super(props);
-
-      this.state = {
-        view:null
-      }
-    }
+export default class TabsContainer extends Component {
 
     render() {
-        var currentHash = this.props.projectList.projects?.find(proj => proj.id === this.props.projectList.activeProjectId)?.currentHash;
-        var viewableUrn = currentHash ? `/data/${currentHash}/svf/bubble.json` : null;
-
-        console.log(`viewableUrn: ${viewableUrn}`);
-
         return (
             <div className="tabsContainer">
             <Tabs
@@ -37,18 +22,7 @@ export class TabsContainer extends Component {
               </Tab>
               <Tab label="Model">
                 <div id="model" className="tabContent">
-                  <ForgeViewer
-                    // version="6.0"
-                    urn={viewableUrn}
-                    view={this.state.view}
-                    headless={false}
-                    onViewerError={ViewerHadlers.handleViewerError.bind(this)}
-                    onTokenRequest={ViewerHadlers.handleTokenRequested.bind(this)}
-                    onDocumentLoad={ViewerHadlers.handleDocumentLoaded.bind(this)}
-                    onDocumentError={ViewerHadlers.handleDocumentError.bind(this)}
-                    onModelLoad={ViewerHadlers.handleModelLoaded.bind(this)}
-                    onModelError={ViewerHadlers.handleModelError.bind(this)}
-                  />
+                  <ForgeView/>
                 </div>
               </Tab>
               <Tab label="BOM">
@@ -72,8 +46,3 @@ export class TabsContainer extends Component {
     }
 }
 
-export default connect(function (store){
-  return {
-    projectList: store.projectList
-  }
-})(TabsContainer);
