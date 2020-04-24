@@ -73,7 +73,7 @@ namespace WebApplication
 
                     // store project locally
                     using var tempFile = new TempFile();
-                    using (FileStream fs = new FileStream(tempFile.Name, FileMode.CreateNew))
+                    using (FileStream fs = new FileStream(tempFile.Name, FileMode.Open))
                     {
                         await response.Content.CopyToAsync(fs);
 

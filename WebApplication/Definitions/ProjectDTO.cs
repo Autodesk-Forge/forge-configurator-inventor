@@ -4,11 +4,15 @@ namespace WebApplication.Definitions
     {
         public string Id { get; set; }
         public string Label { get; set; }
+
+        /// <summary>
+        /// Thumbnail URL.
+        /// </summary>
         public string Image { get; set; }
 
         /// <summary>
-        /// Parameters hash.
+        /// URL to SVF directory.
         /// </summary>
-        public string Hash { get; set; }
+        public string Svf { get; set; }
     }
 }

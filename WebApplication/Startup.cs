@@ -98,12 +98,12 @@ namespace WebApplication
             app.UseStaticFiles();
 
             // expose local cache dir as 'data' virtual dir to serve locally cached OSS files
+            Directory.CreateDirectory(resourceProvider.LocalRootName);
             app.UseStaticFiles(new StaticFileOptions
             {
                 // make sure that directory exists
-                System.IO.Directory.CreateDirectory(resourceProvider.LocalRootName);
                 FileProvider = new PhysicalFileProvider(resourceProvider.LocalRootName),
-                RequestPath = new PathString("/data")
+                RequestPath = new PathString(ResourceProvider.VirtualCacheDir)
             });
 
             app.UseSpaStaticFiles();

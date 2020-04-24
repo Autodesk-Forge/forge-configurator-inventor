@@ -9,7 +9,7 @@ namespace WebApplication.Utilities
     public class TempFile : IDisposable
     {
         /// <summary>
-        /// Full filename of the temporary file.
+        /// Full filename of uniquely named, zero-byte temporary file on disk.
         /// </summary>
         public string Name { get; }
 

@@ -37,8 +37,8 @@ namespace WebApplication.Controllers
                 projectDTOs.Add(new ProjectDTO { 
                                     Id = project.Name,
                                     Label = project.Name,
-                                    Image = project.HrefThumbnail,
-                                    Hash = projectStorage.Metadata.Hash
+                                    Image = _resourceProvider.ToDataUrl(project.LocalAttributes.Thumbnail),
+                                    Svf = _resourceProvider.ToDataUrl(projectStorage.LocalNames.SvfDir)
                                 });
             }
             return projectDTOs;

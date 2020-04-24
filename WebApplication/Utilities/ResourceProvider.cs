@@ -10,6 +10,7 @@ namespace WebApplication.Utilities
     public class ResourceProvider
     {
         private const string LocalCacheDir = "LocalCache";
+        public const string VirtualCacheDir = "/data";
 
         private readonly IForgeOSS _forgeOSS;
 
@@ -29,7 +30,7 @@ namespace WebApplication.Utilities
         {
             _forgeOSS = forgeOSS;
             var configuration = forgeConfigOptionsAccessor.Value.Validate();
-            BucketKey = bucketKey ?? $"projects-{configuration.ClientId.Substring(0, 3)}-{configuration.HashString()}{Environment.GetEnvironmentVariable("BucketKeySuffix")}".ToLowerInvariant();
+            BucketKey = bucketKey ?? $"projects-{configuration.ClientId.Substring(0, 4)}-{configuration.HashString()}{Environment.GetEnvironmentVariable("BucketKeySuffix")}".ToLowerInvariant();
 
             _nickname = new Lazy<Task<string>>(async () => await client.GetNicknameAsync("me"));
 
@@ -55,6 +56,19 @@ namespace WebApplication.Utilities
         public Task<string> CreateSignedUrlAsync(string objectName, ObjectAccess access = ObjectAccess.Read, int minutesExpiration = 30)
         {
             return _forgeOSS.CreateSignedUrlAsync(BucketKey, objectName, access, minutesExpiration);
+        }
+
+        /// <summary>
+        /// Get URL pointing for the data file.
+        /// </summary>
+        /// <param name="localFileName">Full filename. Must be under "local cache root"</param>
+        public string ToDataUrl(string localFileName)
+        {
+            if (!localFileName.StartsWith(LocalRootName, StringComparison.InvariantCultureIgnoreCase))
+                throw new ApplicationException("Attempt to generate URL for non-data file");
+
+            string relativeName = localFileName.Substring(LocalRootName.Length);
+            return VirtualCacheDir + relativeName.Replace('\\', '/');
         }
     }
 }
