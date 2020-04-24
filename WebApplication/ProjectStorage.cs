@@ -23,6 +23,18 @@ namespace WebApplication
         private readonly Lazy<ProjectMetadata> _lazyMetadata;
 
         /// <summary>
+        /// OSS names for "hashed" files.
+        /// </summary>
+        public OSSObjectNameProvider OssNames => _lazyOssNames.Value;
+        private readonly Lazy<OSSObjectNameProvider> _lazyOssNames;
+
+        /// <summary>
+        /// Local names for "hashed" files.
+        /// </summary>
+        public LocalNameProvider LocalNames => _lazyLocalNames.Value;
+        private readonly Lazy<LocalNameProvider> _lazyLocalNames;
+
+        /// <summary>
         /// Constructor.
         /// </summary>
         public ProjectStorage(Project project, ResourceProvider resourceProvider)
@@ -35,6 +47,8 @@ namespace WebApplication
                                                                 var metadataFile = _project.LocalAttributes.Metadata;
                                                                 return Json.DeserializeFile<ProjectMetadata>(metadataFile);
                                                             });
+            _lazyOssNames = new Lazy<OSSObjectNameProvider>(() => _project.OssNameProvider(Metadata.Hash));
+            _lazyLocalNames = new Lazy<LocalNameProvider>(() => _project.LocalNameProvider(Metadata.Hash));
         }
 
         /// <summary>
@@ -54,17 +68,16 @@ namespace WebApplication
             // download ZIP with SVF model
             // NOTE: this step is impossible without having project metadata,
             // because file/dir names depends on hash of initial project state
-            var ossNames = _project.OssNameProvider(Metadata.Hash);
             using var tempFile = new TempFile();
-            await DownloadFileAsync(httpClient, ossNames.ModelView, tempFile.Name);
+            await DownloadFileAsync(httpClient, OssNames.ModelView, tempFile.Name);
 
             // extract SVF from the archive
-            var localNames = _project.LocalNameProvider(Metadata.Hash);
-            ZipFile.ExtractToDirectory(tempFile.Name, localNames.SvfDir, overwriteFiles: true); // TODO: non-default encoding is not supported
+            ZipFile.ExtractToDirectory(tempFile.Name, LocalNames.SvfDir, overwriteFiles: true); // TODO: non-default encoding is not supported
 
             // write marker file about processing completion
             await File.WriteAllTextAsync(_project.LocalAttributes.Marker, "done");
         }
+
 
         /// <summary>
         /// Downloads OSS file locally.

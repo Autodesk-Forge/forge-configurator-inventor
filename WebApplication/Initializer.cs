@@ -72,9 +72,8 @@ namespace WebApplication
                     _logger.LogInformation("Upload to the app bucket");
 
                     // store project locally
-                    string path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-
-                    using (FileStream fs = new FileStream(path, FileMode.CreateNew))
+                    using var tempFile = new TempFile();
+                    using (FileStream fs = new FileStream(tempFile.Name, FileMode.CreateNew))
                     {
                         await response.Content.CopyToAsync(fs);
 
@@ -126,8 +125,6 @@ namespace WebApplication
                             await _forge.UploadObjectAsync(_resourceProvider.BucketKey, fs, project.OSSSourceModel);
                         }
                     }
-                    // delete local temporary file
-                    File.Delete(path);
                 }
 
                 await AdoptAsync(httpClient, project, tlaFilename);
