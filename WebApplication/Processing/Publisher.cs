@@ -113,7 +113,7 @@ namespace WebApplication.Processing
             var fullActivityId = await GetFullActivityId(config);
             
             //remove activity
-            Trace($"Trying  to remove existing activity. Deleting {activityId}...");
+            Trace($"Trying to remove existing activity. Deleting {activityId}...");
             await _client.ActivitiesApi.DeleteActivityAsync(activityId, null, null, false);
         }
 

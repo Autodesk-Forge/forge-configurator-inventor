@@ -130,7 +130,6 @@ namespace WebApplication
                     File.Delete(path);
                 }
 
-                _logger.LogInformation("Adopt the project");
                 await AdoptAsync(httpClient, project, tlaFilename);
             }
 
@@ -159,8 +158,9 @@ namespace WebApplication
         /// </summary>
         private async Task AdoptAsync(HttpClient httpClient, Project project, string tlaFilename)
         {
-            var inputDocUrl = await _resourceProvider.CreateSignedUrlAsync(project.OSSSourceModel);
+            _logger.LogInformation("Adopt the project");
 
+            var inputDocUrl = await _resourceProvider.CreateSignedUrlAsync(project.OSSSourceModel);
             var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, tlaFilename);
 
             var status = await _fdaClient.AdoptAsync(adoptionData); // ER: think: it's a business logic, so it might not deal with low-level WI and status
@@ -172,6 +172,8 @@ namespace WebApplication
             {
                 // rearrange generated data according to the parameters hash
                 await _arranger.DoAsync(project);
+
+                _logger.LogInformation("Cache the project locally");
 
                 // and now cache the generate stuff locally
                 var projectLocalStorage = new ProjectStorage(project, _resourceProvider);

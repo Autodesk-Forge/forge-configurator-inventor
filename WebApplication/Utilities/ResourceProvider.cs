@@ -29,7 +29,7 @@ namespace WebApplication.Utilities
         {
             _forgeOSS = forgeOSS;
             var configuration = forgeConfigOptionsAccessor.Value.Validate();
-            BucketKey = bucketKey ?? $"projects-{configuration.ClientId.Substring(0, 4)}-{configuration.HashString()}".ToLowerInvariant();
+            BucketKey = bucketKey ?? $"projects-{configuration.ClientId.Substring(0, 3)}-{configuration.HashString()}".ToLowerInvariant();
 
             _nickname = new Lazy<Task<string>>(async () => await client.GetNicknameAsync("me"));
 
