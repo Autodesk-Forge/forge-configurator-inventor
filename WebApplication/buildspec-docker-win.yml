@@ -1,0 +1,29 @@
+version: 0.2
+env:
+  variables:
+    IMAGE_REPO_NAME: "io-configurator-app"
+    IMAGE_TAG: "latest"
+    AWS_ACCOUNT_ID: "624240287035"
+phases:
+  install:
+    commands:
+      - choco install -y docker-machine
+      - docker --version
+  pre_build:
+    commands:
+      - echo "Logging in to Amazon ECR..."
+      - dir env:\
+      - aws ecr get-login --no-include-email --region $Env:AWS_DEFAULT_REGION
+  build:
+    commands:
+      - echo "Build started on $(Get-Date)"
+      - docker build -t $Env:IMAGE_REPO_NAME:$Env:IMAGE_TAG --build-arg COMMIT_ID=$Env:CODEBUILD_RESOLVED_SOURCE_VERSION WebApplication/
+      - docker tag $Env:IMAGE_REPO_NAME:$Env:IMAGE_TAG $Env:AWS_ACCOUNT_ID.dkr.ecr.$Env:AWS_DEFAULT_REGION.amazonaws.com/$Env:IMAGE_REPO_NAME:$Env:IMAGE_TAG
+  post_build:
+    commands:
+      - echo "Build completed on $(Get-Date)"
+      - echo "Pushing the Docker image..."
+      - docker push $Env:AWS_ACCOUNT_ID.dkr.ecr.$Env:AWS_DEFAULT_REGION.amazonaws.com/$Env:IMAGE_REPO_NAME:$Env:IMAGE_TAG
+artifacts:
+  files:
+    Dockerrun.aws.json
