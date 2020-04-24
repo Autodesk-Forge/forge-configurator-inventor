@@ -12,7 +12,7 @@ phases:
       - echo Build started on `date`
       - echo Building AppBundles on Windows EC2 machine
       - chmod +x ./WebApplication/execOnEc2.sh
-      - ./WebApplication/execOnEc2.sh i-0de2e9cf0030fd80b 'C:/Users/Administrator/sdra-windows-build/compile.ps1'
+      - ./WebApplication/execOnEc2.sh i-0de2e9cf0030fd80b 'C:/Users/Administrator/sdra-windows-build/compile.ps1 $CODEBUILD_RESOLVED_SOURCE_VERSION'
       - echo Getting AppBundles Zips
       - aws s3 cp --recursive s3://sdra-build/AppBundles/ ./WebApplication/AppBundles
       - echo Building Docker test image...
