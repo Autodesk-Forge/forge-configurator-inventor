@@ -34,15 +34,10 @@ export class ForgeView extends Component {
     }    
 
     render() {
-        var currentHash = this.props.projectList.projects?.find(proj => proj.id === this.props.projectList.activeProjectId)?.currentHash;
-        var viewableUrn = currentHash ? `/data/${currentHash}/svf/bubble.json` : null;
-
-        console.log(`viewableUrn: ${viewableUrn}`);
-        
         return (
             <ForgeViewer
                 // version="6.0"
-                urn={viewableUrn}
+                urn={this.props.viewableUrn}
                 view={this.state.view}
                 headless={false}
                 onViewerError={() => {}}
@@ -58,6 +53,6 @@ export class ForgeView extends Component {
 
 export default connect(function (store){
     return {
-      projectList: store.projectList
+      viewableUrn: store.projectList.projects?.find(proj => proj.id === store.projectList.activeProjectId)?.svf
     }
   })(ForgeView);

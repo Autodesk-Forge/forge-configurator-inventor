@@ -4,7 +4,7 @@ import ProjectList from './projectList';
 import ForgeView from './forgeView';
 import './tabs.css'
 
-export default class TabsContainer extends Component {
+class TabsContainer extends Component {
 
     render() {
         return (
@@ -46,3 +46,4 @@ export default class TabsContainer extends Component {
     }
 }
 
+export default TabsContainer;

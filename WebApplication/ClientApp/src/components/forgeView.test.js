@@ -12,13 +12,13 @@ const projectList = {
           id: '1',
           label: 'New Project',
           image: 'new_image.png',
-          currentHash: 'aaa111'
+          svf: 'aaa111'
       },
       {
           id: '2',
           label: 'New Project B',
           image: 'new_image_B.png',
-          currentHash: 'bbb222'
+          svf: 'bbb222'
       }]
 }
 

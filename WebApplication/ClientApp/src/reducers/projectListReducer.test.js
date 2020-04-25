@@ -16,13 +16,13 @@ describe('projectList reducer', () => {
                 id: '7',
                 label: 'New Project',
                 image: 'new_image.png',
-                currentHash: 'aaa111'
+                svf: 'aaa111'
             },
             {
                 id: '5',
                 label: 'New Project B',
                 image: 'new_image_B.png',
-                currentHash: 'bbb222'
+                svf: 'bbb222'
             }            
         ]
 
@@ -49,13 +49,13 @@ describe('projectList reducer', () => {
                 id: '3',
                 label: 'Local Project 3',
                 image: 'bike.png',
-                currentHash: 'aaa111'
+                svf: 'aaa111'
             },
             {
                 id: '2',
                 label: 'Another Local One',
                 image: 'logo.png',
-                currentHash: 'bbb222'
+                svf: 'bbb222'
             }
         ]
 
