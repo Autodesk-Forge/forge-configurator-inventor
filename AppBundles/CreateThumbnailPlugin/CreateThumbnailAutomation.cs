@@ -30,6 +30,7 @@ namespace CreateThumbnailPlugin
                 LogTrace("Processing " + doc.FullFileName);
                 dynamic invDoc = doc;
 
+                // TODO: only IAM and IPT are supported now, but it's not validated
                 invDoc.ObjectVisibility.AllWorkFeatures = false;
                 invDoc.ObjectVisibility.Sketches = false;
                 invDoc.ObjectVisibility.Sketches3D = false;
