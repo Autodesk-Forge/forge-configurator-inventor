@@ -6,4 +6,7 @@ phases:
       - echo "Creating application version"
       - bucketAndFile=${CODEBUILD_SOURCE_VERSION:13}
       - IFS='/' read -ra S3 <<< "$bucketAndFile"
-      - aws elasticbeanstalk create-application-version --application-name sdra --version-label $CODEBUILD_BUILD_NUMBER-$ --source-bundle S3Bucket="${S3[0]}",S3Key="${S3[1]}/${S3[2]}/${S3[3]}"
+      - version=`cat version.txt`
+      - versionLabel=$CODEBUILD_BUILD_NUMBER-$version
+      - aws elasticbeanstalk create-application-version --application-name sdra --version-label $versionLabel --source-bundle S3Bucket="${S3[0]}",S3Key="${S3[1]}/${S3[2]}/${S3[3]}"
+      - aws elasticbeanstalk update-environment --environment-name sdra-dev --version-label $versionLabel
