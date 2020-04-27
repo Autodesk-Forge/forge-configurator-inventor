@@ -68,7 +68,7 @@ namespace WebApplication
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Initializer initializer, ILogger<Startup> logger)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Initializer initializer, ILogger<Startup> logger, ResourceProvider resourceProvider)
         {
             if(Configuration.GetValue<bool>("clear"))
             {
@@ -97,14 +97,13 @@ namespace WebApplication
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
-            // expose 'LocalCache' dir as 'data' virtual dir to serve locally cached OSS files
-            var localDir = Path.Combine(Directory.GetCurrentDirectory(), "LocalCache");
-            // make sure that directory exists
-            System.IO.Directory.CreateDirectory(localDir);
+            // expose local cache dir as 'data' virtual dir to serve locally cached OSS files
+            Directory.CreateDirectory(resourceProvider.LocalRootName);
             app.UseStaticFiles(new StaticFileOptions
             {
-                FileProvider = new PhysicalFileProvider(localDir),
-                RequestPath = new PathString("/data")
+                // make sure that directory exists
+                FileProvider = new PhysicalFileProvider(resourceProvider.LocalRootName),
+                RequestPath = new PathString(ResourceProvider.VirtualCacheDir)
             });
 
             app.UseSpaStaticFiles();

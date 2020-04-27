@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace WebApplication.Definitions
 {
-    public class ProjectAttributes
+    public class ProjectMetadata
     {
         /// <summary>
         /// Hash string for parameters.

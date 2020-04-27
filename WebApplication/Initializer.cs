@@ -62,7 +62,7 @@ namespace WebApplication
 
                 string[] urlParts = projectUrl.Split("/");
                 string projectName = urlParts[^1];
-                var project = new Project(projectName);
+                var project = new Project(projectName, _resourceProvider.LocalRootName);
 
                 _logger.LogInformation($"Download {projectUrl}");
                 using (HttpResponseMessage response = await httpClient.GetAsync(projectUrl, HttpCompletionOption.ResponseHeadersRead))
@@ -72,9 +72,8 @@ namespace WebApplication
                     _logger.LogInformation("Upload to the app bucket");
 
                     // store project locally
-                    string path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-
-                    using (FileStream fs = new FileStream(path, FileMode.CreateNew))
+                    using var tempFile = new TempFile();
+                    using (FileStream fs = new FileStream(tempFile.Name, FileMode.Open))
                     {
                         await response.Content.CopyToAsync(fs);
 
@@ -125,12 +124,9 @@ namespace WebApplication
                             await _forge.UploadObjectAsync(_resourceProvider.BucketKey, fs, project.OSSSourceModel);
                         }
                     }
-                    // delete local temporary file
-                    File.Delete(path);
                 }
 
-                _logger.LogInformation("Adopt the project");
-                await AdoptAsync(project, tlaFilename);
+                await AdoptAsync(httpClient, project, tlaFilename);
             }
 
             _logger.LogInformation("Added default projects.");
@@ -151,15 +147,19 @@ namespace WebApplication
 
             // delete bundles and activities
             await _fdaClient.CleanUpAsync();
+
+            // cleanup locally cached files
+            Directory.Delete(_resourceProvider.LocalRootName, true);
         }
 
         /// <summary>
         /// Adapt the project.
         /// </summary>
-        private async Task AdoptAsync(Project project, string tlaFilename)
+        private async Task AdoptAsync(HttpClient httpClient, Project project, string tlaFilename)
         {
-            var inputDocUrl = await _forge.CreateSignedUrlAsync(_resourceProvider.BucketKey, project.OSSSourceModel);
+            _logger.LogInformation("Adopt the project");
 
+            var inputDocUrl = await _resourceProvider.CreateSignedUrlAsync(project.OSSSourceModel);
             var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, tlaFilename);
 
             var status = await _fdaClient.AdoptAsync(adoptionData); // ER: think: it's a business logic, so it might not deal with low-level WI and status
@@ -171,6 +171,12 @@ namespace WebApplication
             {
                 // rearrange generated data according to the parameters hash
                 await _arranger.DoAsync(project);
+
+                _logger.LogInformation("Cache the project locally");
+
+                // and now cache the generate stuff locally
+                var projectLocalStorage = new ProjectStorage(project, _resourceProvider);
+                await projectLocalStorage.EnsureLocalAsync(httpClient);
             }
         }
     }
