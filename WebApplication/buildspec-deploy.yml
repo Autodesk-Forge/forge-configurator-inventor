@@ -2,8 +2,10 @@ version: 0.2
 phases:
   pre_build:
     commands:
+      - printenv
       - echo "Creating application version"
       - bucketAndFile=${CODEBUILD_SOURCE_VERSIONCODEBUILD_SOURCE_REPO_URL_BuildArtifact:13}
+      - echo $bucketAndFile
       - versionLabel=$CODEBUILD_BUILD_NUMBER-${CODEBUILD_RESOLVED_SOURCE_VERSION:0:7}
       - bucket=$(cut -d'/' -f1 <<< $bucketAndFile)
       - folder1=$(cut -d'/' -f2 <<< $bucketAndFile)
