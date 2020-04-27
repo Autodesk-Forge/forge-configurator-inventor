@@ -29,10 +29,15 @@ namespace CreateThumbnailPlugin
             {
                 LogTrace("Processing " + doc.FullFileName);
                 dynamic invDoc = doc;
+
+                invDoc.ObjectVisibility.AllWorkFeatures = false;
+                invDoc.ObjectVisibility.Sketches = false;
+                invDoc.ObjectVisibility.Sketches3D = false;
+                invDoc.ObjectVisibility.WeldmentSymbols = false;
+
                 string fileNameLarge = "thumbnail-large.png";
                 string filePathLarge = Path.Combine(Directory.GetCurrentDirectory(), fileNameLarge);
-                string fileName = "thumbnail.png";
-                string filePath = Path.Combine(Directory.GetCurrentDirectory(), fileName);
+
 
                 inventorApplication.DisplayOptions.Show3DIndicator = false;
                 Camera cam = inventorApplication.TransientObjects.CreateCamera();
@@ -61,17 +66,18 @@ namespace CreateThumbnailPlugin
                         {
                             wrapMode.SetWrapMode(WrapMode.TileFlipXY);
                             var destRect = new Rectangle(0, 0, ThumbnailSize, ThumbnailSize);
-                            graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel,
-                                wrapMode);
+                            graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
                         }
                     }
 
+                    string fileName = "thumbnail.png";
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), fileName);
                     destImage.Save(filePath);
+
+                    LogTrace($"Saved thumbnail as {filePath}");
                 }
 
                 System.IO.File.Delete(filePathLarge);
-
-                LogTrace($"Saved thumbnail as {filePath}");
             }
             catch (Exception e)
             {
