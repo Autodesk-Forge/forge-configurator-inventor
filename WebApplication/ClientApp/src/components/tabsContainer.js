@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import Tabs, { Tab } from "@hig/tabs";
 import ProjectList from './projectList';
+import ForgeView from './forgeView';
 import './tabs.css'
 
 class TabsContainer extends Component {
+
     render() {
         return (
             <div className="tabsContainer">
@@ -19,22 +21,22 @@ class TabsContainer extends Component {
                 </div>
               </Tab>
               <Tab label="Model">
-                <div id="project-list" className="tabContent">
-                  Model content
+                <div id="model" className="tabContent">
+                  <ForgeView/>
                 </div>
               </Tab>
               <Tab label="BOM">
-                <div id="project-list" className="tabContent">
+                <div id="bom" className="tabContent">
                   BOM content
                 </div>
               </Tab>
               <Tab label="Drawing">
-                <div id="project-list" className="tabContent">
+                <div id="drawing" className="tabContent">
                   Drawing content
                 </div>
               </Tab>
               <Tab label="Downloads">
-                <div id="project-list" className="tabContent">
+                <div id="downloads" className="tabContent">
                   Downloads content
                 </div>
               </Tab>
@@ -43,5 +45,5 @@ class TabsContainer extends Component {
         )
     }
 }
-  
+
 export default TabsContainer;

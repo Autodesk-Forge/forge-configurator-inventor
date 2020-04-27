@@ -10,6 +10,5 @@ describe('components', () => {
     it('CHANGE THE DESCRIPTION ONCE YOU WILL HAVE REAL TEST', () => {
       const { enzymeWrapper } = shallow(<TabsContainer />)
     })
-
   })
 })

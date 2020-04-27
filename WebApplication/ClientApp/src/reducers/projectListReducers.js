@@ -4,6 +4,10 @@ export const initialState = {
     activeProjectId: null
 }
 
+export const getActiveProject = function(state) {
+    return state.projects?.find(proj => proj.id === state.activeProjectId)
+}
+
 export const projectListReducer = function(state = initialState, action) {
     switch(action.type) {
         case projectListActionTypes.PROJECT_LIST_UPDATED: {
