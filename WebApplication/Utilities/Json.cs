@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text;
 using System.Text.Json;
 
 namespace WebApplication.Utilities
@@ -20,6 +21,15 @@ namespace WebApplication.Utilities
 
             memoryStream.Position = 0;
             return memoryStream;
+        }
+
+        /// <summary>
+        /// Deserialize JSON file content.
+        /// </summary>
+        public static T DeserializeFile<T>(string filename)
+        {
+            var content = File.ReadAllText(filename, Encoding.UTF8);
+            return JsonSerializer.Deserialize<T>(content);
         }
     }
 }

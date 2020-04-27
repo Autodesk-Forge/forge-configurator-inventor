@@ -56,7 +56,7 @@ namespace WebApplication.Tests
 
             projectsBucketKey = Guid.NewGuid().ToString();
             
-            var resourceProvider = new ResourceProvider(forgeConfigOptions, designAutomationClient, projectsBucketKey);
+            var resourceProvider = new ResourceProvider(forgeConfigOptions, designAutomationClient, forgeOSS, projectsBucketKey);
             var publisher = new Publisher(designAutomationClient, new NullLogger<Publisher>(), resourceProvider);
 
             var appBundleZipPathsConfiguration = new AppBundleZipPaths

@@ -14,6 +14,7 @@ namespace WebApplication.Processing
         private readonly IForgeOSS _forge;
         private readonly string _bucketKey;
         private readonly IHttpClientFactory _clientFactory;
+        private readonly ResourceProvider _resourceProvider;
 
         // generate unique names for files. The files will be moved to correct places after hash generation.
         public readonly string Parameters = $"{Guid.NewGuid():N}.json";
@@ -28,6 +29,7 @@ namespace WebApplication.Processing
             _forge = forge;
             _bucketKey = resourceProvider.BucketKey;
             _clientFactory = clientFactory;
+            _resourceProvider = resourceProvider;
         }
 
         /// <summary>
@@ -37,9 +39,9 @@ namespace WebApplication.Processing
         /// <param name="tlaFilename">Top level assembly in the ZIP. (if any)</param>
         public async Task<AdoptionData> ForAdoptionAsync(string docUrl, string tlaFilename)
         {
-            var urls = await Task.WhenAll(_forge.CreateSignedUrlAsync(_bucketKey, Thumbnail, ObjectAccess.Write), 
-                                            _forge.CreateSignedUrlAsync(_bucketKey, SVF, ObjectAccess.Write), 
-                                            _forge.CreateSignedUrlAsync(_bucketKey, Parameters, ObjectAccess.Write));
+            var urls = await Task.WhenAll(_resourceProvider.CreateSignedUrlAsync(Thumbnail, ObjectAccess.Write), 
+                                            _resourceProvider.CreateSignedUrlAsync(SVF, ObjectAccess.Write), 
+                                            _resourceProvider.CreateSignedUrlAsync(Parameters, ObjectAccess.Write));
 
             return new AdoptionData
             {
@@ -58,14 +60,14 @@ namespace WebApplication.Processing
         public async Task DoAsync(Project project)
         {
             var hashString = await GenerateParametersHashAsync();
-            var attributes = new ProjectAttributes { Hash = hashString };
-            var keyProvider = project.KeyProvider(hashString);
+            var attributes = new ProjectMetadata { Hash = hashString };
+            var keyProvider = project.OssNameProvider(hashString);
 
             // move data to expected places
-            await Task.WhenAll(_forge.RenameObjectAsync(_bucketKey, Thumbnail, project.Attributes.Thumbnail),
-                _forge.RenameObjectAsync(_bucketKey, SVF, keyProvider.ModelView),
-                _forge.RenameObjectAsync(_bucketKey, Parameters, keyProvider.Parameters),
-                _forge.UploadObjectAsync(_bucketKey, Json.ToStream(attributes), project.Attributes.Metadata));
+            await Task.WhenAll(_forge.RenameObjectAsync(_bucketKey, Thumbnail, project.OssAttributes.Thumbnail),
+                                _forge.RenameObjectAsync(_bucketKey, SVF, keyProvider.ModelView),
+                                _forge.RenameObjectAsync(_bucketKey, Parameters, keyProvider.Parameters),
+                                _forge.UploadObjectAsync(_bucketKey, Json.ToStream(attributes), project.OssAttributes.Metadata));
         }
 
 
@@ -77,7 +79,7 @@ namespace WebApplication.Processing
             var client = _clientFactory.CreateClient();
 
             // rearrange generated data according to the parameters hash
-            var url = await _forge.CreateSignedUrlAsync(_bucketKey, Parameters);
+            var url = await _resourceProvider.CreateSignedUrlAsync(Parameters);
             using var response = await client.GetAsync(url);
             response.EnsureSuccessStatusCode();
 

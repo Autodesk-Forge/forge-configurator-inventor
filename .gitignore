@@ -235,5 +235,4 @@ appsettings.Local.json
 Output/
 
 # preserve `LocalCache` dir
-WebApplication/LocalCache/*
-!WebApplication/LocalCache/placeholder.txt
+WebApplication/LocalCache/

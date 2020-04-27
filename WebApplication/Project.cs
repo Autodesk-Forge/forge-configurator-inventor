@@ -5,22 +5,22 @@ namespace WebApplication
 {
     public class Project
     {
-        public Project(string projectName) 
+        public Project(string projectName, string rootDir)
         {
-            if(Name == string.Empty)
+            if (string.IsNullOrEmpty(projectName))
             {
                 throw new ArgumentException("Initializing Project with empty name", nameof(projectName));
             }
 
             Name = projectName; 
-
             OSSSourceModel = $"{ONC.ProjectsFolder}-{projectName}";
-            HrefThumbnail = "bike.png"; // temporary icon
 
-            Attributes = new AttributesNameProvider(projectName);
+            OssAttributes = new OssAttributes(projectName);
+
+            LocalAttributes = new LocalAttributes(rootDir, Name);
         }
 
-        public static Project FromObjectKey(string objectKey)
+        public static Project FromObjectKey(string objectKey, string rootDir)
         {
             if(!objectKey.StartsWith($"{ONC.ProjectsFolder}-"))
             {
@@ -28,15 +28,23 @@ namespace WebApplication
             }
 
             var projectName = objectKey.Substring(ONC.ProjectsFolder.Length+1);
-            return new Project(projectName);
+            return new Project(projectName, rootDir);
         }
 
         public string Name { get; }
-        public string OSSSourceModel {get; }
-        public string HrefThumbnail { get; }
+        public string OSSSourceModel { get; }
 
-        public OSSObjectKeyProvider KeyProvider(string hash) => new OSSObjectKeyProvider(Name, hash);
+        public OSSObjectNameProvider OssNameProvider(string hash) => new OSSObjectNameProvider(Name, hash);
+        public LocalNameProvider LocalNameProvider(string hash) => new LocalNameProvider(LocalAttributes.BaseDir, hash);
 
-        public AttributesNameProvider Attributes { get; }
+        /// <summary>
+        /// Full local names for project attribute files.
+        /// </summary>
+        public LocalAttributes LocalAttributes { get; }
+
+        /// <summary>
+        /// Full names for project attributes files (metadata, thumbnails, etc.) at OSS.
+        /// </summary>
+        public OssAttributes OssAttributes { get; }
     }
 }
