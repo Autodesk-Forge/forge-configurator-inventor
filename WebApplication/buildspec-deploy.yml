@@ -2,11 +2,13 @@ version: 0.2
 phases:
   pre_build:
     commands:
-      - ls
       - echo "Creating application version"
-      - bucketAndFile=${CODEBUILD_SOURCE_VERSION:13}
-      - IFS='/' read -ra S3 <<< "$bucketAndFile"
-      - version=`cat version.txt`
-      - versionLabel=$CODEBUILD_BUILD_NUMBER-$version
-      - aws elasticbeanstalk create-application-version --application-name sdra --version-label $versionLabel --source-bundle S3Bucket="${S3[0]}",S3Key="${S3[1]}/${S3[2]}/${S3[3]}"
+      - bucketAndFile=${CODEBUILD_SOURCE_VERSIONCODEBUILD_SOURCE_REPO_URL_BuildArtifact:13}
+      - versionLabel=$CODEBUILD_BUILD_NUMBER-${CODEBUILD_RESOLVED_SOURCE_VERSION:0:7}
+      - bucket=$(cut -d'/' -f1 <<< $bucketAndFile)
+      - folder1=$(cut -d'/' -f2 <<< $bucketAndFile)
+      - folder2=$(cut -d'/' -f3 <<< $bucketAndFile)
+      - file=$(cut -d'/' -f4 <<< $bucketAndFile)
+      - echo aws elasticbeanstalk create-application-version --application-name sdra --version-label $versionLabel --source-bundle S3Bucket="$bucket",S3Key="$folder1/$folder2/$file"
+      - aws elasticbeanstalk create-application-version --application-name sdra --version-label $versionLabel --source-bundle S3Bucket="$bucket",S3Key="$folder1/$folder2/$file"
       - aws elasticbeanstalk update-environment --environment-name sdra-dev --version-label $versionLabel
