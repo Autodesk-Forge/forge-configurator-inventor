@@ -1,4 +1,4 @@
-import {projectListReducer, initialState} from './projectListReducers';
+import {projectListReducer, initialState, getActiveProject} from './projectListReducers';
 import {updateProjectList, updateActiveProject} from '../actions/projectListActions';
 
 describe('projectList reducer', () => {
@@ -65,5 +65,29 @@ describe('projectList reducer', () => {
         }
 
         expect(projectListReducer(secondProjectActive, updateProjectList(newList))).toEqual(expectedResult);
+     })
+
+     it('correctly selects active project', () => {
+        const activeProject = {
+            id: '2',
+            svf: 'bbb222'
+        }
+
+        const firstProject = {
+            id: '3',
+            svf: 'aaa111'
+        }
+
+        const projects = [
+            firstProject,
+            activeProject
+        ]
+
+         const projectList = {
+            activeProjectId: '2',
+            projects: projects
+        }
+        
+        expect(getActiveProject(projectList)).toEqual(activeProject);
      })
 })

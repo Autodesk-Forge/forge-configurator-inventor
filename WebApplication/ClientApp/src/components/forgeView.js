@@ -1,6 +1,17 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';  
 import ForgeViewer from 'react-forge-viewer';
+import { getActiveProject } from '../reducers/mainReducer';
+
+    
+/* Once the viewer has initialized, it will ask us for a forge token.
+We don't need to have a token to access our resouce, but need the viewer component to provide something with... */
+function handleTokenRequested(onAccessToken){
+    console.log('Token requested by the viewer.');
+    if(onAccessToken){
+        onAccessToken(null, null);
+    }
+}
 
 export class ForgeView extends Component {
 
@@ -23,25 +34,16 @@ export class ForgeView extends Component {
         this.setState({view:viewables[0]});
         }
     }
-    
-    /* Once the viewer has initialized, it will ask us for a forge token.
-    We don't need to have a token to access our resouce, but need the viewer component to provide something with... */
-    handleTokenRequested(onAccessToken){
-        console.log('Token requested by the viewer.');
-        if(onAccessToken){
-            onAccessToken(null, null);
-        }
-    }    
 
     render() {
         return (
             <ForgeViewer
                 // version="6.0"
-                urn={this.props.viewableUrn}
+                urn={this.props.activeProject?.svf}
                 view={this.state.view}
                 headless={false}
                 onViewerError={() => {}}
-                onTokenRequest={this.handleTokenRequested.bind(this)}
+                onTokenRequest={handleTokenRequested}
                 onDocumentLoad={this.handleDocumentLoaded.bind(this)}
                 onDocumentError={() => {}}
                 onModelLoad={() => {}}
@@ -53,6 +55,6 @@ export class ForgeView extends Component {
 
 export default connect(function (store){
     return {
-      viewableUrn: store.projectList.projects?.find(proj => proj.id === store.projectList.activeProjectId)?.svf
+      activeProject: getActiveProject(store)
     }
   })(ForgeView);
