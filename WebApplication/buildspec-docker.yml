@@ -28,5 +28,5 @@ phases:
       - echo $IMAGE_TAG>version.txt
 artifacts:
   files:
-    Dockerrun.aws.json
-    version.txt
+    - Dockerrun.aws.json
+    - version.txt
