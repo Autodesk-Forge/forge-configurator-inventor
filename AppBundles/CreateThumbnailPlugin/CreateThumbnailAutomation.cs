@@ -32,7 +32,9 @@ namespace CreateThumbnailPlugin
                 cam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation;
                 cam.Fit();
                 cam.ApplyWithoutTransition();
-                cam.SaveAsBitmap(filePath, 30, 30, Type.Missing, Type.Missing);
+
+                Color backgroundColor = inventorApplication.TransientObjects.CreateColor(0xEC, 0xEC, 0xEC, 0.0); // hardcoded. Make as a parameter
+                cam.SaveAsBitmap(filePath, 30, 30, backgroundColor, backgroundColor);
                 LogTrace($"Saved thumbnail as {filePath}");
             }
             catch (Exception e)
