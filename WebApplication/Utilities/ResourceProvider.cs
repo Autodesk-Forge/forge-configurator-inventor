@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Autodesk.Forge.Core;
 using Autodesk.Forge.DesignAutomation;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
 namespace WebApplication.Utilities
@@ -25,11 +26,14 @@ namespace WebApplication.Utilities
         public string LocalRootName => _localRootDir.Value;
         private readonly Lazy<string> _localRootDir;
 
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
         public ResourceProvider(IOptions<ForgeConfiguration> forgeConfigOptionsAccessor, DesignAutomationClient client,
-                                IForgeOSS forgeOSS, string bucketKey = null)
+                                IForgeOSS forgeOSS, IHttpContextAccessor httpContextAccessor, string bucketKey = null)
         {
             _forgeOSS = forgeOSS;
             var configuration = forgeConfigOptionsAccessor.Value.Validate();
+            _httpContextAccessor = httpContextAccessor;
             BucketKey = bucketKey ?? $"projects-{configuration.ClientId.Substring(0, 3)}-{configuration.HashString()}{Environment.GetEnvironmentVariable("BucketKeySuffix")}".ToLowerInvariant();
 
             _nickname = new Lazy<Task<string>>(async () => await client.GetNicknameAsync("me"));
@@ -68,7 +72,7 @@ namespace WebApplication.Utilities
                 throw new ApplicationException("Attempt to generate URL for non-data file");
 
             string relativeName = localFileName.Substring(LocalRootName.Length);
-            return VirtualCacheDir + relativeName.Replace('\\', '/');
+            return _httpContextAccessor.HttpContext.Request.Scheme + "://" + _httpContextAccessor.HttpContext.Request.Host.Value + VirtualCacheDir + relativeName.Replace('\\', '/');
         }
     }
 }
