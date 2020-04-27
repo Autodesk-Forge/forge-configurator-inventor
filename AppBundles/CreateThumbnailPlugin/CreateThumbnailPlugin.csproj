@@ -41,6 +41,7 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
       <HintPath>$(PackagePath)\autodesk\autodesk.inventor.interop.dll</HintPath>
     </Reference>
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CreateThumbnailAutomation.cs" />
