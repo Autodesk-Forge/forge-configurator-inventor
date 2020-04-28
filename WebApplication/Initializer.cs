@@ -62,7 +62,7 @@ namespace WebApplication
 
                 string[] urlParts = projectUrl.Split("/");
                 string projectName = urlParts[^1];
-                var project = new Project(projectName, _resourceProvider.LocalRootName);
+                var project = _resourceProvider.GetProject(projectName);
 
                 _logger.LogInformation($"Download {projectUrl}");
                 using (HttpResponseMessage response = await httpClient.GetAsync(projectUrl, HttpCompletionOption.ResponseHeadersRead))

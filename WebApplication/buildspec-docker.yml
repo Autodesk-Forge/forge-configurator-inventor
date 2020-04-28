@@ -10,6 +10,7 @@ phases:
   build:
     commands:
       - echo Build started on `date`
+      - IMAGE_TAG=${CODEBUILD_RESOLVED_SOURCE_VERSION:0:7}
       - echo Building AppBundles on Windows EC2 machine
       - chmod +x ./WebApplication/execOnEc2.sh
       - ./WebApplication/execOnEc2.sh i-0de2e9cf0030fd80b 'C:/Users/Administrator/sdra-windows-build/compile.ps1 '$CODEBUILD_RESOLVED_SOURCE_VERSION
@@ -23,6 +24,7 @@ phases:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+      - sed -i 's/latest/'$IMAGE_TAG'/g' Dockerrun.aws.json
 artifacts:
   files:
-    Dockerrun.aws.json
+    - Dockerrun.aws.json

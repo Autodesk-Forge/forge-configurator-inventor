@@ -70,5 +70,22 @@ namespace WebApplication.Utilities
             string relativeName = localFileName.Substring(LocalRootName.Length);
             return VirtualCacheDir + relativeName.Replace('\\', '/');
         }
+
+        /// <summary>
+        /// Get project by its name.
+        /// </summary>
+        public Project GetProject(string projectName)
+        {
+            return new Project(projectName, LocalRootName);
+        }
+
+        /// <summary>
+        /// Get project storage by project name.
+        /// </summary>
+        public ProjectStorage GetProjectStorage(string projectName)
+        {
+            var project = GetProject(projectName);
+            return new ProjectStorage(project, this);
+        }
     }
 }
