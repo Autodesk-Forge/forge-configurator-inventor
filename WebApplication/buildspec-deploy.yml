@@ -3,13 +3,15 @@ phases:
   build:
     commands:
       - bucketAndFile=${CODEBUILD_SOURCE_REPO_URL_BuildArtifact:13}
-	  - commitMessage=#{SourceVariables.CommitMessage}
+      - commitMessage=#{SourceVariables.CommitMessage}
+      - echo $commitMessage
+      - echo "${$commitMessage/ /_}"
       - versionLabel=$CODEBUILD_BUILD_NUMBER-${CODEBUILD_RESOLVED_SOURCE_VERSION:0:7}-${commitMessage:0:15}
       - bucket=$(cut -d'/' -f1 <<< $bucketAndFile)
       - folder1=$(cut -d'/' -f2 <<< $bucketAndFile)
       - folder2=$(cut -d'/' -f3 <<< $bucketAndFile)
       - file=$(cut -d'/' -f4 <<< $bucketAndFile)
       - echo "Creating application version " $versionLabel " from artefacts " $file
-      - aws elasticbeanstalk create-application-version --application-name sdra --version-label $versionLabel --source-bundle S3Bucket="$bucket",S3Key="$folder1/$folder2/$file"
+      - aws elasticbeanstalk create-application-version --application-name sdra --description 'commitMessage' --version-label $versionLabel --source-bundle S3Bucket="$bucket",S3Key="$folder1/$folder2/$file"
       - echo "Deploying version " $versionLabel
       - aws elasticbeanstalk update-environment --environment-name sdra-dev --version-label $versionLabel
