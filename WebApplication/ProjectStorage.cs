@@ -65,11 +65,15 @@ namespace WebApplication
                                 DownloadFileAsync(httpClient, _project.OssAttributes.Thumbnail, _project.LocalAttributes.Thumbnail)
                             );
 
+            // create the "hashed" dir
+            Directory.CreateDirectory(LocalNames.BaseDir);
+
             // download ZIP with SVF model
             // NOTE: this step is impossible without having project metadata,
             // because file/dir names depends on hash of initial project state
             using var tempFile = new TempFile();
             await DownloadFileAsync(httpClient, OssNames.ModelView, tempFile.Name);
+            await DownloadFileAsync(httpClient, OssNames.Parameters, LocalNames.Parameters);
 
             // extract SVF from the archive
             ZipFile.ExtractToDirectory(tempFile.Name, LocalNames.SvfDir, overwriteFiles: true); // TODO: non-default encoding is not supported

@@ -16,19 +16,7 @@ namespace WebApplication
             OSSSourceModel = $"{ONC.ProjectsFolder}-{projectName}";
 
             OssAttributes = new OssAttributes(projectName);
-
             LocalAttributes = new LocalAttributes(rootDir, Name);
-        }
-
-        public static Project FromObjectKey(string objectKey, string rootDir)
-        {
-            if(!objectKey.StartsWith($"{ONC.ProjectsFolder}-"))
-            {
-                throw new Exception("Initializing Project from invalid bucket key: " + objectKey);
-            }
-
-            var projectName = objectKey.Substring(ONC.ProjectsFolder.Length+1);
-            return new Project(projectName, rootDir);
         }
 
         public string Name { get; }

@@ -70,5 +70,27 @@ namespace WebApplication.Utilities
             string relativeName = localFileName.Substring(LocalRootName.Length);
             return VirtualCacheDir + relativeName.Replace('\\', '/');
         }
+
+        /// <summary>
+        /// Get project by its name.
+        /// </summary>
+        public Project GetProject(string projectName)
+        {
+            return new Project(projectName, LocalRootName);
+        }
+
+        /// <summary>
+        /// Get project by OSS object name.
+        /// </summary>
+        public Project ProjectFromObjectName(string ossObjectName)
+        {
+            if(!ossObjectName.StartsWith($"{ONC.ProjectsFolder}-"))
+            {
+                throw new Exception("Initializing Project from invalid bucket key: " + ossObjectName);
+            }
+
+            var projectName = ossObjectName.Substring(ONC.ProjectsFolder.Length+1);
+            return GetProject(projectName);
+        }
     }
 }

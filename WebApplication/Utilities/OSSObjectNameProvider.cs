@@ -28,6 +28,11 @@ namespace WebApplication.Utilities
         /// Marker file, serves as a flag that project is locally cached.
         /// </summary>
         public const string Marker = "__marker";
+
+        /// <summary>
+        /// JSON file with parameters.
+        /// </summary>
+        public const string Parameters = "parameters.json";
     }
 
     /// <summary>
@@ -83,7 +88,7 @@ namespace WebApplication.Utilities
         /// <summary>
         /// Filename for JSON with Inventor document parameters.
         /// </summary>
-        public string Parameters => ToFullName("parameters.json");
+        public string Parameters => ToFullName(LocalName.Parameters);
 
         public string DownloadsPath => ToFullName(ONC.DownloadsFolder);
     }
