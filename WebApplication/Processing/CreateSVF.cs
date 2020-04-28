@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using WebApplication.Definitions;
 
 namespace WebApplication.Processing
@@ -18,13 +17,6 @@ namespace WebApplication.Processing
 
         protected override string OutputName => "SvfOutput";
         protected override bool IsOutputZip => true;
-
-        public override List<string> ActivityCommandLine =>
-            new List<string>
-            {
-                $"$(engine.path)\\InventorCoreConsole.exe /al $(appbundles[{ActivityId}].path) /p /i $(args[{InputParameterName}].path)"
-            };
-
 
         /// <summary>
         /// Constructor.
