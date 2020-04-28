@@ -94,5 +94,16 @@ namespace WebApplication
             // and download the file
             await httpClient.DownloadAsync(url, localFullName);
         }
+
+        public ProjectDTO ToDTO()
+        {
+            return new ProjectDTO
+                    {
+                        Id = _project.Name,
+                        Label = _project.Name,
+                        Image = _resourceProvider.ToDataUrl(_project.LocalAttributes.Thumbnail),
+                        Svf = _resourceProvider.ToDataUrl(LocalNames.SvfDir)
+                    };
+        }
     }
 }

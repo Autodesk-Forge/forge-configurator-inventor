@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 
 namespace WebApplication.Utilities
@@ -44,6 +45,20 @@ namespace WebApplication.Utilities
         public const string CacheFolder = "cache";
         public const string DownloadsFolder = "downloads";
         public const string AttributesFolder = "attributes";
+
+        /// <summary>
+        /// Extract project name from OSS object name.
+        /// </summary>
+        /// <param name="ossObjectName">OSS name for the project</param>
+        public static string ToProjectName(string ossObjectName)
+        {
+            if(!ossObjectName.StartsWith($"{ONC.ProjectsFolder}-"))
+            {
+                throw new ApplicationException("Initializing Project from invalid bucket key: " + ossObjectName);
+            }
+
+            return ossObjectName.Substring(ProjectsFolder.Length+1);
+        }
     }
 
     /// <summary>

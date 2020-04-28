@@ -19,8 +19,7 @@ namespace WebApplication.Controllers
         [HttpGet("{projectName}")]
         public ParametersDTO GetParametersAsync(string projectName)
         {
-            Project project = _resourceProvider.GetProject(projectName);
-            var projectStorage = new ProjectStorage(project, _resourceProvider);
+            ProjectStorage projectStorage = _resourceProvider.GetProjectStorage(projectName);
             var inventorParameters = Json.DeserializeFile<InventorParameters>(projectStorage.LocalNames.Parameters);
 
             return ToDTO(inventorParameters);

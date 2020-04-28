@@ -80,17 +80,12 @@ namespace WebApplication.Utilities
         }
 
         /// <summary>
-        /// Get project by OSS object name.
+        /// Get project storage by project name.
         /// </summary>
-        public Project ProjectFromObjectName(string ossObjectName)
+        public ProjectStorage GetProjectStorage(string projectName)
         {
-            if(!ossObjectName.StartsWith($"{ONC.ProjectsFolder}-"))
-            {
-                throw new Exception("Initializing Project from invalid bucket key: " + ossObjectName);
-            }
-
-            var projectName = ossObjectName.Substring(ONC.ProjectsFolder.Length+1);
-            return GetProject(projectName);
+            var project = GetProject(projectName);
+            return new ProjectStorage(project, this);
         }
     }
 }
