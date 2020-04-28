@@ -1,23 +1,17 @@
 import React, { Component } from 'react';
+import Script from 'react-load-script';
 import {connect} from 'react-redux';  
-import ForgeViewer from 'react-forge-viewer';
 import { getActiveProject } from '../reducers/mainReducer';
 
+var Autodesk = null;
     
-/* Once the viewer has initialized, it will ask us for a forge token.
-We don't need to have a token to access our resouce, but need the viewer component to provide something with... */
-function handleTokenRequested(onAccessToken){
-    console.log('Token requested by the viewer.');
-    if(onAccessToken){
-        onAccessToken(null, null);
-    }
-}
-
 export class ForgeView extends Component {
 
     constructor(props){
       super(props);
 
+      this.viewerDiv = React.createRef();
+      this.viewer = null;      
       this.state = {
         view:null
       }
@@ -27,28 +21,53 @@ export class ForgeView extends Component {
     display in our component */
     handleDocumentLoaded(doc, viewables){
         if (viewables.length === 0) {
-        console.error('Document contains no viewables.');
-        }
-        else{
-        //Select the first viewable in the list to use in our viewer component
-        this.setState({view:viewables[0]});
+            console.error('Document contains no viewables.');
+        } else {
+            //Select the first viewable in the list to use in our viewer component
+            this.setState({view:viewables[0]});
         }
     }
 
+    handleScriptLoad(){
+        let options = {
+            env: 'Local' // , getAccessToken: this.props.onTokenRequest
+        };
+
+        Autodesk = window.Autodesk;
+
+        let container = this.viewerDiv.current;
+        this.viewer = new Autodesk.Viewing.GuiViewer3D(container);
+
+        Autodesk.Viewing.Initializer(
+            options, this.handleViewerInit.bind(this));
+      }
+
+    handleViewerInit() {
+        var errorCode = this.viewer.start();
+        if (errorCode)
+            return;
+            
+        this.setState({enable:true});
+
+        Autodesk.Viewing.Document.load(
+            this.props.activeProject.svf + '/bubble.json', this.onDocumentLoadSuccess.bind(this), () => {}
+        );
+    }
+
+    onDocumentLoadSuccess(viewerDocument) {
+        var defaultModel = viewerDocument.getRoot().getDefaultGeometry();
+        this.viewer.loadDocumentNode(viewerDocument, defaultModel);
+    }    
+
     render() {
         return (
-            <ForgeViewer
-                // version="6.0"
-                urn={this.props.activeProject?.svf}
-                view={this.state.view}
-                headless={false}
-                onViewerError={() => {}}
-                onTokenRequest={handleTokenRequested}
-                onDocumentLoad={this.handleDocumentLoaded.bind(this)}
-                onDocumentError={() => {}}
-                onModelLoad={() => {}}
-                onModelError={() => {}}
-            />            
+            <div id="ForgeViewer">
+              <div ref={this.viewerDiv}></div>
+              <link rel="stylesheet" type="text/css" href={`https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/style.css`}/>
+              <Script url={`https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.js`}
+                onLoad={this.handleScriptLoad.bind(this)}
+              />
+            </div>            
         )
     }
 }

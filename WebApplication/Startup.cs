@@ -103,7 +103,8 @@ namespace WebApplication
             {
                 // make sure that directory exists
                 FileProvider = new PhysicalFileProvider(resourceProvider.LocalRootName),
-                RequestPath = new PathString(ResourceProvider.VirtualCacheDir)
+                RequestPath = new PathString(ResourceProvider.VirtualCacheDir),
+                ServeUnknownFileTypes = true
             });
 
             app.UseSpaStaticFiles();
