@@ -3,7 +3,6 @@ phases:
   build:
     commands:
       - bucketAndFile=${CODEBUILD_SOURCE_REPO_URL_BuildArtifact:13}
-      - commitMessage=#{SourceVariables.CommitMessage}
       - echo $commitMessage
       - echo "${$commitMessage/ /_}"
       - versionLabel=$CODEBUILD_BUILD_NUMBER-${CODEBUILD_RESOLVED_SOURCE_VERSION:0:7}-${commitMessage:0:15}
