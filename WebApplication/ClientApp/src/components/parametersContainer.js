@@ -3,8 +3,17 @@ import { connect } from 'react-redux';
 import './parameters.css'
 import Parameter from './parameter';
 import { getActiveProject } from '../reducers/mainReducer';
+import { fetchParameters } from '../actions/parametersActions'
 
 class ParametersContainer extends Component {
+
+    constructor(props) {
+        super(props);
+    }
+
+    componentDidMount() {
+        this.props.fetchParameters(this.props.activeProject.id);
+    }
 
     render() {
         const parameterList = this.props.activeProject.parameters;
@@ -27,6 +36,6 @@ ParametersContainer = connect(function (store) {
     return {
         activeProject: getActiveProject(store)
     }
-})(ParametersContainer);
+}, { fetchParameters })(ParametersContainer);
 
 export default ParametersContainer;
