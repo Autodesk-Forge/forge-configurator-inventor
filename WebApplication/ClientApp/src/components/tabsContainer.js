@@ -4,6 +4,9 @@ import ProjectList from './projectList';
 import ForgeView from './forgeView';
 import './tabs.css'
 
+import ParametersContainer from './parametersContainer';
+import './parameters.css'
+
 class TabsContainer extends Component {
 
     render() {
@@ -21,8 +24,11 @@ class TabsContainer extends Component {
                 </div>
               </Tab>
               <Tab label="Model">
-                <div id="model" className="tabContent">
-                  <ForgeView/>
+                <div className='inRow'>
+                    <ParametersContainer/>
+                    <div id="model" className="tabContent">
+                        <ForgeView/>
+                    </div>
                 </div>
               </Tab>
               <Tab label="BOM">
