@@ -6,7 +6,7 @@ phases:
       - aws codepipeline list-action-executions --pipeline-name sdra-test --filter pipelineExecutionId=$PipelineExecutionId > pipeline-execution.json
       - commitMessage=$(jq -r '.actionExecutionDetails[1].output.outputVariables.CommitMessage' pipeline-execution.json)
       - commitMessageDashes="${commitMessage// /_}"
-      - commitMessageDashes="${commitMessageDashes//\n/_}"
+      - commitMessageDashes="${commitMessageDashes//$'\n'/_}"
       - versionLabel=$CODEBUILD_BUILD_NUMBER-${CODEBUILD_RESOLVED_SOURCE_VERSION:0:7}-${commitMessageDashes:0:15}
       - bucket=$(cut -d'/' -f1 <<< $bucketAndFile)
       - folder1=$(cut -d'/' -f2 <<< $bucketAndFile)
