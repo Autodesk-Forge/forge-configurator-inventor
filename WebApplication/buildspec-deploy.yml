@@ -1,11 +1,14 @@
 version: 0.2
 phases:
+  install:
+    commands:
+      - apt-get install jq
   build:
     commands:
       - bucketAndFile=${CODEBUILD_SOURCE_REPO_URL_BuildArtifact:13}
       - printenv
       - aws codepipeline list-action-executions --pipeline-name sdra-test --filter pipelineExecutionId=$aaa > pipeline-execution.json
-      - commitMessage=$(grep -oP '(?<="externalExecutionSummary": ")[^"]*' pipeline-execution.json)
+      - commitMessage=$(jq -r '.actionExecutionDetails[1].output.executionResult.externalExecutionSummary' pipeline-execution.json)
       - echo $commitMessage
       - commitMessageDashes="${commitMessage// /_}"
       - versionLabel=$CODEBUILD_BUILD_NUMBER-${CODEBUILD_RESOLVED_SOURCE_VERSION:0:7}-${commitMessageDashes:0:15}
