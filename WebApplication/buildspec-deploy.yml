@@ -1,13 +1,11 @@
 version: 0.2
 phases:
-  install:
-    commands:
-      - yum install jq
   build:
     commands:
       - bucketAndFile=${CODEBUILD_SOURCE_REPO_URL_BuildArtifact:13}
       - echo $PipelineExecutionId
       - aws codepipeline list-action-executions --pipeline-name sdra-test --filter pipelineExecutionId=$PipelineExecutionId > pipeline-execution.json
+      - cat pipeline-execution.json
       - commitMessage=$(jq -r '.actionExecutionDetails[1].output.executionResult.externalExecutionSummary' pipeline-execution.json)
       - echo $commitMessage
       - commitMessageDashes="${commitMessage// /_}"
