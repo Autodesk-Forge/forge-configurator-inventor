@@ -7,3 +7,12 @@
     border-width: 8px;
     border-color: #D9D9D9;
 }
+
+.tabContent#model {
+    border-style: none;
+}
+
+.inRow {
+    display: flex;
+    flex-direction: row;
+}

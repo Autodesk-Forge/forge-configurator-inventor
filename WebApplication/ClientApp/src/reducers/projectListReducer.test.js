@@ -1,5 +1,6 @@
 import {projectListReducer, initialState, getActiveProject} from './projectListReducers';
 import {updateProjectList, updateActiveProject} from '../actions/projectListActions';
+import { updateParameters } from '../actions/parametersActions';
 
 describe('projectList reducer', () => {
     test('should return the initial state', () => {
@@ -90,4 +91,119 @@ describe('projectList reducer', () => {
         
         expect(getActiveProject(projectList)).toEqual(activeProject);
      })
+
+     it('adds project parameters', () => {
+        const projects = [
+            {
+                id: '7',
+                label: 'New Project'
+            },
+            {
+                id: '5',
+                label: 'New Project B'               
+            }            
+        ]
+
+        const newParams = [
+            {
+                "name": "Length",
+                "value": "12000 mm",
+                "type": "NYI",
+                "units": "mm",
+                "allowedValues": []
+            },
+            {
+                "name": "Width",
+                "value": "2000 mm",
+                "type": "NYI",
+                "units": "mm",
+                "allowedValues": []
+            }
+        ]
+
+        const oldProjectList = {
+            activeProjectId: '7',
+            projects: projects
+        }
+
+        const updatedProjects = [
+            {
+                id: '7',
+                label: 'New Project',
+                parameters: newParams
+            },
+            {
+                id: '5',
+                label: 'New Project B'               
+            }            
+        ]
+
+        const newProjectList = {
+            activeProjectId: '7',
+            projects: updatedProjects
+        }
+
+        expect(projectListReducer(oldProjectList, updateParameters('7', newParams))).toEqual(newProjectList);
+     })
+
+     it('updates  project parameters', () => {
+        const projects = [
+            {
+                id: '7',
+                label: 'New Project',
+                parameters: [
+                    {
+                        "name": "oldParameter",
+                        "value": null
+                    }
+                ]
+            },
+            {
+                id: '5',
+                label: 'New Project B'               
+            }            
+        ]
+
+        const newParams = [
+            {
+                "name": "Length",
+                "value": "12000 mm",
+                "type": "NYI",
+                "units": "mm",
+                "allowedValues": []
+            },
+            {
+                "name": "Width",
+                "value": "2000 mm",
+                "type": "NYI",
+                "units": "mm",
+                "allowedValues": []
+            }
+        ]
+
+        const oldProjectList = {
+            activeProjectId: '7',
+            projects: projects
+        }
+
+        const updatedProjects = [
+            {
+                id: '7',
+                label: 'New Project',
+                parameters: newParams
+            },
+            {
+                id: '5',
+                label: 'New Project B'               
+            }            
+        ]
+
+        const newProjectList = {
+            activeProjectId: '7',
+            projects: updatedProjects
+        }
+
+        expect(projectListReducer(oldProjectList, updateParameters('7', newParams))).toEqual(newProjectList);
+     })
+
 })

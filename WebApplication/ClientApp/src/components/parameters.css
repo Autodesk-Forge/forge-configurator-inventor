@@ -1,0 +1,10 @@
+.parametersContainer {
+    width: 400px;
+    height: 100%;
+    padding: 16px;
+    background-color: white;
+}
+
+.parameter {
+    padding-bottom: 16px;
+}

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Tabs, { Tab } from "@hig/tabs";
 import ProjectList from './projectList';
 import ForgeView from './forgeView';
+import ParametersContainer from './parametersContainer';
 import './tabs.css'
 
 class TabsContainer extends Component {
@@ -21,8 +22,9 @@ class TabsContainer extends Component {
                 </div>
               </Tab>
               <Tab label="Model">
-                <div id="model" className="tabContent">
-                  <ForgeView/>
+                <div id="model" className='inRow tabContent'>
+                    <ParametersContainer/>
+                    <ForgeView/>
                 </div>
               </Tab>
               <Tab label="BOM">
