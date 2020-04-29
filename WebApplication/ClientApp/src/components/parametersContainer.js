@@ -5,7 +5,7 @@ import Parameter from './parameter';
 import { getActiveProject } from '../reducers/mainReducer';
 import { fetchParameters } from '../actions/parametersActions'
 
-class ParametersContainer extends Component {
+export class ParametersContainer extends Component {
 
     constructor(props) {
         super(props);
@@ -32,10 +32,8 @@ class ParametersContainer extends Component {
     }
 }
 
-ParametersContainer = connect(function (store) {
+export default connect(function (store) {
     return {
         activeProject: getActiveProject(store)
     }
 }, { fetchParameters })(ParametersContainer);
-
-export default ParametersContainer;

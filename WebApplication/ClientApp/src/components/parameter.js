@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './parameters.css'
 
-class Parameter extends Component {
+export class Parameter extends Component {
 
     render() {
         return (
