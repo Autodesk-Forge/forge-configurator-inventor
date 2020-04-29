@@ -21,10 +21,12 @@ export const projectListReducer = function(state = initialState, action) {
             return { ...state, activeProjectId: action.activeProjectId};
         }
         case projectListActionTypes.PARAMETERS_UPDATED: {
-            // ?? make clone to be able to set project parameter and invoke change if any
-            var projects = JSON.parse(JSON.stringify(state.projects));
-            let prj = projects.find(({ id }) => id === action.projectId);
-            prj.parameters = action.parameters;
+            var projects = state.projects.map((project) => {
+                return project.id !== action.projectId ? project : {
+                  ...project,
+                  parameters: action.parameters
+                }
+            });
 
             return { ...state, projects: projects };
         }
