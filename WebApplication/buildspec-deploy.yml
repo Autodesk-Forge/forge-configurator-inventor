@@ -2,7 +2,7 @@ version: 0.2
 phases:
   install:
     commands:
-      - apt-get install jq
+      - yum install jq
   build:
     commands:
       - bucketAndFile=${CODEBUILD_SOURCE_REPO_URL_BuildArtifact:13}
