@@ -3,4 +3,7 @@
     height: 800px;
     width: 1000px;
     position: relative;
+    border-style: solid;
+    border-width: 8px;
+    border-color: #D9D9D9;
 }
