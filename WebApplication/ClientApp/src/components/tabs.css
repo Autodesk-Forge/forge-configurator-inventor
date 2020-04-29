@@ -1,4 +1,7 @@
 .tabsContainer {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
     padding-top: 29px;
 }
 
