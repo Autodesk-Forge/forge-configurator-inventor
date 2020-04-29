@@ -6,10 +6,10 @@ class Parameter extends Component {
     render() {
         return (
             <div className="parameter">
-                name={this.props.parameter.name},
-                value={this.props.parameter.value},
-                type={this.props.parameter.type},
-                units={this.props.parameter.units}
+                {this.props.parameter.name},
+                {this.props.parameter.value},
+                {this.props.parameter.type},
+                {this.props.parameter.units}
             </div>
         )
     }

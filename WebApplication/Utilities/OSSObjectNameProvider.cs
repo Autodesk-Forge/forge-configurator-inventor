@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 
 namespace WebApplication.Utilities
@@ -28,6 +29,11 @@ namespace WebApplication.Utilities
         /// Marker file, serves as a flag that project is locally cached.
         /// </summary>
         public const string Marker = "__marker";
+
+        /// <summary>
+        /// JSON file with parameters.
+        /// </summary>
+        public const string Parameters = "parameters.json";
     }
 
     /// <summary>
@@ -39,6 +45,20 @@ namespace WebApplication.Utilities
         public const string CacheFolder = "cache";
         public const string DownloadsFolder = "downloads";
         public const string AttributesFolder = "attributes";
+
+        /// <summary>
+        /// Extract project name from OSS object name.
+        /// </summary>
+        /// <param name="ossObjectName">OSS name for the project</param>
+        public static string ToProjectName(string ossObjectName)
+        {
+            if(!ossObjectName.StartsWith($"{ONC.ProjectsFolder}-"))
+            {
+                throw new ApplicationException("Initializing Project from invalid bucket key: " + ossObjectName);
+            }
+
+            return ossObjectName.Substring(ProjectsFolder.Length+1);
+        }
     }
 
     /// <summary>
@@ -83,7 +103,7 @@ namespace WebApplication.Utilities
         /// <summary>
         /// Filename for JSON with Inventor document parameters.
         /// </summary>
-        public string Parameters => ToFullName("parameters.json");
+        public string Parameters => ToFullName(LocalName.Parameters);
 
         public string DownloadsPath => ToFullName(ONC.DownloadsFolder);
     }

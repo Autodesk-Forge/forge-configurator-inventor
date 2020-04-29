@@ -55,6 +55,11 @@ namespace WebApplication.Utilities
         /// </summary>
         public string SvfDir => ToFullName(LocalName.SvfDir);
 
+        /// <summary>
+        /// Filename for JSON with Inventor document parameters.
+        /// </summary>
+        public string Parameters => ToFullName(LocalName.Parameters);
+
         public LocalNameProvider(string projectDir, string hash) : base(Path.Combine(projectDir, hash))
         {
         }

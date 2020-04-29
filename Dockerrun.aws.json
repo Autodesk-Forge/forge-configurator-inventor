@@ -1,7 +1,7 @@
 {
     "AWSEBDockerrunVersion": "1",
     "Image": {
-      "Name": "624240287035.dkr.ecr.us-west-2.amazonaws.com/io-configurator-app:latest",
+      "Name": "624240287035.dkr.ecr.us-west-2.amazonaws.com/sdra:latest",
       "Update": "true"
     },
     "Ports": [
