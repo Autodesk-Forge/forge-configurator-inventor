@@ -7,3 +7,8 @@
     border-width: 8px;
     border-color: #D9D9D9;
 }
+
+.inRow {
+    display: flex;
+    flex-direction: row;
+}
