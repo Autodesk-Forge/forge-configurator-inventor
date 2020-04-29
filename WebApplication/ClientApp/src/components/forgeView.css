@@ -1,7 +1,6 @@
 .viewer {
     background-color: white;
-    height: 800px;
-    width: 1000px;
+    width: 100%;
     position: relative;
     border-style: solid;
     border-width: 8px;

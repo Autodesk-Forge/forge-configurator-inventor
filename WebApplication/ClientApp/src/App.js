@@ -8,7 +8,7 @@ import ProjectSwitcher from './components/projectSwitcher';
 class App extends Component {
   render () {
     return (
-      <Surface id="main" level={200}
+      <Surface className="fullheight" id="main" level={200}
         shadow="high"
         borderRadius="m">
         <Toolbar>
