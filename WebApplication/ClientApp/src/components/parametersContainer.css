@@ -1,4 +1,6 @@
 .parametersContainer {
+    display: flex;
+    flex-flow: column;
     width: 296px;
     padding: 16px;
     background-color: white;
@@ -8,10 +10,7 @@
     /* Do something here to make this scroll-able 
     when there's a lot of params,
     instead of the whole window content. */
-    /* these two do not work yet for it:
-    flex-shrink: 1;
-    overflow-y: auto;
-    */
+    flex: auto;
 }
 
 .parameter {
@@ -34,10 +33,13 @@
 }
 
 .buttonsContainer {
-    position: absolute;
-    bottom: 0;
+    flex: none;
     width: 203px; /* somehow deduced from the .parametersContainer width: 296px; minus it's paddings margins etc */
     margin-bottom: 14px;    
+}
+
+.buttonsContainer.hidden {
+    display: none;
 }
 
 .buttonsContainer .buttons {

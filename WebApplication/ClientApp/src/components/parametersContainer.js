@@ -18,35 +18,35 @@ export class ParametersContainer extends Component {
 
     render() {
         const parameterList = this.props.activeProject.parameters;
+        const buttonsContainerClass = parameterList ? "buttonsContainer" : "buttonsContainer hidden";
 
-        if (!parameterList) {
-            return (<span>No parameters</span>)
-        } else {
-            return (
-                <div className="parametersContainer">
-                    <div className="parameters">
-                    {
-                        parameterList.map((parameter, index) => (<Parameter key={index} parameter={parameter}/>))
-                    }
-                    </div>
-                    <div className="buttonsContainer">
-                        <hr/>                            
-                        <div className="buttons">
-                            <Button
-                                size="standard"
-                                title="Cancel"
-                                type="primary"
-                            />
-                            <Button
-                                size="standard"
-                                title="Update"
-                                type="primary"
-                            />
-                        </div>
+        return (
+            <div className="parametersContainer">
+                <div className="parameters">
+                {
+                    parameterList ? 
+                        parameterList.map((parameter, index) => (<Parameter key={index} parameter={parameter}/>)) 
+                        : "No parameters"
+                }
+                </div>
+                <div className={buttonsContainerClass}>
+                    <hr/>                            
+                    <div className="buttons">
+                        <Button
+                            size="standard"
+                            title="Cancel"
+                            type="primary"
+                            onClick={() => {this.props.fetchParameters(this.props.activeProject.id)}}
+                        />
+                        <Button
+                            size="standard"
+                            title="Update"
+                            type="primary"
+                        />
                     </div>
                 </div>
-            )
-        }
+            </div>
+        )
     }
 }
 
