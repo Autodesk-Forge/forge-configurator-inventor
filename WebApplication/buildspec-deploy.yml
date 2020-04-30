@@ -3,7 +3,7 @@ phases:
   build:
     commands:
       - bucketAndFile=${CODEBUILD_SOURCE_REPO_URL_BuildArtifact:13}
-      - aws codepipeline list-action-executions --pipeline-name sdra-test --filter pipelineExecutionId=$PipelineExecutionId > pipeline-execution.json
+      - aws codepipeline list-action-executions --pipeline-name $pipelineName --filter pipelineExecutionId=$PipelineExecutionId > pipeline-execution.json
       - commitMessage=$(jq -r '.actionExecutionDetails[1].output.outputVariables.CommitMessage' pipeline-execution.json)
       - commitMessageDashes="${commitMessage// /_}"
       - commitMessageDashes="${commitMessageDashes//$'\n'/_}"
