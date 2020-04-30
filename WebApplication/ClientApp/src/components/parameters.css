@@ -6,4 +6,19 @@
 
 .parameter {
     padding-bottom: 16px;
+    font-size: 14px;
+    color: rgb(60,60,60);
+}
+
+.parameter.checkbox {
+    padding-bottom: 32px;
+    height: 20px;
+    display: flex;
+    flex-flow: row;
+}
+
+.parameter.checkboxtext {
+    padding-left: 12px;
+    font-size: 14px;
+    line-height: 16px;
 }
