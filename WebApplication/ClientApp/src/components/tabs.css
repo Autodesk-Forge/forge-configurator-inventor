@@ -1,0 +1,21 @@
+.tabsContainer {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+    padding-top: 29px;
+}
+
+.tabContent {
+    border-style: solid;
+    border-width: 8px;
+    border-color: #D9D9D9;
+}
+
+.tabContent#model {
+    border-style: none;
+}
+
+.inRow {
+    display: flex;
+    flex-direction: row;
+}
