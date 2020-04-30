@@ -53,10 +53,19 @@ describe('Integration UI tests', () => {
         await page.close();
     });
 
+    /** Get text content for the given single node at the xpath */
+    async function getTextContent(xpath) {
+        return await page.evaluate(
+                            expression => document.evaluate(expression, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent, 
+                            xpath);
+    }  
 
-    async function waitForLoadedProjects() {
-        await page.waitFor('//p', { timeout: 3000 });
-    }
+    /** Click on the single node at the xpath */
+    async function clickXPath(xpath) {
+        return await page.evaluate(
+                            expression => document.evaluate(expression, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 
+                            xpath);
+    }    
 
     it('should check the page is loaded', async () => {
 
@@ -96,15 +105,15 @@ describe('Integration UI tests', () => {
         await page.waitForSelector('//div/div[2]', {visible: true, timeout: 2000});
 
         // check content of PROJECTS menu
-        const caption = await page.evaluate(() => document.evaluate('//ul/span', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent);
+        const caption = await getTextContent('//ul/span');
         expect(caption).toBe("Projects");
 
         // check name of the first project
-        const firstDemoProject = await page.evaluate(() => document.evaluate('//ul/li[1]/span[2]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent);
+        const firstDemoProject = await getTextContent('//ul/li[1]/span[2]');
         expect(firstDemoProject).toBe("Conveyor.zip");
 
         // check name of the second project
-        const secondDemoProject = await page.evaluate(() => document.evaluate('//ul/li[2]/span[2]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent);
+        const secondDemoProject = await getTextContent('//ul/li[2]/span[2]');
         expect(secondDemoProject).toBe("Wrench.zip");
     });
 
@@ -118,19 +127,19 @@ describe('Integration UI tests', () => {
         await page.waitForSelector('//div/div[2]', {visible: true, timeout: 3000});
 
         // emulate click to trigger project loading
-        await page.evaluate(() => document.evaluate('//ul/li[1]/span[2]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click());
-        let project_name = await page.evaluate(() => document.evaluate('//p', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent);
+        await clickXPath('//ul/li[1]/span[2]');
+        let project_name = await getTextContent('//p');
         expect(project_name).toBe("Conveyor.zip");
 
         // click to show popup menu with list of projects
-        await page.evaluate(() => document.evaluate('//p', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click());
+        await clickXPath('//p');
 
         // wait until project list is displayed
         await page.waitForSelector('//div/div[2]', {visible: true, timeout: 3000});
 
         // emulate click to trigger project loading
-        await page.evaluate(() => document.evaluate('//ul/li[2]/span[2]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click());
-        project_name = await page.evaluate(() => document.evaluate('//p', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent);
+        await clickXPath('//ul/li[2]/span[2]');
+        project_name = await getTextContent('//p');
         expect(project_name).toBe("Wrench.zip");
      });
 
@@ -144,7 +153,7 @@ describe('Integration UI tests', () => {
         // wait until log popup is displayed
         await page.waitForSelector('//div/div[2]', {visible: true, timeout: 3000});
 
-        const log_description = await page.evaluate(() => document.evaluate('//h3', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent);
+        const log_description = await getTextContent('//h3');
         expect(log_description).toBe("Navigation Action");
     });
 
@@ -154,7 +163,7 @@ describe('Integration UI tests', () => {
         await page.waitFor('span[aria-label="Avatar for anonymous user"]', {timeout: 2000});
 
         // validate user name
-        const text = await page.evaluate(() => document.evaluate('//button/span/span', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent);
+        const text = await getTextContent('//button/span/span');
         expect(text).toBe("AU")
     });
 
