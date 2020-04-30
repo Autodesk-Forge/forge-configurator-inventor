@@ -32,24 +32,15 @@ export const updateParameters = (projectId, parameters) => {
  * }
  */
 function adaptParameters(rawParameters) {
-    var result = [];
-
-    for (let key in rawParameters) {
-        if (rawParameters.hasOwnProperty(key)){
-
-            const param = rawParameters[key];
-
-            result.push({
-                name: key,
-                value: param.value,
-                allowedValues: param.values,
-                units: param.unit,
-                type: "NYI" // TODO: remove?
-            });
+    return Object.entries(rawParameters).map( ([key, param]) => {
+        return {
+            name: key,
+            value: param.value,
+            allowedValues: param.values,
+            units: param.unit,
+            type: "NYI" // TODO: remove?
         }
-    }
-
-    return result;
+    })
 }
 
 export const fetchParameters = (projectId) => async (dispatch, getState) => {
