@@ -1,0 +1,48 @@
+.parametersContainer {
+    width: 296px;
+    padding: 16px;
+    background-color: white;
+}
+
+.parameters {
+    /* Do something here to make this scroll-able 
+    when there's a lot of params,
+    instead of the whole window content. */
+    /* these two do not work yet for it:
+    flex-shrink: 1;
+    overflow-y: auto;
+    */
+}
+
+.parameter {
+    padding-bottom: 16px;
+    font-size: 14px;
+    color: rgb(60,60,60);
+}
+
+.parameter.checkbox {
+    padding-bottom: 32px;
+    height: 20px;
+    display: flex;
+    flex-flow: row;
+}
+
+.parameter.checkboxtext {
+    padding-left: 12px;
+    font-size: 14px;
+    line-height: 16px;
+}
+
+.buttonsContainer {
+    position: absolute;
+    bottom: 0;
+    width: 203px; /* somehow deduced from the .parametersContainer width: 296px; minus it's paddings margins etc */
+    margin-bottom: 14px;    
+}
+
+.buttonsContainer .buttons {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-around;
+    align-items: center;
+}

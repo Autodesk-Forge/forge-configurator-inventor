@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './parameters.css'
+import './parametersContainer.css'
 
 import Input from '@hig/input';
 import Checkbox from '@hig/checkbox';
