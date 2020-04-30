@@ -32,9 +32,18 @@ namespace WebApplication.Controllers
             foreach(ObjectDetails objDetails in objects)
             {
                 var projectName = ONC.ToProjectName(objDetails.ObjectKey);
-                ProjectStorage projectStorage = _resourceProvider.GetProjectStorage(projectName);
 
-                projectDTOs.Add(projectStorage.ToDTO());
+                ProjectStorage projectStorage = _resourceProvider.GetProjectStorage(projectName);
+                Project project = projectStorage.Project;
+
+                var dto = new ProjectDTO
+                {
+                    Id = project.Name,
+                    Label = project.Name,
+                    Image = _resourceProvider.ToDataUrl(project.LocalAttributes.Thumbnail),
+                    Svf = _resourceProvider.ToDataUrl(projectStorage.GetLocalNames().SvfDir)
+                };
+                projectDTOs.Add(dto);
             }
 
             return projectDTOs;
