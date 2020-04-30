@@ -3,7 +3,11 @@ phases:
   build:
     commands:
       - bucketAndFile=${CODEBUILD_SOURCE_REPO_URL_BuildArtifact:13}
-      - commitMessageDashes="${commitMessage// /_}"
+      - aws codepipeline list-action-executions --pipeline-name $pipelineName --filter pipelineExecutionId=$PipelineExecutionId > pipeline-execution.json
+      - commitMessage=$(jq -r '.actionExecutionDetails[2].output.outputVariables.CommitMessage' pipeline-execution.json)
+      - commitMessageDashes="${commitMessage/Merge pull request /}"
+      - commitMessageDashes="${commitMessageDashes// /_}"
+      - commitMessageDashes="${commitMessageDashes//$'\n'/_}"
       - versionLabel=$CODEBUILD_BUILD_NUMBER-${CODEBUILD_RESOLVED_SOURCE_VERSION:0:7}-${commitMessageDashes:0:15}
       - bucket=$(cut -d'/' -f1 <<< $bucketAndFile)
       - folder1=$(cut -d'/' -f2 <<< $bucketAndFile)
@@ -12,4 +16,4 @@ phases:
       - echo "Creating application version " $versionLabel " from artefacts " $file
       - aws elasticbeanstalk create-application-version --application-name sdra --description "$commitMessage" --version-label $versionLabel --source-bundle S3Bucket="$bucket",S3Key="$folder1/$folder2/$file"
       - echo "Deploying version " $versionLabel
-      - aws elasticbeanstalk update-environment --environment-name sdra-dev --version-label $versionLabel
+      - aws elasticbeanstalk update-environment --environment-name $environmentName --version-label $versionLabel

@@ -13,7 +13,11 @@ namespace WebApplication
     /// </summary>
     public class ProjectStorage
     {
-        private readonly Project _project;
+        /// <summary>
+        /// Project names.
+        /// </summary>
+        public Project Project { get; }
+
         private readonly ResourceProvider _resourceProvider;
 
         /// <summary>
@@ -23,32 +27,21 @@ namespace WebApplication
         private readonly Lazy<ProjectMetadata> _lazyMetadata;
 
         /// <summary>
-        /// OSS names for "hashed" files.
-        /// </summary>
-        public OSSObjectNameProvider OssNames => _lazyOssNames.Value;
-        private readonly Lazy<OSSObjectNameProvider> _lazyOssNames;
-
-        /// <summary>
-        /// Local names for "hashed" files.
-        /// </summary>
-        public LocalNameProvider LocalNames => _lazyLocalNames.Value;
-        private readonly Lazy<LocalNameProvider> _lazyLocalNames;
-
-        /// <summary>
         /// Constructor.
         /// </summary>
         public ProjectStorage(Project project, ResourceProvider resourceProvider)
         {
-            _project = project;
+            Project = project;
             _resourceProvider = resourceProvider;
 
             _lazyMetadata = new Lazy<ProjectMetadata>(() =>
                                                             {
-                                                                var metadataFile = _project.LocalAttributes.Metadata;
+                                                                var metadataFile = Project.LocalAttributes.Metadata;
+                                                                if (!File.Exists(metadataFile))
+                                                                    throw new ApplicationException("Attempt to work with uninitialized project storage.");
+
                                                                 return Json.DeserializeFile<ProjectMetadata>(metadataFile);
                                                             });
-            _lazyOssNames = new Lazy<OSSObjectNameProvider>(() => _project.OssNameProvider(Metadata.Hash));
-            _lazyLocalNames = new Lazy<LocalNameProvider>(() => _project.LocalNameProvider(Metadata.Hash));
         }
 
         /// <summary>
@@ -57,29 +50,32 @@ namespace WebApplication
         public async Task EnsureLocalAsync(HttpClient httpClient)
         {
             // ensure the directory exists
-            Directory.CreateDirectory(_project.LocalAttributes.BaseDir);
+            Directory.CreateDirectory(Project.LocalAttributes.BaseDir);
 
             // download metadata and thumbnail
             await Task.WhenAll(
-                                DownloadFileAsync(httpClient, _project.OssAttributes.Metadata, _project.LocalAttributes.Metadata),
-                                DownloadFileAsync(httpClient, _project.OssAttributes.Thumbnail, _project.LocalAttributes.Thumbnail)
+                                DownloadFileAsync(httpClient, Project.OssAttributes.Metadata, Project.LocalAttributes.Metadata),
+                                DownloadFileAsync(httpClient, Project.OssAttributes.Thumbnail, Project.LocalAttributes.Thumbnail)
                             );
 
             // create the "hashed" dir
-            Directory.CreateDirectory(LocalNames.BaseDir);
+            var localNames = GetLocalNames();
+            Directory.CreateDirectory(localNames.BaseDir);
 
             // download ZIP with SVF model
             // NOTE: this step is impossible without having project metadata,
             // because file/dir names depends on hash of initial project state
+            var ossNames = GetOssNames();
+ 
             using var tempFile = new TempFile();
-            await DownloadFileAsync(httpClient, OssNames.ModelView, tempFile.Name);
-            await DownloadFileAsync(httpClient, OssNames.Parameters, LocalNames.Parameters);
+            await DownloadFileAsync(httpClient, ossNames.ModelView, tempFile.Name);
+            await DownloadFileAsync(httpClient, ossNames.Parameters, localNames.Parameters);
 
             // extract SVF from the archive
-            ZipFile.ExtractToDirectory(tempFile.Name, LocalNames.SvfDir, overwriteFiles: true); // TODO: non-default encoding is not supported
+            ZipFile.ExtractToDirectory(tempFile.Name, localNames.SvfDir, overwriteFiles: true); // TODO: non-default encoding is not supported
 
             // write marker file about processing completion
-            await File.WriteAllTextAsync(_project.LocalAttributes.Marker, "done");
+            await File.WriteAllTextAsync(Project.LocalAttributes.Marker, "done");
         }
 
 
@@ -95,15 +91,14 @@ namespace WebApplication
             await httpClient.DownloadAsync(url, localFullName);
         }
 
-        public ProjectDTO ToDTO()
-        {
-            return new ProjectDTO
-                    {
-                        Id = _project.Name,
-                        Label = _project.Name,
-                        Image = _resourceProvider.ToDataUrl(_project.LocalAttributes.Thumbnail),
-                        Svf = _resourceProvider.ToDataUrl(LocalNames.SvfDir)
-                    };
-        }
+        /// <summary>
+        /// OSS names for "hashed" files.
+        /// </summary>
+        public OSSObjectNameProvider GetOssNames() => Project.OssNameProvider(Metadata.Hash);
+
+        /// <summary>
+        /// Local names for "hashed" files.
+        /// </summary>
+        public LocalNameProvider GetLocalNames() => Project.LocalNameProvider(Metadata.Hash);
     }
 }
