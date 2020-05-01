@@ -6,6 +6,6 @@
         "AppBundles/packages": true,
         "AppBundles/Output": true
     },
-    "eslint.workingDirectories": [ "ClientApp" ],
+    "eslint.workingDirectories": [ "WebApplication/ClientApp" ],
     "jest.pathToJest": "WebApplication/ClientApp/node_modules/.bin/jest"
 }

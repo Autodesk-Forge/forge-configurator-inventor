@@ -35,7 +35,7 @@ function adaptParameters(rawParameters) {
     var result = [];
 
     for (let key in rawParameters) {
-        if (rawParameters.hasOwnProperty(key)){
+        if (Object.prototype.hasOwnProperty.call(rawParameters, key)){
 
             const param = rawParameters[key];
 
@@ -52,6 +52,7 @@ function adaptParameters(rawParameters) {
     return result;
 }
 
+// eslint-disable-next-line no-unused-vars
 export const fetchParameters = (projectId) => async (dispatch, getState) => {
     dispatch(addLog('get parameters invoked'));
     try {

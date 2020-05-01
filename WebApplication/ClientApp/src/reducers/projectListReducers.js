@@ -5,7 +5,8 @@ export const initialState = {
 }
 
 export const getActiveProject = function(state) {
-    return state.projects?.find(proj => proj.id === state.activeProjectId)
+    if (! state.projects) return undefined;
+    return state.projects.find(proj => proj.id === state.activeProjectId);
 }
 
 export const projectListReducer = function(state = initialState, action) {

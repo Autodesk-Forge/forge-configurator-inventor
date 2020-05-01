@@ -65,7 +65,7 @@ describe('components', () => {
         fetchProjects
       }
 
-      const wrapper = shallow(<ProjectSwitcher {...props} />);
+      /*const wrapper = */shallow(<ProjectSwitcher {...props} />);
       
       expect(fetchProjects).toBeCalled();
     })

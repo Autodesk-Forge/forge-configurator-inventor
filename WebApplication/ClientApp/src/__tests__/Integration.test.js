@@ -80,7 +80,7 @@ describe('Integration UI tests', () => {
             await link.click();
 
             //wait for Autodesk Forge page
-            const element = await page.waitForSelector('.adskf__navbar-logo', {visible: true, timeout: 5000})
+            await page.waitForSelector('.adskf__navbar-logo', {visible: true, timeout: 5000})
             expect(await page.title()).toBe("Autodesk Forge");
         });
 

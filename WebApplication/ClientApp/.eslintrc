@@ -25,7 +25,8 @@
         "react"
     ],
     "rules": {
-        "no-console": "error",
-        "linebreak-style": "off"
+        "no-console": "warn",
+        "linebreak-style": "off",
+        "react/prop-types": 0 // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/prop-types.md
     }
 }

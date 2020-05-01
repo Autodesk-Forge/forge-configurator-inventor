@@ -44,7 +44,7 @@ describe('components', () => {
                 fetchParameters
             }
 
-            const wrapper = shallow(<ParametersContainer {...props} />);
+            /*const wrapper = */shallow(<ParametersContainer {...props} />);
 
             expect(fetchParameters).toBeCalled();
         })

@@ -16,7 +16,7 @@ const param = {
 describe('components', () => {
   describe('parameter', () => {
     it('CHANGE THE DESCRIPTION ONCE YOU WILL HAVE REAL TEST', () => {
-        const enzymeWrapper = shallow(<Parameter parameter={param} />);
+        /*const enzymeWrapper = */shallow(<Parameter parameter={param} />);
     })
   })
 })

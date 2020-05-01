@@ -30,7 +30,7 @@ const baseProps = {
 describe('components', () => {
   describe('forge view', () => {
     it('CHANGE THE DESCRIPTION ONCE YOU WILL HAVE REAL TEST', () => {
-      const enzymeWrapper = shallow(<ForgeView { ...baseProps } />);
+      /*const enzymeWrapper = */shallow(<ForgeView { ...baseProps } />);
     })
   })
 })
