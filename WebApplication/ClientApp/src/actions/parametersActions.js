@@ -1,14 +1,14 @@
 import repo from '../Repository';
 import { addError, addLog } from './notificationActions';
-import actionTypes from './projectListActions'
+import actionTypes from './projectListActions';
 
 export const updateParameters = (projectId, parameters) => {
     return {
         type: actionTypes.PARAMETERS_UPDATED,
         projectId: projectId,
         parameters
-    }
-}
+    };
+};
 
 /**
  * Convert incoming raw parameters into expected parameters format.
@@ -35,7 +35,7 @@ function adaptParameters(rawParameters) {
     var result = [];
 
     for (let key in rawParameters) {
-        if (rawParameters.hasOwnProperty(key)){
+        if (Object.prototype.hasOwnProperty.call(rawParameters, key)){
 
             const param = rawParameters[key];
 
@@ -52,6 +52,7 @@ function adaptParameters(rawParameters) {
     return result;
 }
 
+// eslint-disable-next-line no-unused-vars
 export const fetchParameters = (projectId) => async (dispatch, getState) => {
     dispatch(addLog('get parameters invoked'));
     try {
@@ -62,4 +63,4 @@ export const fetchParameters = (projectId) => async (dispatch, getState) => {
     } catch (error) {
         dispatch(addError('Failed to get parameters for ' + projectId + '. (' + error + ')'));
     }
-}
+};

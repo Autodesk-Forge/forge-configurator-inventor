@@ -80,7 +80,7 @@ describe('Integration UI tests', () => {
             await link.click();
 
             //wait for Autodesk Forge page
-            const element = await page.waitForSelector('.adskf__navbar-logo', {visible: true, timeout: 5000})
+            await page.waitForSelector('.adskf__navbar-logo', {visible: true, timeout: 5000});
             expect(await page.title()).toBe("Autodesk Forge");
         });
 
@@ -100,7 +100,7 @@ describe('Integration UI tests', () => {
             // This selector does not exist on page opening, and will be created after projects are loaded from the server. Wait for it.
             const listItems = await page.$$("#project-list ul li");
             expect(listItems).toHaveLength(2); // expecting two default projects
-        });        
+        });
     });
 
     describe('Toolbar', () => {
@@ -179,7 +179,7 @@ describe('Integration UI tests', () => {
 
             // validate user name
             const text = await getTextContent('//button/span/span');
-            expect(text).toBe("AU")
+            expect(text).toBe("AU");
         });
     });
 });

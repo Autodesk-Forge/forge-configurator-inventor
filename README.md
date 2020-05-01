@@ -18,6 +18,11 @@ Demo application showcasing Configuration with Design Automation for Inventor
 1. Clone repository
 1. Specify [forge credentials](#specify-forge-credentials).
 
+### VSCode extensions
+* In order to debug the solution in VS Code you have to install the extension [Debugger for Chrome](https://marketplace.visualstudio.com/items?itemName=msjsdiag.debugger-for-chrome)
+* [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
+* [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+
 ## Build
 * Building the projects also installs required packages (this can take several minutes).
 ### App Bundles

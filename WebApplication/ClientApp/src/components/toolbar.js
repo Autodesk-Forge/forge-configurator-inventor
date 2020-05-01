@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import TopNav, {
     Logo,
     LogoText,
-    Interactions, 
+    Interactions,
     ProfileAction,
     NavAction,
     Separator
