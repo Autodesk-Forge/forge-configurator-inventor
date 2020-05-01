@@ -1,0 +1,8 @@
+.viewer {
+    background-color: white;
+    width: 100%;
+    position: relative;
+    border-style: solid;
+    border-width: 8px;
+    border-color: #D9D9D9;
+}

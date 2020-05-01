@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Addin Type="Plugin">
+  <ClassId>{824d9b00-545b-4929-accf-a47b7eca80a1}</ClassId>
+  <ClientId>{824d9b00-545b-4929-accf-a47b7eca80a1}</ClientId>
+  <DisplayName>ExtractParametersPlugin</DisplayName>
+  <Description>a ExtractParametersPlugin</Description>
+  <Assembly>ExtractParametersPlugin.dll</Assembly>
+</Addin>

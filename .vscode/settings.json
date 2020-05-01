@@ -2,8 +2,10 @@
     "files.exclude": {
         "**/bin": true,
         "**/obj": true,
-        "**/node_modules": true
+        "**/node_modules": true,
+        "AppBundles/packages": true,
+        "AppBundles/Output": true
     },
-    "jest.pathToJest": "ClientApp/node_modules/.bin/jest",
-    "eslint.workingDirectories": [ "ClientApp" ]
+    "eslint.workingDirectories": [ "ClientApp" ],
+    "jest.pathToJest": "WebApplication/ClientApp/node_modules/.bin/jest"
 }

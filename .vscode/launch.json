@@ -11,21 +11,54 @@
    ],
    "configurations": [
         {
+          "name": "Debug Jest All",
+          "type": "node",
+          "request": "launch",
+          "runtimeExecutable": "${cwd}/WebApplication/ClientApp/node_modules/.bin/react-scripts",
+          "args": [
+            "test",
+            "--runInBand",
+            "--no-cache",
+            "--env=jsdom"
+          ],
+          "cwd": "${workspaceRoot}/WebApplication/ClientApp/",
+          "protocol": "inspector",
+          "console": "integratedTerminal",
+          "internalConsoleOptions": "neverOpen"
+        },
+        {
+          "name": "Debug Jest File",
+          "type": "node",
+          "request": "launch",
+          "runtimeExecutable": "${cwd}/WebApplication/ClientApp/node_modules/.bin/react-scripts",
+          "args": [
+            "test",
+            "${fileBasenameNoExtension}",
+            "--runInBand",
+            "--no-cache",
+            "--env=jsdom"
+          ],
+          "cwd": "${workspaceRoot}/WebApplication/ClientApp/",
+          "protocol": "inspector",
+          "console": "integratedTerminal",
+          "internalConsoleOptions": "neverOpen"
+        },
+        {
             "name": "Server",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/bin/Debug/netcoreapp3.1/SalesDemoToolApp.dll",
+            "program": "${workspaceFolder}/WebApplication/bin/Debug/netcoreapp3.1/WebApplication.dll",
             "args": [],
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/WebApplication",
             "stopAtEntry": false,
             "justMyCode": false,
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
             },
             "sourceFileMap": {
-                "/Views": "${workspaceFolder}/Views"
+                "/Views": "${workspaceFolder}/WebApplication/Views"
             }
         },
         {
@@ -39,37 +72,7 @@
             "request": "launch",
             "name": "Client",
             "url": "https://localhost:5001",
-            "webRoot": "${workspaceFolder}"
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Jest All",
-            "program": "${workspaceFolder}/ClientApp/node_modules/.bin/jest",
-            "args": ["--runInBand"],
-            "console": "integratedTerminal",
-            "internalConsoleOptions": "neverOpen",
-            "disableOptimisticBPs": true,
-            "windows": {
-              "program": "${workspaceFolder}/ClientApp/node_modules/jest/bin/jest",
-            }
-        },
-        {
-          "type": "node",
-          "request": "launch",
-          "name": "Jest Current File",
-          "program": "${workspaceFolder}/ClientApp/node_modules/.bin/jest",
-          "args": [
-            "${fileBasenameNoExtension}",
-            "--config",
-            "jest.config.js"
-          ],
-          "console": "integratedTerminal",
-          "internalConsoleOptions": "neverOpen",
-          "disableOptimisticBPs": true,
-          "windows": {
-            "program": "${workspaceFolder}/ClientApp/node_modules/jest/bin/jest",
-          }
-        },
+            "webRoot": "${workspaceFolder}/WebApplication"
+        }
       ]
 }

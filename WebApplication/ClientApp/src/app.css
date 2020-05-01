@@ -1,0 +1,17 @@
+html, body {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+  }
+  
+.fullheight {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+}
+
+#root {
+    display: flex;
+    flex-flow: column;
+    height: 100%;    
+}

@@ -232,3 +232,7 @@ _Pvt_Extensions
 .fake/
 
 appsettings.Local.json
+Output/
+
+# preserve `LocalCache` dir
+WebApplication/LocalCache/
