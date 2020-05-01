@@ -80,7 +80,7 @@ describe('Integration UI tests', () => {
             await link.click();
 
             //wait for Autodesk Forge page
-            await page.waitForSelector('.adskf__navbar-logo', {visible: true, timeout: 5000})
+            await page.waitForSelector('.adskf__navbar-logo', {visible: true, timeout: 5000});
             expect(await page.title()).toBe("Autodesk Forge");
         });
 
@@ -179,7 +179,7 @@ describe('Integration UI tests', () => {
 
             // validate user name
             const text = await getTextContent('//button/span/span');
-            expect(text).toBe("AU")
+            expect(text).toBe("AU");
         });
     });
 });

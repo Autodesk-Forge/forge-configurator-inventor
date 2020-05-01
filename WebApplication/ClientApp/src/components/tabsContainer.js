@@ -3,7 +3,7 @@ import Tabs, { Tab } from "@hig/tabs";
 import ProjectList from './projectList';
 import ForgeView from './forgeView';
 import ParametersContainer from './parametersContainer';
-import './tabs.css'
+import './tabs.css';
 
 class TabsContainer extends Component {
 
@@ -47,7 +47,7 @@ class TabsContainer extends Component {
               </Tab>
             </Tabs>
           </div>
-        )
+        );
     }
 }
 

@@ -1,11 +1,11 @@
-import React from 'react'
+import React from 'react';
 
-import { ProjectSwitcher } from './projectSwitcher'
+import { ProjectSwitcher } from './projectSwitcher';
 
-import Enzyme, { shallow } from 'enzyme'
-import Adapter from 'enzyme-adapter-react-16'
+import Enzyme, { shallow } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
 
-Enzyme.configure({ adapter: new Adapter() })
+Enzyme.configure({ adapter: new Adapter() });
 
 const projectList = {
   activeProjectId: '2',
@@ -20,12 +20,12 @@ const projectList = {
           label: 'New Project B',
           image: 'new_image_B.png'
       }]
-}
+};
 
 const baseProps = {
   projectList,
   fetchProjects: () => {}
-}
+};
 
 describe('components', () => {
   describe('Project switcher', () => {
@@ -36,7 +36,7 @@ describe('components', () => {
       expect(wrapper.props().defaultProject).toBe(projectList.activeProjectId);
       expect(wrapper.props().projects).toBe(projectList.projects);
       expect(wrapper.props().projectTitle).toBe('Projects');
-    })
+    });
 
     it('should call onChange with given handler',  () => {
       var updateActiveProject = jest.fn();
@@ -44,7 +44,7 @@ describe('components', () => {
         updateActiveProject,
         addLog: () => {},
         ... baseProps
-      }
+      };
 
       const wrapper = shallow(<ProjectSwitcher {...props} />);
       wrapper.simulate('change', {
@@ -55,7 +55,7 @@ describe('components', () => {
 
       expect(updateActiveProject).toHaveBeenLastCalledWith(5);
 
-    })
+    });
 
     it('should start loading projects on mount', () => {
       var fetchProjects = jest.fn();
@@ -63,11 +63,11 @@ describe('components', () => {
       const props = {
         ... baseProps,
         fetchProjects
-      }
+      };
 
       /*const wrapper = */shallow(<ProjectSwitcher {...props} />);
 
       expect(fetchProjects).toBeCalled();
-    })
-  })
-})
+    });
+  });
+});

@@ -2,7 +2,7 @@ import notificationTypes from '../actions/notificationActions';
 
 export const initialState = [
     '0 Errors'
-]
+];
 
 export const notificationReducer = function(state = initialState, action) {
     switch(action.type) {
@@ -15,4 +15,4 @@ export const notificationReducer = function(state = initialState, action) {
         default:
             return state;
     }
-}
+};

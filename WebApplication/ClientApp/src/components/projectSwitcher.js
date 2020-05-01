@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 
 import ProjectAccountSwitcher from '@hig/project-account-switcher';
 
-import { fetchProjects, updateActiveProject } from '../actions/projectListActions'
+import { fetchProjects, updateActiveProject } from '../actions/projectListActions';
 import {addLog} from '../actions/notificationActions';
 
 export class ProjectSwitcher extends Component {
@@ -39,5 +39,5 @@ export class ProjectSwitcher extends Component {
 export default connect(function (store){
     return {
       projectList: store.projectList
-    }
+    };
   }, { fetchProjects, updateActiveProject, addLog } )(ProjectSwitcher);

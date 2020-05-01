@@ -1,4 +1,4 @@
-import { fetchProjects } from './projectListActions'
+import { fetchProjects } from './projectListActions';
 
 // the test based on https://redux.js.org/recipes/writing-tests#async-action-creators
 
@@ -63,7 +63,7 @@ describe('fetchProjects', () => {
         // NOT YET IMLPEMENTED!
 
 
-        loadProjectsMock.mockImplementation( () => {throw new Error()});
+        loadProjectsMock.mockImplementation( () => {throw new Error();});
 
         const store = mockStore({ /* initial state */ });
 

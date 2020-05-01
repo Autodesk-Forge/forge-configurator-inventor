@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Surface from '@hig/surface';
-import './app.css'
+import './app.css';
 import Toolbar from './components/toolbar';
 import TabsContainer from './components/tabsContainer';
 import ProjectSwitcher from './components/projectSwitcher';

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Script from 'react-load-script';
 import {connect} from 'react-redux';
 import { getActiveProject } from '../reducers/mainReducer';
-import './forgeView.css'
+import './forgeView.css';
 
 var Autodesk = null;
 
@@ -15,7 +15,7 @@ export class ForgeView extends Component {
       this.viewer = null;
       this.state = {
         view:null
-      }
+      };
     }
 
     /* after the viewer loads a document, we need to select which viewable to
@@ -69,12 +69,12 @@ export class ForgeView extends Component {
                 onLoad={this.handleScriptLoad.bind(this)}
               />
             </div>
-        )
+        );
     }
 }
 
 export default connect(function (store){
     return {
       activeProject: getActiveProject(store)
-    }
+    };
   })(ForgeView);

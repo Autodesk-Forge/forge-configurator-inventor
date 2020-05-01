@@ -1,9 +1,9 @@
-import React from 'react'
-import Enzyme, { shallow } from 'enzyme'
-import Adapter from 'enzyme-adapter-react-16'
-import { ForgeView } from './forgeView'
+import React from 'react';
+import Enzyme, { shallow } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+import { ForgeView } from './forgeView';
 
-Enzyme.configure({ adapter: new Adapter() })
+Enzyme.configure({ adapter: new Adapter() });
 
 const projectList = {
   activeProjectId: '2',
@@ -20,17 +20,17 @@ const projectList = {
           image: 'new_image_B.png',
           svf: 'bbb222'
       }]
-}
+};
 
 const baseProps = {
   projectList,
   fetchProjects: () => {}
-}
+};
 
 describe('components', () => {
   describe('forge view', () => {
     it('CHANGE THE DESCRIPTION ONCE YOU WILL HAVE REAL TEST', () => {
       /*const enzymeWrapper = */shallow(<ForgeView { ...baseProps } />);
-    })
-  })
-})
+    });
+  });
+});

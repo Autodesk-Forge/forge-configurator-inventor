@@ -6,7 +6,7 @@ const actionTypes = {
     PROJECT_LIST_UPDATED: 'PROJECT_LIST_UPDATED',
     ACTIVE_PROJECT_UPDATED: 'ACTIVE_PROJECT_UPDATED',
     PARAMETERS_UPDATED: 'PARAMETERS_UPDATED'
-}
+};
 
 export default actionTypes;
 
@@ -14,15 +14,15 @@ export const updateProjectList = projectList => {
     return {
         type: actionTypes.PROJECT_LIST_UPDATED,
         projectList
-    }
-}
+    };
+};
 
 export const updateActiveProject = activeProjectId => {
     return {
         type: actionTypes.ACTIVE_PROJECT_UPDATED,
         activeProjectId
-    }
-}
+    };
+};
 
 // eslint-disable-next-line no-unused-vars
 export const fetchProjects = () => async (dispatch, getState) => {
@@ -34,4 +34,4 @@ export const fetchProjects = () => async (dispatch, getState) => {
     } catch (error) {
         dispatch(addError('Failed to get Project list. (' + error + ')'));
     }
-}
+};

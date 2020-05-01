@@ -11,7 +11,7 @@ class ProjectList extends Component {
 
       if (! projects) {
 
-        return (<span>No projects loaded</span>)
+        return (<span>No projects loaded</span>);
       } else {
 
         return (
@@ -25,7 +25,7 @@ class ProjectList extends Component {
               infos.map((info, index) => (<div key={index}>{info}</div>))
             }
           </div>
-        )
+        );
       }
     }
 }
@@ -39,5 +39,5 @@ export default connect(function (store) {
   return {
     projectList: store.projectList,
     notifications: store.notifications
-  }
+  };
 })(ProjectList);

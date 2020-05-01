@@ -1,14 +1,14 @@
 import repo from '../Repository';
 import { addError, addLog } from './notificationActions';
-import actionTypes from './projectListActions'
+import actionTypes from './projectListActions';
 
 export const updateParameters = (projectId, parameters) => {
     return {
         type: actionTypes.PARAMETERS_UPDATED,
         projectId: projectId,
         parameters
-    }
-}
+    };
+};
 
 /**
  * Convert incoming raw parameters into expected parameters format.
@@ -63,4 +63,4 @@ export const fetchParameters = (projectId) => async (dispatch, getState) => {
     } catch (error) {
         dispatch(addError('Failed to get parameters for ' + projectId + '. (' + error + ')'));
     }
-}
+};

@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import './parameters.css'
+import './parameters.css';
 import Parameter from './parameter';
 import { getActiveProject } from '../reducers/mainReducer';
-import { fetchParameters } from '../actions/parametersActions'
+import { fetchParameters } from '../actions/parametersActions';
 
 export class ParametersContainer extends Component {
 
@@ -19,7 +19,7 @@ export class ParametersContainer extends Component {
         const parameterList = this.props.activeProject.parameters;
 
         if (!parameterList) {
-            return (<span>No parameters</span>)
+            return (<span>No parameters</span>);
         } else {
             return (
                 <div className="parametersContainer">
@@ -27,7 +27,7 @@ export class ParametersContainer extends Component {
                         parameterList.map((parameter, index) => (<Parameter key={index} parameter={parameter}/>))
                     }
                 </div>
-            )
+            );
         }
     }
 }
@@ -35,5 +35,5 @@ export class ParametersContainer extends Component {
 export default connect(function (store) {
     return {
         activeProject: getActiveProject(store)
-    }
+    };
 }, { fetchParameters })(ParametersContainer);

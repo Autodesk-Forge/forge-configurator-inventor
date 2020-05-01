@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './parameters.css'
+import './parameters.css';
 
 export class Parameter extends Component {
 
@@ -11,7 +11,7 @@ export class Parameter extends Component {
                 {this.props.parameter.type},
                 {this.props.parameter.units}
             </div>
-        )
+        );
     }
 }
 
