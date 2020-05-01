@@ -29,7 +29,7 @@ const baseProps = {
 
 describe('components', () => {
   describe('Project switcher', () => {
-    
+
     it('should propagate data to proper properties', () => {
       const wrapper = shallow(<ProjectSwitcher {...baseProps} />);
 
@@ -59,14 +59,14 @@ describe('components', () => {
 
     it('should start loading projects on mount', () => {
       var fetchProjects = jest.fn();
-      
+
       const props = {
         ... baseProps,
         fetchProjects
       }
 
       /*const wrapper = */shallow(<ProjectSwitcher {...props} />);
-      
+
       expect(fetchProjects).toBeCalled();
     })
   })

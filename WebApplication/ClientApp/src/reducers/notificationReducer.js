@@ -11,7 +11,7 @@ export const notificationReducer = function(state = initialState, action) {
         }
         case notificationTypes.ADD_LOG: {
             return ([ ...state, action.info ]);
-        }        
+        }
         default:
             return state;
     }

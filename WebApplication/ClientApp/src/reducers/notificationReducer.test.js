@@ -22,5 +22,5 @@ describe('notification reducer', () => {
             newText
         ]
         expect(notificationReducer(initialState, addLog(newText))).toEqual(stateWithLog);
-    })    
+    })
 })

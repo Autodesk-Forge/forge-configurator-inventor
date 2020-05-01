@@ -24,7 +24,7 @@ describe('projectList reducer', () => {
                 label: 'New Project B',
                 image: 'new_image_B.png',
                 svf: 'bbb222'
-            }            
+            }
         ]
 
         const expectedResult = {
@@ -34,7 +34,7 @@ describe('projectList reducer', () => {
 
         expect(projectListReducer(initialState, updateProjectList(projectList))).toEqual(expectedResult);
      })
-     
+
      it('handles active project selection', () => {
         const secondProjectActive = { ...initialState, activeProjectId: '2'};
 
@@ -88,7 +88,7 @@ describe('projectList reducer', () => {
             activeProjectId: '2',
             projects: projects
         }
-        
+
         expect(getActiveProject(projectList)).toEqual(activeProject);
      })
 
@@ -100,8 +100,8 @@ describe('projectList reducer', () => {
             },
             {
                 id: '5',
-                label: 'New Project B'               
-            }            
+                label: 'New Project B'
+            }
         ]
 
         const newParams = [
@@ -134,8 +134,8 @@ describe('projectList reducer', () => {
             },
             {
                 id: '5',
-                label: 'New Project B'               
-            }            
+                label: 'New Project B'
+            }
         ]
 
         const newProjectList = {
@@ -160,8 +160,8 @@ describe('projectList reducer', () => {
             },
             {
                 id: '5',
-                label: 'New Project B'               
-            }            
+                label: 'New Project B'
+            }
         ]
 
         const newParams = [
@@ -194,8 +194,8 @@ describe('projectList reducer', () => {
             },
             {
                 id: '5',
-                label: 'New Project B'               
-            }            
+                label: 'New Project B'
+            }
         ]
 
         const newProjectList = {

@@ -1,23 +1,23 @@
 import React, { Component } from 'react';
 import Script from 'react-load-script';
-import {connect} from 'react-redux';  
+import {connect} from 'react-redux';
 import { getActiveProject } from '../reducers/mainReducer';
 import './forgeView.css'
 
 var Autodesk = null;
-    
+
 export class ForgeView extends Component {
 
     constructor(props){
       super(props);
 
       this.viewerDiv = React.createRef();
-      this.viewer = null;      
+      this.viewer = null;
       this.state = {
         view:null
       }
     }
-    
+
     /* after the viewer loads a document, we need to select which viewable to
     display in our component */
     handleDocumentLoaded(doc, viewables){
@@ -47,7 +47,7 @@ export class ForgeView extends Component {
         var errorCode = this.viewer.start();
         if (errorCode)
             return;
-            
+
         this.setState({enable:true});
 
         Autodesk.Viewing.Document.load(
@@ -58,7 +58,7 @@ export class ForgeView extends Component {
     onDocumentLoadSuccess(viewerDocument) {
         var defaultModel = viewerDocument.getRoot().getDefaultGeometry();
         this.viewer.loadDocumentNode(viewerDocument, defaultModel);
-    }    
+    }
 
     render() {
         return (
@@ -68,7 +68,7 @@ export class ForgeView extends Component {
               <Script url={`https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.js`}
                 onLoad={this.handleScriptLoad.bind(this)}
               />
-            </div>            
+            </div>
         )
     }
 }

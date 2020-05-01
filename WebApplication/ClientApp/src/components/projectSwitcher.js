@@ -41,4 +41,3 @@ export default connect(function (store){
       projectList: store.projectList
     }
   }, { fetchProjects, updateActiveProject, addLog } )(ProjectSwitcher);
-  

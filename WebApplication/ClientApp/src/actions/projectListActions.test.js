@@ -34,7 +34,7 @@ describe('fetchProjects', () => {
     });
 
     it('should fetch project from the server', () => {
-        
+
         // set expected value for the mock
         loadProjectsMock.mockReturnValue(testProjects);
 
@@ -52,7 +52,7 @@ describe('fetchProjects', () => {
                     // check expected actions and their types
                     expect(actions).toHaveLength(3);
                     expect(actions.map(a => a.type)).toEqual(['ADD_LOG', 'ADD_LOG', 'PROJECT_LIST_UPDATED']);
-                    
+
                     // check if the expected projects are returned
                     expect(actions[2].projectList).toEqual(testProjects);
                 });
@@ -69,6 +69,6 @@ describe('fetchProjects', () => {
 
         const actions = store.getActions();
         expect(actions).toHaveLength(1);
-        
+
     });
 });

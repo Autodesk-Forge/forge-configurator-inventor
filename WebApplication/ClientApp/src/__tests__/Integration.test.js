@@ -100,7 +100,7 @@ describe('Integration UI tests', () => {
             // This selector does not exist on page opening, and will be created after projects are loaded from the server. Wait for it.
             const listItems = await page.$$("#project-list ul li");
             expect(listItems).toHaveLength(2); // expecting two default projects
-        });        
+        });
     });
 
     describe('Toolbar', () => {
