@@ -22,7 +22,7 @@ export class ParametersContainer extends Component {
 
         return (
             <div className="parametersContainer">
-                <div className="parameters">
+                <div className="parameters" style={{ overflow: "auto" }}>
                 {
                     parameterList ? 
                         parameterList.map((parameter, index) => (<Parameter key={index} parameter={parameter}/>)) 
