@@ -2,11 +2,12 @@ import projectListActionTypes from '../actions/projectListActions';
 
 export const initialState = {
     activeProjectId: null
-}
+};
 
 export const getActiveProject = function(state) {
-    return state.projects?.find(proj => proj.id === state.activeProjectId)
-}
+    if (! state.projects) return undefined;
+    return state.projects.find(proj => proj.id === state.activeProjectId);
+};
 
 export const projectListReducer = function(state = initialState, action) {
     switch(action.type) {
@@ -21,18 +22,18 @@ export const projectListReducer = function(state = initialState, action) {
             return { ...state, activeProjectId: action.activeProjectId};
         }
         case projectListActionTypes.PARAMETERS_UPDATED: {
-            var projects = state.projects.map((project) => {
+            let projects = state.projects.map((project) => {
                 return project.id !== action.projectId ? project : {
                   ...project,
                   parameters: action.parameters,
                   updateParameters: action.parameters
-                }
+                };
             });
 
             return { ...state, projects: projects };
         }
         case projectListActionTypes.PARAMETER_EDITED: {
-            var projects = state.projects.map((project) => {
+            let projects = state.projects.map((project) => {
                 return project.id !== action.projectId ? project : {
                   ...project,
                   updateParameters: project.updateParameters.map((param) => {
@@ -48,7 +49,7 @@ export const projectListReducer = function(state = initialState, action) {
             return { ...state, projects: projects };            
         }
         case projectListActionTypes.PARAMETERS_RESET: {
-            var projects = state.projects.map((project) => {
+            let projects = state.projects.map((project) => {
                 return project.id !== action.projectId ? project : {
                   ...project,
                   updateParameters: project.parameters
@@ -60,4 +61,4 @@ export const projectListReducer = function(state = initialState, action) {
         default:
             return state;
     }
-}
+};

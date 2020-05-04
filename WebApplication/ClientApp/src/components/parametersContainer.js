@@ -1,16 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import './parametersContainer.css'
+import './parametersContainer.css';
 import Parameter from './parameter';
 import { getActiveProject } from '../reducers/mainReducer';
 import { fetchParameters, resetParameters } from '../actions/parametersActions'
 import Button from '@hig/button';
 
 export class ParametersContainer extends Component {
-
-    constructor(props) {
-        super(props);
-    }
 
     componentDidMount() {
         this.props.fetchParameters(this.props.activeProject.id);
@@ -52,12 +48,12 @@ export class ParametersContainer extends Component {
                     </div>
                 </div>
             </div>
-        )
+        );
     }
 }
 
 export default connect(function (store) {
     return {
         activeProject: getActiveProject(store)
-    }
+    };
 }, { fetchParameters, resetParameters })(ParametersContainer);

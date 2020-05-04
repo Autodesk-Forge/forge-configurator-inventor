@@ -1,9 +1,9 @@
-import React from 'react'
-import Enzyme, { shallow } from 'enzyme'
-import Adapter from 'enzyme-adapter-react-16'
-import { ParametersContainer } from './parametersContainer'
+import React from 'react';
+import Enzyme, { shallow } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+import { ParametersContainer } from './parametersContainer';
 
-Enzyme.configure({ adapter: new Adapter() })
+Enzyme.configure({ adapter: new Adapter() });
 
 const params = [
     {
@@ -20,12 +20,12 @@ const params = [
         "units": "mm",
         "allowedValues": []
     }
-]
+];
 
 const baseProps = {
     activeProject: { updateParameters: params },
     fetchParameters: () => {}
-}
+};
 
 describe('components', () => {
     describe('parameters constainer', () => {
@@ -36,18 +36,18 @@ describe('components', () => {
             expect(children.length).toBe(params.length);
             expect(children[0].props.parameter).toBe(params[0]);
             expect(children[1].props.parameter).toBe(params[1]);
-        })
+        });
         it('should start loading parameters on mount', () => {
             var fetchParameters = jest.fn();
 
             const props = {
                 ...baseProps,
                 fetchParameters
-            }
+            };
 
-            const wrapper = shallow(<ParametersContainer {...props} />);
+            /*const wrapper = */shallow(<ParametersContainer {...props} />);
 
             expect(fetchParameters).toBeCalled();
-        })
-    })
-  })
+        });
+    });
+});

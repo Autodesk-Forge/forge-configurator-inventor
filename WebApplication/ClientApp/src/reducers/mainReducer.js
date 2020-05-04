@@ -9,4 +9,4 @@ export const mainReducer = combineReducers({
 
 export const getActiveProject = function(state) {
     return listReducerActiveProject(state.projectList);
-}
+};

@@ -1,29 +1,29 @@
 import repo from '../Repository';
 import { addError, addLog } from './notificationActions';
-import actionTypes from './projectListActions'
+import actionTypes from './projectListActions';
 
 export const updateParameters = (projectId, parameters) => {
     return {
         type: actionTypes.PARAMETERS_UPDATED,
         projectId: projectId,
         parameters
-    }
-}
+    };
+};
 
 export const editParameter = (projectId, parameter) => {
     return {
         type: actionTypes.PARAMETER_EDITED,
         projectId: projectId,
         parameter
-    }
-}
+    };
+};
 
 export const resetParameters = (projectId) => {
     return {
         type: actionTypes.PARAMETERS_RESET,
         projectId: projectId
-    }
-}
+    };
+};
 
 /**
  * Convert incoming raw parameters into expected parameters format.
@@ -54,10 +54,11 @@ function adaptParameters(rawParameters) {
             allowedValues: param.values,
             units: param.unit,
             type: "NYI" // TODO: remove?
-        }
-    })
-}
+        };
+    });
+};
 
+// eslint-disable-next-line no-unused-vars
 export const fetchParameters = (projectId) => async (dispatch, getState) => {
     dispatch(addLog('get parameters invoked'));
     try {
@@ -68,4 +69,4 @@ export const fetchParameters = (projectId) => async (dispatch, getState) => {
     } catch (error) {
         dispatch(addError('Failed to get parameters for ' + projectId + '. (' + error + ')'));
     }
-}
+};

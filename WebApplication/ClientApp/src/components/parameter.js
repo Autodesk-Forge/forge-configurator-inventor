@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
-import { editParameter } from '../actions/parametersActions'
+import { editParameter } from '../actions/parametersActions';
 import { getActiveProject } from '../reducers/mainReducer';
-
-import './parametersContainer.css'
-
+import './parametersContainer.css';
 import Input from '@hig/input';
 import Checkbox from '@hig/checkbox';
 import Dropdown from '@hig/dropdown';
@@ -79,12 +77,12 @@ export class Parameter extends Component {
                 />
 
             </div>
-            )
+        );
     }
 }
 
 export default connect(function (store){
     return {
         activeProject: getActiveProject(store)
-    }
+    };
   }, { editParameter } )(Parameter);
