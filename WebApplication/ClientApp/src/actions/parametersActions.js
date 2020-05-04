@@ -18,6 +18,13 @@ export const editParameter = (projectId, parameter) => {
     }
 }
 
+export const resetParameters = (projectId) => {
+    return {
+        type: actionTypes.PARAMETERS_RESET,
+        projectId: projectId
+    }
+}
+
 /**
  * Convert incoming raw parameters into expected parameters format.
  * @param {Object} rawParameters Object with parameter data.

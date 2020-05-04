@@ -47,6 +47,16 @@ export const projectListReducer = function(state = initialState, action) {
 
             return { ...state, projects: projects };            
         }
+        case projectListActionTypes.PARAMETERS_RESET: {
+            var projects = state.projects.map((project) => {
+                return project.id !== action.projectId ? project : {
+                  ...project,
+                  updateParameters: project.parameters
+                }
+            });
+
+            return { ...state, projects: projects };              
+        }
         default:
             return state;
     }
