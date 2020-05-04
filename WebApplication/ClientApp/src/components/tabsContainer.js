@@ -9,7 +9,7 @@ class TabsContainer extends Component {
 
     render() {
         return (
-            <div className="tabsContainer" style={{ overflow: "hidden" }}>
+            <div className="tabsContainer">
             <Tabs
               className="fullheight"
               align="center"

@@ -5,7 +5,8 @@ import {addError, addLog} from './notificationActions';
 const actionTypes = {
     PROJECT_LIST_UPDATED: 'PROJECT_LIST_UPDATED',
     ACTIVE_PROJECT_UPDATED: 'ACTIVE_PROJECT_UPDATED',
-    PARAMETERS_UPDATED: 'PARAMETERS_UPDATED'
+    PARAMETERS_UPDATED: 'PARAMETERS_UPDATED',
+    PARAMETER_EDITED: 'PARAMETER_EDITED'
 }
 
 export default actionTypes;

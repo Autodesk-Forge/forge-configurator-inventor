@@ -7,10 +7,8 @@
 }
 
 .parameters {
-    /* Do something here to make this scroll-able 
-    when there's a lot of params,
-    instead of the whole window content. */
     flex: auto;
+    overflow: auto;
 }
 
 .parameter {

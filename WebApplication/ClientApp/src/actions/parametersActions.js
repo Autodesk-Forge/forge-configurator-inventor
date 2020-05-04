@@ -10,6 +10,14 @@ export const updateParameters = (projectId, parameters) => {
     }
 }
 
+export const editParameter = (projectId, parameter) => {
+    return {
+        type: actionTypes.PARAMETER_EDITED,
+        projectId: projectId,
+        parameter
+    }
+}
+
 /**
  * Convert incoming raw parameters into expected parameters format.
  * @param {Object} rawParameters Object with parameter data.
