@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import './parametersContainer.css'
 import Parameter from './parameter';
 import { getActiveProject } from '../reducers/mainReducer';
-import { fetchParameters } from '../actions/parametersActions'
+import { fetchParameters, resetParameters } from '../actions/parametersActions'
 import Button from '@hig/button';
 
 export class ParametersContainer extends Component {
@@ -16,8 +16,13 @@ export class ParametersContainer extends Component {
         this.props.fetchParameters(this.props.activeProject.id);
     }
 
+    updateClicked() {
+        alert("Update of model on server is not implemented yet. Parameter values will be returned back for now.");
+        this.props.resetParameters(this.props.activeProject.id);
+    }
+
     render() {
-        const parameterList = this.props.activeProject.parameters;
+        const parameterList = this.props.activeProject.updateParameters;
         const buttonsContainerClass = parameterList ? "buttonsContainer" : "buttonsContainer hidden";
 
         return (
@@ -36,12 +41,13 @@ export class ParametersContainer extends Component {
                             size="standard"
                             title="Cancel"
                             type="primary"
-                            onClick={() => {this.props.fetchParameters(this.props.activeProject.id)}}
+                            onClick={() => {this.props.resetParameters(this.props.activeProject.id)}}
                         />
                         <Button
                             size="standard"
                             title="Update"
                             type="primary"
+                            onClick={() => {this.updateClicked()}}
                         />
                     </div>
                 </div>
@@ -54,4 +60,4 @@ export default connect(function (store) {
     return {
         activeProject: getActiveProject(store)
     }
-}, { fetchParameters })(ParametersContainer);
+}, { fetchParameters, resetParameters })(ParametersContainer);
