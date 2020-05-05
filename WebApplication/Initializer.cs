@@ -60,9 +60,7 @@ namespace WebApplication
                 var projectUrl = defaultProjectConfig.Url;
                 var tlaFilename = defaultProjectConfig.TopLevelAssembly;
 
-                string[] urlParts = projectUrl.Split("/");
-                string projectName = urlParts[^1];
-                var project = _resourceProvider.GetProject(projectName);
+                var project = _resourceProvider.GetProject(defaultProjectConfig.Name);
 
                 _logger.LogInformation($"Download {projectUrl}");
                 using (HttpResponseMessage response = await httpClient.GetAsync(projectUrl, HttpCompletionOption.ResponseHeadersRead))
