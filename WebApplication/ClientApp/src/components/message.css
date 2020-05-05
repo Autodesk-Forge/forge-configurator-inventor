@@ -3,9 +3,3 @@
     background: #9bd5ef;
     margin-left: 24px;
 }
-
-.message {
-    position: fixed;
-    z-index: 100;
-    width: calc(100% - 240px);
-}
