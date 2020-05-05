@@ -14,6 +14,6 @@ phases:
       - folder2=$(cut -d'/' -f3 <<< $bucketAndFile)
       - file=$(cut -d'/' -f4 <<< $bucketAndFile)
       - echo "Creating application version " $versionLabel " from artefacts " $file
-      - aws elasticbeanstalk create-application-version --application-name sdra --description "$commitMessage" --version-label $versionLabel --source-bundle S3Bucket="$bucket",S3Key="$folder1/$folder2/$file"
+      - aws elasticbeanstalk create-application-version --application-name sdra --description "${commitMessage:0:199}" --version-label $versionLabel --source-bundle S3Bucket="$bucket",S3Key="$folder1/$folder2/$file"
       - echo "Deploying version " $versionLabel
       - aws elasticbeanstalk update-environment --environment-name $environmentName --version-label $versionLabel
