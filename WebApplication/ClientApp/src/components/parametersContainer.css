@@ -1,0 +1,48 @@
+.parametersContainer {
+    display: flex;
+    flex-flow: column;
+    width: 296px;
+    padding: 16px;
+    background-color: white;
+}
+
+.parameters {
+    flex: auto;
+    overflow: auto;
+}
+
+.parameter {
+    padding-bottom: 16px;
+    font-size: 14px;
+    color: rgb(60,60,60);
+}
+
+.parameter.checkbox {
+    padding-bottom: 32px;
+    height: 20px;
+    display: flex;
+    flex-flow: row;
+}
+
+.parameter.checkboxtext {
+    padding-left: 12px;
+    font-size: 14px;
+    line-height: 16px;
+}
+
+.buttonsContainer {
+    flex: none;
+    width: 203px; /* somehow deduced from the .parametersContainer width: 296px; minus it's paddings margins etc */
+    margin-bottom: 14px;    
+}
+
+.buttonsContainer.hidden {
+    display: none;
+}
+
+.buttonsContainer .buttons {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-around;
+    align-items: center;
+}

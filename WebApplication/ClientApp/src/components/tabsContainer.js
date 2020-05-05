@@ -22,7 +22,7 @@ class TabsContainer extends Component {
                   <ProjectList/>
                 </div>
               </Tab>
-              <Tab label="Model">
+              <Tab label="Model" >
                 <div id="model" className='tabContent fullheight'>
                   <div className='inRow fullheight'>
                     <ParametersContainer/>

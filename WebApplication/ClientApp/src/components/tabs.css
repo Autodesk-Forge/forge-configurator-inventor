@@ -3,6 +3,7 @@
     flex-flow: column;
     height: 100%;
     padding-top: 29px;
+    overflow: hidden;
 }
 
 .tabContent {
@@ -18,4 +19,9 @@
 .inRow {
     display: flex;
     flex-direction: row;
+}
+
+/* set style for an element made by React component */
+.fullheight__content {
+    overflow: hidden
 }

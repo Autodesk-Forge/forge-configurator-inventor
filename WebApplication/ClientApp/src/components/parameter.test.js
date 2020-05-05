@@ -5,18 +5,49 @@ import { Parameter } from './parameter';
 
 Enzyme.configure({ adapter: new Adapter() });
 
-const param = {
-                "name": "Length",
-                "value": "1000 mm",
-                "type": "NYI",
-                "units": "mm",
-                "allowedValues": []
+const param1 = {
+  "name": "editbox",
+  "value": "1000 mm",
+  "type": "",
+  "units": "mm",
+  "allowedValues": []
+};
+
+const param2 = {
+  "name": "listbox",
+  "value": "green",
+  "type": "",
+  "units": "",
+  "allowedValues": ["reg","green","blue"]
+};
+
+const param3 = {
+  "name": "checkbox",
+  "value": "True",
+  "type": "",
+  "units": "Boolean",
+  "allowedValues": []
 };
 
 describe('components', () => {
   describe('parameter', () => {
-    it('CHANGE THE DESCRIPTION ONCE YOU WILL HAVE REAL TEST', () => {
-        /*const enzymeWrapper = */shallow(<Parameter parameter={param} />);
-    });
+    it('test editbox', () => {
+        const wrapper = shallow(<Parameter parameter={param1}/>);
+        var wrapperComponent = wrapper.find('Input');
+        expect(wrapperComponent.length).toEqual(1);
+        expect(wrapperComponent.prop("value")).toEqual(param1.value);
+      });
+    it('test listbox', () => {
+        const wrapper = shallow(<Parameter parameter={param2}/>);
+        var wrapperComponent = wrapper.find('Dropdown');
+        expect(wrapperComponent.length).toEqual(1);
+        expect(wrapperComponent.prop("value")).toEqual(param2.value);
+      });
+    it('test checkbox', () => {
+        const wrapper = shallow(<Parameter parameter={param3}/>);
+        var wrapperComponent = wrapper.find('Checkbox');
+        expect(wrapperComponent.length).toEqual(1);
+        expect(wrapperComponent.prop("checked")).toEqual(true);
+      });
   });
 });
