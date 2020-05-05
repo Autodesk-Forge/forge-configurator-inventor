@@ -42,7 +42,8 @@ export const projectListReducer = function(state = initialState, action) {
                           ...param,
                           value: action.parameter.value 
                       }
-                  })
+                  }),
+                  dismissUpdateMessage: false
                 }
             });
 
@@ -52,11 +53,22 @@ export const projectListReducer = function(state = initialState, action) {
             let projects = state.projects.map((project) => {
                 return project.id !== action.projectId ? project : {
                   ...project,
-                  updateParameters: project.parameters
+                  updateParameters: project.parameters,
+                  dismissUpdateMessage: false
                 }
             });
 
             return { ...state, projects: projects };              
+        }
+        case projectListActionTypes.ACTIVE_PROJECT_DISMISS_UPDATEMSG: {
+            let projects = state.projects.map((project) => {
+                return project.id !== action.projectId ? project : {
+                  ...project,
+                  dismissUpdateMessage: true
+                };
+            });
+
+            return { ...state, projects: projects };
         }
         default:
             return state;

@@ -5,4 +5,9 @@
     border-style: solid;
     border-width: 8px;
     border-color: #D9D9D9;
+    height: 100%;
+}
+
+.modelContainer {
+    width: 100%;
 }
