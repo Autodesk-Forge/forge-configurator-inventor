@@ -23,7 +23,7 @@ export class Message extends Component {
     render() {
         const updateParameters = this.props.activeProject.updateParameters;
         const parameters = this.props.activeProject.parameters;
-        const visible = updateParameters === parameters || this.props.activeProject.dismissUpdate ? false : true;
+        const visible = updateParameters === parameters || this.props.activeProject.dismissUpdateMessage ? false : true;
 
         return (
             <Banner
@@ -41,7 +41,7 @@ export class Message extends Component {
                   <div className="verticalseparator"/>
                   <Banner.Action>
                     <Checkbox/>
-                    <div>Don't show again.</div>
+                    <div style={{ marginLeft: '12px' }}>Don't show again.</div>
                   </Banner.Action>
                   <div className="verticalseparator"/>
                 </Banner.Interactions>
