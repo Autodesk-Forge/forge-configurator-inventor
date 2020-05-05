@@ -10,6 +10,21 @@ export const updateParameters = (projectId, parameters) => {
     };
 };
 
+export const editParameter = (projectId, parameter) => {
+    return {
+        type: actionTypes.PARAMETER_EDITED,
+        projectId: projectId,
+        parameter
+    };
+};
+
+export const resetParameters = (projectId) => {
+    return {
+        type: actionTypes.PARAMETERS_RESET,
+        projectId: projectId
+    };
+};
+
 /**
  * Convert incoming raw parameters into expected parameters format.
  * @param {Object} rawParameters Object with parameter data.
@@ -32,25 +47,16 @@ export const updateParameters = (projectId, parameters) => {
  * }
  */
 function adaptParameters(rawParameters) {
-    var result = [];
-
-    for (let key in rawParameters) {
-        if (Object.prototype.hasOwnProperty.call(rawParameters, key)){
-
-            const param = rawParameters[key];
-
-            result.push({
-                name: key,
-                value: param.value,
-                allowedValues: param.values,
-                units: param.unit,
-                type: "NYI" // TODO: remove?
-            });
-        }
-    }
-
-    return result;
-}
+    return Object.entries(rawParameters).map( ([key, param]) => {
+        return {
+            name: key,
+            value: param.value,
+            allowedValues: param.values,
+            units: param.unit,
+            type: "NYI" // TODO: remove?
+        };
+    });
+};
 
 // eslint-disable-next-line no-unused-vars
 export const fetchParameters = (projectId) => async (dispatch, getState) => {

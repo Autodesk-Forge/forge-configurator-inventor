@@ -23,20 +23,21 @@ const params = [
 ];
 
 const baseProps = {
-    activeProject: { parameters: params },
+    activeProject: { updateParameters: params },
     fetchParameters: () => {}
 };
 
 describe('components', () => {
-    describe('paramaters constainer', () => {
+    describe('parameters constainer', () => {
         it('should propagate data to proper properties', () => {
             const wrapper = shallow(<ParametersContainer {...baseProps} />);
-            var objProps = wrapper.props();
-            expect(objProps.children.length).toBe(params.length);
-            expect(objProps.children[0].props.parameter).toBe(params[0]);
-            expect(objProps.children[1].props.parameter).toBe(params[1]);
+            var wrapperComponent = wrapper.find('.parameters');
+            var children = wrapperComponent.prop('children');
+            expect(children.length).toBe(params.length);
+            expect(children[0].props.parameter).toBe(params[0]);
+            expect(children[1].props.parameter).toBe(params[1]);
         });
-        it('should start loading projects on mount', () => {
+        it('should start loading parameters on mount', () => {
             var fetchParameters = jest.fn();
 
             const props = {
@@ -49,4 +50,4 @@ describe('components', () => {
             expect(fetchParameters).toBeCalled();
         });
     });
-  });
+});

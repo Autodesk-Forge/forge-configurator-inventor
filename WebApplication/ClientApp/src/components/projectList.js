@@ -31,7 +31,7 @@ class ProjectList extends Component {
 }
 
 ProjectList.propTypes = {
-  projectList: PropTypes.array,
+  projectList: PropTypes.object,
   notifications: PropTypes.array
 };
 
