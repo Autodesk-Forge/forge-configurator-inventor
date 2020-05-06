@@ -37,17 +37,5 @@ describe('components', () => {
             expect(children[0].props.parameter).toBe(params[0]);
             expect(children[1].props.parameter).toBe(params[1]);
         });
-        it('should start loading parameters on mount', () => {
-            var fetchParameters = jest.fn();
-
-            const props = {
-                ...baseProps,
-                fetchParameters
-            };
-
-            /*const wrapper = */shallow(<ParametersContainer {...props} />);
-
-            expect(fetchParameters).toBeCalled();
-        });
     });
 });
