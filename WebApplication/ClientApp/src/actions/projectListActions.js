@@ -1,6 +1,5 @@
 import repo from '../Repository';
 import {addError, addLog} from './notificationActions';
-import { fetchParameters } from './parametersActions';
 
 const actionTypes = {
     PROJECT_LIST_UPDATED: 'PROJECT_LIST_UPDATED',

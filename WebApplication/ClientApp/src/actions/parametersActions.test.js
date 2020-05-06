@@ -15,37 +15,43 @@ const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
 const testProjectsNoParams = {
-    projectList: [
-        {
-            id: '1',
-            label: 'Local Project 1',
-            image: 'bike.png'
-        }
-    ]
+    projectList: {
+        projects: [
+            {
+                id: '1',
+                label: 'Local Project 1',
+                image: 'bike.png'
+            }
+        ]
+    }
 };
 
 const testProjectsEmptyParams = {
-    projectList: [
-        {
-            id: '1',
-            label: 'Local Project 1',
-            image: 'bike.png',
-            parameters: [],
-            updateParameters: []
-        }
-    ]
+    projectList: {
+        projects: [
+            {
+                id: '1',
+                label: 'Local Project 1',
+                image: 'bike.png',
+                parameters: [],
+                updateParameters: []
+            }
+        ]
+    }
 };
 
 const testProjectsHasParams = {
-    projectList: [
-        {
-            id: '1',
-            label: 'Local Project 1',
-            image: 'bike.png',
-            parameters: [ { name: 'a parameter here' } ],
-            updateParameters: [ { name: 'a parameteter here' } ]        
-        }
-    ]
+    projectList: {
+        projects: [
+            {
+                id: '1',
+                label: 'Local Project 1',
+                image: 'bike.png',
+                parameters: [ { name: 'a parameter here' } ],
+                updateParameters: [ { name: 'a parameteter here' } ]        
+            }
+        ]
+    }
 }
 
 const testParameters = [
@@ -65,6 +71,7 @@ describe('fetchParameters', () => {
         loadParametersMock.mockReturnValue(testParameters);
 
         const store = mockStore(testProjectsNoParams);
+        store.getState = () => testProjectsNoParams;
 
         return store
             .dispatch(fetchParameters('1')) // demand parameters loading
@@ -88,6 +95,7 @@ describe('fetchParameters', () => {
         loadParametersMock.mockReturnValue(testParameters);
 
         const store = mockStore(testProjectsEmptyParams);
+        store.getState = () => testProjectsEmptyParams;
 
         return store
             .dispatch(fetchParameters('1')) // demand parameters loading
@@ -111,9 +119,10 @@ describe('fetchParameters', () => {
         loadParametersMock.mockReturnValue(testParameters);
 
         const store = mockStore(testProjectsHasParams);
+        store.getState = () => testProjectsHasParams;
 
         return store
-            .dispatch(fetchParameters('1')) // demand parameters loading
+            .dispatch(fetchParameters('1', store.getState)) // demand parameters loading
             .then(() => {
 
                 // ensure that the mock called once
