@@ -6,7 +6,12 @@ export const initialState = {
 
 export const getActiveProject = function(state) {
     if (! state.projects) return undefined;
-    return state.projects.find(proj => proj.id === state.activeProjectId);
+    return getProject(state.activeProjectId, state);
+};
+
+export const getProject = function(id, state) {
+    if (! state.projects) return undefined;
+    return state.projects.find(proj => proj.id === id);
 };
 
 export const projectListReducer = function(state = initialState, action) {
