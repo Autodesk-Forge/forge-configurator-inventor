@@ -33,7 +33,6 @@ export const fetchProjects = () => async (dispatch, getState) => {
         const data = await repo.loadProjects();
         dispatch(addLog('Load Projects received'));
         dispatch(updateProjectList(data));
-        dispatch(fetchParameters(getState().projectList.activeProjectId));
     } catch (error) {
         dispatch(addError('Failed to get Project list. (' + error + ')'));
     }
