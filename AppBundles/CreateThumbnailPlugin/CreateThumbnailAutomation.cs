@@ -8,7 +8,6 @@ using Path = System.IO.Path;
 using System.Runtime.InteropServices;
 using Inventor;
 using Color = Inventor.Color;
-using File = Inventor.File;
 
 namespace CreateThumbnailPlugin
 {

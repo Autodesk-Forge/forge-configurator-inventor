@@ -18,5 +18,7 @@
     {
         public string Url { get; set; }
         public string TopLevelAssembly { get; set; }
+
+        public string Name { get; set; }
     }
 }
