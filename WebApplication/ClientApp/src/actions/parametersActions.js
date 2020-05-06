@@ -1,6 +1,7 @@
 import repo from '../Repository';
 import { addError, addLog } from './notificationActions';
 import actionTypes from './projectListActions';
+import { getActiveProject } from '../reducers/projectListReducers';
 
 export const updateParameters = (projectId, parameters) => {
     return {
@@ -60,6 +61,11 @@ function adaptParameters(rawParameters) {
 
 // eslint-disable-next-line no-unused-vars
 export const fetchParameters = (projectId) => async (dispatch, getState) => {
+    const activeProject = getActiveProject(getState().projectList);
+    if(activeProject.updateParameters && activeProject.updateParameters.lenght!==0) {
+        return;
+    }
+
     dispatch(addLog('get parameters invoked'));
     try {
         const rawData = await repo.loadParameters(projectId);

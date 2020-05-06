@@ -14,10 +14,6 @@ export class ParametersContainer extends Component {
     }
 
     render() {
-        if(!this.props.activeProject.updateParameters || this.props.activeProject.updateParameters.lenght===0) {
-            this.props.fetchParameters(this.props.activeProject.id);
-        }
-                
         const parameterList = this.props.activeProject.updateParameters;
         const buttonsContainerClass = parameterList ? "buttonsContainer" : "buttonsContainer hidden";
 
