@@ -85,7 +85,7 @@
   },
   "lint-staged": {
     "src/**/*.{js,jsx}": [
-      "eslint . --fix", "git add"
+      "eslint . --fix"
     ]
   }  ,
   "husky": {
