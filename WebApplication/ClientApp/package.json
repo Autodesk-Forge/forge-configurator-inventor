@@ -82,5 +82,15 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx}": [
+      "eslint . --fix", "git add"
+    ]
+  }  ,
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   }
 }
