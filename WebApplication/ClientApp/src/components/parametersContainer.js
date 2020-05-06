@@ -8,16 +8,16 @@ import Button from '@hig/button';
 
 export class ParametersContainer extends Component {
 
-    componentDidMount() {
-        this.props.fetchParameters(this.props.activeProject.id);
-    }
-
     updateClicked() {
         alert("Update of model on server is not implemented yet. Parameter values will be returned back for now.");
         this.props.resetParameters(this.props.activeProject.id);
     }
 
     render() {
+        if(!this.props.activeProject.updateParameters || this.props.activeProject.updateParameters.lenght===0) {
+            this.props.fetchParameters(this.props.activeProject.id);
+        }
+                
         const parameterList = this.props.activeProject.updateParameters;
         const buttonsContainerClass = parameterList ? "buttonsContainer" : "buttonsContainer hidden";
 
