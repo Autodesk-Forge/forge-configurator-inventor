@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Autodesk.Forge.Model;
 using Microsoft.AspNetCore.Mvc;
@@ -46,7 +47,7 @@ namespace WebApplication.Controllers
                 projectDTOs.Add(dto);
             }
 
-            return projectDTOs;
+            return projectDTOs.OrderBy(project => project.Label);
         }
     }
 }

@@ -31,25 +31,44 @@ export class ForgeView extends Component {
     }
 
     handleScriptLoad(){
-        let options = {
+        const options = {
             env: 'Local' // , getAccessToken: this.props.onTokenRequest
         };
 
         Autodesk = window.Autodesk;
 
-        let container = this.viewerDiv.current;
+        const container = this.viewerDiv.current;
         this.viewer = new Autodesk.Viewing.GuiViewer3D(container);
+        this.viewer.debugEvents(true);
 
         Autodesk.Viewing.Initializer(
             options, this.handleViewerInit.bind(this));
       }
 
     handleViewerInit() {
-        var errorCode = this.viewer.start();
+        const errorCode = this.viewer.start();
         if (errorCode)
             return;
 
         this.setState({enable:true});
+
+        // orient camera in the same way as it's on the thumbnail
+        // corresponding to ViewOrientationTypeEnum.kIsoTopRightViewOrientation
+        const viewer = this.viewer;
+        this.viewer.addEventListener(Autodesk.Viewing.EXTENSION_LOADED_EVENT, (event) => {
+
+            const viewCubeExtensionId = "Autodesk.ViewCubeUi";
+
+            // ER: it's not perfect, because the view transition is visible, so this is
+            // a place to improve someday
+            if (event.extensionId === viewCubeExtensionId) {
+
+                const viewCubeUI = event.target.getExtension(viewCubeExtensionId);
+                viewCubeUI.setViewCube("front top right");
+
+                viewer.removeEventListener(Autodesk.Viewing.EXTENSION_LOADED_EVENT);
+            }
+        });
 
         Autodesk.Viewing.Document.load(
             this.props.activeProject.svf + '/bubble.json', this.onDocumentLoadSuccess.bind(this), () => {}
@@ -57,7 +76,7 @@ export class ForgeView extends Component {
     }
 
     onDocumentLoadSuccess(viewerDocument) {
-        var defaultModel = viewerDocument.getRoot().getDefaultGeometry();
+        const defaultModel = viewerDocument.getRoot().getDefaultGeometry();
         this.viewer.loadDocumentNode(viewerDocument, defaultModel);
     }
 
