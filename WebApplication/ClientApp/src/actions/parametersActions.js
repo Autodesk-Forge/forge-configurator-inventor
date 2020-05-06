@@ -54,7 +54,7 @@ function adaptParameters(rawParameters) {
         if (input[0] === "\"" && input[input.length-1] === "\"")
             return input.substr(1, input.length-2);
 
-        return input.replace('"\"','"');
+        return input;
     };
 
     return Object.entries(rawParameters).map( ([key, param]) => {
