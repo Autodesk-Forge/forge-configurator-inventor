@@ -62,7 +62,7 @@ function adaptParameters(rawParameters) {
 // eslint-disable-next-line no-unused-vars
 export const fetchParameters = (projectId) => async (dispatch, getState) => {
     const activeProject = getActiveProject(getState().projectList);
-    if(activeProject.updateParameters && activeProject.updateParameters.lenght!==0) {
+    if(activeProject.updateParameters && activeProject.updateParameters.length!==0) {
         return;
     }
 
