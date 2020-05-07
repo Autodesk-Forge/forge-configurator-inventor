@@ -44,7 +44,7 @@ export class Parameter extends Component {
                         {this.props.parameter.name}
                     </div>
                 </div>
-            )
+            );
         else if (this.props.parameter.allowedValues != null && this.props.parameter.allowedValues.length > 0)
             return (
                 <div className="parameter">
@@ -61,7 +61,7 @@ export class Parameter extends Component {
                         value={this.props.parameter.value}
                     />
                 </div>
-            )
+            );
         else
             return (
             <div className="parameter">

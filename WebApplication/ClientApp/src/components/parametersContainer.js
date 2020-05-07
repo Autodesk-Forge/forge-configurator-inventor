@@ -3,15 +3,15 @@ import { connect } from 'react-redux';
 import './parametersContainer.css';
 import Parameter from './parameter';
 import { getActiveProject } from '../reducers/mainReducer';
-import { fetchParameters, resetParameters } from '../actions/parametersActions'
+import { fetchParameters, resetParameters } from '../actions/parametersActions';
 import Button from '@hig/button';
 
 export class ParametersContainer extends Component {
 
-    componentDidMount() {	
-        this.props.fetchParameters(this.props.activeProject.id);	
+    componentDidMount() {
+        this.props.fetchParameters(this.props.activeProject.id);
     }
-    
+
     updateClicked() {
         alert("Update of model on server is not implemented yet. Parameter values will be returned back for now.");
         this.props.resetParameters(this.props.activeProject.id);
@@ -25,25 +25,25 @@ export class ParametersContainer extends Component {
             <div className="parametersContainer">
                 <div className="parameters">
                 {
-                    parameterList ? 
-                        parameterList.map((parameter, index) => (<Parameter key={index} parameter={parameter}/>)) 
+                    parameterList ?
+                        parameterList.map((parameter, index) => (<Parameter key={index} parameter={parameter}/>))
                         : "No parameters"
                 }
                 </div>
                 <div className={buttonsContainerClass}>
-                    <hr/>                            
+                    <hr/>
                     <div className="buttons">
                         <Button
                             size="standard"
                             title="Cancel"
                             type="primary"
-                            onClick={() => {this.props.resetParameters(this.props.activeProject.id)}}
+                            onClick={() => {this.props.resetParameters(this.props.activeProject.id);}}
                         />
                         <Button
                             size="standard"
                             title="Update"
                             type="primary"
-                            onClick={() => {this.updateClicked()}}
+                            onClick={() => {this.updateClicked();}}
                         />
                     </div>
                 </div>

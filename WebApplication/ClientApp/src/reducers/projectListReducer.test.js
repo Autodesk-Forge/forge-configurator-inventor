@@ -34,7 +34,7 @@ describe('projectList reducer', () => {
 
         expect(projectListReducer(initialState, updateProjectList(projectList))).toEqual(expectedResult);
     });
-     
+
     it('handles active project selection', () => {
         const secondProjectActive = { ...initialState, activeProjectId: '2'};
 
@@ -42,7 +42,8 @@ describe('projectList reducer', () => {
     });
 
     it('keeps active project during project list update', () => {
-         const secondProjectActive = { ...initialState, activeProjectId: '2' };
+
+        const secondProjectActive = { ...initialState, activeProjectId: '2' };
 
          // new data that include also the current active project
          const newList = [
@@ -234,12 +235,12 @@ describe('projectList reducer', () => {
                         "name": "unchangedParameter",
                         "value": 123
                     }
-                ],                
+                ],
             },
             {
                 id: '5',
-                label: 'New Project B'               
-            }            
+                label: 'New Project B'
+            }
         ];
 
         const newParamEdit = {
@@ -261,7 +262,7 @@ describe('projectList reducer', () => {
                         "name": "unchangedParameter",
                         "value": 123
                     }
-                ],                
+                ],
                 updateParameters: [
                     {
                         "name": "editedParameter",
@@ -276,8 +277,8 @@ describe('projectList reducer', () => {
             },
             {
                 id: '5',
-                label: 'New Project B'               
-            }            
+                label: 'New Project B'
+            }
         ];
 
         const oldProjectList = {
@@ -287,7 +288,7 @@ describe('projectList reducer', () => {
 
         const newProjectList = {
             activeProjectId: '7',
-            projects: updatedProjects            
+            projects: updatedProjects
         };
 
         expect(projectListReducer(oldProjectList, editParameter('7', newParamEdit))).toEqual(newProjectList);
@@ -297,51 +298,51 @@ describe('projectList reducer', () => {
         const originalParameters = [
                     {
                         "name": "editedParameter",
-                        "value": null, 
-                        "type": "xyz" 
+                        "value": null,
+                        "type": "xyz"
                     },
                     {
                         "name": "unchangedParameter",
                         "value": 123
                     }
                 ];
-        
+
         const editedParameters = [
                     {
                         "name": "editedParameter",
                         "value": "12000 mm",
-                        "type": "xyz" 
+                        "type": "xyz"
                     },
                     {
                         "name": "unchangedParameter",
                         "value": 123
                     }
                 ];
-        
+
         const originalProjects = [
             {
                 id: '7',
                 label: 'New Project',
-                parameters: originalParameters,                
+                parameters: originalParameters,
                 updateParameters: editedParameters
             },
             {
                 id: '5',
-                label: 'New Project B'               
-            }            
+                label: 'New Project B'
+            }
         ];
 
         const resetProjects = [
             {
                 id: '7',
                 label: 'New Project',
-                parameters: originalParameters,                
+                parameters: originalParameters,
                 updateParameters: originalParameters // here's the change: edits are gone...
             },
             {
                 id: '5',
-                label: 'New Project B'               
-            }             
+                label: 'New Project B'
+            }
         ];
 
         const oldProjectList = {
@@ -351,7 +352,7 @@ describe('projectList reducer', () => {
 
         const newProjectList = {
             activeProjectId: '7',
-            projects: resetProjects            
+            projects: resetProjects
         };
 
         expect(projectListReducer(oldProjectList, resetParameters('7'))).toEqual(newProjectList);

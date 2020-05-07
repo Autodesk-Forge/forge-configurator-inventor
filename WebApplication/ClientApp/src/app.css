@@ -3,7 +3,7 @@ html, body {
     flex-flow: column;
     height: 100%;
   }
-  
+
 .fullheight {
     display: flex;
     flex-flow: column;
@@ -13,5 +13,5 @@ html, body {
 #root {
     display: flex;
     flex-flow: column;
-    height: 100%;    
+    height: 100%;
 }
