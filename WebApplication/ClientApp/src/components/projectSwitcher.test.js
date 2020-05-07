@@ -57,7 +57,7 @@ describe('components', () => {
 
       expect(updateActiveProject).toHaveBeenLastCalledWith(5);
       expect(fetchParameters).toHaveBeenLastCalledWith(5);
-    });      
+    });
 
     });
 

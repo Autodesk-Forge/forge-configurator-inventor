@@ -48,11 +48,11 @@ const testProjectsHasParams = {
                 label: 'Local Project 1',
                 image: 'bike.png',
                 parameters: [ { name: 'a parameter here' } ],
-                updateParameters: [ { name: 'a parameteter here' } ]        
+                updateParameters: [ { name: 'a parameteter here' } ]
             }
         ]
     }
-}
+};
 
 const testParameters = [
     { name: 'parameter one' },
@@ -133,6 +133,6 @@ describe('fetchParameters', () => {
                 // check no update parameters is called
                 expect(actions.some(a => a.type === 'PARAMETERS_UPDATED')).toEqual(false);
         });
-    });        
+    });
 
 });
