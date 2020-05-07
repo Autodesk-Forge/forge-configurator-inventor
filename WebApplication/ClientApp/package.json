@@ -37,12 +37,12 @@
     "@types/redux-mock-store": "^1.0.2",
     "ajv": "^6.9.1",
     "cross-env": "^5.2.0",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.2",
     "eslint": "^6.8.0",
     "eslint-config-airbnb": "^18.1.0",
     "eslint-config-node": "^4.0.0",
     "eslint-config-prettier": "^6.10.1",
-    "enzyme": "^3.11.0",
-    "enzyme-adapter-react-16": "^1.15.2",
     "eslint-config-react-app": "^4.0.1",
     "eslint-plugin-flowtype": "^2.0.0",
     "eslint-plugin-import": "^2.20.1",
@@ -51,9 +51,13 @@
     "eslint-plugin-prettier": "^3.1.2",
     "eslint-plugin-react": "^7.19.0",
     "eslint-plugin-react-hooks": "^2.5.0",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.2",
     "playwright": "^0.11.1",
     "prettier": "^2.0.2",
     "redux-mock-store": "^1.5.4",
+    "stylelint": "^13.3.3",
+    "stylelint-config-standard": "^20.0.0",
     "typescript": "^3.5.2"
   },
   "eslintConfig": {
@@ -64,7 +68,8 @@
     "build": "react-scripts build",
     "test": "cross-env CI=true react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "lint": "eslint ./src/"
+    "lint": "eslint ./src/",
+    "lint-css": "stylelint src/**/*.css"
   },
   "babel": {
     "presets": [
@@ -86,8 +91,9 @@
   "lint-staged": {
     "src/**/*.{js,jsx}": [
       "eslint . --fix"
-    ]
-  }  ,
+    ],
+    "src/**/*.css": "npm run lint-css -- --fix"
+  },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
