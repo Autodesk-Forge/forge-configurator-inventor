@@ -45,23 +45,23 @@ export const projectListReducer = function(state = initialState, action) {
                       /* for now, allowing to change only value during edit */
                       return param.name !== action.parameter.name ? param : {
                           ...param,
-                          value: action.parameter.value 
-                      }
+                          value: action.parameter.value
+                      };
                   })
-                }
+                };
             });
 
-            return { ...state, projects: projects };            
+            return { ...state, projects: projects };
         }
         case projectListActionTypes.PARAMETERS_RESET: {
             let projects = state.projects.map((project) => {
                 return project.id !== action.projectId ? project : {
                   ...project,
                   updateParameters: project.parameters
-                }
+                };
             });
 
-            return { ...state, projects: projects };              
+            return { ...state, projects: projects };
         }
         default:
             return state;
