@@ -24,7 +24,9 @@ export class ForgeView extends Component {
 
         const container = this.viewerDiv.current;
         this.viewer = new Autodesk.Viewing.GuiViewer3D(container);
-        this.viewer.debugEvents(true);
+
+        // uncomment this for Viewer debugging
+        //this.viewer.debugEvents(true);
 
         Autodesk.Viewing.Initializer(options, this.handleViewerInit.bind(this));
     }
