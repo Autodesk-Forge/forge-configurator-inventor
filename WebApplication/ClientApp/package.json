@@ -89,10 +89,8 @@
     ]
   },
   "lint-staged": {
-    "src/**/*.{js,jsx}": [
-      "eslint . --fix"
-    ],
-    "src/**/*.css": "npm run lint-css -- --fix"
+    "src/**/*.{js,jsx}": "eslint --fix",
+    "src/**/*.css": "stylelint --fix"
   },
   "husky": {
     "hooks": {
