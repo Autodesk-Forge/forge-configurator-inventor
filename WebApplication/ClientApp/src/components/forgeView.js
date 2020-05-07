@@ -83,7 +83,7 @@ export class ForgeView extends Component {
     render() {
         return (
             <div className="modelContainer fullheight">
-                <Message className="message"/>
+                <Message/>
                 <div className="viewer" id="ForgeViewer">
                     <div ref={this.viewerDiv}></div>
                     <link rel="stylesheet" type="text/css" href={`https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/style.css`}/>
