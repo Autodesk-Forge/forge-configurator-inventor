@@ -1,5 +1,4 @@
 import repo from '../Repository';
-
 import {addError, addLog} from './notificationActions';
 
 const actionTypes = {
