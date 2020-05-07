@@ -14,7 +14,7 @@ export const getProject = function(id, state) {
     return state.projects.find(proj => proj.id === id);
 };
 
-export const projectListReducer = function(state = initialState, action) {
+export default function(state = initialState, action) {
     switch(action.type) {
         case projectListActionTypes.PROJECT_LIST_UPDATED: {
             // select the previous active project if present, or first project otherwise
@@ -48,7 +48,6 @@ export const projectListReducer = function(state = initialState, action) {
                           value: action.parameter.value 
                       }
                   }),
-                  dismissUpdateMessage: false
                 }
             });
 
@@ -59,21 +58,10 @@ export const projectListReducer = function(state = initialState, action) {
                 return project.id !== action.projectId ? project : {
                   ...project,
                   updateParameters: project.parameters,
-                  dismissUpdateMessage: false
                 }
             });
 
             return { ...state, projects: projects };              
-        }
-        case projectListActionTypes.ACTIVE_PROJECT_DISMISS_UPDATEMSG: {
-            let projects = state.projects.map((project) => {
-                return project.id !== action.projectId ? project : {
-                  ...project,
-                  dismissUpdateMessage: true
-                };
-            });
-
-            return { ...state, projects: projects };
         }
         default:
             return state;

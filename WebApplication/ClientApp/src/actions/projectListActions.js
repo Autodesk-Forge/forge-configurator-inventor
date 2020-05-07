@@ -6,8 +6,7 @@ const actionTypes = {
     ACTIVE_PROJECT_UPDATED: 'ACTIVE_PROJECT_UPDATED',
     PARAMETERS_UPDATED: 'PARAMETERS_UPDATED',
     PARAMETER_EDITED: 'PARAMETER_EDITED',
-    PARAMETERS_RESET: 'PARAMETERS_RESET',
-    ACTIVE_PROJECT_DISMISS_UPDATEMSG: 'ACTIVE_PROJECT_DISMISS_UPDATEMSG'
+    PARAMETERS_RESET: 'PARAMETERS_RESET'
 };
 
 export default actionTypes;
@@ -23,13 +22,6 @@ export const updateActiveProject = activeProjectId => {
     return {
         type: actionTypes.ACTIVE_PROJECT_UPDATED,
         activeProjectId
-    };
-};
-
-export const dismissUpdateMessage = projectId => {
-    return {
-        type: actionTypes.ACTIVE_PROJECT_DISMISS_UPDATEMSG,
-        projectId
     };
 };
 

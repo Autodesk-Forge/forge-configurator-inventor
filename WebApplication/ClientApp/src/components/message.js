@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { getActiveProject } from '../reducers/mainReducer';
-import { dismissUpdateMessage } from '../actions/projectListActions';
+import { getActiveProject, showUpdateNotification} from '../reducers/mainReducer';
+import { dismissUpdateMessage } from '../actions/dismissUpdateMessageActions';
 
 import './message.css';
 import Banner from '@hig/banner'
@@ -21,9 +21,7 @@ export class Message extends Component {
     }
 
     render() {
-        const updateParameters = this.props.activeProject.updateParameters;
-        const parameters = this.props.activeProject.parameters;
-        const visible = updateParameters === parameters || this.props.activeProject.dismissUpdate ? false : true;
+        const visible = this.props.showUpdateNotification;
 
         return (
             <Banner
@@ -35,7 +33,8 @@ export class Message extends Component {
                       type="secondary"
                       size="small"
                       width={isWrappingActions ? "grow" : "shrink"}
-                      title="Ok"
+                      title="Close"
+                      onClick={this.onDismiss}
                     />
                   </Banner.Action>
                   <div className="verticalseparator"/>
@@ -57,6 +56,7 @@ export class Message extends Component {
 
 export default connect(function (store) {
     return {
-        activeProject: getActiveProject(store)
+        activeProject: getActiveProject(store),
+        showUpdateNotification: showUpdateNotification(store)
     };
 }, { dismissUpdateMessage })(Message);
