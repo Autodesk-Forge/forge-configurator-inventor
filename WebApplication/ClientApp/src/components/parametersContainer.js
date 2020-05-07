@@ -8,10 +8,10 @@ import Button from '@hig/button';
 
 export class ParametersContainer extends Component {
 
-    componentDidMount() {
-        this.props.fetchParameters(this.props.activeProject.id);
+    componentDidMount() {	
+        this.props.fetchParameters(this.props.activeProject.id);	
     }
-
+    
     updateClicked() {
         alert("Update of model on server is not implemented yet. Parameter values will be returned back for now.");
         this.props.resetParameters(this.props.activeProject.id);

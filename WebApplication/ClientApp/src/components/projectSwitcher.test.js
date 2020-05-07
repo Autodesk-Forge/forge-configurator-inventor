@@ -40,8 +40,10 @@ describe('components', () => {
 
     it('should call onChange with given handler',  () => {
       var updateActiveProject = jest.fn();
+      var fetchParameters = jest.fn();
       const props = {
         updateActiveProject,
+        fetchParameters,
         addLog: () => {},
         ... baseProps
       };
@@ -54,6 +56,8 @@ describe('components', () => {
       });
 
       expect(updateActiveProject).toHaveBeenLastCalledWith(5);
+      expect(fetchParameters).toHaveBeenLastCalledWith(5);
+    });      
 
     });
 
@@ -69,5 +73,4 @@ describe('components', () => {
 
       expect(fetchProjects).toBeCalled();
     });
-  });
 });
