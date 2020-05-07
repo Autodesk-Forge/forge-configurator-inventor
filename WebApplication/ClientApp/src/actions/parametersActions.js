@@ -51,7 +51,7 @@ function adaptParameters(rawParameters) {
     var unquote = function(input) {
         if (input == null || input.length < 2)
             return input;
-        
+
         if (input[0] === "\"" && input[input.length-1] === "\"")
             return input.substr(1, input.length-2);
 

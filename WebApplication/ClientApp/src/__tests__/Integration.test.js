@@ -122,11 +122,11 @@ describe('Integration UI tests', () => {
 
                 // check name of the first project
                 const firstDemoProject = await getTextContent('//ul/li[1]/span[2]');
-                expect(firstDemoProject).toBe("Conveyor.zip");
+                expect(firstDemoProject).toBe("Conveyor");
 
                 // check name of the second project
                 const secondDemoProject = await getTextContent('//ul/li[2]/span[2]');
-                expect(secondDemoProject).toBe("Wrench.zip");
+                expect(secondDemoProject).toBe("Wrench");
             });
 
             it('should check if Project switcher allows to switch project', async () => {
@@ -141,7 +141,7 @@ describe('Integration UI tests', () => {
                 // emulate click to trigger project loading
                 await clickXPath('//ul/li[1]/span[2]');
                 let project_name = await getTextContent('//p');
-                expect(project_name).toBe("Conveyor.zip");
+                expect(project_name).toBe("Conveyor");
 
                 // click to show popup menu with list of projects
                 await clickXPath('//p');
@@ -152,7 +152,7 @@ describe('Integration UI tests', () => {
                 // emulate click to trigger project loading
                 await clickXPath('//ul/li[2]/span[2]');
                 project_name = await getTextContent('//p');
-                expect(project_name).toBe("Wrench.zip");
+                expect(project_name).toBe("Wrench");
              });
 
         });
