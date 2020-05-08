@@ -26,7 +26,7 @@ export default class Toolbar extends Component {
           logo={
             <Logo link="https://forge.autodesk.com" label="Autodesk HIG">
               <PlaceCenterContainer>
-                <img src={"logo.png"}/>
+                <img src={"logo.png"} alt=""/>
                 <LogoText>
                     AUTODESK<sup>®</sup> <strong>FORGE</strong>
                 </LogoText>
