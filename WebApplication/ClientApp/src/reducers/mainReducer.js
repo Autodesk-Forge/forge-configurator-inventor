@@ -1,10 +1,12 @@
 import {combineReducers} from 'redux';
 import {projectListReducer, getActiveProject as listReducerActiveProject, getProject as listReducerGetProject } from './projectListReducers';
 import {notificationReducer} from './notificationReducer';
+import {parameterReducer} from './parameterReducer';
 
 export const mainReducer = combineReducers({
     projectList: projectListReducer,
-    notifications: notificationReducer
+    notifications: notificationReducer,
+    parameters: parameterReducer
 });
 
 export const getActiveProject = function(state) {

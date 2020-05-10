@@ -1,7 +1,14 @@
 import repo from '../Repository';
 import { addError, addLog } from './notificationActions';
-import actionTypes from './projectListActions';
 import { getProject } from '../reducers/mainReducer';
+
+const actionTypes = {
+    PARAMETERS_UPDATED: 'PARAMETERS_UPDATED',
+    PARAMETER_EDITED: 'PARAMETER_EDITED',
+    PARAMETERS_RESET: 'PARAMETERS_RESET'
+};
+
+export default actionTypes;
 
 export const updateParameters = (projectId, parameters) => {
     return {
