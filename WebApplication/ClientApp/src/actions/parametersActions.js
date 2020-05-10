@@ -13,7 +13,7 @@ export default actionTypes;
 export const updateParameters = (projectId, parameters) => {
     return {
         type: actionTypes.PARAMETERS_UPDATED,
-        projectId: projectId,
+        projectId,
         parameters
     };
 };
@@ -21,7 +21,7 @@ export const updateParameters = (projectId, parameters) => {
 export const editParameter = (projectId, parameter) => {
     return {
         type: actionTypes.PARAMETER_EDITED,
-        projectId: projectId,
+        projectId,
         parameter
     };
 };
@@ -29,7 +29,7 @@ export const editParameter = (projectId, parameter) => {
 export const resetParameters = (projectId) => {
     return {
         type: actionTypes.PARAMETERS_RESET,
-        projectId: projectId
+        projectId
     };
 };
 
