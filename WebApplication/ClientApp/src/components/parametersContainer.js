@@ -14,11 +14,11 @@ export class ParametersContainer extends Component {
 
     updateClicked() {
         alert("Update of model on server is not implemented yet. Parameter values will be returned back for now.");
-        this.props.resetParameters(this.props.activeProject.id);
+        this.props.resetParameters(this.props.activeProject.id, this.props.projectSourceParameters);
     }
 
     render() {
-        const parameterList = this.props.updateParameters[this.props.activeProject.id];
+        const parameterList = this.props.activeProject ? this.props.projectUpdateParameters : [];
         const buttonsContainerClass = parameterList ? "buttonsContainer" : "buttonsContainer hidden";
 
         return (
@@ -37,7 +37,7 @@ export class ParametersContainer extends Component {
                             size="standard"
                             title="Cancel"
                             type="primary"
-                            onClick={() => {this.props.resetParameters(this.props.activeProject.id);}}
+                            onClick={() => {this.props.resetParameters(this.props.activeProject.id, this.props.projectSourceParameters);}}
                         />
                         <Button
                             size="standard"
@@ -53,8 +53,11 @@ export class ParametersContainer extends Component {
 }
 
 export default connect(function (store) {
+    let activeProject = getActiveProject(store);
+
     return {
-        activeProject: getActiveProject(store),
-        updateParameters: store.updateParameters
+        activeProject: activeProject,
+        projectSourceParameters: store.parameters[activeProject.id],
+        projectUpdateParameters: store.updateParameters[activeProject.id]
     };
 }, { fetchParameters, resetParameters })(ParametersContainer);

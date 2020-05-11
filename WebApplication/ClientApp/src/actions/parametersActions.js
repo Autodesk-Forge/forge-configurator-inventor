@@ -26,10 +26,11 @@ export const editParameter = (projectId, parameter) => {
     };
 };
 
-export const resetParameters = (projectId) => {
+export const resetParameters = (projectId, parameters) => {
     return {
         type: actionTypes.PARAMETERS_RESET,
-        projectId
+        projectId,
+        parameters
     };
 };
 

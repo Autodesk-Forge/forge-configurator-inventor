@@ -20,10 +20,11 @@ export const updateParametersReducer = function(state = initialState, action) {
         }
         
         case parameterActionTypes.PARAMETERS_RESET: {
-            /*TBD*/
-
-            return state;
+            let newState = { ...state };
+            newState[action.projectId] = action.parameters;
+            return newState;
         }
+        
         default:
             return state;
     }
