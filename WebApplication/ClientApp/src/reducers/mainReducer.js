@@ -4,13 +4,15 @@ import {notificationReducer} from './notificationReducer';
 import {parametersReducer} from './parametersReducer';
 import {updateParametersReducer} from './updateParametersReducer';
 import dismissUpdateMessageReducer from './dismissUpdateMessageReducer';
+import showChangedParametersReducer from './showChangedParametersReducer';
 
 export const mainReducer = combineReducers({
     projectList: projectListReducer,
     notifications: notificationReducer,
     parameters: parametersReducer,
     updateParameters: updateParametersReducer,
-    dismissUpdateMessage: dismissUpdateMessageReducer
+    dismissUpdateMessage: dismissUpdateMessageReducer,
+    showChangedParameters: showChangedParametersReducer
 });
 
 export const getActiveProject = function(state) {
@@ -22,7 +24,7 @@ export const getProject = function(id, state) {
 };
 
 export const showUpdateNotification = function(state) {
-    if (state.dismissUpdateMessage === true)
+    if (state.dismissUpdateMessage === true || state.showChangedParameters === false )
         return false;
 
     const activeProject = getActiveProject(state);
