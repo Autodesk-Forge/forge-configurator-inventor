@@ -6,8 +6,10 @@ Demo application showcasing Configuration with Design Automation for Inventor
 ### Web Application 
 1. .NET Core 3.1
 1. Node.js
-1. Visual Studio Code (recommended)
-    * Debugger for Chrome extension (for debugging client side code)
+1. (recommended) Visual Studio Code with extensions:
+    * [Debugger for Chrome](https://marketplace.visualstudio.com/items?itemName=msjsdiag.debugger-for-chrome) (for debugging client side code)
+    * [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
+    * [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
 ### App Bundles
 1. Autodesk Inventor 2021
 1. Visual Studio 2019
@@ -17,11 +19,6 @@ Demo application showcasing Configuration with Design Automation for Inventor
 1. Note the Client ID and Secret generated.
 1. Clone repository
 1. Specify [forge credentials](#specify-forge-credentials).
-
-### VSCode extensions
-* In order to debug the solution in VS Code you have to install the extension [Debugger for Chrome](https://marketplace.visualstudio.com/items?itemName=msjsdiag.debugger-for-chrome)
-* [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
-* [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
 
 ## Build
 * Building the projects also installs required packages (this can take several minutes).

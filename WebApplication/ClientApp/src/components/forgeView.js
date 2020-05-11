@@ -14,20 +14,6 @@ export class ForgeView extends Component {
 
       this.viewerDiv = React.createRef();
       this.viewer = null;
-      this.state = {
-        view:null
-      };
-    }
-
-    /* after the viewer loads a document, we need to select which viewable to
-    display in our component */
-    handleDocumentLoaded(doc, viewables){
-        if (viewables.length === 0) {
-            console.error('Document contains no viewables.');
-        } else {
-            //Select the first viewable in the list to use in our viewer component
-            this.setState({view:viewables[0]});
-        }
     }
 
     handleScriptLoad(){
@@ -39,11 +25,12 @@ export class ForgeView extends Component {
 
         const container = this.viewerDiv.current;
         this.viewer = new Autodesk.Viewing.GuiViewer3D(container);
-        this.viewer.debugEvents(true);
 
-        Autodesk.Viewing.Initializer(
-            options, this.handleViewerInit.bind(this));
-      }
+        // uncomment this for Viewer debugging
+        //this.viewer.debugEvents(true);
+
+        Autodesk.Viewing.Initializer(options, this.handleViewerInit.bind(this));
+    }
 
     handleViewerInit() {
         const errorCode = this.viewer.start();

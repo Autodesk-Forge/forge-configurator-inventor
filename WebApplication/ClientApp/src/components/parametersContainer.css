@@ -33,7 +33,7 @@
 .buttonsContainer {
     flex: none;
     width: 203px; /* somehow deduced from the .parametersContainer width: 296px; minus it's paddings margins etc */
-    margin-bottom: 14px;    
+    margin-bottom: 14px;
 }
 
 .buttonsContainer.hidden {

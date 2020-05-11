@@ -29,6 +29,13 @@
         "linebreak-style": "off",
         "no-trailing-spaces": "warn",
         "semi": "warn",
+        "no-var": "warn",
+        "prefer-const": "warn",
         "react/prop-types": 0 // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/prop-types.md
+    },
+    "settings": {
+        "react": {
+            "version": "detect"
+        }
     }
 }

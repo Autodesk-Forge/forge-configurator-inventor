@@ -67,7 +67,7 @@ function adaptParameters(rawParameters) {
             type: "NYI" // TODO: remove?
         };
     });
-};
+}
 
 // eslint-disable-next-line no-unused-vars
 export const fetchParameters = (projectId) => async (dispatch, getState) => {
