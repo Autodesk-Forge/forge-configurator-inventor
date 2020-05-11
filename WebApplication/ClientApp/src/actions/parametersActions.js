@@ -69,7 +69,7 @@ function adaptParameters(rawParameters) {
         return {
             name: key,
             value: unquote(param.value),
-            allowedValues: (param.values) ? param.values.map( item => unquote(item)) : new Array(),
+            allowedValues: (param.values) ? param.values.map( item => unquote(item)) : [],
             units: param.unit,
             type: "NYI" // TODO: remove?
         };
