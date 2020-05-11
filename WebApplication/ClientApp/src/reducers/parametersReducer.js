@@ -6,10 +6,8 @@ export const parametersReducer = function(state = initialState, action) {
 
     switch(action.type) {
         case parameterActionTypes.PARAMETERS_UPDATED: {
-            /* should be something like...
             let newState = { ...state };
             newState[action.projectId] = action.parameters;
-            */
             return newState;
         }
 
