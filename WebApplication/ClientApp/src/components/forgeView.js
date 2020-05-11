@@ -3,6 +3,7 @@ import Script from 'react-load-script';
 import {connect} from 'react-redux';
 import { getActiveProject } from '../reducers/mainReducer';
 import './forgeView.css';
+import Message from './message';
 
 var Autodesk = null;
 
@@ -68,12 +69,15 @@ export class ForgeView extends Component {
 
     render() {
         return (
-            <div className="viewer" id="ForgeViewer">
-              <div ref={this.viewerDiv}></div>
-              <link rel="stylesheet" type="text/css" href={`https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/style.css`}/>
-              <Script url={`https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.js`}
-                onLoad={this.handleScriptLoad.bind(this)}
-              />
+            <div className="modelContainer fullheight">
+                <Message/>
+                <div className="viewer" id="ForgeViewer">
+                    <div ref={this.viewerDiv}></div>
+                    <link rel="stylesheet" type="text/css" href={`https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/style.css`}/>
+                    <Script url={`https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.js`}
+                      onLoad={this.handleScriptLoad.bind(this)}
+                    />
+                </div>
             </div>
         );
     }

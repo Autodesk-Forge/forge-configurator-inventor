@@ -1,14 +1,14 @@
-import {projectListReducer, initialState, getActiveProject} from './projectListReducers';
+import projectListReducer, * as list from './projectListReducers';
 import {updateProjectList, updateActiveProject} from '../actions/projectListActions';
 import { updateParameters, editParameter, resetParameters } from '../actions/parametersActions';
 
 describe('projectList reducer', () => {
     test('should return the initial state', () => {
-        expect(projectListReducer(undefined, {})).toEqual(initialState);
+        expect(projectListReducer(undefined, {})).toEqual(list.initialState);
     });
 
     test('handles empty project list', () => {
-        expect(projectListReducer(initialState, updateProjectList([]))).toEqual({"activeProjectId": null, "projects": []});
+        expect(projectListReducer(list.initialState, updateProjectList([]))).toEqual({"activeProjectId": null, "projects": []});
     });
 
     it('handles new project list', () => {
@@ -32,18 +32,17 @@ describe('projectList reducer', () => {
             projects: projectList
         };
 
-        expect(projectListReducer(initialState, updateProjectList(projectList))).toEqual(expectedResult);
+        expect(projectListReducer(list.initialState, updateProjectList(projectList))).toEqual(expectedResult);
     });
 
     it('handles active project selection', () => {
-        const secondProjectActive = { ...initialState, activeProjectId: '2'};
+        const secondProjectActive = { ...list.initialState, activeProjectId: '2'};
 
-        expect(projectListReducer(initialState, updateActiveProject('2'))).toEqual(secondProjectActive);
+        expect(projectListReducer(list.initialState, updateActiveProject('2'))).toEqual(secondProjectActive);
     });
 
     it('keeps active project during project list update', () => {
-
-        const secondProjectActive = { ...initialState, activeProjectId: '2' };
+         const secondProjectActive = { ...list.initialState, activeProjectId: '2' };
 
          // new data that include also the current active project
          const newList = [
@@ -90,7 +89,7 @@ describe('projectList reducer', () => {
             projects: projects
         };
 
-        expect(getActiveProject(projectList)).toEqual(activeProject);
+        expect(list.getActiveProject(projectList)).toEqual(activeProject);
     });
 
     it('adds project parameters', () => {
