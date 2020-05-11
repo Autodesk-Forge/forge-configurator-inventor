@@ -53,7 +53,7 @@ export class ParametersContainer extends Component {
 }
 
 export default connect(function (store) {
-    let activeProject = getActiveProject(store);
+    const activeProject = getActiveProject(store);
 
     return {
         activeProject: activeProject,
