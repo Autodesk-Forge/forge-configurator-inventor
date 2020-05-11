@@ -59,7 +59,7 @@ export class Message extends Component {
                           fontFamily: resolvedRoles["basics.fontFamilies.main"],
                           fontSize: resolvedRoles["basics.fontSizes.highMedium"],
                           marginLeft: '12px'
-                      }}>Don`&apos;`t show again.
+                      }}>Don&apos;t show again.
                       </div>
                   )}</ThemeContext.Consumer>
                   </Banner.Action>
