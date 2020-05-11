@@ -13,7 +13,7 @@ export default actionTypes;
 export const updateParameters = (projectId, parameters) => {
     return {
         type: actionTypes.PARAMETERS_UPDATED,
-        projectId: projectId,
+        projectId,
         parameters
     };
 };
@@ -21,7 +21,7 @@ export const updateParameters = (projectId, parameters) => {
 export const editParameter = (projectId, parameter) => {
     return {
         type: actionTypes.PARAMETER_EDITED,
-        projectId: projectId,
+        projectId,
         parameter
     };
 };
@@ -29,7 +29,7 @@ export const editParameter = (projectId, parameter) => {
 export const resetParameters = (projectId) => {
     return {
         type: actionTypes.PARAMETERS_RESET,
-        projectId: projectId
+        projectId
     };
 };
 
@@ -69,7 +69,8 @@ function adaptParameters(rawParameters) {
 // eslint-disable-next-line no-unused-vars
 export const fetchParameters = (projectId) => async (dispatch, getState) => {
     const selectedProject = getProject(projectId, getState());
-    if(selectedProject && selectedProject.updateParameters && selectedProject.updateParameters.length!==0) {
+    const params = getState().updateParameters[selectedProject.id];
+    if(selectedProject && params && params.length!==0) {
         return;
     }
 

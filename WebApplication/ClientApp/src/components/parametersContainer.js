@@ -18,7 +18,7 @@ export class ParametersContainer extends Component {
     }
 
     render() {
-        const parameterList = this.props.activeProject.updateParameters;
+        const parameterList = this.props.updateParameters[this.props.activeProject.id];
         const buttonsContainerClass = parameterList ? "buttonsContainer" : "buttonsContainer hidden";
 
         return (
@@ -54,6 +54,7 @@ export class ParametersContainer extends Component {
 
 export default connect(function (store) {
     return {
-        activeProject: getActiveProject(store)
+        activeProject: getActiveProject(store),
+        updateParameters: store.updateParameters
     };
 }, { fetchParameters, resetParameters })(ParametersContainer);
