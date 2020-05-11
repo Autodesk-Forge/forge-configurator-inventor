@@ -48,7 +48,7 @@ export const resetParameters = (projectId) => {
  * }
  */
 function adaptParameters(rawParameters) {
-    var unquote = function(input) {
+    const unquote = function(input) {
         if (input == null || input.length < 2)
             return input;
 
@@ -62,7 +62,7 @@ function adaptParameters(rawParameters) {
         return {
             name: key,
             value: unquote(param.value),
-            allowedValues: param.values?.map( item => unquote(item) ),
+            allowedValues: (param.values) ? param.values.map( item => unquote(item)) : new Array(),
             units: param.unit,
             type: "NYI" // TODO: remove?
         };
