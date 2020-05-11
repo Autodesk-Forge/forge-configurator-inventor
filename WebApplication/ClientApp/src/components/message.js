@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import { getActiveProject, showUpdateNotification} from '../reducers/mainReducer';
-import { dismissUpdateMessage } from '../actions/dismissUpdateMessageActions';
+import { hideUpdateMessageBanner } from '../actions/dismissUpdateMessageActions';
 
 import './message.css';
-import Banner from '@hig/banner'
-import Button from '@hig/button'
+import Banner from '@hig/banner';
+import Button from '@hig/button';
 import Checkbox from '@hig/checkbox';
 
 import ThemeContext from '@hig/theme-context';
@@ -18,17 +18,18 @@ const Fixed = styled('div')`
   position: fixed;
   z-index: 100;
   width: calc(100% - 240px);
-`
+`;
 
 export class Message extends Component {
 
     constructor(props) {
         super(props);
         this.onDismiss = this.onDismiss.bind(this);
+        this.dontShowAgain = false;
     }
 
     onDismiss() {
-        this.props.dismissUpdateMessage(this.props.activeProject.id);
+        this.props.hideUpdateMessageBanner(this.dontShowAgain);
     }
 
     render() {
@@ -52,13 +53,13 @@ export class Message extends Component {
                   </Banner.Action>
                   <div className="verticalseparator"/>
                   <Banner.Action>
-                    <Checkbox/>
-                    <ThemeContext.Consumer>{({ resolvedRoles, metadata }) => (
+                    <Checkbox onChange={(checked) => this.dontShowAgain = checked}/>
+                    <ThemeContext.Consumer>{({ resolvedRoles }) => (
                       <div style={{
                           fontFamily: resolvedRoles["basics.fontFamilies.main"],
                           fontSize: resolvedRoles["basics.fontSizes.highMedium"],
                           marginLeft: '12px'
-                      }}>Don't show again.
+                      }}>Don`&apos;`t show again.
                       </div>
                   )}</ThemeContext.Consumer>
                   </Banner.Action>
@@ -81,4 +82,4 @@ export default connect(function (store) {
         activeProject: getActiveProject(store),
         showUpdateNotification: showUpdateNotification(store)
     };
-}, { dismissUpdateMessage })(Message);
+}, { hideUpdateMessageBanner })(Message);

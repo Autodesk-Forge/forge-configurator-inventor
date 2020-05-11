@@ -150,6 +150,12 @@ namespace WebApplication
             await objectsApi.DeleteObjectAsync(bucketKey, oldName);
         }
 
+        public async Task<Autodesk.Forge.Client.ApiResponse<dynamic>> GetObjectAsync(string bucketKey, string objectName)
+        {
+            ObjectsApi objectsApi = await GetObjectsApiAsync();
+            return await objectsApi.GetObjectAsyncWithHttpInfo(bucketKey, objectName);
+        }
+
         private async Task<ObjectsApi> GetObjectsApiAsync()
         {
             return new ObjectsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } }; // TODO: ER: cache? Or is it lightweight operation?

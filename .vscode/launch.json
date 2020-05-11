@@ -19,8 +19,7 @@
             "test",
             "--runInBand",
             "--no-cache",
-            "--env=jsdom",
-            "--transformIgnorePatterns=node_modules/hig"
+            "--env=jsdom"
           ],
           "cwd": "${workspaceRoot}/WebApplication/ClientApp/",
           "protocol": "inspector",
@@ -37,8 +36,7 @@
             "${fileBasenameNoExtension}",
             "--runInBand",
             "--no-cache",
-            "--env=jsdom",
-            "--transformIgnorePatterns=node_modules/hig"
+            "--env=jsdom"
           ],
           "cwd": "${workspaceRoot}/WebApplication/ClientApp/",
           "protocol": "inspector",
