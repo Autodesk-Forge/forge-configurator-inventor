@@ -1,4 +1,4 @@
-import { parametersReducer, initialState } from './parametersReducer';
+import parametersReducer, { initialState } from './parametersReducer';
 import { updateParameters, editParameter, resetParameters } from '../actions/parametersActions';
 
 describe('parameters reducer', () => {
@@ -22,7 +22,7 @@ describe('parameters reducer', () => {
 
         const initialState = {};
 
-        let expectedState = {};
+        const expectedState = {};
         expectedState[projectId] = parameterSet;
 
         expect(parametersReducer(initialState, updateParameters(projectId, parameterSet))).toMatchObject(expectedState);
@@ -42,7 +42,7 @@ describe('parameters reducer', () => {
             }
         ];
 
-        let initialState = {};
+        const initialState = {};
         initialState[projectId] = parameterSet;
 
         const newParameterValue = {
@@ -67,7 +67,7 @@ describe('parameters reducer', () => {
             }
         ];
 
-        let initialState = {};
+        const initialState = {};
         initialState[projectId] = parameterSet;
 
         expect(parametersReducer(initialState, resetParameters(projectId))).toMatchObject(initialState);

@@ -1,8 +1,8 @@
 import {combineReducers} from 'redux';
 import projectListReducer, * as list from './projectListReducers';
 import {notificationReducer} from './notificationReducer';
-import {parametersReducer} from './parametersReducer';
-import {updateParametersReducer} from './updateParametersReducer';
+import parametersReducer, * as params from './parametersReducer';
+import updateParametersReducer, * as updateParams from './updateParametersReducer';
 import dismissUpdateMessageReducer from './dismissUpdateMessageReducer';
 import showChangedParametersReducer from './showChangedParametersReducer';
 
@@ -21,6 +21,14 @@ export const getActiveProject = function(state) {
 
 export const getProject = function(id, state) {
     return list.getProject(id, state.projectList);
+};
+
+export const getParameters = function(projectId, state) {
+    return params.getParameters(projectId, state.parameters);
+};
+
+export const getUpdateParameters = function(projectId, state) {
+    return updateParams.getParameters(projectId, state.updateParameters);
 };
 
 export const showUpdateNotification = function(state) {
