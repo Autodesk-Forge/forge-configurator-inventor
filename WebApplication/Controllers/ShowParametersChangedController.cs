@@ -44,8 +44,10 @@ namespace WebApplication.Controllers
 
             if(ossObjectResponse != null)
             {
-                Stream objectStream = ossObjectResponse.Data;
-                result = await JsonSerializer.DeserializeAsync<bool>(objectStream);
+                using (Stream objectStream = ossObjectResponse.Data)
+                {
+                    result = await JsonSerializer.DeserializeAsync<bool>(objectStream);
+                }
             }
 
             return result;
