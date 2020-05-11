@@ -14,7 +14,7 @@ export const getProject = function(id, state) {
     return state.projects.find(proj => proj.id === id);
 };
 
-export const projectListReducer = function(state = initialState, action) {
+export default function(state = initialState, action) {
     switch(action.type) {
         case projectListActionTypes.PROJECT_LIST_UPDATED: {
             // select the previous active project if present, or first project otherwise
