@@ -2,11 +2,13 @@ import {combineReducers} from 'redux';
 import projectListReducer, * as list from './projectListReducers';
 import {notificationReducer} from './notificationReducer';
 import dismissUpdateMessageReducer from './dismissUpdateMessageReducer';
+import showChangedParametersReducer from './showChangedParametersReducer';
 
 export const mainReducer = combineReducers({
     projectList: projectListReducer,
     notifications: notificationReducer,
-    dismissUpdateMessage: dismissUpdateMessageReducer
+    dismissUpdateMessage: dismissUpdateMessageReducer,
+    showChangedParameters: showChangedParametersReducer
 });
 
 export const getActiveProject = function(state) {
@@ -18,21 +20,21 @@ export const getProject = function(id, state) {
 };
 
 export const showUpdateNotification = function(state) {
-    if (state.dismissUpdateMessage === true)
+    if (state.dismissUpdateMessage === true || state.showChangedParameters === false )
         return false;
 
-    let activeProject = getActiveProject(state);
+    const activeProject = getActiveProject(state);
 
     if (!activeProject.parameters)
         return false;
 
-    for (let parameterId in activeProject.parameters) {
-        let parameter = activeProject.parameters[parameterId];
-        let updateParameter = activeProject.updateParameters.find(updatePar => updatePar.name === parameter.name)
+    for (const parameterId in activeProject.parameters) {
+        const parameter = activeProject.parameters[parameterId];
+        const updateParameter = activeProject.updateParameters.find(updatePar => updatePar.name === parameter.name);
         if (parameter.value !== updateParameter.value) {
             return true;
         }
     }
 
     return false;
-}
+};

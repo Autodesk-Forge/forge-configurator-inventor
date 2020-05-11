@@ -45,5 +45,7 @@ namespace WebApplication
         /// <param name="oldName">Old object name.</param>
         /// <param name="newName">New object name.</param>
         Task RenameObjectAsync(string bucketKey, string oldName, string newName);
+
+        Task<Autodesk.Forge.Client.ApiResponse<dynamic>> GetObjectAsync(string bucketKey, string objectName);
     }
 }

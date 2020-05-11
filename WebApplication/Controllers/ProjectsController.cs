@@ -11,13 +11,13 @@ namespace WebApplication.Controllers
 {
     [ApiController]
     [Route("projects")]
-    public class ProjectController : ControllerBase
+    public class ProjectsController : ControllerBase
     {
-        private readonly ILogger<ProjectController> _logger;
+        private readonly ILogger<ProjectsController> _logger;
         private readonly IForgeOSS _forge;
         private readonly ResourceProvider _resourceProvider;
 
-        public ProjectController(ILogger<ProjectController> logger, IForgeOSS forge, ResourceProvider resourceProvider)
+        public ProjectsController(ILogger<ProjectsController> logger, IForgeOSS forge, ResourceProvider resourceProvider)
         {
             _logger = logger;
             _forge = forge;

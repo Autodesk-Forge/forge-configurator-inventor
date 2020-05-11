@@ -1,11 +1,16 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import Surface from '@hig/surface';
 import './app.css';
 import Toolbar from './components/toolbar';
 import TabsContainer from './components/tabsContainer';
 import ProjectSwitcher from './components/projectSwitcher';
+import { fetchShowParametersChanged } from './actions/applicationActions';
 
-class App extends Component {
+export class App extends Component {
+  componentDidMount() {
+    this.props.fetchShowParametersChanged();
+  }
   render () {
     return (
       <Surface className="fullheight" id="main" level={200}
@@ -20,4 +25,7 @@ class App extends Component {
   }
 }
 
-export default App;
+export default connect(null, {
+  fetchShowParametersChanged
+})(App);
+
