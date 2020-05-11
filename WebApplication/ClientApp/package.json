@@ -3,9 +3,12 @@
   "version": "0.1.1",
   "private": true,
   "dependencies": {
+    "@hig/banner": "^2.1.1",
     "@hig/button": "^1.4.3",
     "@hig/checkbox": "^2.0.8",
     "@hig/dropdown": "^2.2.1",
+    "@hig/icon-button": "^2.4.0",
+    "@hig/icons": "^3.2.0",
     "@hig/input": "^1.2.0",
     "@hig/project-account-switcher": "^2.0.5",
     "@hig/surface": "^1.1.0",
@@ -23,7 +26,7 @@
     "react-redux": "^7.2.0",
     "react-router-bootstrap": "^0.24.4",
     "react-router-dom": "^4.2.2",
-    "react-scripts": "^3.4.0",
+    "react-scripts": "3.4.1",
     "reactstrap": "^6.3.0",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
@@ -66,7 +69,7 @@
   "scripts": {
     "start": "rimraf ./build && react-scripts start",
     "build": "react-scripts build",
-    "test": "cross-env CI=true react-scripts test --env=jsdom",
+    "test": "cross-env CI=true react-scripts test --env=jsdom --transformIgnorePatterns 'node_modules/hig/theme-data'",
     "eject": "react-scripts eject",
     "lint": "eslint ./src/",
     "lint-css": "stylelint src/**/*.css"
