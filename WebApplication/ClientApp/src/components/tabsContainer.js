@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import Tabs, { Tab } from "@hig/tabs";
-import ProjectList from './projectList';
+// import ProjectList from './projectList'; // to be restored soon
 import ForgeView from './forgeView';
 import ParametersContainer from './parametersContainer';
+import PageNYI from './pageNYI';
 import './tabs.css';
 
 class TabsContainer extends Component {
@@ -19,7 +20,7 @@ class TabsContainer extends Component {
             >
               <Tab label="Projects">
                 <div id="project-list" className="tabContent fullheight">
-                  <ProjectList/>
+                  <PageNYI/>
                 </div>
               </Tab>
               <Tab label="Model" >
@@ -32,17 +33,17 @@ class TabsContainer extends Component {
               </Tab>
               <Tab label="BOM">
                 <div id="bom" className="tabContent fullheight">
-                  BOM content
+                  <PageNYI/>
                 </div>
               </Tab>
               <Tab label="Drawing">
                 <div id="drawing" className="tabContent fullheight">
-                  Drawing content
+                  <PageNYI/>
                 </div>
               </Tab>
               <Tab label="Downloads">
                 <div id="downloads" className="tabContent fullheight">
-                  Downloads content
+                  <PageNYI/>
                 </div>
               </Tab>
             </Tabs>
