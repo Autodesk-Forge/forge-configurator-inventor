@@ -27,24 +27,28 @@ const testParameters = [
 // set expected value for the mock
 const loadParametersMock = repoInstance.loadParameters;
 
+
 describe('fetchParameters', () => {
 
-    let paramData;
+    let updateParameters;
+    let store;
     beforeEach(() => {
 
         loadParametersMock.mockReturnValue(testParameters);
         loadParametersMock.mockClear();
 
-        // prepare empty param data
-        paramData = {
+        // prepare empty 'updated parameters' data
+        const fakeState = {
             updateParameters: {}
         };
+        updateParameters = fakeState.updateParameters;
+
+
+        store = mockStore(fakeState);
+        store.getState = () => fakeState;
     });
 
     it('should fetch parameters from the server if there are none in the project', () => {
-
-        const store = mockStore(paramData);
-        store.getState = () => paramData;
 
         return store
             .dispatch(fetchParameters(projectId)) // demand parameters loading
@@ -64,10 +68,7 @@ describe('fetchParameters', () => {
 
     it('should fetch parameters from the server if there is empty parameter array in the project', () => {
 
-        paramData.updateParameters[projectId] = [];
-
-        const store = mockStore(paramData);
-        store.getState = () => paramData;
+        updateParameters[projectId] = [];
 
         return store
             .dispatch(fetchParameters(projectId)) // demand parameters loading
@@ -87,11 +88,7 @@ describe('fetchParameters', () => {
 
     it('should NOT fetch parameters from the server if there are SOME in the project', () => {
 
-        paramData.updateParameters[projectId] = testParameters;
-
-        // set expected value for the mock
-        const store = mockStore(paramData);
-        store.getState = () => paramData;
+        updateParameters[projectId] = testParameters;
 
         return store
             .dispatch(fetchParameters(projectId, store.getState)) // demand parameters loading
