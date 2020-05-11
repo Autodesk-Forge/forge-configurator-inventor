@@ -51,18 +51,19 @@ describe('updateParameters reducer', () => {
             value: "a new string"
         };
 
-        const newState = {
-            "Conveoyr": [ 
-                {
-                    name: "ABC",
-                    value: 123
-                },
-                {
-                    name: "XYZ",
-                    value: "a new string"
-                }                
-             ]
-        };
+        const newParameterSet = [
+            {
+                name: "ABC",
+                value: 123
+            },
+            {
+                name: "XYZ",
+                value: "a new string"
+            }
+        ];
+
+        let newState = {};
+        newState[projectId] = newParameterSet;
 
         expect(updateParametersReducer(initialState, editParameter(projectId, newParameterValue))).toMatchObject(newState);
     });
