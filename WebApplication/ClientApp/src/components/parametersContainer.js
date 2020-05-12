@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import './parametersContainer.css';
 import Parameter from './parameter';
-import { getActiveProject } from '../reducers/mainReducer';
+import { getActiveProject, getParameters, getUpdateParameters } from '../reducers/mainReducer';
 import { fetchParameters, resetParameters } from '../actions/parametersActions';
 import Button from '@hig/button';
 
@@ -57,7 +57,7 @@ export default connect(function (store) {
 
     return {
         activeProject: activeProject,
-        projectSourceParameters: store.parameters[activeProject.id],
-        projectUpdateParameters: store.updateParameters[activeProject.id]
+        projectSourceParameters: getParameters(activeProject.id, store),
+        projectUpdateParameters: getUpdateParameters(activeProject.id, store)
     };
 }, { fetchParameters, resetParameters })(ParametersContainer);
