@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import './parametersContainer.css';
 import Parameter from './parameter';
-import { getActiveProject } from '../reducers/mainReducer';
+import { getActiveProject, getParameters, getUpdateParameters } from '../reducers/mainReducer';
 import { fetchParameters, resetParameters } from '../actions/parametersActions';
 import Button from '@hig/button';
 
@@ -14,11 +14,11 @@ export class ParametersContainer extends Component {
 
     updateClicked() {
         alert("Update of model on server is not implemented yet. Parameter values will be returned back for now.");
-        this.props.resetParameters(this.props.activeProject.id);
+        this.props.resetParameters(this.props.activeProject.id, this.props.projectSourceParameters);
     }
 
     render() {
-        const parameterList = this.props.activeProject.updateParameters;
+        const parameterList = this.props.activeProject ? this.props.projectUpdateParameters : [];
         const buttonsContainerClass = parameterList ? "buttonsContainer" : "buttonsContainer hidden";
 
         return (
@@ -37,7 +37,7 @@ export class ParametersContainer extends Component {
                             size="standard"
                             title="Cancel"
                             type="primary"
-                            onClick={() => {this.props.resetParameters(this.props.activeProject.id);}}
+                            onClick={() => {this.props.resetParameters(this.props.activeProject.id, this.props.projectSourceParameters);}}
                         />
                         <Button
                             size="standard"
@@ -53,7 +53,11 @@ export class ParametersContainer extends Component {
 }
 
 export default connect(function (store) {
+    const activeProject = getActiveProject(store);
+
     return {
-        activeProject: getActiveProject(store)
+        activeProject: activeProject,
+        projectSourceParameters: getParameters(activeProject.id, store),
+        projectUpdateParameters: getUpdateParameters(activeProject.id, store)
     };
 }, { fetchParameters, resetParameters })(ParametersContainer);

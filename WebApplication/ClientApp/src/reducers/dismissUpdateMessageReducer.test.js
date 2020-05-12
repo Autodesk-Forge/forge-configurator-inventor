@@ -7,5 +7,5 @@ describe('dismissUpdateMessage reducer', () => {
       expect(dismissUpdateMessageReducer(undefined, dismissUpdateMessage())).toEqual(true);
       expect(dismissUpdateMessageReducer(undefined, editParameter("",""))).toEqual(false);
       expect(dismissUpdateMessageReducer(undefined, resetParameters(""))).toEqual(false);
-   })
-})
+   });
+});
