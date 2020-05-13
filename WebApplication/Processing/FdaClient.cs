@@ -46,7 +46,7 @@ namespace WebApplication.Processing
             await _updateParametersWork.CleanUpAsync();
         }
 
-        public Task<WorkItemStatus> AdoptAsync(AdoptionData projectData)
+        public Task<bool> AdoptAsync(AdoptionData projectData)
         {
             return _adoptWork.ProcessAsync(projectData);
         }

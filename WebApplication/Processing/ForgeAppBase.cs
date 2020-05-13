@@ -73,18 +73,19 @@ namespace WebApplication.Processing
         }
 
         /// <summary>
-        /// Run work items.
+        /// Run work item and wait for the completion.
         /// </summary>
         /// <param name="args">Work item arguments.</param>
-        protected Task<WorkItemStatus> RunAsync(Dictionary<string, IArgument> args)
+        protected async Task<bool> RunAsync(Dictionary<string, IArgument> args)
         {
-            return Publisher.RunWorkItemAsync(args, this);
+            WorkItemStatus status = await Publisher.RunWorkItemAsync(args, this);
+            return status.Status == Status.Success;
         }
 
         /// <summary>
         /// Process IPT or Zipped IAM file.
         /// </summary>
-        public Task<WorkItemStatus> ProcessAsync(AdoptionData projectData)
+        public Task<bool> ProcessAsync(AdoptionData projectData)
         {
             var args = projectData.IsAssembly ? ToIamArguments(projectData) : ToIptArguments(projectData);
 
