@@ -35,14 +35,15 @@ namespace WebApplication.Controllers
             Guid jobId = Guid.NewGuid();
             string bodyStr = (string)body.ToString();
             JObject bodyJson = JObject.Parse(bodyStr);
+            int sleep = bodyJson["sleep"].Value<int>();
 
             await _hubContext.Clients.Client(connectionId).SendAsync("onStarted", jobId.ToString(), bodyStr);
 
-            // call 'initialize' for test
-            Thread.Sleep(5000);
+            // wait interval we recieved now
+            Thread.Sleep(sleep);
 
             // done
-            await _hubContext.Clients.Client(connectionId).SendAsync("onComplete", jobId.ToString(), 3);
+            await _hubContext.Clients.Client(connectionId).SendAsync("onComplete", jobId.ToString());
         }
     }
 }

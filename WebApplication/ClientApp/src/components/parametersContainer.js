@@ -16,8 +16,11 @@ export class ParametersContainer extends Component {
         alert("Update of model on server is not implemented yet. Parameter values will be returned back for now.");
         this.props.resetParameters(this.props.activeProject.id);
 
-        const data = { data: "someData" };
-
+        const data = { 
+            parameters: this.props.activeProject.updateParameters,
+            // for testing ONLY now
+            sleep: 5000
+        };
         this.props.updateModelWithParameters(this.props.activeProject.id, data);
     }
 

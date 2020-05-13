@@ -13,15 +13,60 @@ class JobManager {
             state: "notStarted",
             connectionId: null,
             connection: null,
-            onStart: function(id) { jobId=id; },
+            onStart: (id, data) => {
+                // eslint-disable-next-line no-console
+                console.log('job ' + id + ' started : ' + data);
+                jobId = id;
+            },
             onComplete: onComplete
         };
 
-        await connect(jobInfo);
+        await this.connect(jobInfo);
         jobCallback(jobInfo.connectionId);
 
         // store job
         this.jobs.set(jobId, jobInfo);
+    }
+
+    stopConnection(jobInfo) {
+        jobInfo.connection.stop();
+        jobInfo.connectionId = null;
+        jobInfo.connection = null;
+    }
+
+    async connect(jobInfo) {
+        if (jobInfo != null &&
+            jobInfo.connection != null && jobInfo.connection.connectionState) {
+            return;
+        }
+
+        try {
+
+            jobInfo.connection = new signalR.HubConnectionBuilder()
+            .withUrl('/signalr/connection')
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
+
+            await jobInfo.connection.start();
+            const id = await jobInfo.connection.invoke('getConnectionId');
+            jobInfo.connectionId = id;
+
+            jobInfo.connection.on("onStarted", (id, data) => {
+                if (jobInfo.onStart)
+                    jobInfo.onStart(id, data);
+            });
+
+            jobInfo.connection.on("onComplete", (id, data) => {
+                // stop connection
+                this.stopConnection(jobInfo);
+
+                if (jobInfo.onComplete)
+                    jobInfo.onComplete(id,data);
+            });
+        } catch (error) {
+            // eslint-disable-next-line no-console
+            console.error('Failed to call updateModelWithParameters :' + error);
+        }
     }
 }
 
@@ -31,43 +76,4 @@ export function Jobs() {
   return jobManager;
 }
 
-function stopConnection(jobInfo) {
-    jobInfo.connection.stop();
-    jobInfo.connectionId = null;
-    jobInfo.connection = null;
-}
 
-async function connect(jobInfo) {
-    if (jobInfo != null &&
-        jobInfo.connection != null && jobInfo.connection.connectionState) {
-        return;
-    }
-
-    try {
-
-        jobInfo.connection = new signalR.HubConnectionBuilder()
-        .withUrl('/signalr/connection')
-        .configureLogging(signalR.LogLevel.Information)
-        .build();
-
-        await jobInfo.connection.start();
-        const id = await jobInfo.connection.invoke('getConnectionId');
-        jobInfo.connectionId = id;
-
-        jobInfo.connection.on("onStarted", function (id) {
-            if (jobInfo.onStart)
-                jobInfo.onStart(id);
-        });
-
-        jobInfo.connection.on("onComplete", function (id, data) {
-            // stop connection
-            stopConnection(jobInfo);
-
-            if (jobInfo.onComplete)
-                jobInfo.onComplete(id,data);
-        });
-    } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('Failed to call updateModelWithParameters :' + error);
-    }
-}
