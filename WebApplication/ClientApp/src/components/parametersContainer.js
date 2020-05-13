@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import './parametersContainer.css';
 import Parameter from './parameter';
 import { getActiveProject } from '../reducers/mainReducer';
-import { fetchParameters, resetParameters } from '../actions/parametersActions';
+import { fetchParameters, resetParameters, updateModelWithParameters } from '../actions/parametersActions';
 import Button from '@hig/button';
 
 export class ParametersContainer extends Component {
@@ -15,6 +15,10 @@ export class ParametersContainer extends Component {
     updateClicked() {
         alert("Update of model on server is not implemented yet. Parameter values will be returned back for now.");
         this.props.resetParameters(this.props.activeProject.id);
+
+        const data = { data: "someData" };
+
+        this.props.updateModelWithParameters(this.props.activeProject.id, data);
     }
 
     render() {
@@ -56,4 +60,4 @@ export default connect(function (store) {
     return {
         activeProject: getActiveProject(store)
     };
-}, { fetchParameters, resetParameters })(ParametersContainer);
+}, { fetchParameters, resetParameters, updateModelWithParameters })(ParametersContainer);

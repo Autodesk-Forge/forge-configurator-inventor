@@ -2,6 +2,7 @@ import repo from '../Repository';
 import { addError, addLog } from './notificationActions';
 import actionTypes from './projectListActions';
 import { getProject } from '../reducers/mainReducer';
+import { Jobs } from '../JobManager';
 
 export const updateParameters = (projectId, parameters) => {
     return {
@@ -85,4 +86,16 @@ export const fetchParameters = (projectId) => async (dispatch, getState) => {
     } catch (error) {
         dispatch(addError('Failed to get parameters for ' + projectId + '. (' + error + ')'));
     }
+};
+
+export const updateModelWithParameters = (projectId, data) => async (dispatch) => {
+    dispatch(addLog('updateModelWithParameters invoked'));
+
+    const jobManager = Jobs();
+    jobManager.doJob(function(connectionId) {
+        repo.updateModelWithParameters(projectId, connectionId, data);
+    }, function() {
+        alert('done');
+        // launch some update
+    });
 };
