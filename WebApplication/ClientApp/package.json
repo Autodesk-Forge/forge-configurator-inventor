@@ -10,6 +10,7 @@
     "@hig/icon-button": "^2.4.0",
     "@hig/icons": "^3.2.0",
     "@hig/input": "^1.2.0",
+    "@hig/modal": "^2.2.0",
     "@hig/project-account-switcher": "^2.0.5",
     "@hig/surface": "^1.1.0",
     "@hig/theme-context": "^3.0.0",

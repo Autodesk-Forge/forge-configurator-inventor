@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { getActiveProject, showUpdateNotification} from '../reducers/mainReducer';
-import { hideUpdateMessageBanner } from '../actions/dismissUpdateMessageActions';
+import { getActiveProject, parametersEditedMessageVisible} from '../reducers/mainReducer';
+import { hideUpdateMessageBanner } from '../actions/uiFlagsActions';
 
 import './message.css';
 import Banner from '@hig/banner';
@@ -33,7 +33,7 @@ export class Message extends Component {
     }
 
     render() {
-        const visible = this.props.showUpdateNotification;
+        const visible = this.props.parametersEditedMessageVisible;
 
         return (
           <ThemeContext.Provider value={HIGHighDensityTheme}>
@@ -80,6 +80,6 @@ export class Message extends Component {
 export default connect(function (store) {
     return {
         activeProject: getActiveProject(store),
-        showUpdateNotification: showUpdateNotification(store)
+        parametersEditedMessageVisible: parametersEditedMessageVisible(store)
     };
 }, { hideUpdateMessageBanner })(Message);
