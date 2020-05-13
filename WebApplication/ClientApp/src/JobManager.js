@@ -8,8 +8,7 @@ class JobManager {
     async doJob(jobCallback, onComplete) {
 
         let jobId = null;
-        // eslint-disable-next-line prefer-const
-        let jobInfo = {
+        const jobInfo = {
             state: "notStarted",
             connectionId: null,
             connection: null,
