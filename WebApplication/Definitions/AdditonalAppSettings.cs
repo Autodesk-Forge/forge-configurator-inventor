@@ -7,6 +7,7 @@
         public string CreateSVF { get; set; }
         public string CreateThumbnail { get; set; }
         public string ExtractParameters { get; set; }
+        public string UpdateParameters { get; set; }
     }
 
     public class DefaultProjectsConfiguration
