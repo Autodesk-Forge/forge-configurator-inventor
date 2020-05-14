@@ -1,5 +1,6 @@
 import repo from '../Repository';
 import { addError, addLog } from './notificationActions';
+import { Jobs } from '../JobManager';
 
 const actionTypes = {
     PARAMETERS_UPDATED: 'PARAMETERS_UPDATED',
@@ -92,4 +93,25 @@ export const fetchParameters = (projectId) => async (dispatch, getState) => {
     } catch (error) {
         dispatch(addError('Failed to get parameters for ' + projectId + '. (' + error + ')'));
     }
+};
+
+export const updateModelWithParameters = (projectId, data) => async (dispatch) => {
+    dispatch(addLog('updateModelWithParameters invoked'));
+
+    const jobManager = Jobs();
+    jobManager.doJob(
+        // start job
+        (connectionId) => {
+            // launch modal dialog
+
+            repo.updateModelWithParameters(projectId, connectionId, data);
+        },
+        // onComplete
+        (jobId) => {
+            // hide modal dialog
+
+            alert('Job (' + jobId + ') is done');
+            // launch some update here
+        }
+    );
 };

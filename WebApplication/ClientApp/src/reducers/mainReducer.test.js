@@ -1,6 +1,6 @@
 import {parametersEditedMessageVisible} from './mainReducer';
 import * as uiFlagsTestStates from './uiFlagsReducer.test';
-import uiFlagsReducer, * as uiFlags from './uiFlagsReducer';
+import * as uiFlags from './uiFlagsReducer';
 
 const projectId = "1";
 
