@@ -5,7 +5,7 @@ import { getActiveProject } from '../reducers/mainReducer';
 import './forgeView.css';
 import Message from './message';
 
-var Autodesk = null;
+let Autodesk = null;
 
 export class ForgeView extends Component {
 

@@ -5,7 +5,7 @@ import './app.css';
 import Toolbar from './components/toolbar';
 import TabsContainer from './components/tabsContainer';
 import ProjectSwitcher from './components/projectSwitcher';
-import { fetchShowParametersChanged } from './actions/applicationActions';
+import { fetchShowParametersChanged } from './actions/uiFlagsActions';
 
 export class App extends Component {
   componentDidMount() {
