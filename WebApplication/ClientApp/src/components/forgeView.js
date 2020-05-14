@@ -62,6 +62,14 @@ export class ForgeView extends Component {
         );
     }
 
+    componentDidUpdate(prevProps) {
+        if (this.props.activeProject.id !== prevProps.activeProject.id) {
+            Autodesk.Viewing.Document.load(
+                this.props.activeProject.svf + '/bubble.json', this.onDocumentLoadSuccess.bind(this), () => {}
+            );
+        }
+      }
+
     onDocumentLoadSuccess(viewerDocument) {
         const defaultModel = viewerDocument.getRoot().getDefaultGeometry();
         this.viewer.loadDocumentNode(viewerDocument, defaultModel);

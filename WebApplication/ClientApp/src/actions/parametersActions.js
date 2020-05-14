@@ -1,6 +1,7 @@
 import repo from '../Repository';
 import { addError, addLog } from './notificationActions';
 import { Jobs } from '../JobManager';
+import { showUpdateProgress } from './uiFlagsActions';
 
 const actionTypes = {
     PARAMETERS_UPDATED: 'PARAMETERS_UPDATED',
@@ -78,9 +79,9 @@ function adaptParameters(rawParameters) {
 }
 
 // eslint-disable-next-line no-unused-vars
-export const fetchParameters = (projectId) => async (dispatch, getState) => {
+export const fetchParameters = (projectId, force = false) => async (dispatch, getState) => {
     const params = getState().updateParameters[projectId];
-    if(params && params.length!==0) {
+    if(!force && params && params.length!==0) {
         return;
     }
 
@@ -107,8 +108,12 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
         // onComplete
         (jobId) => {
             // hide modal dialog
+            dispatch(showUpdateProgress(false));
 
-            alert('Job (' + jobId + ') is done');
+            // just get rid of lint warning. jobId will be used later
+            const job = jobId;
+            jobId = job;
+
             // launch some update here
         }
     );

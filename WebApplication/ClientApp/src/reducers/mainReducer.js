@@ -32,15 +32,15 @@ export const getUpdateParameters = function(projectId, state) {
 export const parametersEditedMessageVisible = function(state) {
     if (state.uiFlagsReducer.parametersEditedMessageClosed === true || state.uiFlagsReducer.parametersEditedMessageRejected === true )
         return false;
- 
+
     const activeProject = getActiveProject(state);
- 
+
     const parameters = getParameters(activeProject.id, state);
     const updateParameters = getUpdateParameters(activeProject.id, state);
- 
-    if (!parameters)
+
+    if (!parameters || !updateParameters)
         return false;
- 
+
     for (const parameterId in parameters) {
         const parameter = parameters[parameterId];
         const updateParameter = updateParameters.find(updatePar => updatePar.name === parameter.name);
@@ -48,11 +48,11 @@ export const parametersEditedMessageVisible = function(state) {
             return true;
         }
     }
- 
+
     return false;
 };
- 
+
 export const updateProgressShowing = function(state) {
     return uiFlasg.updateProgressShowing(state.uiFlagsReducer);
-}
+};
 
