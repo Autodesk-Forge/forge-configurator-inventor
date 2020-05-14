@@ -17,12 +17,7 @@ export class ParametersContainer extends Component {
     updateClicked() {
         this.props.showUpdateProgress(true);
 
-        const data = {
-            parameters: this.props.activeProject.updateParameters,
-            // for testing ONLY now
-            sleep: 5000
-        };
-        this.props.updateModelWithParameters(this.props.activeProject.id, data);
+        this.props.updateModelWithParameters(this.props.activeProject.id, this.props.projectUpdateParameters);
     }
 
     render() {
