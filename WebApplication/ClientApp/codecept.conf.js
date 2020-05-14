@@ -4,6 +4,10 @@ const { setHeadlessWhen } = require('@codeceptjs/configure');
 // HEADLESS=true npx codecept run
 setHeadlessWhen(process.env.HEADLESS);
 
+//waitForNavigation: "networkidle0",
+//waitForAction: 500,
+//restart: false,
+
 const chromiumArgs = [
   '--disable-web-security',
   '--ignore-certificate-errors',
@@ -15,16 +19,13 @@ const chromiumArgs = [
 ];
 
 exports.config = {
-  tests: './*_test.js',
+  tests: './src/__tests__/*_test.js',
   output: './output',
   helpers: {
     Playwright: {
-      url: 'http://localhost:5001',
+      url: 'https://localhost:5001',
       show: true,
       browser: 'chromium',
-      restart: false,
-      waitForNavigation: "networkidle0",
-      waitForAction: 500,
       chromium: {args: chromiumArgs}
     }
   },
