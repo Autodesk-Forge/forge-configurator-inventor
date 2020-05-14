@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using Autodesk.Forge.DesignAutomation;
 using Autodesk.Forge.DesignAutomation.Model;
@@ -40,7 +39,7 @@ namespace WebApplication.Processing
             Trace($"Created WI {status.Id}");
             while (status.Status == Status.Pending || status.Status == Status.Inprogress)
             {
-                Thread.Sleep(2000);
+                await Task.Delay(2000);
                 status = await _client.GetWorkitemStatusAsync(status.Id);
             }
 
@@ -65,7 +64,7 @@ namespace WebApplication.Processing
         /// Create new activity.
         /// Throws an exception if the activity exists already.
         /// </summary>
-        protected async Task PublishActivityAsync(ForgeAppBase config)
+        private async Task PublishActivityAsync(ForgeAppBase config)
         {
             // prepare activity definition
             var nickname = await _resourceProvider.Nickname;
