@@ -2,6 +2,7 @@ import repo from '../Repository';
 import { addError, addLog } from './notificationActions';
 import { Jobs } from '../JobManager';
 import { showUpdateProgress } from './uiFlagsActions';
+import { fetchProjects } from './projectListActions';
 
 const actionTypes = {
     PARAMETERS_UPDATED: 'PARAMETERS_UPDATED',
@@ -115,6 +116,7 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
             jobId = job;
 
             // launch some update here
+            dispatch(fetchProjects());
         }
     );
 };
