@@ -23,28 +23,37 @@ export class ParametersContainer extends Component {
 
         return (
             <div className="parametersContainer">
-                <div className="parameters">
-                {
-                    parameterList ?
-                        parameterList.map((parameter, index) => (<Parameter key={index} parameter={parameter}/>))
-                        : "No parameters"
-                }
+                <div className="parametersTop">
                 </div>
-                <div className={buttonsContainerClass}>
-                    <hr/>
-                    <div className="buttons">
-                        <Button
-                            size="standard"
-                            title="Cancel"
-                            type="primary"
-                            onClick={() => {this.props.resetParameters(this.props.activeProject.id, this.props.projectSourceParameters);}}
-                        />
-                        <Button
-                            size="standard"
-                            title="Update"
-                            type="primary"
-                            onClick={() => {this.updateClicked();}}
-                        />
+                <div className="parametersMiddle">
+                    <div className="parameters">
+                    {
+                        parameterList ?
+                            parameterList.map((parameter, index) => (<Parameter key={index} parameter={parameter}/>))
+                            : "No parameters"
+                    }
+                    </div>
+                </div>
+                <hr className="parametersSeparator"/>
+                <div className="parametersBottom">
+                    <div className={buttonsContainerClass}>
+                        <div className="buttons">
+                            <Button style={{width: '125px'}}
+                                size="standard"
+                                title="Reset"
+                                type="secondary"
+                                width="grow"
+                                onClick={() => {this.props.resetParameters(this.props.activeProject.id, this.props.projectSourceParameters);}}
+                            />
+                            <div style={{width: '14px'}}/>
+                            <Button style={{width: '125px'}}
+                                size="standard"
+                                title="Update"
+                                type="primary"
+                                width="grow"
+                                onClick={() => {this.updateClicked();}}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>

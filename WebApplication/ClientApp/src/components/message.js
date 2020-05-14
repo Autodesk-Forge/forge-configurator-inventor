@@ -17,7 +17,7 @@ import styled from 'styled-components';
 const Fixed = styled('div')`
   position: fixed;
   z-index: 100;
-  width: calc(100% - 240px);
+  width: calc(100% - 296px);
 `;
 
 export class Message extends Component {
