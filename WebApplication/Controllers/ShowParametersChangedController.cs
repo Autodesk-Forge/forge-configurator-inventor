@@ -1,10 +1,7 @@
-using System;
 using System.IO;
-using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Autodesk.Forge.Client;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication.Utilities;
 
@@ -32,14 +29,11 @@ namespace WebApplication.Controllers
 
             try
             {
-                ossObjectResponse = await this._forgeOSS.GetObjectAsync(_resourceProvider.BucketKey, ONC.ShowPatametersChanged);
+                ossObjectResponse = await _forgeOSS.GetObjectAsync(_resourceProvider.BucketKey, ONC.ShowParametersChanged);
             } 
-            catch(ApiException ex)
+            catch (ApiException ex) when (ex.ErrorCode == 404)
             {
-               if (ex.ErrorCode != 404)
-                {
-                    throw;
-                }
+                // the file is not found. Just swallow the exception
             }
 
             if(ossObjectResponse != null)
@@ -56,7 +50,7 @@ namespace WebApplication.Controllers
         [HttpPost]
         public async Task<bool> Set([FromBody]bool show)
         {
-            await this._forgeOSS.UploadObjectAsync(_resourceProvider.BucketKey, Json.ToStream(show), ONC.ShowPatametersChanged);
+            await _forgeOSS.UploadObjectAsync(_resourceProvider.BucketKey, Json.ToStream(show), ONC.ShowParametersChanged);
             return show;
         }
     }

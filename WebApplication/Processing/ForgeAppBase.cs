@@ -87,9 +87,17 @@ namespace WebApplication.Processing
         /// </summary>
         public Task<bool> ProcessAsync(AdoptionData projectData)
         {
-            var args = projectData.IsAssembly ? ToIamArguments(projectData) : ToIptArguments(projectData);
+            var args = ToWorkItemArgs(projectData);
 
             return RunAsync(args);
+        }
+
+        public virtual Dictionary<string, IArgument> ToWorkItemArgs(AdoptionData projectData)
+        {
+            if (projectData.IsAssembly)
+                return ToIamArguments(projectData.InputUrl, projectData.TLA, OutputUrl(projectData));
+            else
+                return ToIptArguments(projectData.InputUrl, OutputUrl(projectData));
         }
 
         /// <summary>
@@ -144,16 +152,6 @@ namespace WebApplication.Processing
                     new XrefTreeArgument { Verb = Verb.Put, Url = outputUrl }
                 }
             };
-        }
-
-        public virtual Dictionary<string, IArgument> ToIptArguments(AdoptionData projectData)
-        {
-            return ToIptArguments(projectData.InputUrl, OutputUrl(projectData));
-        }
-
-        public virtual Dictionary<string, IArgument> ToIamArguments(AdoptionData projectData)
-        {
-            return ToIamArguments(projectData.InputUrl, projectData.TLA, OutputUrl(projectData));
         }
 
         /// <summary>

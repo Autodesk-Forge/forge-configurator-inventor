@@ -42,7 +42,7 @@ namespace WebApplication.Utilities
     public static class ONC // aka ObjectNameConstants
     {
         public const string ProjectsFolder = "projects";
-        public const string ShowPatametersChanged = "showparameterschanged.json";
+        public const string ShowParametersChanged = "showparameterschanged.json";
         public const string CacheFolder = "cache";
         public const string DownloadsFolder = "downloads";
         public const string AttributesFolder = "attributes";

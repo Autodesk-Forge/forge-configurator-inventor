@@ -57,16 +57,17 @@ namespace WebApplication.Processing
         /// Move OSS objects to correct places.
         /// NOTE: it's expected that the data is generated already.
         /// </summary>
-        public async Task DoAsync(Project project)
+        public async Task DoAsync(Project project, string tlaFilename)
         {
             var hashString = await GenerateParametersHashAsync();
-            var attributes = new ProjectMetadata { Hash = hashString };
-            var keyProvider = project.OssNameProvider(hashString);
+            var attributes = new ProjectMetadata { Hash = hashString, TLA = tlaFilename };
+
+            var ossNames = project.OssNameProvider(hashString);
 
             // move data to expected places
             await Task.WhenAll(_forge.RenameObjectAsync(_bucketKey, Thumbnail, project.OssAttributes.Thumbnail),
-                                _forge.RenameObjectAsync(_bucketKey, SVF, keyProvider.ModelView),
-                                _forge.RenameObjectAsync(_bucketKey, Parameters, keyProvider.Parameters),
+                                _forge.RenameObjectAsync(_bucketKey, SVF, ossNames.ModelView),
+                                _forge.RenameObjectAsync(_bucketKey, Parameters, ossNames.Parameters),
                                 _forge.UploadObjectAsync(_bucketKey, Json.ToStream(attributes), project.OssAttributes.Metadata));
         }
 
@@ -80,7 +81,7 @@ namespace WebApplication.Processing
 
             // rearrange generated data according to the parameters hash
             var url = await _resourceProvider.CreateSignedUrlAsync(Parameters);
-            using var response = await client.GetAsync(url);
+            using var response = await client.GetAsync(url); // TODO: find
             response.EnsureSuccessStatusCode();
 
             // generate hash for parameters

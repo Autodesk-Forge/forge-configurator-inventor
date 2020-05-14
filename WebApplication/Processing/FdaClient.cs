@@ -48,7 +48,9 @@ namespace WebApplication.Processing
 
         public Task<bool> AdoptAsync(AdoptionData projectData)
         {
-            return _adoptWork.ProcessAsync(projectData);
+            return _updateParametersWork.ProcessAsync(projectData);
+
+            //return _adoptWork.ProcessAsync(projectData);
         }
     }
 }
