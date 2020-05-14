@@ -45,7 +45,10 @@ namespace WebApplication.Processing
         public override Dictionary<string, IArgument> ToWorkItemArgs(AdoptionData projectData)
         {
             var workItemArgs = base.ToWorkItemArgs(projectData);
-            workItemArgs.Add(InventorParameters, new XrefTreeArgument { Url = projectData.InputParamsUrl });
+            if (projectData.InputParamsUrl != null)
+            {
+                workItemArgs.Add(InventorParameters, new XrefTreeArgument { Url = projectData.InputParamsUrl });
+            }
             return workItemArgs;
         }
     }

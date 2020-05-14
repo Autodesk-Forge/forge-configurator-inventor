@@ -29,9 +29,8 @@ namespace WebApplication.Processing
             await _svfWork.InitializeAsync(_paths.CreateSVF);
             await _thumbnailWork.InitializeAsync(_paths.CreateThumbnail);
             await _parametersWork.InitializeAsync(_paths.ExtractParameters);
-            await _adoptWork.InitializeAsync(null /* does not matter */);
-
             await _updateParametersWork.InitializeAsync(_paths.UpdateParameters);
+            await _adoptWork.InitializeAsync(null /* does not matter */);
         }
 
         public async Task CleanUpAsync()
@@ -40,16 +39,13 @@ namespace WebApplication.Processing
             await _svfWork.CleanUpAsync();
             await _thumbnailWork.CleanUpAsync();
             await _parametersWork.CleanUpAsync();
-            await _adoptWork.CleanUpAsync();
-
             await _updateParametersWork.CleanUpAsync();
+            await _adoptWork.CleanUpAsync();
         }
 
         public Task<bool> AdoptAsync(AdoptionData projectData)
         {
-            return _updateParametersWork.ProcessAsync(projectData);
-
-            //return _adoptWork.ProcessAsync(projectData);
+            return _adoptWork.ProcessAsync(projectData);
         }
     }
 }
