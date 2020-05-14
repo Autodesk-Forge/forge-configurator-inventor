@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import './parametersContainer.css';
 import Parameter from './parameter';
-import { getActiveProject } from '../reducers/mainReducer';
+import { getActiveProject, getParameters, getUpdateParameters, updateProgressShowing } from '../reducers/mainReducer';
 import { fetchParameters, resetParameters, updateModelWithParameters } from '../actions/parametersActions';
 import Button from '@hig/button';
+import Modal from '@hig/modal';
 
 export class ParametersContainer extends Component {
 
@@ -13,17 +14,14 @@ export class ParametersContainer extends Component {
     }
 
     updateClicked() {
-        //alert("Update of model on server is not implemented yet. Parameter values will be returned back for now.");
-        //this.props.resetParameters(this.props.activeProject.id);
+        alert("Update of model on server is not implemented yet. Parameter values will be returned back for now.");
+        this.props.resetParameters(this.props.activeProject.id);
 
-        // TEMPORARY
-        alert("Launching Update of model parameters.");
-        // TEMPORARY
-        this.props.updateModelWithParameters(this.props.activeProject.id, this.props.activeProject.updateParameters);
+        this.props.updateModelWithParameters(this.props.activeProject.id, data);
     }
 
     render() {
-        const parameterList = this.props.activeProject.updateParameters;
+        const parameterList = this.props.activeProject ? this.props.projectUpdateParameters : [];
         const buttonsContainerClass = parameterList ? "buttonsContainer" : "buttonsContainer hidden";
 
         return (
@@ -42,7 +40,7 @@ export class ParametersContainer extends Component {
                             size="standard"
                             title="Cancel"
                             type="primary"
-                            onClick={() => {this.props.resetParameters(this.props.activeProject.id);}}
+                            onClick={() => {this.props.resetParameters(this.props.activeProject.id, this.props.projectSourceParameters);}}
                         />
                         <Button
                             size="standard"
@@ -50,6 +48,7 @@ export class ParametersContainer extends Component {
                             type="primary"
                             onClick={() => {this.updateClicked();}}
                         />
+                        <Modal open={this.props.updateProgressShowing} title="Wait please" id="Modal" name="Modal" onCloseClick={() => this.closeModal()}>Model is now being updated based on the changed parameters.</Modal>
                     </div>
                 </div>
             </div>
@@ -58,7 +57,12 @@ export class ParametersContainer extends Component {
 }
 
 export default connect(function (store) {
+    const activeProject = getActiveProject(store);
+
     return {
-        activeProject: getActiveProject(store)
+        activeProject: activeProject,
+        projectSourceParameters: getParameters(activeProject.id, store),
+        projectUpdateParameters: getUpdateParameters(activeProject.id, store),
+        updateProgressShowing: updateProgressShowing(store)
     };
 }, { fetchParameters, resetParameters, updateModelWithParameters })(ParametersContainer);
