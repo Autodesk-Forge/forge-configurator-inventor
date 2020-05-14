@@ -57,9 +57,9 @@ namespace WebApplication.Processing
         /// Move OSS objects to correct places.
         /// NOTE: it's expected that the data is generated already.
         /// </summary>
-        public async Task DoAsync(Project project)
+        public async Task DoAsync(Project project, /*TEMPORARY*/string tempHash = null)
         {
-            var hashString = await GenerateParametersHashAsync();
+            var hashString = tempHash != null ? tempHash : await GenerateParametersHashAsync();
             var attributes = new ProjectMetadata { Hash = hashString };
             var keyProvider = project.OssNameProvider(hashString);
 

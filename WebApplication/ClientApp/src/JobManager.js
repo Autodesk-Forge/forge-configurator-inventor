@@ -5,66 +5,30 @@ class JobManager {
         this.jobs = new Map();
     }
 
-    async doJob(jobCallback, onComplete) {
-
-        let jobId = null;
-        const jobInfo = {
-            state: "notStarted",
-            connectionId: null,
-            connection: null,
-            onStart: (id, data) => {
-                // eslint-disable-next-line no-console
-                console.log('job ' + id + ' started : ' + data);
-                jobId = id;
-            },
-            onComplete: onComplete
-        };
-
-        await this.connect(jobInfo);
-        jobCallback(jobInfo.connectionId);
-
-        // store job
-        this.jobs.set(jobId, jobInfo);
-    }
-
-    stopConnection(jobInfo) {
-        jobInfo.connection.stop();
-        jobInfo.connectionId = null;
-        jobInfo.connection = null;
-    }
-
-    async connect(jobInfo) {
-        if (jobInfo != null &&
-            jobInfo.connection != null && jobInfo.connection.connectionState) {
-            return;
-        }
-
+    async doJob(projectId, data, onStart, onComplete) {
         try {
 
-            jobInfo.connection = new signalR.HubConnectionBuilder()
+            const connection = new signalR.HubConnectionBuilder()
             .withUrl('/signalr/connection')
-            .configureLogging(signalR.LogLevel.Information)
+            .configureLogging(signalR.LogLevel.Trace)
             .build();
 
-            await jobInfo.connection.start();
-            const id = await jobInfo.connection.invoke('getConnectionId');
-            jobInfo.connectionId = id;
+            await connection.start();
 
-            jobInfo.connection.on("onStarted", (id, data) => {
-                if (jobInfo.onStart)
-                    jobInfo.onStart(id, data);
-            });
+            if (onStart)
+                onStart();
 
-            jobInfo.connection.on("onComplete", (id, data) => {
+            await connection.invoke('CreateJob', projectId, JSON.stringify(data));
+
+            connection.on("onComplete", (id) => {
                 // stop connection
-                this.stopConnection(jobInfo);
+                connection.stop();
 
-                if (jobInfo.onComplete)
-                    jobInfo.onComplete(id,data);
+                if (onComplete)
+                    onComplete(id);
             });
         } catch (error) {
-            // eslint-disable-next-line no-console
-            console.error('Failed to call updateModelWithParameters :' + error);
+            //console.error('Failed to call updateModelWithParameters :' + error);
         }
     }
 }

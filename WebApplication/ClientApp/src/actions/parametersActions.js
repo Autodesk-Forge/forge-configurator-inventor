@@ -92,12 +92,10 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
     dispatch(addLog('updateModelWithParameters invoked'));
 
     const jobManager = Jobs();
-    jobManager.doJob(
+    jobManager.doJob(projectId, data,
         // start job
-        (connectionId) => {
+        () => {
             // launch modal dialog
-
-            repo.updateModelWithParameters(projectId, connectionId, data);
         },
         // onComplete
         (jobId) => {
