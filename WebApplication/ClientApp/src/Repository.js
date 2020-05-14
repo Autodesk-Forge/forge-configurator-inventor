@@ -29,6 +29,18 @@ class Repository {
         });
         return response.data;
     }
+
+    /** Send to server new parameters to update model */
+    async updateModelWithParameters(projectName, connectionId, data) {
+        const response = await axios.post(
+            "/parameters/" + projectName + "?connectionId=" + connectionId,
+            data, {
+                headers: {
+                    'content-type': 'application/json'
+                }
+            });
+        return response.data;
+    }
 }
 
 
