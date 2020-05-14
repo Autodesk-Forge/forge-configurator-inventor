@@ -17,7 +17,7 @@ export class ParametersContainer extends Component {
     updateClicked() {
         this.props.showUpdateProgress(true);
 
-        this.props.updateModelWithParameters(this.props.activeProject.id, data);
+        this.props.updateModelWithParameters(this.props.activeProject.id, this.props.projectUpdateParameters);
     }
 
     render() {
