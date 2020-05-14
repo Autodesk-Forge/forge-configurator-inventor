@@ -5,11 +5,11 @@ export const initialState = {
    parametersEditedMessageClosed: false,
    parametersEditedMessageRejected: false,
    updateProgressShowing: false
-}
+};
 
 export const updateProgressShowing = function(state) {
    return state.updateProgressShowing;
-}
+};
 
 export default function(state = initialState, action) {
    switch(action.type) {
@@ -21,6 +21,8 @@ export default function(state = initialState, action) {
          return { ...state, parametersEditedMessageClosed: false};
       case uiFlagsActionTypes.REJECT_PARAMETERS_EDITED_MESSAGE:
          return { ...state, parametersEditedMessageRejected: action.show };
+      case uiFlagsActionTypes.SHOW_UPDATE_PROGRESS:
+         return { ...state, updateProgressShowing: action.visible};
       default:
          return state;
   }

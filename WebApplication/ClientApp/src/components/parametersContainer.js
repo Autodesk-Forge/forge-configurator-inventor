@@ -4,6 +4,7 @@ import './parametersContainer.css';
 import Parameter from './parameter';
 import { getActiveProject, getParameters, getUpdateParameters, updateProgressShowing } from '../reducers/mainReducer';
 import { fetchParameters, resetParameters, updateModelWithParameters } from '../actions/parametersActions';
+import { showUpdateProgress } from '../actions/uiFlagsActions';
 import Button from '@hig/button';
 import Modal from '@hig/modal';
 
@@ -14,8 +15,7 @@ export class ParametersContainer extends Component {
     }
 
     updateClicked() {
-        alert("Update of model on server is not implemented yet. Parameter values will be returned back for now.");
-        this.props.resetParameters(this.props.activeProject.id);
+        this.props.showUpdateProgress(true);
 
         const data = {
             parameters: this.props.activeProject.updateParameters,
@@ -70,4 +70,4 @@ export default connect(function (store) {
         projectUpdateParameters: getUpdateParameters(activeProject.id, store),
         updateProgressShowing: updateProgressShowing(store)
     };
-}, { fetchParameters, resetParameters, updateModelWithParameters })(ParametersContainer);
+}, { fetchParameters, resetParameters, updateModelWithParameters, showUpdateProgress })(ParametersContainer);

@@ -1,6 +1,7 @@
 import repo from '../Repository';
 import { addError, addLog } from './notificationActions';
 import { Jobs } from '../JobManager';
+import { showUpdateProgress } from './uiFlagsActions';
 
 const actionTypes = {
     PARAMETERS_UPDATED: 'PARAMETERS_UPDATED',
@@ -109,8 +110,12 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
         // onComplete
         (jobId) => {
             // hide modal dialog
+            dispatch(showUpdateProgress(false));
 
-            alert('Job (' + jobId + ') is done');
+            // just get rid of lint warning. jobId will be used later
+            const job = jobId;
+            jobId = job;
+
             // launch some update here
         }
     );
