@@ -46,12 +46,12 @@ namespace WebApplication
 
             // create bundles and activities
             await _fdaClient.InitializeAsync();
-/*
+
             _logger.LogInformation("Initializing base data");
 
             await _forge.CreateBucketAsync(_resourceProvider.BucketKey);
             _logger.LogInformation($"Bucket {_resourceProvider.BucketKey} created");
-*/
+
             // download default project files from the public location
             // specified by the appsettings.json
             var httpClient = _httpClientFactory.CreateClient();
@@ -129,27 +129,26 @@ namespace WebApplication
             }
 
             _logger.LogInformation("Added default projects.");
-/**/
         }
 
         public async Task ClearAsync()
         {
-            //try
-            //{
-            //    await _forge.DeleteBucketAsync(_resourceProvider.BucketKey);
-            //    // We need to wait because server needs some time to settle it down. If we would go and create bucket immediately again we would receive conflict.
-            //    await Task.Delay(4000);
-            //}
-            //catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
-            //{
-            //    _logger.LogInformation($"Nothing to delete because bucket {_resourceProvider.BucketKey} does not exists yet");
-            //}
+            try
+            {
+                await _forge.DeleteBucketAsync(_resourceProvider.BucketKey);
+                // We need to wait because server needs some time to settle it down. If we would go and create bucket immediately again we would receive conflict.
+                await Task.Delay(4000);
+            }
+            catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
+            {
+                _logger.LogInformation($"Nothing to delete because bucket {_resourceProvider.BucketKey} does not exists yet");
+            }
 
             // delete bundles and activities
             await _fdaClient.CleanUpAsync();
 
             // cleanup locally cached files
-            //Directory.Delete(_resourceProvider.LocalRootName, true);
+            Directory.Delete(_resourceProvider.LocalRootName, true);
         }
 
         /// <summary>
