@@ -3,11 +3,9 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Autodesk.Forge.Client;
-using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using WebApplication.Controllers;
 using WebApplication.Definitions;
 using WebApplication.Processing;
 using WebApplication.Utilities;
@@ -159,12 +157,7 @@ namespace WebApplication
             _logger.LogInformation("Adopt the project");
 
             var inputDocUrl = await _resourceProvider.CreateSignedUrlAsync(project.OSSSourceModel);
-            var parameters = new InventorParameters
-            {
-                { "WrenchSz", new InventorParameter { Value = "\"Large\"" }},
-                { "PartMaterial", new InventorParameter { Value = "\"Cast Bronze\"" }}
-            };
-            var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, tlaFilename, parameters);
+            var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, tlaFilename);
 
             bool success = await _fdaClient.AdoptAsync(adoptionData);
             if (! success)

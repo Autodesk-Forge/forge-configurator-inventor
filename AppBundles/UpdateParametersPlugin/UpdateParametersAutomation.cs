@@ -71,9 +71,8 @@ namespace UpdateParametersPlugin
                     catch (Exception e)
                     {
                         LogError($"Failed to set '{paramName}' parameter. Error is {e}");
-                        // swallow for now
+                        throw;
                     }
-
                 }
 
                 LogTrace("Saving");
@@ -81,7 +80,6 @@ namespace UpdateParametersPlugin
                 LogTrace("Closing");
                 doc.Close(true);
             }
-
         }
 
         #region Logging utilities
