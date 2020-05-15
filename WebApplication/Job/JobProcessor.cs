@@ -12,6 +12,7 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
+using System.Threading.Tasks;
 using WebApplication.Controllers;
 using WebApplication.Definitions;
 using WebApplication.Processing;
@@ -26,7 +27,7 @@ namespace WebApplication.Job
 
     public class JobProcessor : IJobProcessor
     {
-        List<JobItem> _jobs = new List<JobItem>();
+        List<Task> _jobs = new List<Task>();
         
         private readonly IHubContext<UpdateJobHub> _hubContext;
         private readonly DesignAutomationClient _client;
@@ -62,12 +63,10 @@ namespace WebApplication.Job
 
         public void AddNewJob(JobItem job)
         {
-            _jobs.Add(job);
-
-            new Thread(() => ProcessJob(job)).Start();
+            _jobs.Add(ProcessJob(job));
         }
 
-        private async void ProcessJob(JobItem job)
+        private async Task ProcessJob(JobItem job)
         {
             // TEMPORARY
             // do the similar work like we have in initializer UNTIL we have finished
