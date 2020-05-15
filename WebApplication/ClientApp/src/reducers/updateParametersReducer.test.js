@@ -29,7 +29,7 @@ describe('updateParameters reducer', () => {
         expect(returnedState).toMatchObject(expectedState);
     });
 
-    it('handles edit a single parameter', () => {
+    it('handles edit a single parameter - sets value and does not loose other attributes', () => {
         const projectId = 'Conveyor';
 
         const parameterSet = [
@@ -39,7 +39,8 @@ describe('updateParameters reducer', () => {
             },
             {
                 name: "XYZ",
-                value: "a string"
+                value: "a string",
+                other: "an attribute"
             }
         ];
 
@@ -58,7 +59,8 @@ describe('updateParameters reducer', () => {
             },
             {
                 name: "XYZ",
-                value: "a new string"
+                value: "a new string",
+                other: "an attribute"
             }
         ];
 
