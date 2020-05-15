@@ -6,10 +6,12 @@
 }
 
 .parameters {
+    overflow: auto;
+    padding: 16px;
     flex: auto;
 }
 
-.parametersTop {
+.pencilContainer {
     padding-top: 10px;
     padding-left: 10px;
     padding-right: 10px;
@@ -19,15 +21,6 @@
     margin-top: 8px;
     margin-bottom: 0px;
     width: calc(100% - 16px);
-}
-
-.parametersMiddle {
-    padding: 16px;
-    overflow: auto;
-}
-
-.parametersBottom {
-    padding: 16px;
 }
 
 .parameter {
@@ -52,18 +45,11 @@
     line-height: 16px;
 }
 
-.buttonsContainer {
-    flex: none;
-    width: 264px; /* .parametersContainer width: 296px; minus 2x it's paddings 32 = 264px */
-}
-
 .buttonsContainer.hidden {
     display: none;
 }
 
-.buttonsContainer .buttons {
+.buttonsContainer {
     display: flex;
-    flex-flow: row nowrap;
-    justify-content: space-around;
-    align-items: center;
+    padding: 16px;
 }
