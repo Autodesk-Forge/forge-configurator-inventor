@@ -17,7 +17,7 @@ export default function(state = initialState, action) {
 
         case parameterActionTypes.PARAMETER_EDITED: {
             /* replace only the one parameter for the given project */
-            const paramSet = (state[action.projectId]).map( (param) => param.name === action.parameter.name ? action.parameter : param);
+            const paramSet = (state[action.projectId]).map( (param) => param.name === action.parameter.name ? { ...param, value: action.parameter.value } : param);
             const newState = { ...state };
             newState[action.projectId] = paramSet;
             return newState;
