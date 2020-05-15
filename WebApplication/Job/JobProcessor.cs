@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using WebApplication.Controllers;
 using WebApplication.Definitions;
@@ -68,8 +69,6 @@ namespace WebApplication.Job
 
         private async void ProcessJob(JobItem job)
         {
-            JArray bodyJson = JArray.Parse(job.Data);
-
             // TEMPORARY
             // do the similar work like we have in initializer UNTIL we have finished
             // the final activity which will do the final job for us
@@ -78,41 +77,38 @@ namespace WebApplication.Job
                 var httpClient = _httpClientFactory.CreateClient();
 
                 string projectname = job.ProjectId;
-                foreach (DefaultProjectConfiguration defaultProjectConfig in _defaultProjectsConfiguration.Projects)
+                foreach (DefaultProjectConfiguration projectConfig in _defaultProjectsConfiguration.Projects)
                 {
-                    if (defaultProjectConfig.Name != projectname)
+                    if (projectConfig.Name != projectname)
                         continue;
 
-                    var project = _resourceProvider.GetProject(defaultProjectConfig.Name);
-
-                    //await AdoptAsync(httpClient, project, defaultProjectConfig.TopLevelAssembly);
-                    // TEMPORARY the similar as we do in AdoptAsync
-                    // but with changed parameters ONLY for now
+                    var project = _resourceProvider.GetProject(projectConfig.Name);
 
                     var inputDocUrl = await _resourceProvider.CreateSignedUrlAsync(project.OSSSourceModel);
-                    var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, defaultProjectConfig.TopLevelAssembly);
-                    var status = await _fdaClient.AdoptAsync(adoptionData); // ER: think: it's a business logic, so it might not deal with low-level WI and status
-                    if (status.Status != Status.Success)
+                    var parameters = JsonSerializer.Deserialize<InventorParameters>(job.Data);
+                    //var parameters = new InventorParameters
+                    //{
+                    //    { "WrenchSz", new InventorParameter { Value = "\"Large\"" }},
+                    //    { "PartMaterial", new InventorParameter { Value = "\"Cast Bronze\"" }}
+                    //};
+
+
+                    var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, projectConfig.TopLevelAssembly, parameters);
+                    bool status = await _fdaClient.AdoptAsync(adoptionData);
+                    if (! status)
                     {
                         _logger.LogError($"Failed to adopt {project.Name}");
                     }
                     else
                     {
-                        string tempParameters = TempConvert(bodyJson);
-
-                        // TEMPORARY generate hash from new parameters here
-                        byte[] byteArray = Encoding.ASCII.GetBytes(tempParameters);
-                        MemoryStream stream = new MemoryStream(byteArray);
-                        string tempHash = Crypto.GenerateStreamHashString(stream);
-
                         // rearrange generated data according to the parameters hash
-                        await _arranger.DoAsync(project, /*TEMPORARY*/tempHash);
+                        await _arranger.DoAsync(project, projectConfig.TopLevelAssembly);
 
                         _logger.LogInformation("Cache the project locally");
 
                         // and now cache the generate stuff locally
                         var projectLocalStorage = new ProjectStorage(project, _resourceProvider);
-                        await projectLocalStorage.EnsureLocalAsync(httpClient, /*TEMPORARY*/tempParameters);
+                        await projectLocalStorage.EnsureLocalAsync(httpClient);
                     }
 
                     break;
@@ -122,23 +118,6 @@ namespace WebApplication.Job
 
             // send that we are done to client
             await _hubContext.Clients.All.SendAsync("onComplete", job.Id);
-        }
-        /*TEMPORARY*/
-        private string TempConvert(JArray data)
-        {
-            JObject outJSon = new JObject();
-            foreach (JObject param in data)
-            {
-                JObject p = new JObject();
-                string key = param["name"].ToString();
-                p.Add("value", param["value"]);
-                p.Add("values", param["allowedValues"]);
-                p.Add("unit", param["units"]);
-
-                outJSon.Add(key, p);
-            }
-
-            return outJSon.ToString();
         }
     }
 }
