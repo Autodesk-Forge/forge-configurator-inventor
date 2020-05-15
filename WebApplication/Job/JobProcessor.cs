@@ -61,6 +61,9 @@ namespace WebApplication.Job
 
             var project = _resourceProvider.GetProject(projectConfig.Name);
 
+            // TODO: unify with initialization code
+            // TODO: use cached version (if exists)
+            // TODO: what to do on processing errors?
             var inputDocUrl = await _resourceProvider.CreateSignedUrlAsync(project.OSSSourceModel);
             var parameters = JsonSerializer.Deserialize<InventorParameters>(job.Data);
 
