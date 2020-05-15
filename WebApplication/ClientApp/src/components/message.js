@@ -10,7 +10,7 @@ import Button from '@hig/button';
 import Checkbox from '@hig/checkbox';
 
 import ThemeContext from '@hig/theme-context';
-import HIGHighDensityTheme from '@hig/theme-data/build/esm/webLightHighDensityTheme';
+import HIGMediumDensityTheme from '@hig/theme-data/build/esm/webLightMediumDensityTheme';
 
 import styled from 'styled-components';
 
@@ -36,18 +36,19 @@ export class Message extends Component {
         const visible = this.props.parametersEditedMessageVisible;
 
         return (
-          <ThemeContext.Provider value={HIGHighDensityTheme}>
+          <ThemeContext.Provider value={HIGMediumDensityTheme}>
           <Fixed>
             <Banner
             type="primary"
             actions={({ isWrappingActions }) => (
                 <Banner.Interactions isWrappingActions={isWrappingActions}>
                   <Banner.Action>
-                    <Button
+                    <Button className="button" style={
+                      { width: '99px', height: '36px', borderRadius: '2px'}}
                       type="secondary"
                       size="small"
                       width={isWrappingActions ? "grow" : "shrink"}
-                      title="Close"
+                      title="Ok"
                       onClick={this.onDismiss}
                     />
                   </Banner.Action>
@@ -57,7 +58,7 @@ export class Message extends Component {
                     <ThemeContext.Consumer>{({ resolvedRoles }) => (
                       <div style={{
                           fontFamily: resolvedRoles["basics.fontFamilies.main"],
-                          fontSize: resolvedRoles["basics.fontSizes.highMedium"],
+                          fontSize: resolvedRoles["basics.fontSizes.mediumMedium"],
                           marginLeft: '12px'
                       }}>Don&apos;t show again.
                       </div>
