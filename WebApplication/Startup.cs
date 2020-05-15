@@ -13,6 +13,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WebApplication.Definitions;
+using WebApplication.Job;
 using WebApplication.Processing;
 using WebApplication.Utilities;
 
@@ -35,7 +36,10 @@ namespace WebApplication
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            services.AddSignalR();
+            services.AddSignalR(o =>
+            {
+                o.EnableDetailedErrors = true;
+            });
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -66,6 +70,7 @@ namespace WebApplication
                                         return new DesignAutomationClient(forgeService);
                                     });
             services.AddSingleton<Publisher>();
+            services.AddSingleton<IJobProcessor, JobProcessor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -115,7 +120,7 @@ namespace WebApplication
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHub<Controllers.signalRHub>("/signalr/connection");
+                endpoints.MapHub<Controllers.UpdateJobHub>("/signalr/connection");
             });
 
             app.UseSpa(spa =>
