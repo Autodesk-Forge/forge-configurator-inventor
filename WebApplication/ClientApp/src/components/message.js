@@ -33,7 +33,7 @@ export class Message extends Component {
     }
 
     render() {
-        const visible = true;//this.props.parametersEditedMessageVisible;
+        const visible = this.props.parametersEditedMessageVisible;
 
         return (
           <ThemeContext.Provider value={HIGMediumDensityTheme}>
