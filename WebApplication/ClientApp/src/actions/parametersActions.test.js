@@ -169,7 +169,7 @@ describe('fetchParameters', () => {
                     {
                         name: 'WrenchSz',
                         value: 'Small',
-                        unit: 'Text',
+                        units: 'Text',
                         allowedValues: ['Large', 'Medium', 'Small']
                     }
                 ];
