@@ -19,7 +19,7 @@ export class ProjectSwitcher extends Component {
     onProjectChange(data) {
         const id = data.project.id;
         this.props.updateActiveProject(id);
-        this.props.fetchParameters(id);
+        this.props.fetchParameters(id, true);
         this.props.addLog('Selected: ' + id);
     }
 

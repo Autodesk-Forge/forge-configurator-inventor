@@ -1,13 +1,18 @@
 import repo from '../Repository';
 import { addError, addLog } from './notificationActions';
-import actionTypes from './projectListActions';
-import { getProject } from '../reducers/mainReducer';
-import { Jobs } from '../JobManager';
+
+const actionTypes = {
+    PARAMETERS_UPDATED: 'PARAMETERS_UPDATED',
+    PARAMETER_EDITED: 'PARAMETER_EDITED',
+    PARAMETERS_RESET: 'PARAMETERS_RESET'
+};
+
+export default actionTypes;
 
 export const updateParameters = (projectId, parameters) => {
     return {
         type: actionTypes.PARAMETERS_UPDATED,
-        projectId: projectId,
+        projectId,
         parameters
     };
 };
@@ -15,15 +20,16 @@ export const updateParameters = (projectId, parameters) => {
 export const editParameter = (projectId, parameter) => {
     return {
         type: actionTypes.PARAMETER_EDITED,
-        projectId: projectId,
+        projectId,
         parameter
     };
 };
 
-export const resetParameters = (projectId) => {
+export const resetParameters = (projectId, parameters) => {
     return {
         type: actionTypes.PARAMETERS_RESET,
-        projectId: projectId
+        projectId,
+        parameters
     };
 };
 
@@ -63,7 +69,7 @@ function adaptParameters(rawParameters) {
         return {
             name: key,
             value: unquote(param.value),
-            allowedValues: (param.values) ? param.values.map( item => unquote(item)) : new Array(),
+            allowedValues: (param.values) ? param.values.map( item => unquote(item)) : [],
             units: param.unit,
             type: "NYI" // TODO: remove?
         };
@@ -71,9 +77,9 @@ function adaptParameters(rawParameters) {
 }
 
 // eslint-disable-next-line no-unused-vars
-export const fetchParameters = (projectId) => async (dispatch, getState) => {
-    const selectedProject = getProject(projectId, getState());
-    if(selectedProject && selectedProject.updateParameters && selectedProject.updateParameters.length!==0) {
+export const fetchParameters = (projectId, force = false) => async (dispatch, getState) => {
+    const params = getState().updateParameters[projectId];
+    if(!force && params && params.length!==0) {
         return;
     }
 

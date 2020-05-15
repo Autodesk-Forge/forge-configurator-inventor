@@ -5,7 +5,7 @@ import { getActiveProject } from '../reducers/mainReducer';
 import './forgeView.css';
 import Message from './message';
 
-var Autodesk = null;
+let Autodesk = null;
 
 export class ForgeView extends Component {
 
@@ -61,6 +61,14 @@ export class ForgeView extends Component {
             this.props.activeProject.svf + '/bubble.json', this.onDocumentLoadSuccess.bind(this), () => {}
         );
     }
+
+    componentDidUpdate(prevProps) {
+        if (this.props.activeProject.id !== prevProps.activeProject.id) {
+            Autodesk.Viewing.Document.load(
+                this.props.activeProject.svf + '/bubble.json', this.onDocumentLoadSuccess.bind(this), () => {}
+            );
+        }
+      }
 
     onDocumentLoadSuccess(viewerDocument) {
         const defaultModel = viewerDocument.getRoot().getDefaultGeometry();
