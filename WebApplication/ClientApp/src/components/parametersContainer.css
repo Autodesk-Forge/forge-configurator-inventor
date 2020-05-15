@@ -45,20 +45,11 @@
     line-height: 16px;
 }
 
-.buttonsContainer {
-    flex: none;
-    width: 264px; /* .parametersContainer width: 296px; minus 2x it's paddings 32 = 264px */
-}
-
 .buttonsContainer.hidden {
     display: none;
 }
 
-.buttonsContainer .buttons {
+.buttonsContainer {
     display: flex;
-    flex-flow: row nowrap;
-    justify-content: space-around;
-    align-items: center;
     padding: 16px;
-    width: min-content;
 }
