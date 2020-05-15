@@ -11,6 +11,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using WebApplication.Controllers;
 using WebApplication.Definitions;
 using WebApplication.Processing;
@@ -25,7 +26,7 @@ namespace WebApplication.Job
 
     public class JobProcessor : IJobProcessor
     {
-        List<JobItem> _jobs = new List<JobItem>();
+        List<Task> _jobs = new List<Task>();
         
         private readonly IHubContext<UpdateJobHub> _hubContext;
         private readonly DesignAutomationClient _client;
@@ -61,15 +62,11 @@ namespace WebApplication.Job
 
         public void AddNewJob(JobItem job)
         {
-            _jobs.Add(job);
-
-            new Thread(() => ProcessJob(job)).Start();
+            _jobs.Add(ProcessJob(job));
         }
 
-        private async void ProcessJob(JobItem job)
+        private async Task ProcessJob(JobItem job)
         {
-            JArray bodyJson = JArray.Parse(job.Data);
-
             // TEMPORARY
             // do the similar work like we have in initializer UNTIL we have finished
             // the final activity which will do the final job for us
@@ -98,7 +95,7 @@ namespace WebApplication.Job
                     }
                     else
                     {
-                        string tempParameters = TempConvert(bodyJson);
+                        string tempParameters = job.Data;
 
                         // TEMPORARY generate hash from new parameters here
                         byte[] byteArray = Encoding.ASCII.GetBytes(tempParameters);
@@ -122,23 +119,6 @@ namespace WebApplication.Job
 
             // send that we are done to client
             await _hubContext.Clients.All.SendAsync("onComplete", job.Id);
-        }
-        /*TEMPORARY*/
-        private string TempConvert(JArray data)
-        {
-            JObject outJSon = new JObject();
-            foreach (JObject param in data)
-            {
-                JObject p = new JObject();
-                string key = param["name"].ToString();
-                p.Add("value", param["value"]);
-                p.Add("values", param["allowedValues"]);
-                p.Add("unit", param["units"]);
-
-                outJSon.Add(key, p);
-            }
-
-            return outJSon.ToString();
         }
     }
 }

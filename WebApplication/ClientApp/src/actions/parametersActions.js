@@ -97,11 +97,40 @@ export const fetchParameters = (projectId, force = false) => async (dispatch, ge
     }
 };
 
+export function formatParameters(clientParameters) {
+    const quote = function(input) {
+        if (input == null)
+            return input;
+
+        const out = "\"".concat(input, "\"");
+        return out;
+    };
+
+    const invFormatedParameters = clientParameters.reduce( (obj, param) => {
+        const quoteValues = param.allowedValues != null && param.allowedValues.length > 0;
+        const values = quoteValues ? param.allowedValues.map(item => quote(item)) : [];
+        const value = quoteValues ? quote(param.value) : param.value;
+
+        obj[param.name] = {
+            value: value,
+            unit: param.units ? param.units : null,
+            values: values
+        };
+
+        return obj;
+    }, {});
+
+    return invFormatedParameters;
+}
+
 export const updateModelWithParameters = (projectId, data) => async (dispatch) => {
     dispatch(addLog('updateModelWithParameters invoked'));
 
+    // update 'data' parameters back to inventor format
+    const invFormattedParameters = formatParameters(data);
+
     const jobManager = Jobs();
-    jobManager.doJob(projectId, data,
+    jobManager.doJob(projectId, invFormattedParameters,
         // start job
         () => {
             // launch modal dialog
