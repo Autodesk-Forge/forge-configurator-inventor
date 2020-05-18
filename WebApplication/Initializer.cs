@@ -3,10 +3,10 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Autodesk.Forge.Client;
-using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using WebApplication.Controllers;
 using WebApplication.Definitions;
 using WebApplication.Processing;
 using WebApplication.Utilities;
@@ -158,17 +158,18 @@ namespace WebApplication
             _logger.LogInformation("Adopt the project");
 
             var inputDocUrl = await _resourceProvider.CreateSignedUrlAsync(project.OSSSourceModel);
-            var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, tlaFilename);
+            var inventorParameters = new InventorParameters(); // TODO: TEMPORARY! remove
+            var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, tlaFilename, inventorParameters);
 
-            var status = await _fdaClient.AdoptAsync(adoptionData); // ER: think: it's a business logic, so it might not deal with low-level WI and status
-            if (status.Status != Status.Success)
+            bool success = await _fdaClient.AdoptAsync(adoptionData);
+            if (! success)
             {
                 _logger.LogError($"Failed to adopt {project.Name}");
             }
             else
             {
                 // rearrange generated data according to the parameters hash
-                await _arranger.DoAsync(project);
+                await _arranger.DoAsync(project, tlaFilename);
 
                 _logger.LogInformation("Cache the project locally");
 

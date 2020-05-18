@@ -47,7 +47,7 @@ namespace WebApplication
         /// <summary>
         /// Ensure the project is cached locally.
         /// </summary>
-        public async Task EnsureLocalAsync(HttpClient httpClient, /*TEMPORARY*/string hackedParametersJson = null)
+        public async Task EnsureLocalAsync(HttpClient httpClient)
         {
             // ensure the directory exists
             Directory.CreateDirectory(Project.LocalAttributes.BaseDir);
@@ -70,16 +70,6 @@ namespace WebApplication
             using var tempFile = new TempFile();
             await DownloadFileAsync(httpClient, ossNames.ModelView, tempFile.Name);
             await DownloadFileAsync(httpClient, ossNames.Parameters, localNames.Parameters);
-
-            // TEMPORARY
-            if (hackedParametersJson != null)
-            {
-                using (StreamWriter w = File.CreateText(localNames.Parameters))
-                {
-                    w.Write(hackedParametersJson);
-                }
-            }
-            // TEMPORARY
 
             // extract SVF from the archive
             ZipFile.ExtractToDirectory(tempFile.Name, localNames.SvfDir, overwriteFiles: true); // TODO: non-default encoding is not supported

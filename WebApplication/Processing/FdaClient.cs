@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.Extensions.Options;
 using WebApplication.Definitions;
 
@@ -12,6 +11,7 @@ namespace WebApplication.Processing
         private readonly ExtractParameters _parametersWork;
         private readonly AdoptProject _adoptWork;
         private readonly AppBundleZipPaths _paths;
+        private readonly UpdateParameters _updateParametersWork;
 
         public FdaClient(Publisher publisher, IOptions<AppBundleZipPaths> appBundleZipPathsOptionsAccessor)
         {
@@ -19,6 +19,7 @@ namespace WebApplication.Processing
             _thumbnailWork = new CreateThumbnail(publisher);
             _parametersWork = new ExtractParameters(publisher);
             _adoptWork = new AdoptProject(publisher);
+            _updateParametersWork = new UpdateParameters(publisher);
             _paths = appBundleZipPathsOptionsAccessor.Value;
         }
 
@@ -28,6 +29,7 @@ namespace WebApplication.Processing
             await _svfWork.InitializeAsync(_paths.CreateSVF);
             await _thumbnailWork.InitializeAsync(_paths.CreateThumbnail);
             await _parametersWork.InitializeAsync(_paths.ExtractParameters);
+            await _updateParametersWork.InitializeAsync(_paths.UpdateParameters);
             await _adoptWork.InitializeAsync(null /* does not matter */);
         }
 
@@ -37,10 +39,11 @@ namespace WebApplication.Processing
             await _svfWork.CleanUpAsync();
             await _thumbnailWork.CleanUpAsync();
             await _parametersWork.CleanUpAsync();
+            await _updateParametersWork.CleanUpAsync();
             await _adoptWork.CleanUpAsync();
         }
 
-        public Task<WorkItemStatus> AdoptAsync(AdoptionData projectData)
+        public Task<bool> AdoptAsync(AdoptionData projectData)
         {
             return _adoptWork.ProcessAsync(projectData);
         }

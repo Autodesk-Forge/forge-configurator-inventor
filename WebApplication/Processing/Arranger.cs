@@ -1,6 +1,7 @@
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using WebApplication.Controllers;
 using WebApplication.Definitions;
 using WebApplication.Utilities;
 
@@ -20,6 +21,7 @@ namespace WebApplication.Processing
         public readonly string Parameters = $"{Guid.NewGuid():N}.json";
         public readonly string Thumbnail = $"{Guid.NewGuid():N}.png";
         public readonly string SVF = $"{Guid.NewGuid():N}.zip";
+        public readonly string InputParams = $"{Guid.NewGuid():N}.zip";
 
         /// <summary>
         /// Constructor.
@@ -37,11 +39,19 @@ namespace WebApplication.Processing
         /// </summary>
         /// <param name="docUrl">URL to the input Inventor document (IPT or zipped IAM)</param>
         /// <param name="tlaFilename">Top level assembly in the ZIP. (if any)</param>
-        public async Task<AdoptionData> ForAdoptionAsync(string docUrl, string tlaFilename)
+        /// <param name="parameters"></param>
+        public async Task<AdoptionData> ForAdoptionAsync(string docUrl, string tlaFilename, InventorParameters parameters = null)
         {
             var urls = await Task.WhenAll(_resourceProvider.CreateSignedUrlAsync(Thumbnail, ObjectAccess.Write), 
                                             _resourceProvider.CreateSignedUrlAsync(SVF, ObjectAccess.Write), 
-                                            _resourceProvider.CreateSignedUrlAsync(Parameters, ObjectAccess.Write));
+                                            _resourceProvider.CreateSignedUrlAsync(Parameters, ObjectAccess.Write),
+                                            _resourceProvider.CreateSignedUrlAsync(InputParams, ObjectAccess.ReadWrite));
+
+            if (parameters != null)
+            {
+                await using var jsonStream = Json.ToStream(parameters);
+                await _forge.UploadObjectAsync(_resourceProvider.BucketKey, jsonStream, InputParams);
+            }
 
             return new AdoptionData
             {
@@ -49,6 +59,7 @@ namespace WebApplication.Processing
                 ThumbnailUrl      = urls[0],
                 SvfUrl            = urls[1],
                 ParametersJsonUrl = urls[2],
+                InputParamsUrl    = urls[3],
                 TLA               = tlaFilename
             };
         }
@@ -57,16 +68,17 @@ namespace WebApplication.Processing
         /// Move OSS objects to correct places.
         /// NOTE: it's expected that the data is generated already.
         /// </summary>
-        public async Task DoAsync(Project project, /*TEMPORARY*/string tempHash = null)
+        public async Task DoAsync(Project project, string tlaFilename)
         {
-            var hashString = tempHash != null ? tempHash : await GenerateParametersHashAsync();
-            var attributes = new ProjectMetadata { Hash = hashString };
-            var keyProvider = project.OssNameProvider(hashString);
+            var hashString = await GenerateParametersHashAsync();
+            var attributes = new ProjectMetadata { Hash = hashString, TLA = tlaFilename };
+
+            var ossNames = project.OssNameProvider(hashString);
 
             // move data to expected places
             await Task.WhenAll(_forge.RenameObjectAsync(_bucketKey, Thumbnail, project.OssAttributes.Thumbnail),
-                                _forge.RenameObjectAsync(_bucketKey, SVF, keyProvider.ModelView),
-                                _forge.RenameObjectAsync(_bucketKey, Parameters, keyProvider.Parameters),
+                                _forge.RenameObjectAsync(_bucketKey, SVF, ossNames.ModelView),
+                                _forge.RenameObjectAsync(_bucketKey, Parameters, ossNames.Parameters),
                                 _forge.UploadObjectAsync(_bucketKey, Json.ToStream(attributes), project.OssAttributes.Metadata));
         }
 
@@ -80,7 +92,7 @@ namespace WebApplication.Processing
 
             // rearrange generated data according to the parameters hash
             var url = await _resourceProvider.CreateSignedUrlAsync(Parameters);
-            using var response = await client.GetAsync(url);
+            using var response = await client.GetAsync(url); // TODO: find
             response.EnsureSuccessStatusCode();
 
             // generate hash for parameters
