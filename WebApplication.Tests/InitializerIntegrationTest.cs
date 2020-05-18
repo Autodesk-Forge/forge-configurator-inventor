@@ -75,8 +75,9 @@ namespace WebApplication.Tests
             IOptions<DefaultProjectsConfiguration> defaultProjectsOptions = Options.Create(defaultProjectsConfiguration);
             var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
             var arranger = new Arranger(forgeOSS, httpClientFactory, resourceProvider);
+            var projectWork = new ProjectWork(new NullLogger<ProjectWork>(), resourceProvider, httpClientFactory, arranger, fdaClient);
             initializer = new Initializer(forgeOSS, resourceProvider, new NullLogger<Initializer>(), fdaClient, 
-                                            defaultProjectsOptions, httpClientFactory, arranger);
+                                            defaultProjectsOptions, httpClientFactory, projectWork);
 
             testFileDirectory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()));
             httpClient = new HttpClient();

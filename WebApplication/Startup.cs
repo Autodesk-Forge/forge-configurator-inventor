@@ -59,6 +59,7 @@ namespace WebApplication
             services.Configure<DefaultProjectsConfiguration>(Configuration.GetSection(DefaultProjectsSectionKey));
             services.AddTransient<Initializer>();
             services.AddTransient<Arranger>();
+            services.AddTransient<ProjectWork>();
             services.AddSingleton<DesignAutomationClient>(provider =>
                                     {
                                         var forge = provider.GetService<IForgeOSS>();

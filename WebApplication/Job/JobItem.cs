@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace WebApplication.Job
 {
     public class JobItem
     {
-        public string ProjectId { get; private set; }
-        public string Data { get; private set; }
-        public string Id { get; private set; }
+        public string ProjectId { get; }
+        public string Data { get; }
+        public string Id { get; }
 
         public JobItem(string projectId, string data)
         {

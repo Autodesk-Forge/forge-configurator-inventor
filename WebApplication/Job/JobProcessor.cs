@@ -4,7 +4,6 @@ using Microsoft.Extensions.Options;
 using System;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using WebApplication.Controllers;
@@ -19,24 +18,19 @@ namespace WebApplication.Job
         private readonly IHubContext<JobsHub> _hubContext;
 
         private readonly DefaultProjectsConfiguration _defaultProjectsConfiguration;
-        private readonly FdaClient _fdaClient;
-        private readonly Arranger _arranger;
         private readonly ResourceProvider _resourceProvider;
         private readonly ILogger<JobProcessor> _logger;
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly ProjectWork _projectWork;
 
         public JobProcessor(IHubContext<JobsHub> hubContext, IOptions<DefaultProjectsConfiguration> optionsAccessor, 
-                                FdaClient fdaClient, Arranger arranger, ResourceProvider resourceProvider, ILogger<JobProcessor> logger,
-                                IHttpClientFactory httpClientFactory)
-                            {
+                            ResourceProvider resourceProvider, ILogger<JobProcessor> logger, ProjectWork projectWork)
+        {
             _hubContext = hubContext;
 
             _defaultProjectsConfiguration = optionsAccessor.Value;
-            _fdaClient = fdaClient;
-            _arranger = arranger;
             _resourceProvider = resourceProvider;
             _logger = logger;
-            _httpClientFactory = httpClientFactory;
+            _projectWork = projectWork;
         }
 
         public Task AddNewJob(JobItem job)
@@ -62,34 +56,14 @@ namespace WebApplication.Job
             if (Directory.Exists(localNames.SvfDir))
             {
                 _logger.LogInformation($"Found cached data corresponded to {hash}");
-                await Task.Delay(1);
             }
             else
             {
-                // TODO: unify with initialization code
-                // TODO: what to do on processing errors?
-                var inputDocUrl = await _resourceProvider.CreateSignedUrlAsync(project.OSSSourceModel);
                 var parameters = JsonSerializer.Deserialize<InventorParameters>(job.Data);
 
-                var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, projectConfig.TopLevelAssembly, parameters);
-                bool status = await _fdaClient.AdoptAsync(adoptionData);
-                if (!status)
-                {
-                    _logger.LogError($"Failed to adopt {project.Name}");
-                }
-                else
-                {
-                    // rearrange generated data according to the parameters hash
-                    await _arranger.DoAsync(project, projectConfig.TopLevelAssembly);
-
-                    _logger.LogInformation("Cache the project locally");
-
-                    // and now cache the generate stuff locally
-                    var projectLocalStorage = new ProjectStorage(project, _resourceProvider);
-                    await projectLocalStorage.EnsureLocalAsync(_httpClientFactory.CreateClient());
-                }
+                // TODO: what to do on processing errors?
+                await _projectWork.UpdateAsync(project, parameters, projectConfig.TopLevelAssembly);
             }
-
 
             // send that we are done to client
             await _hubContext.Clients.All.SendAsync("onComplete", job.Id);

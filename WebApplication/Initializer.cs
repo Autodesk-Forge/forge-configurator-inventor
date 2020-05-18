@@ -6,7 +6,6 @@ using Autodesk.Forge.Client;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using WebApplication.Controllers;
 using WebApplication.Definitions;
 using WebApplication.Processing;
 using WebApplication.Utilities;
@@ -21,21 +20,21 @@ namespace WebApplication
         private readonly DefaultProjectsConfiguration _defaultProjectsConfiguration;
         private readonly FdaClient _fdaClient;
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly Arranger _arranger;
+        private readonly ProjectWork _projectWork;
 
         /// <summary>
         /// Constructor.
         /// </summary>
         public Initializer(IForgeOSS forge, ResourceProvider resourceProvider, ILogger<Initializer> logger,
                             FdaClient fdaClient, IOptions<DefaultProjectsConfiguration> optionsAccessor,
-                            IHttpClientFactory httpClientFactory, Arranger arranger)
+                            IHttpClientFactory httpClientFactory, ProjectWork projectWork)
         {
             _forge = forge;
             _resourceProvider = resourceProvider;
             _logger = logger;
             _fdaClient = fdaClient;
             _httpClientFactory = httpClientFactory;
-            _arranger = arranger;
+            _projectWork = projectWork;
             _defaultProjectsConfiguration = optionsAccessor.Value;
         }
 
@@ -124,7 +123,7 @@ namespace WebApplication
                     }
                 }
 
-                await AdoptAsync(httpClient, project, tlaFilename);
+                await _projectWork.AdoptAsync(project, tlaFilename);
             }
 
             _logger.LogInformation("Added default projects.");
@@ -148,35 +147,6 @@ namespace WebApplication
 
             // cleanup locally cached files
             Directory.Delete(_resourceProvider.LocalRootName, true);
-        }
-
-        /// <summary>
-        /// Adapt the project.
-        /// </summary>
-        private async Task AdoptAsync(HttpClient httpClient, Project project, string tlaFilename)
-        {
-            _logger.LogInformation("Adopt the project");
-
-            var inputDocUrl = await _resourceProvider.CreateSignedUrlAsync(project.OSSSourceModel);
-            var inventorParameters = new InventorParameters(); // TODO: TEMPORARY! remove
-            var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, tlaFilename, inventorParameters);
-
-            bool success = await _fdaClient.AdoptAsync(adoptionData);
-            if (! success)
-            {
-                _logger.LogError($"Failed to adopt {project.Name}");
-            }
-            else
-            {
-                // rearrange generated data according to the parameters hash
-                await _arranger.DoAsync(project, tlaFilename);
-
-                _logger.LogInformation("Cache the project locally");
-
-                // and now cache the generate stuff locally
-                var projectLocalStorage = new ProjectStorage(project, _resourceProvider);
-                await projectLocalStorage.EnsureLocalAsync(httpClient);
-            }
         }
     }
 }
