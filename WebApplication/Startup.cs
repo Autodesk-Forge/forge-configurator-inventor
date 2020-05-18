@@ -70,7 +70,7 @@ namespace WebApplication
                                         return new DesignAutomationClient(forgeService);
                                     });
             services.AddSingleton<Publisher>();
-            services.AddSingleton<IJobProcessor, JobProcessor>();
+            services.AddSingleton<JobProcessor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -120,7 +120,7 @@ namespace WebApplication
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHub<Controllers.UpdateJobHub>("/signalr/connection");
+                endpoints.MapHub<Controllers.JobsHub>("/signalr/connection");
             });
 
             app.UseSpa(spa =>

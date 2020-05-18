@@ -14,10 +14,11 @@ import HIGMediumDensityTheme from '@hig/theme-data/build/esm/webLightMediumDensi
 
 import styled from 'styled-components';
 
+// use 283px instead of the 296px, to move 'X' close button 13px more to the right
 const Fixed = styled('div')`
   position: fixed;
   z-index: 100;
-  width: calc(100% - 296px);
+  width: calc(100% - 283px);
 `;
 
 export class Message extends Component {
@@ -44,7 +45,7 @@ export class Message extends Component {
                 <Banner.Interactions isWrappingActions={isWrappingActions}>
                   <Banner.Action>
                     <Button className="button" style={
-                      { width: '99px', height: '36px', borderRadius: '2px'}}
+                      { width: '99px', height: '36px', borderRadius: '2px', marginLeft: '12px'}}
                       type="secondary"
                       size="small"
                       width={isWrappingActions ? "grow" : "shrink"}

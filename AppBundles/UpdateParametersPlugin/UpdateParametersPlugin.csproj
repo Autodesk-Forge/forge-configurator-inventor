@@ -35,9 +35,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autodesk.Forge.DesignAutomation.Inventor.Utils">
-      <HintPath>..\..\..\..\..\..\Users\eu\.nuget\packages\autodesk.forge.designautomation.inventor.utils\1.0.0-beta3\lib\netstandard2.0\Autodesk.Forge.DesignAutomation.Inventor.Utils.dll</HintPath>
-    </Reference>
     <Reference Include="autodesk.inventor.interop, Version=25.0.0.0, Culture=neutral, PublicKeyToken=d84147f8b4276564, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>True</EmbedInteropTypes>
