@@ -40,6 +40,9 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
       <HintPath>$(PackagePath)\autodesk\autodesk.inventor.interop.dll</HintPath>
     </Reference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>11.0.2</Version>
+    </PackageReference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
