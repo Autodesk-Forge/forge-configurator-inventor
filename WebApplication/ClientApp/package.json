@@ -30,7 +30,6 @@
     "reactstrap": "^6.3.0",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
-    "resq": "^1.7.1",
     "rimraf": "^2.6.2",
     "styled-components": "^4.1.3"
   },
