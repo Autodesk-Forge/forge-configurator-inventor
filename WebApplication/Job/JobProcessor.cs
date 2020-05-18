@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
@@ -14,16 +13,9 @@ using WebApplication.Utilities;
 
 namespace WebApplication.Job
 {
-    public interface IJobProcessor
+    public class JobProcessor
     {
-        void AddNewJob(JobItem job);
-    }
-
-    public class JobProcessor : IJobProcessor
-    {
-        private readonly List<Task> _jobs = new List<Task>();
-
-        private readonly IHubContext<UpdateJobHub> _hubContext;
+        private readonly IHubContext<JobsHub> _hubContext;
 
         private readonly DefaultProjectsConfiguration _defaultProjectsConfiguration;
         private readonly FdaClient _fdaClient;
@@ -32,7 +24,7 @@ namespace WebApplication.Job
         private readonly ILogger<JobProcessor> _logger;
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public JobProcessor(IHubContext<UpdateJobHub> hubContext, IOptions<DefaultProjectsConfiguration> optionsAccessor, 
+        public JobProcessor(IHubContext<JobsHub> hubContext, IOptions<DefaultProjectsConfiguration> optionsAccessor, 
                                 FdaClient fdaClient, Arranger arranger, ResourceProvider resourceProvider, ILogger<JobProcessor> logger,
                                 IHttpClientFactory httpClientFactory)
                             {
@@ -46,9 +38,9 @@ namespace WebApplication.Job
             _httpClientFactory = httpClientFactory;
         }
 
-        public void AddNewJob(JobItem job)
+        public Task AddNewJob(JobItem job)
         {
-            _jobs.Add(ProcessJob(job));
+            return ProcessJob(job);
         }
 
         private async Task ProcessJob(JobItem job)
@@ -88,8 +80,6 @@ namespace WebApplication.Job
 
             // send that we are done to client
             await _hubContext.Clients.All.SendAsync("onComplete", job.Id);
-
-            // TODO: do we need to remove the job from from `this._jobs`
         }
     }
 }

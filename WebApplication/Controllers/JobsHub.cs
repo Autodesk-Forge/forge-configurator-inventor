@@ -4,11 +4,11 @@ using WebApplication.Job;
 
 namespace WebApplication.Controllers
 {
-    public class UpdateJobHub : Hub
+    public class JobsHub : Hub
     {
-        IJobProcessor _jobProcessor;
+        JobProcessor _jobProcessor;
 
-        public UpdateJobHub(IJobProcessor jobProcessor)
+        public JobsHub(JobProcessor jobProcessor)
         {
             _jobProcessor = jobProcessor;
         }
