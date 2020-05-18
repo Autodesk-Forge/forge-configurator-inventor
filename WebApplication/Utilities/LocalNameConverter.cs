@@ -38,8 +38,6 @@ namespace WebApplication.Utilities
         /// </summary>
         public string Metadata => ToFullName(LocalName.Metadata);
 
-        public string Marker => ToFullName(LocalName.Marker);
-
         public LocalAttributes(string rootDir, string projectDir) : base(Path.Combine(rootDir, projectDir))
         {
         }

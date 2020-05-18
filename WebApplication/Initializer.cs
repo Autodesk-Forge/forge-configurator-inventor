@@ -118,7 +118,7 @@ namespace WebApplication
                         {
                             // jump to beginning
                             fs.Seek(0, SeekOrigin.Begin);
-                            await _forge.UploadObjectAsync(_resourceProvider.BucketKey, fs, project.OSSSourceModel);
+                            await _forge.UploadObjectAsync(_resourceProvider.BucketKey, project.OSSSourceModel, fs);
                         }
                     }
                 }

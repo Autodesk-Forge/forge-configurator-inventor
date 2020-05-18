@@ -39,7 +39,7 @@ namespace WebApplication.Processing
         /// </summary>
         /// <param name="docUrl">URL to the input Inventor document (IPT or zipped IAM)</param>
         /// <param name="tlaFilename">Top level assembly in the ZIP. (if any)</param>
-        /// <param name="parameters"></param>
+        /// <param name="parameters">Inventor parameters.</param>
         public async Task<AdoptionData> ForAdoptionAsync(string docUrl, string tlaFilename, InventorParameters parameters = null)
         {
             var urls = await Task.WhenAll(_resourceProvider.CreateSignedUrlAsync(Thumbnail, ObjectAccess.Write), 
@@ -47,15 +47,12 @@ namespace WebApplication.Processing
                                             _resourceProvider.CreateSignedUrlAsync(Parameters, ObjectAccess.Write),
                                             _resourceProvider.CreateSignedUrlAsync(InputParams, ObjectAccess.ReadWrite));
 
-            if (parameters != null)
-            {
-                await using var jsonStream = Json.ToStream(parameters);
-                await _forge.UploadObjectAsync(_resourceProvider.BucketKey, jsonStream, InputParams);
-            }
+            await using var jsonStream = Json.ToStream(parameters ?? new InventorParameters());  // TODO: TEMPORARY! no need to pass parameters for "adopt" phase
+            await _forge.UploadObjectAsync(_resourceProvider.BucketKey, InputParams, jsonStream);
 
             return new AdoptionData
             {
-                InputUrl          = docUrl,
+                InputDocUrl       = docUrl,
                 ThumbnailUrl      = urls[0],
                 SvfUrl            = urls[1],
                 ParametersJsonUrl = urls[2],
@@ -65,10 +62,11 @@ namespace WebApplication.Processing
         }
 
         /// <summary>
-        /// Move OSS objects to correct places.
+        /// Move project OSS objects to correct places.
         /// NOTE: it's expected that the data is generated already.
         /// </summary>
-        public async Task DoAsync(Project project, string tlaFilename)
+        /// <returns>Parameters hash.</returns>
+        public async Task<string> MoveProjectAsync(Project project, string tlaFilename)
         {
             var hashString = await GenerateParametersHashAsync();
             var attributes = new ProjectMetadata { Hash = hashString, TLA = tlaFilename };
@@ -79,9 +77,29 @@ namespace WebApplication.Processing
             await Task.WhenAll(_forge.RenameObjectAsync(_bucketKey, Thumbnail, project.OssAttributes.Thumbnail),
                                 _forge.RenameObjectAsync(_bucketKey, SVF, ossNames.ModelView),
                                 _forge.RenameObjectAsync(_bucketKey, Parameters, ossNames.Parameters),
-                                _forge.UploadObjectAsync(_bucketKey, Json.ToStream(attributes), project.OssAttributes.Metadata));
+                                _forge.UploadObjectAsync(_bucketKey, project.OssAttributes.Metadata, Json.ToStream(attributes)));
+
+            return hashString;
         }
 
+        /// <summary>
+        /// Move viewables OSS objects to correct places.
+        /// NOTE: it's expected that the data is generated already.
+        /// </summary>
+        /// <returns>Parameters hash.</returns>
+        public async Task<string> MoveViewablesAsync(Project project)
+        {
+            var hashString = await GenerateParametersHashAsync();
+
+            var ossNames = project.OssNameProvider(hashString);
+
+            // move data to expected places
+            await Task.WhenAll(_forge.RenameObjectAsync(_bucketKey, Thumbnail, project.OssAttributes.Thumbnail),
+                                _forge.RenameObjectAsync(_bucketKey, SVF, ossNames.ModelView),
+                                _forge.RenameObjectAsync(_bucketKey, Parameters, ossNames.Parameters));
+
+            return hashString;
+        }
 
         /// <summary>
         /// Generate hash string for the _temporary_ parameters json.

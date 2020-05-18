@@ -62,7 +62,7 @@ namespace WebApplication.Job
                 var parameters = JsonSerializer.Deserialize<InventorParameters>(job.Data);
 
                 // TODO: what to do on processing errors?
-                await _projectWork.UpdateAsync(project, parameters, projectConfig.TopLevelAssembly);
+                await _projectWork.UpdateAsync(project, projectConfig.TopLevelAssembly, parameters);
             }
 
             // send that we are done to client

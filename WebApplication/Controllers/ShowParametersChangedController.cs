@@ -50,7 +50,7 @@ namespace WebApplication.Controllers
         [HttpPost]
         public async Task<bool> Set([FromBody]bool show)
         {
-            await _forgeOSS.UploadObjectAsync(_resourceProvider.BucketKey, Json.ToStream(show), ONC.ShowParametersChanged);
+            await _forgeOSS.UploadObjectAsync(_resourceProvider.BucketKey, ONC.ShowParametersChanged, Json.ToStream(show));
             return show;
         }
     }

@@ -34,8 +34,7 @@ namespace WebApplication.Processing
             _logger.LogInformation("Adopt the project");
 
             var inputDocUrl = await _resourceProvider.CreateSignedUrlAsync(project.OSSSourceModel);
-            var inventorParameters = new InventorParameters(); // TODO: TEMPORARY! remove
-            var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, tlaFilename, inventorParameters);
+            var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, tlaFilename);
 
             bool success = await _fdaClient.AdoptAsync(adoptionData);
             if (! success)
@@ -45,7 +44,7 @@ namespace WebApplication.Processing
             else
             {
                 // rearrange generated data according to the parameters hash
-                await _arranger.DoAsync(project, tlaFilename);
+                await _arranger.MoveProjectAsync(project, tlaFilename);
 
                 _logger.LogInformation("Cache the project locally");
 
@@ -55,11 +54,13 @@ namespace WebApplication.Processing
             }
         }
 
-        public async Task UpdateAsync(Project project, InventorParameters parameters, string tlaFilename)
+        public async Task UpdateAsync(Project project, string tlaFilename, InventorParameters parameters)
         {
-            var inputDocUrl = await _resourceProvider.CreateSignedUrlAsync(project.OSSSourceModel);
+            _logger.LogInformation("Update the project");
 
+            var inputDocUrl = await _resourceProvider.CreateSignedUrlAsync(project.OSSSourceModel);
             var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, tlaFilename, parameters);
+
             bool status = await _fdaClient.AdoptAsync(adoptionData);
             if (!status)
             {
@@ -68,15 +69,14 @@ namespace WebApplication.Processing
             else
             {
                 // rearrange generated data according to the parameters hash
-                await _arranger.DoAsync(project, tlaFilename);
+                var hash = await _arranger.MoveViewablesAsync(project);
 
                 _logger.LogInformation("Cache the project locally");
 
                 // and now cache the generate stuff locally
                 var projectLocalStorage = new ProjectStorage(project, _resourceProvider);
-                await projectLocalStorage.EnsureLocalAsync(_httpClientFactory.CreateClient());
+                await projectLocalStorage.EnsureViewablesAsync(_httpClientFactory.CreateClient(), hash);
             }
         }
-
     }
 }
