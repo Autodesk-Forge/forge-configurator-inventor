@@ -35,17 +35,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autodesk.Forge.DesignAutomation.Inventor.Utils">
-      <HintPath>..\..\..\..\..\..\Users\eu\.nuget\packages\autodesk.forge.designautomation.inventor.utils\1.0.0-beta3\lib\netstandard2.0\Autodesk.Forge.DesignAutomation.Inventor.Utils.dll</HintPath>
-    </Reference>
     <Reference Include="autodesk.inventor.interop, Version=25.0.0.0, Culture=neutral, PublicKeyToken=d84147f8b4276564, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>True</EmbedInteropTypes>
       <HintPath>$(PackagePath)\autodesk\autodesk.inventor.interop.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\Users\eu\.nuget\packages\newtonsoft.json\11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
