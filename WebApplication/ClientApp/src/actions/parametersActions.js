@@ -133,19 +133,16 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
     jobManager.doJob(projectId, invFormattedParameters,
         // start job
         () => {
-            // launch modal dialog
+            dispatch(showUpdateProgress(true));
         },
         // onComplete
-        (jobId) => {
+        () => {
             // hide modal dialog
             dispatch(showUpdateProgress(false));
 
-            // just get rid of lint warning. jobId will be used later
-            const job = jobId;
-            jobId = job;
-
-            // launch some update here
+            // launch update here
             dispatch(fetchProjects());
+            dispatch(fetchParameters(projectId, true));
         }
     );
 };

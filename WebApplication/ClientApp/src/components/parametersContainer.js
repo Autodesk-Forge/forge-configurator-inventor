@@ -4,7 +4,6 @@ import './parametersContainer.css';
 import Parameter from './parameter';
 import { getActiveProject, getParameters, getUpdateParameters, updateProgressShowing } from '../reducers/mainReducer';
 import { fetchParameters, resetParameters, updateModelWithParameters } from '../actions/parametersActions';
-import { showUpdateProgress } from '../actions/uiFlagsActions';
 import Button from '@hig/button';
 import Modal from '@hig/modal';
 
@@ -15,8 +14,6 @@ export class ParametersContainer extends Component {
     }
 
     updateClicked() {
-        this.props.showUpdateProgress(true);
-
         this.props.updateModelWithParameters(this.props.activeProject.id, this.props.projectUpdateParameters);
     }
 
@@ -68,4 +65,4 @@ export default connect(function (store) {
         projectUpdateParameters: getUpdateParameters(activeProject.id, store),
         updateProgressShowing: updateProgressShowing(store)
     };
-}, { fetchParameters, resetParameters, updateModelWithParameters, showUpdateProgress })(ParametersContainer);
+}, { fetchParameters, resetParameters, updateModelWithParameters })(ParametersContainer);
