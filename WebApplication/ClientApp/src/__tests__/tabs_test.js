@@ -27,7 +27,7 @@ Scenario('should check if All tabs are avaiable', async (I) => {
 Scenario('should check if all Tabs are loaded after click', async (I) => {
 
     // click on Model tab
-    I.wait(3); // allow the projects to load
+    I.waitForElement({xpath: '//div[3]/div/div[1]/div'}, 5);
     I.click({xpath: "//ul/li[2]/div"});
 
     // check that Model tab has correct content
