@@ -5,18 +5,35 @@ using System.Runtime.InteropServices;
 using Inventor;
 using Autodesk.Forge.DesignAutomation.Inventor.Utils;
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace ExtractParametersPlugin
 {
+    public class InventorParameter // TODO: unify its usage
+    {
+        [JsonProperty("value")]
+        public string Value { get; set; }
+
+        [JsonProperty("unit")]
+        public string Unit { get; set; }
+
+        [JsonProperty("values")]
+        public string[] Values { get; set; }
+    }
+
+    /// <summary>
+    /// Format for data stored in `parameters.json`.
+    /// </summary>
+    public class InventorParameters : Dictionary<string, InventorParameter> {} // TODO: unify its usage
+
     [ComVisible(true)]
     public class ExtractParametersAutomation
     {
-        private readonly InventorServer inventorApplication;
+        private readonly InventorServer _inventorApplication;
 
         public ExtractParametersAutomation(InventorServer inventorApp)
         {
-            inventorApplication = inventorApp;
+            _inventorApplication = inventorApp;
         }
 
         public void Run(Document doc)
@@ -28,7 +45,7 @@ namespace ExtractParametersPlugin
                 using (new HeartBeat())
                 {
                     dynamic dynDoc = doc;
-                    string parameters = getParamsAsJson(dynDoc.ComponentDefinition.Parameters.UserParameters);
+                    string parameters = GetParamsAsJson(dynDoc.ComponentDefinition.Parameters.UserParameters);
 
                     System.IO.File.WriteAllText("documentParams.json", parameters);
                 }
@@ -39,7 +56,7 @@ namespace ExtractParametersPlugin
             }
         }
 
-        public string getParamsAsJson(dynamic userParameters)
+        public string GetParamsAsJson(dynamic userParameters)
         {
             /* The resulting json will be like this:
               { 
@@ -56,22 +73,20 @@ namespace ExtractParametersPlugin
             */
             try
             {
-                List<object> parameters = new List<object>();
+                var parameters = new InventorParameters();
                 foreach (dynamic param in userParameters)
                 {
-                    List<object> paramProperties = new List<object>();
-                    if (param.ExpressionList != null)
+                    var parameter = new InventorParameter
                     {
-                        string[] expressions = param.ExpressionList.GetExpressionList();
-                        JArray values = new JArray(expressions);
-                        paramProperties.Add(new JProperty("values", values));
-                    }
-                    paramProperties.Add(new JProperty("value", param.Expression));
-                    paramProperties.Add(new JProperty("unit", param.Units));
-                    parameters.Add(new JProperty(param.Name, new JObject(paramProperties.ToArray())));
+                        Unit = param.Units,
+                        Value = param.Expression,
+                        Values = param.ExpressionList.GetExpressionList()
+                    };
+                    parameters.Add(param.Name, parameter);
                 }
-                JObject allParameters = new JObject(parameters.ToArray());
-                string paramsJson = allParameters.ToString();
+
+                // generate resulting JSON. Note it's not formatted (to have consistent hash)
+                string paramsJson = JsonConvert.SerializeObject(parameters, Formatting.None);
                 LogTrace(paramsJson);
 
                 return paramsJson;
