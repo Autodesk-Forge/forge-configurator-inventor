@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+const XPathElements = require('./elements_definition.js');
 
 Before((I) => {
     I.amOnPage('https://localhost:5001');
@@ -9,51 +10,53 @@ Feature('Tabs');
 Scenario('should check if All tabs are avaiable', async (I) => {
 
     // check if exists the Projects tab
-    I.see("Projects", {xpath: '//ul/li[1]/div'});
+    I.see("Projects", {xpath: XPathElements.xpTabProjects});
 
     // check if exists the Model tab
-    I.see("Model", {xpath: '//ul/li[2]/div'});
+    I.see("Model", {xpath: XPathElements.xpTabModel});
 
     // check if exists the BOM tab
-    I.see("BOM", {xpath: '//ul/li[3]/div'});
+    I.see("BOM", {xpath: XPathElements.xpTabBOM});
 
     // check if exists the Drawing tab
-    I.see("Drawing", {xpath: '//ul/li[4]/div'});
+    I.see("Drawing", {xpath: XPathElements.xpTabDrawing});
 
-    // check if exists the Drawing tab
-    I.see("Downloads", {xpath: '//ul/li[5]/div'});
+    // check if exists the Downloads tab
+    I.see("Downloads", {xpath: XPathElements.xpTabDownloads});
 });
 
 Scenario('should check if all Tabs are loaded after click', async (I) => {
 
+    // we need to have Combo Projects loaded first - https://jira.autodesk.com/browse/INVGEN-40998
+    I.waitForVisible({xpath: XPathElements.xpComboProjects}, 5);
+
     // click on Model tab
-    I.waitForElement({xpath: '//div[3]/div/div[1]/div'}, 5);
-    I.click({xpath: "//ul/li[2]/div"});
+    I.click({xpath: XPathElements.xpTabModel});
 
     // check that Model tab has correct content
-    I.waitForElement({xpath: '//*[@id="model"]/div/div[1]'}, 5);
-    I.seeElement({xpath: '//*[@id="ForgeViewer"]'});
+    I.waitForVisible({xpath: XPathElements.xpDivParameterContainer}, 5);
+    I.seeElement({xpath: XPathElements.xpDivForgeViewer});
 
     // click on BOM tab
-    I.click({xpath: "//ul/li[3]/div"});
+    I.click({xpath: XPathElements.xpTabBOM});
 
     // check that BOM tab has correct content
     I.see("The page is not yet implemented\nPlease switch to the Model tab", {xpath: "//*[@id='bom']"});
 
     // click on Drawing tab
-    I.click({xpath: "//ul/li[4]/div"});
+    I.click({xpath: XPathElements.xpTabDrawing});
 
     // check that Drawing tab has correct content
     I.see("The page is not yet implemented\nPlease switch to the Model tab", {xpath: "//*[@id='drawing']"});
 
     // click on Downloads tab
-    I.click({xpath: "//ul/li[5]/div"});
+    I.click({xpath: XPathElements.xpTabDownloads});
 
     // check that Downloads tab has correct content
     I.see("The page is not yet implemented\nPlease switch to the Model tab", {xpath: "//*[@id='downloads']"});
 
     // click on Project tab
-    I.click({xpath: "//ul/li[1]/div"});
+    I.click({xpath: XPathElements.xpTabProjects});
 
     // check that Project tab has correct content
     I.see("The page is not yet implemented\nPlease switch to the Model tab", {xpath: "//*[@id='project-list']"});

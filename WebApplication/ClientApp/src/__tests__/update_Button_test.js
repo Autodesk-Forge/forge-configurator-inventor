@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+const XPathElements = require('./elements_definition.js');
 
 Before((I) => {
     I.amOnPage('https://localhost:5001');
@@ -10,12 +11,12 @@ Feature('Update Button');
 Scenario('should check if Update button displays a message', (I) => {
 
     // click on Model tab
-    I.wait(3); // allow the projects to load
-    I.click({xpath: "//ul/li[2]/div"});
+    I.wait(3); // allow the projects combo  to be  loaded - https://jira.autodesk.com/browse/INVGEN-40998
+    I.click({xpath: XPathElements.xpTabModel});
 
     // Click on Update button
-    I.see("Update", '//div[2]/div/button[2]');
-    I.click('//div[2]/div/button[2]');
+    I.see("Update", XPathElements.xpButtonUpdate);
+    I.click( XPathElements.xpButtonUpdate);
 
     // TO DO
     // check an action after Click on Update button - not implemneted yet

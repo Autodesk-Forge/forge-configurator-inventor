@@ -13,7 +13,7 @@ Scenario('should check switch to model tab loads the viewer', async (I) => {
     const viewerModelSelector = '#ViewerModelStructurePanel';
 
     I.see('Model', modelTabSelector);
-    I.wait(5); // allow the projects to load
+    I.wait(3); // allow the projects combo to be loaded
     I.click(modelTabSelector);
     I.waitForElement(viewerSelector, 20);
     I.waitForElement(viewerModelSelector, 20);
