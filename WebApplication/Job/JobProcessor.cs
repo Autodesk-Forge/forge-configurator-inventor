@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
@@ -40,10 +41,10 @@ namespace WebApplication.Job
 
         public Task AddNewJob(JobItem job)
         {
-            return ProcessJob(job);
+            return ProcessJobAsync(job);
         }
 
-        private async Task ProcessJob(JobItem job)
+        private async Task ProcessJobAsync(JobItem job)
         {
             var projectConfig = _defaultProjectsConfiguration.Projects.FirstOrDefault(cfg => cfg.Name == job.ProjectId);
             if (projectConfig == null)
@@ -51,32 +52,44 @@ namespace WebApplication.Job
                 throw new ApplicationException($"Attempt to get unknown project ({job.ProjectId})");
             }
 
+            var hash = Crypto.GenerateHashString(job.Data); // TODO: need to ensure JSON is the same each time
+            _logger.LogInformation(job.Data);
+
             var project = _resourceProvider.GetProject(projectConfig.Name);
+            var localNames = project.LocalNameProvider(hash);
 
-            // TODO: unify with initialization code
-            // TODO: use cached version (if exists)
-            // TODO: what to do on processing errors?
-            var inputDocUrl = await _resourceProvider.CreateSignedUrlAsync(project.OSSSourceModel);
-            var parameters = JsonSerializer.Deserialize<InventorParameters>(job.Data);
-
-            var adoptionData =
-                await _arranger.ForAdoptionAsync(inputDocUrl, projectConfig.TopLevelAssembly, parameters);
-            bool status = await _fdaClient.AdoptAsync(adoptionData);
-            if (!status)
+            // check if the data cached already
+            if (Directory.Exists(localNames.SvfDir))
             {
-                _logger.LogError($"Failed to adopt {project.Name}");
+                _logger.LogInformation($"Found cached data corresponded to {hash}");
+                await Task.Delay(1);
             }
             else
             {
-                // rearrange generated data according to the parameters hash
-                await _arranger.DoAsync(project, projectConfig.TopLevelAssembly);
+                // TODO: unify with initialization code
+                // TODO: what to do on processing errors?
+                var inputDocUrl = await _resourceProvider.CreateSignedUrlAsync(project.OSSSourceModel);
+                var parameters = JsonSerializer.Deserialize<InventorParameters>(job.Data);
 
-                _logger.LogInformation("Cache the project locally");
+                var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, projectConfig.TopLevelAssembly, parameters);
+                bool status = await _fdaClient.AdoptAsync(adoptionData);
+                if (!status)
+                {
+                    _logger.LogError($"Failed to adopt {project.Name}");
+                }
+                else
+                {
+                    // rearrange generated data according to the parameters hash
+                    await _arranger.DoAsync(project, projectConfig.TopLevelAssembly);
 
-                // and now cache the generate stuff locally
-                var projectLocalStorage = new ProjectStorage(project, _resourceProvider);
-                await projectLocalStorage.EnsureLocalAsync(_httpClientFactory.CreateClient());
+                    _logger.LogInformation("Cache the project locally");
+
+                    // and now cache the generate stuff locally
+                    var projectLocalStorage = new ProjectStorage(project, _resourceProvider);
+                    await projectLocalStorage.EnsureLocalAsync(_httpClientFactory.CreateClient());
+                }
             }
+
 
             // send that we are done to client
             await _hubContext.Clients.All.SendAsync("onComplete", job.Id);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace WebApplication.Utilities
 {
@@ -43,6 +44,16 @@ namespace WebApplication.Utilities
         public static string GenerateStreamHashString(Stream stream)
         {
             return BytesToString(_sha1.ComputeHash(stream));
+        }
+
+        /// <summary>
+        /// Generate hash for string.
+        /// </summary>
+        /// <returns>Hash string.</returns>
+        public static string GenerateHashString(string input)
+        {
+            var buffer = Encoding.UTF8.GetBytes(input);
+            return BytesToString(_sha1.ComputeHash(buffer));
         }
     }
 }
