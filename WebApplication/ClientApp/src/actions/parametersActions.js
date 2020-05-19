@@ -128,21 +128,27 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
 
     // update 'data' parameters back to inventor format
     const invFormattedParameters = formatParameters(data);
-
     const jobManager = Jobs();
-    jobManager.doJob(projectId, invFormattedParameters,
-        // start job
-        () => {
-            dispatch(showUpdateProgress(true));
-        },
-        // onComplete
-        () => {
-            // hide modal dialog
-            dispatch(showUpdateProgress(false));
 
-            // launch update here
-            dispatch(fetchProjects());
-            dispatch(fetchParameters(projectId, true));
-        }
-    );
+    try {
+        await jobManager.doJob(projectId, invFormattedParameters,
+            // start job
+            () => {
+                dispatch(addLog('JobManager: HubConnection started for project : ' + projectId));
+                dispatch(showUpdateProgress(true));
+            },
+            // onComplete
+            () => {
+                dispatch(addLog('JobManager: Received onComplete'));
+                // hide modal dialog
+                dispatch(showUpdateProgress(false));
+
+                // launch update here
+                dispatch(fetchProjects());
+                dispatch(fetchParameters(projectId, true));
+            }
+        );
+    } catch (error) {
+        dispatch(addError('JobManager: Error : ' + error));
+    }
 };

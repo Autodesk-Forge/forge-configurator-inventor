@@ -6,30 +6,25 @@ class JobManager {
     }
 
     async doJob(projectId, data, onStart, onComplete) {
-        try {
+        const connection = new signalR.HubConnectionBuilder()
+        .withUrl('/signalr/connection')
+        .configureLogging(signalR.LogLevel.Trace)
+        .build();
 
-            const connection = new signalR.HubConnectionBuilder()
-            .withUrl('/signalr/connection')
-            .configureLogging(signalR.LogLevel.Trace)
-            .build();
+        await connection.start();
 
-            await connection.start();
+        if (onStart)
+            onStart();
 
-            if (onStart)
-                onStart();
+        await connection.invoke('CreateJob', projectId, JSON.stringify(data));
 
-            await connection.invoke('CreateJob', projectId, JSON.stringify(data));
+        connection.on("onComplete", (id) => {
+            // stop connection
+            connection.stop();
 
-            connection.on("onComplete", (id) => {
-                // stop connection
-                connection.stop();
-
-                if (onComplete)
-                    onComplete(id);
-            });
-        } catch (error) {
-            //console.error('Failed to call updateModelWithParameters :' + error);
-        }
+            if (onComplete)
+                onComplete(id);
+        });
     }
 }
 

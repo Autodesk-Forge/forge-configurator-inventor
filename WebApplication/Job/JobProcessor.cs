@@ -45,6 +45,8 @@ namespace WebApplication.Job
 
         private async Task ProcessJob(JobItem job)
         {
+            _logger.LogInformation($"ProcessJob {job.Id} for project {job.ProjectId} started.");
+
             var projectConfig = _defaultProjectsConfiguration.Projects.FirstOrDefault(cfg => cfg.Name == job.ProjectId);
             if (projectConfig == null)
             {
@@ -77,6 +79,8 @@ namespace WebApplication.Job
                 var projectLocalStorage = new ProjectStorage(project, _resourceProvider);
                 await projectLocalStorage.EnsureLocalAsync(_httpClientFactory.CreateClient());
             }
+
+            _logger.LogInformation($"ProcessJob {job.Id} for project {job.ProjectId} completed.");
 
             // send that we are done to client
             await _hubContext.Clients.All.SendAsync("onComplete", job.Id);
