@@ -5,7 +5,7 @@ class JobManager {
         this.jobs = new Map();
     }
 
-    async doJob(projectId, data, onStart, onComplete) {
+    async doJob(projectId, parameters, onStart, onComplete) {
         const connection = new signalR.HubConnectionBuilder()
         .withUrl('/signalr/connection')
         .configureLogging(signalR.LogLevel.Trace)
@@ -16,7 +16,7 @@ class JobManager {
         if (onStart)
             onStart();
 
-        await connection.invoke('CreateJob', projectId, JSON.stringify(data));
+        await connection.invoke('CreateJob', projectId, parameters);
 
         connection.on("onComplete", (id) => {
             // stop connection

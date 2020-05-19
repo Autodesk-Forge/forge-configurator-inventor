@@ -48,8 +48,8 @@ namespace WebApplication.Job
                 throw new ApplicationException($"Attempt to get unknown project ({job.ProjectId})");
             }
 
-            var hash = Crypto.GenerateHashString(job.Data); // TODO: need to ensure JSON is the same each time
-            _logger.LogInformation(job.Data);
+            var hash = Crypto.GenerateObjectHashString(job.Parameters); // TODO: need to ensure JSON is the same each time
+            //_logger.LogInformation(job.Parameters);
 
             var project = _resourceProvider.GetProject(projectConfig.Name);
             var localNames = project.LocalNameProvider(hash);
@@ -63,10 +63,8 @@ namespace WebApplication.Job
             }
             else
             {
-                var parameters = JsonSerializer.Deserialize<InventorParameters>(job.Data);
-
                 // TODO: what to do on processing errors?
-                dto = await _projectWork.UpdateAsync(project, projectConfig.TopLevelAssembly, parameters);
+                dto = await _projectWork.UpdateAsync(project, projectConfig.TopLevelAssembly, job.Parameters);
             }
 
             _logger.LogInformation($"ProcessJob {job.Id} for project {job.ProjectId} completed.");

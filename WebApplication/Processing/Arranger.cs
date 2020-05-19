@@ -77,7 +77,7 @@ namespace WebApplication.Processing
             await Task.WhenAll(_forge.RenameObjectAsync(_bucketKey, Thumbnail, project.OssAttributes.Thumbnail),
                                 _forge.RenameObjectAsync(_bucketKey, SVF, ossNames.ModelView),
                                 _forge.RenameObjectAsync(_bucketKey, Parameters, ossNames.Parameters),
-                                _forge.UploadObjectAsync(_bucketKey, project.OssAttributes.Metadata, Json.ToStream(attributes)));
+                                _forge.UploadObjectAsync(_bucketKey, project.OssAttributes.Metadata, Json.ToStream(attributes, writeIndented: true)));
 
             return hashString;
         }

@@ -6,6 +6,9 @@ using WebApplication.Utilities;
 
 namespace WebApplication.Processing
 {
+    /// <summary>
+    /// Business logic for project tasks (adapt, update parameters)
+    /// </summary>
     public class ProjectWork
     {
         private readonly ILogger<ProjectWork> _logger;

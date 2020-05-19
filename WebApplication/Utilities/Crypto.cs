@@ -55,5 +55,15 @@ namespace WebApplication.Utilities
             var buffer = Encoding.UTF8.GetBytes(input);
             return BytesToString(_sha1.ComputeHash(buffer));
         }
+        /// <summary>
+        /// Generate hash for object.
+        /// </summary>
+        /// <remarks>It generates JSON string for the object and then generates hash for the string.</remarks>
+        /// <returns>Hash string.</returns>
+        public static string GenerateObjectHashString<T>(T data)
+        {
+            using var stream = Json.ToStream(data);
+            return GenerateStreamHashString(stream);
+        }
     }
 }
