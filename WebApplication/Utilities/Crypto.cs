@@ -55,6 +55,7 @@ namespace WebApplication.Utilities
             var buffer = Encoding.UTF8.GetBytes(input);
             return BytesToString(_sha1.ComputeHash(buffer));
         }
+
         /// <summary>
         /// Generate hash for object.
         /// </summary>

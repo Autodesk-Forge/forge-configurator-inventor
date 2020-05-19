@@ -1,7 +1,7 @@
 using System;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
-using WebApplication.Controllers;
 using WebApplication.Definitions;
 using WebApplication.Utilities;
 
@@ -115,7 +115,8 @@ namespace WebApplication.Processing
 
             // generate hash for parameters
             var stream = await response.Content.ReadAsStreamAsync();
-            return Crypto.GenerateStreamHashString(stream);
+            var parameters = await JsonSerializer.DeserializeAsync<InventorParameters>(stream);
+            return Crypto.GenerateObjectHashString(parameters);
         }
     }
 }

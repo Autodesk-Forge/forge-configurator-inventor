@@ -48,8 +48,10 @@ namespace WebApplication.Job
                 throw new ApplicationException($"Attempt to get unknown project ({job.ProjectId})");
             }
 
+//            _logger.LogInformation(JsonSerializer.Serialize(job.Parameters));
+
             var hash = Crypto.GenerateObjectHashString(job.Parameters); // TODO: need to ensure JSON is the same each time
-            //_logger.LogInformation(job.Parameters);
+            _logger.LogInformation($"Parameters hash is {hash}");
 
             var project = _resourceProvider.GetProject(projectConfig.Name);
             var localNames = project.LocalNameProvider(hash);
@@ -59,7 +61,7 @@ namespace WebApplication.Job
             // check if the data cached already
             if (Directory.Exists(localNames.SvfDir))
             {
-                _logger.LogInformation($"Found cached data corresponded to {hash}");
+                _logger.LogInformation("Found cached data.");
             }
             else
             {
