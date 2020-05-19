@@ -1,4 +1,6 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using WebApplication.Definitions;
@@ -54,7 +56,39 @@ namespace WebApplication.Processing
             }
         }
 
-        public async Task<ProjectStateDTO> UpdateAsync(Project project, string tlaFilename, InventorParameters parameters)
+        /// <summary>
+        /// Update project state with the parameters (or take it from cache).
+        /// </summary>
+        public async Task<ProjectStateDTO> DoSmartUpdateAsync(ProjectInfo projectInfo, InventorParameters parameters)
+        {
+            var hash = Crypto.GenerateObjectHashString(parameters);
+            //_logger.LogInformation(JsonSerializer.Serialize(parameters));
+            _logger.LogInformation($"Parameters hash is {hash}");
+
+            var project = _resourceProvider.GetProject(projectInfo.Name);
+            var localNames = project.LocalNameProvider(hash);
+
+            // check if the data cached already
+            if (Directory.Exists(localNames.SvfDir))
+            {
+                _logger.LogInformation("Found cached data.");
+            }
+            else
+            {
+                await UpdateAsync(project, projectInfo.TopLevelAssembly, parameters);
+            }
+
+            return new ProjectStateDTO
+                    {
+                        Svf = _resourceProvider.ToDataUrl(localNames.SvfDir),
+                        Parameters = Json.DeserializeFile<InventorParameters>(localNames.Parameters)
+                    };
+        }
+
+        /// <summary>
+        /// Generate project data for the given parameters and cache results locally.
+        /// </summary>
+        public async Task UpdateAsync(Project project, string tlaFilename, InventorParameters parameters)
         {
             _logger.LogInformation("Update the project");
 
@@ -62,11 +96,7 @@ namespace WebApplication.Processing
             var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, tlaFilename, parameters);
 
             bool success = await _fdaClient.AdoptAsync(adoptionData);
-            if (! success)
-            {
-                _logger.LogError($"Failed to adopt {project.Name}");
-                return null;
-            }
+            if (! success) throw new ApplicationException($"Failed to update {project.Name}");
 
             // rearrange generated data according to the parameters hash
             var hash = await _arranger.MoveViewablesAsync(project);
@@ -76,14 +106,6 @@ namespace WebApplication.Processing
             // and now cache the generate stuff locally
             var projectStorage = new ProjectStorage(project, _resourceProvider);
             await projectStorage.EnsureViewablesAsync(_httpClientFactory.CreateClient(), hash);
-
-            var localNames = projectStorage.GetLocalNames(hash);
-
-            return new ProjectStateDTO
-                    {
-                        Svf = _resourceProvider.ToDataUrl(project.LocalNameProvider(hash).SvfDir),
-                        Parameters = Json.DeserializeFile<InventorParameters>(localNames.Parameters)
-                    };
         }
     }
 }

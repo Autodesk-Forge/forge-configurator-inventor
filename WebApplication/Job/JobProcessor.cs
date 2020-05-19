@@ -2,14 +2,11 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
-using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using WebApplication.Controllers;
 using WebApplication.Definitions;
 using WebApplication.Processing;
-using WebApplication.Utilities;
 
 namespace WebApplication.Job
 {
@@ -18,17 +15,15 @@ namespace WebApplication.Job
         private readonly IHubContext<JobsHub> _hubContext;
 
         private readonly DefaultProjectsConfiguration _defaultProjectsConfiguration;
-        private readonly ResourceProvider _resourceProvider;
         private readonly ILogger<JobProcessor> _logger;
         private readonly ProjectWork _projectWork;
 
-        public JobProcessor(IHubContext<JobsHub> hubContext, IOptions<DefaultProjectsConfiguration> optionsAccessor, 
-                            ResourceProvider resourceProvider, ILogger<JobProcessor> logger, ProjectWork projectWork)
+        public JobProcessor(IHubContext<JobsHub> hubContext, IOptions<DefaultProjectsConfiguration> optionsAccessor,
+                            ILogger<JobProcessor> logger, ProjectWork projectWork)
         {
             _hubContext = hubContext;
 
             _defaultProjectsConfiguration = optionsAccessor.Value;
-            _resourceProvider = resourceProvider;
             _logger = logger;
             _projectWork = projectWork;
         }
@@ -48,31 +43,12 @@ namespace WebApplication.Job
                 throw new ApplicationException($"Attempt to get unknown project ({job.ProjectId})");
             }
 
-//            _logger.LogInformation(JsonSerializer.Serialize(job.Parameters));
-
-            var hash = Crypto.GenerateObjectHashString(job.Parameters); // TODO: need to ensure JSON is the same each time
-            _logger.LogInformation($"Parameters hash is {hash}");
-
-            var project = _resourceProvider.GetProject(projectConfig.Name);
-            var localNames = project.LocalNameProvider(hash);
-
-            ProjectStateDTO dto = null;
-
-            // check if the data cached already
-            if (Directory.Exists(localNames.SvfDir))
-            {
-                _logger.LogInformation("Found cached data.");
-            }
-            else
-            {
-                // TODO: what to do on processing errors?
-                dto = await _projectWork.UpdateAsync(project, projectConfig.TopLevelAssembly, job.Parameters);
-            }
+            ProjectStateDTO updatedState = await _projectWork.DoSmartUpdateAsync(projectConfig, job.Parameters);
 
             _logger.LogInformation($"ProcessJob {job.Id} for project {job.ProjectId} completed.");
 
             // send that we are done to client
-            await _hubContext.Clients.All.SendAsync("onComplete", job.Id, dto);
+            await _hubContext.Clients.All.SendAsync("onComplete", job.Id, updatedState);
         }
     }
 }
