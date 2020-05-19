@@ -19,14 +19,14 @@ namespace WebApplication.Processing
         public override List<string> ActivityCommandLine =>
             new List<string>
             {
-                $"$(engine.path)\\InventorCoreConsole.exe /al $(appbundles[{ActivityId}].path) /i \"$(args[{InputParameterName}].path)\" \"$(args[{InventorParameters}].path)\""
+                $"$(engine.path)\\InventorCoreConsole.exe /al $(appbundles[{ActivityId}].path) /i \"$(args[{InputDocParameterName}].path)\" \"$(args[{InventorParameters}].path)\""
             };
 
         public override Dictionary<string, Parameter> ActivityParams =>
             new Dictionary<string, Parameter>
             {
                 {
-                    InputParameterName,
+                    InputDocParameterName,
                     new Parameter { Verb = Verb.Get, Description = "IPT or IAM (in ZIP) file to process" }
                 },
                 {

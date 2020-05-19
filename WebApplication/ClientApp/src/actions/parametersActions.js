@@ -138,7 +138,8 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
                 dispatch(showUpdateProgress(true));
             },
             // onComplete
-            () => {
+            (_, updatedState) => {
+                const { svf, parameters } = updatedState; // TODO: apply the parameter and SVF to the "UI"
                 dispatch(addLog('JobManager: Received onComplete'));
                 // hide modal dialog
                 dispatch(showUpdateProgress(false));

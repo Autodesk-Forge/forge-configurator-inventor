@@ -58,24 +58,35 @@ namespace WebApplication
                                 DownloadFileAsync(httpClient, Project.OssAttributes.Thumbnail, Project.LocalAttributes.Thumbnail)
                             );
 
-            // create the "hashed" dir
-            var localNames = GetLocalNames();
-            Directory.CreateDirectory(localNames.BaseDir);
 
             // download ZIP with SVF model
             // NOTE: this step is impossible without having project metadata,
             // because file/dir names depends on hash of initial project state
-            var ossNames = GetOssNames();
- 
+
+            await PlaceViewablesAsync(httpClient, GetLocalNames(), GetOssNames());
+        }
+
+        /// <summary>
+        /// Ensure the project viewables are cached locally.
+        /// </summary>
+        /// <param name="httpClient">HTTP client.</param>
+        /// <param name="hash">Parameters hash.</param>
+        public Task EnsureViewablesAsync(HttpClient httpClient, string hash)
+        {
+            return PlaceViewablesAsync(httpClient, GetLocalNames(hash), GetOssNames(hash));
+        }
+
+        private async Task PlaceViewablesAsync(HttpClient httpClient, LocalNameProvider localNames, OSSObjectNameProvider ossNames)
+        {
+            // create the "hashed" dir
+            Directory.CreateDirectory(localNames.BaseDir);
+
             using var tempFile = new TempFile();
             await DownloadFileAsync(httpClient, ossNames.ModelView, tempFile.Name);
             await DownloadFileAsync(httpClient, ossNames.Parameters, localNames.Parameters);
 
             // extract SVF from the archive
             ZipFile.ExtractToDirectory(tempFile.Name, localNames.SvfDir, overwriteFiles: true); // TODO: non-default encoding is not supported
-
-            // write marker file about processing completion
-            await File.WriteAllTextAsync(Project.LocalAttributes.Marker, "done");
         }
 
 
@@ -94,11 +105,11 @@ namespace WebApplication
         /// <summary>
         /// OSS names for "hashed" files.
         /// </summary>
-        public OSSObjectNameProvider GetOssNames() => Project.OssNameProvider(Metadata.Hash);
+        public OSSObjectNameProvider GetOssNames(string hash = null) => Project.OssNameProvider(hash ?? Metadata.Hash);
 
         /// <summary>
         /// Local names for "hashed" files.
         /// </summary>
-        public LocalNameProvider GetLocalNames() => Project.LocalNameProvider(Metadata.Hash);
+        public LocalNameProvider GetLocalNames(string hash = null) => Project.LocalNameProvider(hash ?? Metadata.Hash);
     }
 }

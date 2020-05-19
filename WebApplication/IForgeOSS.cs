@@ -24,7 +24,7 @@ namespace WebApplication
         Task CreateBucketAsync(string bucketKey);
         Task DeleteBucketAsync(string bucketKey);
         Task CreateEmptyObjectAsync(string bucketKey, string objectName);
-        Task UploadObjectAsync(string bucketKey, Stream stream, string objectName);
+        Task UploadObjectAsync(string bucketKey, string objectName, Stream stream);
         Task UploadChunkAsync(string bucketKey, Stream stream, string objectName, string contentRange, string sessionId);
 
         /// <summary>

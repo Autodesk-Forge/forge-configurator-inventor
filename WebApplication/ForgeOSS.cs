@@ -125,7 +125,7 @@ namespace WebApplication
             return result.signedUrl;
         }
 
-        public async Task UploadObjectAsync(string bucketKey, Stream stream, string objectName)
+        public async Task UploadObjectAsync(string bucketKey, string objectName, Stream stream)
         {
             ObjectsApi objectsApi = await GetObjectsApiAsync();
             await objectsApi.UploadObjectAsync(bucketKey, objectName, 0, stream);
