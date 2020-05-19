@@ -146,7 +146,7 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
 
                 // launch update here
                 dispatch(fetchProjects());
-                dispatch(dispatch(fetchParameters(projectId, true)));
+                dispatch(fetchParameters(projectId, true));
             }
         );
     } catch (error) {
