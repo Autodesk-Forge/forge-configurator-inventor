@@ -114,9 +114,9 @@ namespace WebApplication.Processing
         protected virtual void AddInputArgs(IDictionary<string, IArgument> args, AdoptionData projectData)
         {
             if (projectData.IsAssembly)
-                args.Add(InputParameterName, new XrefTreeArgument { PathInZip = projectData.TLA, LocalName = "zippedIam.zip", Url = projectData.InputUrl });
+                args.Add(InputDocParameterName, new XrefTreeArgument { PathInZip = projectData.TLA, LocalName = "zippedIam.zip", Url = projectData.InputDocUrl });
             else
-                args.Add(InputParameterName, new XrefTreeArgument { Url = projectData.InputUrl });
+                args.Add(InputDocParameterName, new XrefTreeArgument { Url = projectData.InputDocUrl });
         }
 
         /// <summary>
@@ -135,7 +135,7 @@ namespace WebApplication.Processing
         public virtual List<string> ActivityCommandLine =>
             new List<string>
             {
-                $"$(engine.path)\\InventorCoreConsole.exe /al $(appbundles[{ActivityId}].path) /i $(args[{InputParameterName}].path)"
+                $"$(engine.path)\\InventorCoreConsole.exe /al $(appbundles[{ActivityId}].path) /i $(args[{InputDocParameterName}].path)"
             };
 
         /// <summary>
@@ -144,9 +144,9 @@ namespace WebApplication.Processing
         protected virtual string OutputUrl(AdoptionData projectData) => throw new NotImplementedException();
 
         /// <summary>
-        /// Name of the input parameter.
+        /// Parameter name for input document.
         /// </summary>
-        public const string InputParameterName = "InventorDoc";
+        public const string InputDocParameterName = "InventorDoc";
 
         /// <summary>
         /// Name of the output parameter.
@@ -163,7 +163,7 @@ namespace WebApplication.Processing
                 var activityParams = new Dictionary<string, Parameter>
                                         {
                                             {
-                                                InputParameterName,
+                                                InputDocParameterName,
                                                 new Parameter
                                                 {
                                                     Verb = Verb.Get,

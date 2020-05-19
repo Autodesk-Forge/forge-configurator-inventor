@@ -52,6 +52,8 @@ namespace WebApplication.Job
             var project = _resourceProvider.GetProject(projectConfig.Name);
             var localNames = project.LocalNameProvider(hash);
 
+            ProjectStateDTO dto = null;
+
             // check if the data cached already
             if (Directory.Exists(localNames.SvfDir))
             {
@@ -62,11 +64,11 @@ namespace WebApplication.Job
                 var parameters = JsonSerializer.Deserialize<InventorParameters>(job.Data);
 
                 // TODO: what to do on processing errors?
-                await _projectWork.UpdateAsync(project, projectConfig.TopLevelAssembly, parameters);
+                dto = await _projectWork.UpdateAsync(project, projectConfig.TopLevelAssembly, parameters);
             }
 
             // send that we are done to client
-            await _hubContext.Clients.All.SendAsync("onComplete", job.Id);
+            await _hubContext.Clients.All.SendAsync("onComplete", job.Id, dto);
         }
     }
 }

@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using System.Collections.Generic;
 using WebApplication.Job;
 
 namespace WebApplication.Controllers
 {
     public class JobsHub : Hub
     {
-        JobProcessor _jobProcessor;
+        readonly JobProcessor _jobProcessor;
 
         public JobsHub(JobProcessor jobProcessor)
         {

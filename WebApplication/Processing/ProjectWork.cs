@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using WebApplication.Controllers;
+using WebApplication.Definitions;
 using WebApplication.Utilities;
 
 namespace WebApplication.Processing
@@ -54,29 +51,36 @@ namespace WebApplication.Processing
             }
         }
 
-        public async Task UpdateAsync(Project project, string tlaFilename, InventorParameters parameters)
+        public async Task<ProjectStateDTO> UpdateAsync(Project project, string tlaFilename, InventorParameters parameters)
         {
             _logger.LogInformation("Update the project");
 
             var inputDocUrl = await _resourceProvider.CreateSignedUrlAsync(project.OSSSourceModel);
             var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, tlaFilename, parameters);
 
-            bool status = await _fdaClient.AdoptAsync(adoptionData);
-            if (!status)
+            bool success = await _fdaClient.AdoptAsync(adoptionData);
+            if (! success)
             {
                 _logger.LogError($"Failed to adopt {project.Name}");
+                return null;
             }
-            else
-            {
-                // rearrange generated data according to the parameters hash
-                var hash = await _arranger.MoveViewablesAsync(project);
 
-                _logger.LogInformation("Cache the project locally");
+            // rearrange generated data according to the parameters hash
+            var hash = await _arranger.MoveViewablesAsync(project);
 
-                // and now cache the generate stuff locally
-                var projectLocalStorage = new ProjectStorage(project, _resourceProvider);
-                await projectLocalStorage.EnsureViewablesAsync(_httpClientFactory.CreateClient(), hash);
-            }
+            _logger.LogInformation("Cache the project locally");
+
+            // and now cache the generate stuff locally
+            var projectStorage = new ProjectStorage(project, _resourceProvider);
+            await projectStorage.EnsureViewablesAsync(_httpClientFactory.CreateClient(), hash);
+
+            var localNames = projectStorage.GetLocalNames(hash);
+
+            return new ProjectStateDTO
+                    {
+                        Svf = _resourceProvider.ToDataUrl(project.LocalNameProvider(hash).SvfDir),
+                        Parameters = Json.DeserializeFile<InventorParameters>(localNames.Parameters)
+                    };
         }
     }
 }
