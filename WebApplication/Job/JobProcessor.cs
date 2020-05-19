@@ -40,6 +40,8 @@ namespace WebApplication.Job
 
         private async Task ProcessJobAsync(JobItem job)
         {
+            _logger.LogInformation($"ProcessJob {job.Id} for project {job.ProjectId} started.");
+
             var projectConfig = _defaultProjectsConfiguration.Projects.FirstOrDefault(cfg => cfg.Name == job.ProjectId);
             if (projectConfig == null)
             {
@@ -66,6 +68,8 @@ namespace WebApplication.Job
                 // TODO: what to do on processing errors?
                 dto = await _projectWork.UpdateAsync(project, projectConfig.TopLevelAssembly, parameters);
             }
+
+            _logger.LogInformation($"ProcessJob {job.Id} for project {job.ProjectId} completed.");
 
             // send that we are done to client
             await _hubContext.Clients.All.SendAsync("onComplete", job.Id, dto);
