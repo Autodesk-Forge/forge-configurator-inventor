@@ -128,9 +128,9 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
 
     // update 'data' parameters back to inventor format
     const invFormattedParameters = formatParameters(data);
+    const jobManager = Jobs();
 
     try {
-        const jobManager = Jobs();
         await jobManager.doJob(projectId, invFormattedParameters,
             // start job
             () => {
