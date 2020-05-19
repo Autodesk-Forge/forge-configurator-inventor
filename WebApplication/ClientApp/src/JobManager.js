@@ -5,7 +5,7 @@ class JobManager {
         this.jobs = new Map();
     }
 
-    async doJob(projectId, data, onStart, onComplete) {
+    async doJob(projectId, data, onStart, onComplete, onError) {
         try {
 
             const connection = new signalR.HubConnectionBuilder()
@@ -28,7 +28,8 @@ class JobManager {
                     onComplete(id);
             });
         } catch (error) {
-            //console.error('Failed to call updateModelWithParameters :' + error);
+            if (onError)
+                onError(error);
         }
     }
 }
