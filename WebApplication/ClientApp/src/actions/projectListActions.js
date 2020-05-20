@@ -3,7 +3,8 @@ import {addError, addLog} from './notificationActions';
 
 const actionTypes = {
     PROJECT_LIST_UPDATED: 'PROJECT_LIST_UPDATED',
-    ACTIVE_PROJECT_UPDATED: 'ACTIVE_PROJECT_UPDATED'
+    ACTIVE_PROJECT_UPDATED: 'ACTIVE_PROJECT_UPDATED',
+    UPDATE_SVF: 'UPDATE_SVF'
 };
 
 export default actionTypes;
@@ -21,6 +22,13 @@ export const updateActiveProject = activeProjectId => {
         activeProjectId
     };
 };
+
+export const updateSvf = (activeProjectId, svf) => {
+    return {
+        type: actionTypes.UPDATE_SVF,
+        activeProjectId, svf
+    }
+}
 
 // eslint-disable-next-line no-unused-vars
 export const fetchProjects = () => async (dispatch, getState) => {
