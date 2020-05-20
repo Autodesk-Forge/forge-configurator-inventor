@@ -38,6 +38,7 @@ Demo application showcasing Configuration with Design Automation for Inventor
  - Create initial data: from the `WebApplication` directory, run `dotnet run initialize=true`
  - Clear data: from the `WebApplication` directory, run `dotnet run clear=true`
  - Clear and then load initial data: from the `WebApplication` directory, run `dotnet run initialize=true clear=true`
+ - Clear AppBundles/Activities and initialize from existing data: from the `WebApplication` directory, run `dotnet run initialize=true clear=true oss=false`
 
 ## Debug The Web Application With VS Code
 

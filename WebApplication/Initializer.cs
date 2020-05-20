@@ -38,7 +38,7 @@ namespace WebApplication
             _defaultProjectsConfiguration = optionsAccessor.Value;
         }
 
-        public async Task InitializeAsync()
+        public async Task InitializeAsync(bool initOSSdata = true)
         {
             using var scope = _logger.BeginScope("Init");
 
@@ -47,8 +47,11 @@ namespace WebApplication
 
             _logger.LogInformation("Initializing base data");
 
-            await _forge.CreateBucketAsync(_resourceProvider.BucketKey);
-            _logger.LogInformation($"Bucket {_resourceProvider.BucketKey} created");
+            if (initOSSdata)
+            {
+                await _forge.CreateBucketAsync(_resourceProvider.BucketKey);
+                _logger.LogInformation($"Bucket {_resourceProvider.BucketKey} created");
+            }
 
             // download default project files from the public location
             // specified by the appsettings.json
@@ -61,64 +64,67 @@ namespace WebApplication
 
                 var project = _resourceProvider.GetProject(defaultProjectConfig.Name);
 
-                _logger.LogInformation($"Download {projectUrl}");
-                using (HttpResponseMessage response = await httpClient.GetAsync(projectUrl, HttpCompletionOption.ResponseHeadersRead))
+                if (initOSSdata)
                 {
-                    response.EnsureSuccessStatusCode();
-
-                    _logger.LogInformation("Upload to the app bucket");
-
-                    // store project locally
-                    using var tempFile = new TempFile();
-                    using (FileStream fs = new FileStream(tempFile.Name, FileMode.Open))
+                    _logger.LogInformation($"Download {projectUrl}");
+                    using (HttpResponseMessage response = await httpClient.GetAsync(projectUrl, HttpCompletionOption.ResponseHeadersRead))
                     {
-                        await response.Content.CopyToAsync(fs);
+                        response.EnsureSuccessStatusCode();
 
-                        // determine if we need to upload in chunks or in one piece
-                        long sizeToUpload = fs.Length;
-                        long chunkMBSize = 5;
-                        long chunkSize = chunkMBSize * 1024 * 1024; // 2MB is minimal
+                        _logger.LogInformation("Upload to the app bucket");
 
-                        // use chunks for all files greater than chunk size
-                        if (sizeToUpload > chunkSize)
+                        // store project locally
+                        using var tempFile = new TempFile();
+                        using (FileStream fs = new FileStream(tempFile.Name, FileMode.Open))
                         {
-                            long chunksCnt = (long)((sizeToUpload + chunkSize - 1) / chunkSize);
+                            await response.Content.CopyToAsync(fs);
 
-                            _logger.LogInformation($"Uploading in {chunksCnt} x {chunkMBSize}MB chunks");
+                            // determine if we need to upload in chunks or in one piece
+                            long sizeToUpload = fs.Length;
+                            long chunkMBSize = 5;
+                            long chunkSize = chunkMBSize * 1024 * 1024; // 2MB is minimal
 
-                            string sessionId = Guid.NewGuid().ToString();
-                            long begin = 0;
-                            long end = chunkSize - 1;
-                            long count = chunkSize;
-                            byte[] buffer = new byte[count];
-
-                            for (int idx = 0; idx < chunksCnt; idx++)
+                            // use chunks for all files greater than chunk size
+                            if (sizeToUpload > chunkSize)
                             {
-                                // jump to requested position
-                                fs.Seek(begin, SeekOrigin.Begin);
-                                fs.Read(buffer, 0, (int)count);
-                                using (MemoryStream chunkStream = new MemoryStream(buffer, 0, (int)count))
-                                {
-                                    string contentRange = string.Format($"bytes {begin}-{end}/{sizeToUpload}");
-                                    await _forge.UploadChunkAsync(_resourceProvider.BucketKey, chunkStream, project.OSSSourceModel, contentRange, sessionId);
-                                }
-                                begin = end + 1;
-                                chunkSize = ((begin + chunkSize > sizeToUpload) ? sizeToUpload - begin : chunkSize);
-                                // for the last chunk there should be smaller count of bytes to read
-                                if (chunkSize > 0 && chunkSize != count)
-                                {
-                                    // reset to the new size for the LAST chunk
-                                    count = chunkSize;
-                                }
+                                long chunksCnt = (long)((sizeToUpload + chunkSize - 1) / chunkSize);
 
-                                end = begin + chunkSize - 1;
+                                _logger.LogInformation($"Uploading in {chunksCnt} x {chunkMBSize}MB chunks");
+
+                                string sessionId = Guid.NewGuid().ToString();
+                                long begin = 0;
+                                long end = chunkSize - 1;
+                                long count = chunkSize;
+                                byte[] buffer = new byte[count];
+
+                                for (int idx = 0; idx < chunksCnt; idx++)
+                                {
+                                    // jump to requested position
+                                    fs.Seek(begin, SeekOrigin.Begin);
+                                    fs.Read(buffer, 0, (int)count);
+                                    using (MemoryStream chunkStream = new MemoryStream(buffer, 0, (int)count))
+                                    {
+                                        string contentRange = string.Format($"bytes {begin}-{end}/{sizeToUpload}");
+                                        await _forge.UploadChunkAsync(_resourceProvider.BucketKey, chunkStream, project.OSSSourceModel, contentRange, sessionId);
+                                    }
+                                    begin = end + 1;
+                                    chunkSize = ((begin + chunkSize > sizeToUpload) ? sizeToUpload - begin : chunkSize);
+                                    // for the last chunk there should be smaller count of bytes to read
+                                    if (chunkSize > 0 && chunkSize != count)
+                                    {
+                                        // reset to the new size for the LAST chunk
+                                        count = chunkSize;
+                                    }
+
+                                    end = begin + chunkSize - 1;
+                                }
                             }
-                        }
-                        else
-                        {
-                            // jump to beginning
-                            fs.Seek(0, SeekOrigin.Begin);
-                            await _forge.UploadObjectAsync(_resourceProvider.BucketKey, project.OSSSourceModel, fs);
+                            else
+                            {
+                                // jump to beginning
+                                fs.Seek(0, SeekOrigin.Begin);
+                                await _forge.UploadObjectAsync(_resourceProvider.BucketKey, project.OSSSourceModel, fs);
+                            }
                         }
                     }
                 }
@@ -129,17 +135,20 @@ namespace WebApplication
             _logger.LogInformation("Added default projects.");
         }
 
-        public async Task ClearAsync()
+        public async Task ClearAsync(bool initOSSdata=true)
         {
-            try
+            if (initOSSdata)
             {
-                await _forge.DeleteBucketAsync(_resourceProvider.BucketKey);
-                // We need to wait because server needs some time to settle it down. If we would go and create bucket immediately again we would receive conflict.
-                await Task.Delay(4000);
-            }
-            catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
-            {
-                _logger.LogInformation($"Nothing to delete because bucket {_resourceProvider.BucketKey} does not exists yet");
+                try
+                {
+                    await _forge.DeleteBucketAsync(_resourceProvider.BucketKey);
+                    // We need to wait because server needs some time to settle it down. If we would go and create bucket immediately again we would receive conflict.
+                    await Task.Delay(4000);
+                }
+                catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
+                {
+                    _logger.LogInformation($"Nothing to delete because bucket {_resourceProvider.BucketKey} does not exists yet");
+                }
             }
 
             // delete bundles and activities

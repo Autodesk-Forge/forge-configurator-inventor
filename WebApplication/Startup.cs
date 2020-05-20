@@ -77,16 +77,18 @@ namespace WebApplication
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Initializer initializer, ILogger<Startup> logger, ResourceProvider resourceProvider)
         {
-            if(Configuration.GetValue<bool>("clear"))
+            bool initOSSdata = Configuration.GetValue<bool>("oss", true);
+
+            if (Configuration.GetValue<bool>("clear"))
             {
                 logger.LogInformation("-- Clean up --");
-                initializer.ClearAsync().Wait();
+                initializer.ClearAsync(initOSSdata).Wait();
             }
 
             if(Configuration.GetValue<bool>("initialize"))
             {
                 logger.LogInformation("-- Initialization --");
-                initializer.InitializeAsync().Wait();
+                initializer.InitializeAsync(initOSSdata).Wait();
             }
 
             if (env.IsDevelopment())
