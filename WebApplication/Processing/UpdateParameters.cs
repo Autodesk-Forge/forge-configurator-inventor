@@ -19,7 +19,7 @@ namespace WebApplication.Processing
         public override List<string> ActivityCommandLine =>
             new List<string>
             {
-                $"$(engine.path)\\InventorCoreConsole.exe /al $(appbundles[{ActivityId}].path) /i \"$(args[{InputDocParameterName}].path)\" \"$(args[{InventorParameters}].path)\""
+                $"$(engine.path)\\InventorCoreConsole.exe /al $(appbundles[{ActivityId}].path) /i \"$(args[{InputDocParameterName}].path)\" \"$(args[{InventorParameters}].path)\" /p"
             };
 
         public override Dictionary<string, Parameter> ActivityParams =>

@@ -75,6 +75,9 @@ namespace UpdateParametersPlugin
                     }
                 }
 
+                LogTrace("Updating");
+                doc.Update2();
+
                 LogTrace("Saving");
                 doc.Save2(true);
                 LogTrace("Closing");
