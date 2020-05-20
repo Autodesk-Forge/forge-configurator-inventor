@@ -26,6 +26,14 @@ export default function(state = initialState, action) {
         case projectListActionTypes.ACTIVE_PROJECT_UPDATED: {
             return { ...state, activeProjectId: action.activeProjectId};
         }
+        case projectListActionTypes.UPDATE_SVF: {
+            const projects = state.projects.map((project) => {
+                return project.id !== action.activeProjectId ? project : {
+                    ...project, svf: action.svf
+                }
+            });
+            return { ...state, projects };
+        }
         default:
             return state;
     }

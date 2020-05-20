@@ -4,6 +4,7 @@ import './parametersContainer.css';
 import Parameter from './parameter';
 import { getActiveProject, getParameters, getUpdateParameters, updateProgressShowing } from '../reducers/mainReducer';
 import { fetchParameters, resetParameters, updateModelWithParameters } from '../actions/parametersActions';
+import { showUpdateProgress } from '../actions/uiFlagsActions'
 import Button from '@hig/button';
 import Modal from '@hig/modal';
 
@@ -15,6 +16,10 @@ export class ParametersContainer extends Component {
 
     updateClicked() {
         this.props.updateModelWithParameters(this.props.activeProject.id, this.props.projectUpdateParameters);
+    }
+
+    onCloseClick() {
+        this.props.showUpdateProgress(false);
     }
 
     render() {
@@ -49,7 +54,7 @@ export class ParametersContainer extends Component {
                         width="grow"
                         onClick={() => {this.updateClicked();}}
                     />
-                    <Modal open={this.props.updateProgressShowing} title="Wait please" id="Modal" name="Modal" onCloseClick={() => this.closeModal()}>Model is now being updated based on the changed parameters.</Modal>
+                    <Modal open={this.props.updateProgressShowing} title="Wait please" onCloseClick={() => this.onCloseClick()}>Model is now being updated based on the changed parameters.</Modal>
                 </div>
             </div>
         );
@@ -65,4 +70,4 @@ export default connect(function (store) {
         projectUpdateParameters: getUpdateParameters(activeProject.id, store),
         updateProgressShowing: updateProgressShowing(store)
     };
-}, { fetchParameters, resetParameters, updateModelWithParameters })(ParametersContainer);
+}, { fetchParameters, resetParameters, updateModelWithParameters, showUpdateProgress })(ParametersContainer);

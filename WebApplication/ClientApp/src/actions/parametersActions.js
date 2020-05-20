@@ -2,7 +2,7 @@ import repo from '../Repository';
 import { addError, addLog } from './notificationActions';
 import { Jobs } from '../JobManager';
 import { showUpdateProgress } from './uiFlagsActions';
-import { fetchProjects } from './projectListActions';
+import { updateSvf } from './projectListActions';
 
 const actionTypes = {
     PARAMETERS_UPDATED: 'PARAMETERS_UPDATED',
@@ -139,14 +139,18 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
             },
             // onComplete
             (_, updatedState) => {
-                const { svf, parameters } = updatedState; // TODO: apply the parameter and SVF to the "UI"
                 dispatch(addLog('JobManager: Received onComplete'));
+
+                const rawParameters = updatedState.parameters;
+                const svf = updatedState.svf;
+                
                 // hide modal dialog
                 dispatch(showUpdateProgress(false));
 
-                // launch update here
-                dispatch(fetchProjects());
-                dispatch(fetchParameters(projectId, true));
+                // launch update
+                const parameters = adaptParameters(rawParameters);
+                dispatch(updateParameters(projectId, parameters));
+                dispatch(updateSvf(projectId, svf));
             }
         );
     } catch (error) {
