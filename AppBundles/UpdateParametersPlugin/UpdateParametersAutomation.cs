@@ -89,6 +89,9 @@ namespace UpdateParametersPlugin
                 // don't do anything unless parameters really changed
                 if (changed)
                 {
+                    LogTrace("Updating");
+                    doc.Update2();     
+
                     LogTrace("Saving");
                     doc.Save2(true);
                     LogTrace("Closing");
