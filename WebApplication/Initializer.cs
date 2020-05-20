@@ -57,8 +57,6 @@ namespace WebApplication
             foreach (DefaultProjectConfiguration defaultProjectConfig in _defaultProjectsConfiguration.Projects)
             {
                 var projectUrl = defaultProjectConfig.Url;
-                var tlaFilename = defaultProjectConfig.TopLevelAssembly;
-
                 var project = _resourceProvider.GetProject(defaultProjectConfig.Name);
 
                 _logger.LogInformation($"Download {projectUrl}");
@@ -66,13 +64,13 @@ namespace WebApplication
                 {
                     response.EnsureSuccessStatusCode();
 
-                    _logger.LogInformation("Upload to the app bucket");
-
                     // store project locally
                     using var tempFile = new TempFile();
                     using (FileStream fs = new FileStream(tempFile.Name, FileMode.Open))
                     {
                         await response.Content.CopyToAsync(fs);
+
+                        _logger.LogInformation("Upload to the app bucket");
 
                         // determine if we need to upload in chunks or in one piece
                         long sizeToUpload = fs.Length;
@@ -123,7 +121,7 @@ namespace WebApplication
                     }
                 }
 
-                await _projectWork.AdoptAsync(project, tlaFilename);
+                await _projectWork.AdoptAsync(defaultProjectConfig);
             }
 
             _logger.LogInformation("Added default projects.");
