@@ -31,12 +31,14 @@ namespace WebApplication.Processing
         /// <summary>
         /// Adapt the project.
         /// </summary>
-        public async Task AdoptAsync(Project project, string tlaFilename)
+        public async Task AdoptAsync(ProjectInfo projectInfo)
         {
             _logger.LogInformation("Adopt the project");
 
+            var project = _resourceProvider.GetProject(projectInfo.Name);
+
             var inputDocUrl = await _resourceProvider.CreateSignedUrlAsync(project.OSSSourceModel);
-            var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, tlaFilename);
+            var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, projectInfo.TopLevelAssembly);
 
             bool success = await _fdaClient.AdoptAsync(adoptionData);
             if (! success)
@@ -46,7 +48,7 @@ namespace WebApplication.Processing
             else
             {
                 // rearrange generated data according to the parameters hash
-                await _arranger.MoveProjectAsync(project, tlaFilename);
+                await _arranger.MoveProjectAsync(project, projectInfo.TopLevelAssembly);
 
                 _logger.LogInformation("Cache the project locally");
 
@@ -88,7 +90,7 @@ namespace WebApplication.Processing
         /// <summary>
         /// Generate project data for the given parameters and cache results locally.
         /// </summary>
-        public async Task UpdateAsync(Project project, string tlaFilename, InventorParameters parameters)
+        private async Task UpdateAsync(Project project, string tlaFilename, InventorParameters parameters)
         {
             _logger.LogInformation("Update the project");
 
@@ -99,7 +101,7 @@ namespace WebApplication.Processing
             if (! success) throw new ApplicationException($"Failed to update {project.Name}");
 
             // rearrange generated data according to the parameters hash
-            var hash = await _arranger.MoveViewablesAsync(project);
+            string hash = await _arranger.MoveViewablesAsync(project);
 
             _logger.LogInformation("Cache the project locally");
 

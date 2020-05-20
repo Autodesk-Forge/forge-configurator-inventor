@@ -53,6 +53,7 @@ namespace WebApplication
             // https://github.com/Autodesk-Forge/forge-api-dotnet-core/blob/master/src/Autodesk.Forge.Core/ServiceCollectionExtensions.cs
             services.Configure<ForgeConfiguration>(Configuration.GetSection(ForgeSectionKey));
             services.AddSingleton<ResourceProvider>();
+            services.AddSingleton<IPostProcessing, PostProcessing>();
             services.AddTransient<IForgeOSS, ForgeOSS>(); // ER: TODO: this will fail on token expiration, need extra work to refresh token
             services.Configure<AppBundleZipPaths>(Configuration.GetSection(AppBundleZipPathsKey));
             services.AddSingleton<FdaClient>();

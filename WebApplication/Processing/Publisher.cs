@@ -12,17 +12,19 @@ namespace WebApplication.Processing
     public class Publisher
     {
         private readonly ResourceProvider _resourceProvider;
+        private readonly IPostProcessing _postProcessing;
         private readonly DesignAutomationClient _client;
         private readonly ILogger<Publisher> _logger;
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Publisher(DesignAutomationClient client, ILogger<Publisher> logger, ResourceProvider resourceProvider)
+        public Publisher(DesignAutomationClient client, ILogger<Publisher> logger, ResourceProvider resourceProvider, IPostProcessing postProcessing)
         {
             _client = client;
             _logger = logger;
             _resourceProvider = resourceProvider;
+            _postProcessing = postProcessing;
         }
 
         public async Task<WorkItemStatus> RunWorkItemAsync(Dictionary<string, IArgument> workItemArgs, ForgeAppBase config)
@@ -35,7 +37,7 @@ namespace WebApplication.Processing
             };
 
             // run WI and wait for completion
-            var status = await _client.CreateWorkItemAsync(wi);
+            WorkItemStatus status = await _client.CreateWorkItemAsync(wi);
             Trace($"Created WI {status.Id}");
             while (status.Status == Status.Pending || status.Status == Status.Inprogress)
             {
@@ -45,6 +47,8 @@ namespace WebApplication.Processing
 
             Trace($"WI {status.Id} completed with {status.Status}");
             Trace($"{status.ReportUrl}");
+
+            await _postProcessing.HandleStatus(status);
             return status;
         }
 
