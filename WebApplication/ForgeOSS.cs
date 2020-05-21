@@ -102,22 +102,16 @@ namespace WebApplication
         /// <param name="bucketKey">The bucket name.</param>
         public Task CreateBucketAsync(string bucketKey)
         {
-            var payload = new PostBucketsPayload(bucketKey, /*allow*/null, PostBucketsPayload.PolicyKeyEnum.Persistent);
-
-            return _refreshTokenPolicy.ExecuteAsync(async () =>
+            return WithBucketApiAsync(api =>
             {
-                var api = await GetBucketsApiAsync();
-                await api.CreateBucketAsync(payload, /* use default (US region) */ null);
+                var payload = new PostBucketsPayload(bucketKey, /*allow*/null, PostBucketsPayload.PolicyKeyEnum.Persistent);
+                return api.CreateBucketAsync(payload, /* use default (US region) */ null);
             });
         }
 
         public Task DeleteBucketAsync(string bucketKey)
         {
-            return _refreshTokenPolicy.ExecuteAsync(async () =>
-            {
-                var api = await GetBucketsApiAsync();
-                await api.DeleteBucketAsync(bucketKey);
-            });
+            return WithBucketApiAsync(api => api.DeleteBucketAsync(bucketKey));
         }
 
         public Task CreateEmptyObjectAsync(string bucketKey, string objectName)
@@ -199,9 +193,17 @@ namespace WebApplication
             return new ObjectsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } };
         }
 
-        private async Task<BucketsApi> GetBucketsApiAsync()
+        /// <summary>
+        /// Run action against Buckets OSS API. 
+        /// </summary>
+        /// <remarks>The action runs with retry policy to handle API token expiration.</remarks>
+        private Task WithBucketApiAsync(Func<BucketsApi, Task> action)
         {
-            return new BucketsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } };
+            return _refreshTokenPolicy.ExecuteAsync(async () =>
+                    {
+                        var api = new BucketsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } };
+                        return action(api);
+                    });
         }
 
         private static string AsString(ObjectAccess access)
