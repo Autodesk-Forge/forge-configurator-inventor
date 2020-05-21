@@ -4,6 +4,7 @@
 
     public class AppBundleZipPaths
     {
+        public string EmptyExe { get; set; }
         public string CreateSVF { get; set; }
         public string CreateThumbnail { get; set; }
         public string ExtractParameters { get; set; }

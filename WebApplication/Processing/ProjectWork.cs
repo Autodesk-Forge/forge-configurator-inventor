@@ -89,6 +89,14 @@ namespace WebApplication.Processing
                     };
         }
 
+        public async Task FileTransferAsync(string source, string target)
+        {
+            bool success = await _fdaClient.TransferAsync(source, target);
+            if (!success) throw new ApplicationException($"Failed to transfer project file {source}");
+
+            _logger.LogInformation("File transferred.");
+        }
+
         /// <summary>
         /// Generate project data for the given parameters and cache results locally.
         /// </summary>
