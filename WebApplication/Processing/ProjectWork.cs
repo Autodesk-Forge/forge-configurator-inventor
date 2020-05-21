@@ -33,13 +33,11 @@ namespace WebApplication.Processing
         /// <summary>
         /// Adapt the project.
         /// </summary>
-        public async Task AdoptAsync(ProjectInfo projectInfo)
+        public async Task AdoptAsync(ProjectInfo projectInfo, string inputDocUrl)
         {
             _logger.LogInformation("Adopt the project");
 
             var project = _resourceProvider.GetProject(projectInfo.Name);
-
-            var inputDocUrl = await _forgeOSS.CreateSignedUrlAsync(_resourceProvider.BucketKey, project.OSSSourceModel);
             var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, projectInfo.TopLevelAssembly);
 
             bool success = await _fdaClient.AdoptAsync(adoptionData);

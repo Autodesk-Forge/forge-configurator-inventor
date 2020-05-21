@@ -95,15 +95,6 @@ namespace WebApplication
             return WithBucketApiAsync(api => api.DeleteBucketAsync(bucketKey));
         }
 
-        public Task CreateEmptyObjectAsync(string bucketKey, string objectName)
-        {
-            return WithObjectsApiAsync(async api =>
-            {
-                await using var stream = new MemoryStream();
-                await api.UploadObjectAsync(bucketKey, objectName, 0, stream);
-            });
-        }
-
         /// <summary>
         /// Generate a signed URL to OSS object.
         /// NOTE: An empty object created if not exists.
@@ -129,12 +120,6 @@ namespace WebApplication
             return WithObjectsApiAsync(api => api.UploadObjectAsync(bucketKey, objectName, 0, stream));
         }
 
-        public Task UploadChunkAsync(string bucketKey, Stream stream, string objectName, string contentRange, string sessionId)
-        {
-            return WithObjectsApiAsync(api => 
-                    api.UploadChunkAsync(bucketKey, objectName, (int) stream.Length, contentRange, sessionId, stream));
-        }
-
         /// <summary>
         /// Rename object.
         /// </summary>
@@ -157,7 +142,7 @@ namespace WebApplication
         }
 
         /// <summary>
-        /// Run action against Buckets OSS API. 
+        /// Run action against Buckets OSS API.
         /// </summary>
         /// <remarks>The action runs with retry policy to handle API token expiration.</remarks>
         private Task WithBucketApiAsync(Func<BucketsApi, Task> action)
@@ -170,7 +155,7 @@ namespace WebApplication
         }
 
         /// <summary>
-        /// Run action against Objects OSS API. 
+        /// Run action against Objects OSS API.
         /// </summary>
         /// <remarks>The action runs with retry policy to handle API token expiration.</remarks>
         private Task WithObjectsApiAsync(Func<ObjectsApi, Task> action)
@@ -183,7 +168,7 @@ namespace WebApplication
         }
 
         /// <summary>
-        /// Run action against Objects OSS API. 
+        /// Run action against Objects OSS API.
         /// </summary>
         /// <remarks>The action runs with retry policy to handle API token expiration.</remarks>
         private Task<T> WithObjectsApiAsync<T>(Func<ObjectsApi, Task<T>> action)
