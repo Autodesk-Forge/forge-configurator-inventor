@@ -12,8 +12,6 @@ namespace WebApplication.Utilities
         private const string LocalCacheDir = "LocalCache";
         public const string VirtualCacheDir = "/data";
 
-        private readonly IForgeOSS _forgeOSS;
-
         public string BucketKey { get; }
 
         public Task<string> Nickname => _nickname.Value;
@@ -25,10 +23,8 @@ namespace WebApplication.Utilities
         public string LocalRootName => _localRootDir.Value;
         private readonly Lazy<string> _localRootDir;
 
-        public ResourceProvider(IOptions<ForgeConfiguration> forgeConfigOptionsAccessor, DesignAutomationClient client,
-                                IForgeOSS forgeOSS, string bucketKey = null)
+        public ResourceProvider(IOptions<ForgeConfiguration> forgeConfigOptionsAccessor, DesignAutomationClient client, string bucketKey = null)
         {
-            _forgeOSS = forgeOSS;
             var configuration = forgeConfigOptionsAccessor.Value.Validate();
             BucketKey = bucketKey ?? $"projects-{configuration.ClientId.Substring(0, 3)}-{configuration.HashString()}{Environment.GetEnvironmentVariable("BucketKeySuffix")}".ToLowerInvariant();
 

@@ -56,7 +56,7 @@ namespace WebApplication.Tests
 
             projectsBucketKey = Guid.NewGuid().ToString();
             
-            var resourceProvider = new ResourceProvider(forgeConfigOptions, designAutomationClient, forgeOSS, projectsBucketKey);
+            var resourceProvider = new ResourceProvider(forgeConfigOptions, designAutomationClient, projectsBucketKey);
 
             var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
             var postProcessing = new PostProcessing(httpClientFactory, resourceProvider, new NullLogger<PostProcessing>());
