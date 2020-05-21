@@ -38,17 +38,6 @@ namespace WebApplication.Processing
                 }
             };
 
-        public override Dictionary<string, IArgument> ToWorkItemArgs(AdoptionData projectData)
-        {
-            var workItemArgs = base.ToWorkItemArgs(projectData);
-            if (projectData.InputParamsUrl != null)
-            {
-                workItemArgs.Add("source", new XrefTreeArgument { Url = projectData.InputParamsUrl });
-                workItemArgs.Add("target", new XrefTreeArgument { Url = projectData.InputParamsUrl });
-            }
-            return workItemArgs;
-        }
-
         public Task<bool> ProcessAsync(string source, string target)
         {
             var workItemArgs = new Dictionary<string, IArgument>();
