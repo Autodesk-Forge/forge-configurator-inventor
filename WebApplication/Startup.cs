@@ -54,7 +54,7 @@ namespace WebApplication
             services.Configure<ForgeConfiguration>(Configuration.GetSection(ForgeSectionKey));
             services.AddSingleton<ResourceProvider>();
             services.AddSingleton<IPostProcessing, PostProcessing>();
-            services.AddTransient<IForgeOSS, ForgeOSS>(); // ER: TODO: this will fail on token expiration, need extra work to refresh token
+            services.AddSingleton<IForgeOSS, ForgeOSS>();
             services.Configure<AppBundleZipPaths>(Configuration.GetSection(AppBundleZipPathsKey));
             services.AddSingleton<FdaClient>();
             services.Configure<DefaultProjectsConfiguration>(Configuration.GetSection(DefaultProjectsSectionKey));

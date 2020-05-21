@@ -50,32 +50,13 @@ namespace WebApplication
                                     .RetryAsync(5, (_, __) => RefreshApiToken());
         }
 
-        private async Task<string> _2leggedAsync()
-        {
-            _logger.LogInformation("Refreshing Forge token");
-
-            // Call the asynchronous version of the 2-legged client with HTTP information
-            // HTTP information helps to verify if the call was successful as well as read the HTTP transaction headers.
-            var twoLeggedApi = new TwoLeggedApi();
-            Autodesk.Forge.Client.ApiResponse<dynamic> response = await twoLeggedApi.AuthenticateAsyncWithHttpInfo(Configuration.ClientId, Configuration.ClientSecret, oAuthConstants.CLIENT_CREDENTIALS, _scope);
-            if (response.StatusCode != StatusCodes.Status200OK)
-            {
-                throw new Exception("Request failed! (with HTTP response " + response.StatusCode + ")");
-            }
-
-            // The JSON response from the oAuth server is the Data variable and has already been parsed into a DynamicDictionary object.
-            dynamic bearer = response.Data;
-            return bearer.access_token;
-        }
-
         public Task<List<ObjectDetails>> GetBucketObjectsAsync(string bucketKey, string beginsWith = null)
         {
-            return _refreshTokenPolicy.ExecuteAsync(async () =>
+            return WithObjectsApiAsync(async api =>
             {
                 var objects = new List<ObjectDetails>();
 
-                ObjectsApi objectsApi = await GetObjectsApiAsync();
-                dynamic objectsList = await objectsApi.GetObjectsAsync(bucketKey, null, beginsWith);
+                dynamic objectsList = await api.GetObjectsAsync(bucketKey, null, beginsWith);
 
                 foreach (KeyValuePair<string, dynamic> objInfo in new DynamicDictionaryItems(objectsList.items))
                 {
@@ -116,9 +97,8 @@ namespace WebApplication
 
         public Task CreateEmptyObjectAsync(string bucketKey, string objectName)
         {
-            return _refreshTokenPolicy.ExecuteAsync(async () =>
+            return WithObjectsApiAsync(async api =>
             {
-                var api = await GetObjectsApiAsync();
                 await using var stream = new MemoryStream();
                 await api.UploadObjectAsync(bucketKey, objectName, 0, stream);
             });
@@ -133,35 +113,28 @@ namespace WebApplication
         /// <param name="access">Requested access to the object.</param>
         /// <param name="minutesExpiration">Minutes while the URL is valid. Default is 30 minutes.</param>
         /// <returns>Signed URL</returns>
-        public Task<string> CreateSignedUrlAsync(string bucketKey, string objectName, ObjectAccess access = ObjectAccess.Read, int minutesExpiration = 30)
+        public async Task<string> CreateSignedUrlAsync(string bucketKey, string objectName, ObjectAccess access = ObjectAccess.Read, int minutesExpiration = 30)
         {
             var signature = new PostBucketsSigned(minutesExpiration);
 
-            return _refreshTokenPolicy.ExecuteAsync(async () =>
+            return await WithObjectsApiAsync(async api =>
             {
-                var api = await GetObjectsApiAsync();
                 dynamic result = await api.CreateSignedResourceAsync(bucketKey, objectName, signature, AsString(access));
-                return result.signedUrl as string;
+                return result.signedUrl;
             });
         }
 
         public Task UploadObjectAsync(string bucketKey, string objectName, Stream stream)
         {
-            return _refreshTokenPolicy.ExecuteAsync(async () =>
-            {
-                ObjectsApi objectsApi = await GetObjectsApiAsync();
-                await objectsApi.UploadObjectAsync(bucketKey, objectName, 0, stream);
-            });
+            return WithObjectsApiAsync(api => api.UploadObjectAsync(bucketKey, objectName, 0, stream));
         }
 
         public Task UploadChunkAsync(string bucketKey, Stream stream, string objectName, string contentRange, string sessionId)
         {
-            return _refreshTokenPolicy.ExecuteAsync(async () =>
-            {
-                var api = await GetObjectsApiAsync();
-                await api.UploadChunkAsync(bucketKey, objectName, (int) stream.Length, contentRange, sessionId, stream);
-            });
+            return WithObjectsApiAsync(api => 
+                    api.UploadChunkAsync(bucketKey, objectName, (int) stream.Length, contentRange, sessionId, stream));
         }
+
         /// <summary>
         /// Rename object.
         /// </summary>
@@ -170,10 +143,9 @@ namespace WebApplication
         /// <param name="newName">New object name.</param>
         public Task RenameObjectAsync(string bucketKey, string oldName, string newName)
         {
-            return _refreshTokenPolicy.ExecuteAsync(async () =>
+            return WithObjectsApiAsync(async api =>
             {
                 // OSS does not support renaming, so emulate it with more ineffective operations
-                var api = await GetObjectsApiAsync();
                 await api.CopyToAsync(bucketKey, oldName, newName);
                 await api.DeleteObjectAsync(bucketKey, oldName);
             });
@@ -181,16 +153,7 @@ namespace WebApplication
 
         public Task<Autodesk.Forge.Client.ApiResponse<dynamic>> GetObjectAsync(string bucketKey, string objectName)
         {
-            return _refreshTokenPolicy.ExecuteAsync(async () =>
-            {
-                var api = await GetObjectsApiAsync();
-                return await api.GetObjectAsyncWithHttpInfo(bucketKey, objectName);
-            });
-        }
-
-        private async Task<ObjectsApi> GetObjectsApiAsync()
-        {
-            return new ObjectsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } };
+            return WithObjectsApiAsync(api => api.GetObjectAsyncWithHttpInfo(bucketKey, objectName));
         }
 
         /// <summary>
@@ -206,6 +169,32 @@ namespace WebApplication
                     });
         }
 
+        /// <summary>
+        /// Run action against Objects OSS API. 
+        /// </summary>
+        /// <remarks>The action runs with retry policy to handle API token expiration.</remarks>
+        private Task WithObjectsApiAsync(Func<ObjectsApi, Task> action)
+        {
+            return _refreshTokenPolicy.ExecuteAsync(async () =>
+            {
+                var api = new ObjectsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } };
+                await action(api);
+            });
+        }
+
+        /// <summary>
+        /// Run action against Objects OSS API. 
+        /// </summary>
+        /// <remarks>The action runs with retry policy to handle API token expiration.</remarks>
+        private Task<T> WithObjectsApiAsync<T>(Func<ObjectsApi, Task<T>> action)
+        {
+            return _refreshTokenPolicy.ExecuteAsync(async () =>
+            {
+                var api = new ObjectsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } };
+                return await action(api);
+            });
+        }
+
         private static string AsString(ObjectAccess access)
         {
             return access.ToString().ToLowerInvariant();
@@ -214,6 +203,24 @@ namespace WebApplication
         private void RefreshApiToken()
         {
             _twoLeggedAccessToken = new Lazy<Task<string>>(async () => await _2leggedAsync());
+        }
+
+        private async Task<string> _2leggedAsync()
+        {
+            _logger.LogInformation("Refreshing Forge token");
+
+            // Call the asynchronous version of the 2-legged client with HTTP information
+            // HTTP information helps to verify if the call was successful as well as read the HTTP transaction headers.
+            var twoLeggedApi = new TwoLeggedApi();
+            Autodesk.Forge.Client.ApiResponse<dynamic> response = await twoLeggedApi.AuthenticateAsyncWithHttpInfo(Configuration.ClientId, Configuration.ClientSecret, oAuthConstants.CLIENT_CREDENTIALS, _scope);
+            if (response.StatusCode != StatusCodes.Status200OK)
+            {
+                throw new Exception("Request failed! (with HTTP response " + response.StatusCode + ")");
+            }
+
+            // The JSON response from the oAuth server is the Data variable and has already been parsed into a DynamicDictionary object.
+            dynamic bearer = response.Data;
+            return bearer.access_token;
         }
     }
 }
