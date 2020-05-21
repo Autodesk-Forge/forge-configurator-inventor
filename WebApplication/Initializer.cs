@@ -59,67 +59,11 @@ namespace WebApplication
                 var projectUrl = defaultProjectConfig.Url;
                 var project = _resourceProvider.GetProject(defaultProjectConfig.Name);
 
-                _logger.LogInformation($"Download {projectUrl}");
-                using (HttpResponseMessage response = await httpClient.GetAsync(projectUrl, HttpCompletionOption.ResponseHeadersRead))
-                {
-                    response.EnsureSuccessStatusCode();
-
-                    // store project locally
-                    using var tempFile = new TempFile();
-                    using (FileStream fs = new FileStream(tempFile.Name, FileMode.Open))
-                    {
-                        await response.Content.CopyToAsync(fs);
-
-                        _logger.LogInformation("Upload to the app bucket");
-
-                        // determine if we need to upload in chunks or in one piece
-                        long sizeToUpload = fs.Length;
-                        long chunkMBSize = 5;
-                        long chunkSize = chunkMBSize * 1024 * 1024; // 2MB is minimal
-
-                        // use chunks for all files greater than chunk size
-                        if (sizeToUpload > chunkSize)
-                        {
-                            long chunksCnt = (long)((sizeToUpload + chunkSize - 1) / chunkSize);
-
-                            _logger.LogInformation($"Uploading in {chunksCnt} x {chunkMBSize}MB chunks");
-
-                            string sessionId = Guid.NewGuid().ToString();
-                            long begin = 0;
-                            long end = chunkSize - 1;
-                            long count = chunkSize;
-                            byte[] buffer = new byte[count];
-
-                            for (int idx = 0; idx < chunksCnt; idx++)
-                            {
-                                // jump to requested position
-                                fs.Seek(begin, SeekOrigin.Begin);
-                                fs.Read(buffer, 0, (int)count);
-                                using (MemoryStream chunkStream = new MemoryStream(buffer, 0, (int)count))
-                                {
-                                    string contentRange = string.Format($"bytes {begin}-{end}/{sizeToUpload}");
-                                    await _forge.UploadChunkAsync(_resourceProvider.BucketKey, chunkStream, project.OSSSourceModel, contentRange, sessionId);
-                                }
-                                begin = end + 1;
-                                chunkSize = ((begin + chunkSize > sizeToUpload) ? sizeToUpload - begin : chunkSize);
-                                // for the last chunk there should be smaller count of bytes to read
-                                if (chunkSize > 0 && chunkSize != count)
-                                {
-                                    // reset to the new size for the LAST chunk
-                                    count = chunkSize;
-                                }
-
-                                end = begin + chunkSize - 1;
-                            }
-                        }
-                        else
-                        {
-                            // jump to beginning
-                            fs.Seek(0, SeekOrigin.Begin);
-                            await _forge.UploadObjectAsync(_resourceProvider.BucketKey, project.OSSSourceModel, fs);
-                        }
-                    }
-                }
+                _logger.LogInformation($"Launching 'TransferData' for {projectUrl}");
+                string signedUrl = await _forge.CreateSignedUrlAsync(_resourceProvider.BucketKey, project.OSSSourceModel, ObjectAccess.Write);
+                // TransferData from s3 to oss
+                await _projectWork.FileTransferAsync(projectUrl, signedUrl);
+                _logger.LogInformation($"'TransferData' for {projectUrl} is done.");
 
                 await _projectWork.AdoptAsync(defaultProjectConfig);
             }
