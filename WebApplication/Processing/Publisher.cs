@@ -37,6 +37,7 @@ namespace WebApplication.Processing
             };
 
             // run WI and wait for completion
+            DateTime start = DateTime.Now;
             WorkItemStatus status = await _client.CreateWorkItemAsync(wi);
             Trace($"Created WI {status.Id}");
             while (status.Status == Status.Pending || status.Status == Status.Inprogress)
@@ -45,7 +46,8 @@ namespace WebApplication.Processing
                 status = await _client.GetWorkitemStatusAsync(status.Id);
             }
 
-            Trace($"WI {status.Id} completed with {status.Status}");
+            var seconds = (DateTime.Now - start).TotalSeconds;
+            Trace($"WI {status.Id} completed with {status.Status} in {seconds} seconds");
             Trace($"{status.ReportUrl}");
 
             await _postProcessing.HandleStatus(status);

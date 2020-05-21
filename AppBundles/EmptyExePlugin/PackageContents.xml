@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ApplicationPackage SchemaVersion="1.0" Version="1.0" ProductCode="{E20F6D0B-676E-40F7-8870-205A76A5B689}" Name="EmptyExePlugin" Description="EmptyExePlugin Plugin" Author="Inventor IO Dev">
+    <CompanyDetails Name="Autodesk, Inc" Phone="415.555.5555" Url="www.autodesk.com" Email="noreply@autodesk.com" />
+    <Components>
+        <!-- For Inventor Engine, "Platform" attribute must be "Inventor" -->
+        <RuntimeRequirements  OS="Win64" Platform="Inventor" />
+    </Components>
+    <EnvironmentVariables>
+    </EnvironmentVariables>
+</ApplicationPackage>

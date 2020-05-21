@@ -6,6 +6,7 @@ namespace WebApplication.Processing
 {
     public class FdaClient
     {
+        private readonly TransferData _transferData;
         private readonly CreateSVF _svfWork;
         private readonly CreateThumbnail _thumbnailWork;
         private readonly ExtractParameters _parametersWork;
@@ -15,6 +16,7 @@ namespace WebApplication.Processing
 
         public FdaClient(Publisher publisher, IOptions<AppBundleZipPaths> appBundleZipPathsOptionsAccessor)
         {
+            _transferData = new TransferData(publisher);
             _svfWork = new CreateSVF(publisher);
             _thumbnailWork = new CreateThumbnail(publisher);
             _parametersWork = new ExtractParameters(publisher);
@@ -26,6 +28,7 @@ namespace WebApplication.Processing
         public async Task InitializeAsync()
         {
             // create bundles and activities
+            await _transferData.InitializeAsync(_paths.EmptyExe);
             await _svfWork.InitializeAsync(_paths.CreateSVF);
             await _thumbnailWork.InitializeAsync(_paths.CreateThumbnail);
             await _parametersWork.InitializeAsync(_paths.ExtractParameters);
@@ -36,6 +39,7 @@ namespace WebApplication.Processing
         public async Task CleanUpAsync()
         {
             // delete bundles and activities
+            await _transferData.CleanUpAsync();
             await _svfWork.CleanUpAsync();
             await _thumbnailWork.CleanUpAsync();
             await _parametersWork.CleanUpAsync();
@@ -46,6 +50,11 @@ namespace WebApplication.Processing
         public Task<bool> AdoptAsync(AdoptionData projectData)
         {
             return _adoptWork.ProcessAsync(projectData);
+        }
+
+        internal Task<bool> TransferAsync(string source, string target)
+        {
+            return _transferData.ProcessAsync(source, target);
         }
     }
 }
