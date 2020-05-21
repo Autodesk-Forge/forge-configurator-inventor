@@ -68,9 +68,9 @@ namespace WebApplication
             return bearer.access_token;
         }
 
-        public async Task<List<ObjectDetails>> GetBucketObjectsAsync(string bucketKey, string beginsWith = null)
+        public Task<List<ObjectDetails>> GetBucketObjectsAsync(string bucketKey, string beginsWith = null)
         {
-            return await _refreshTokenPolicy.ExecuteAsync(async () =>
+            return _refreshTokenPolicy.ExecuteAsync(async () =>
             {
                 var objects = new List<ObjectDetails>();
 
@@ -100,29 +100,29 @@ namespace WebApplication
         /// Create bucket with given name
         /// </summary>
         /// <param name="bucketKey">The bucket name.</param>
-        public async Task CreateBucketAsync(string bucketKey)
+        public Task CreateBucketAsync(string bucketKey)
         {
             var payload = new PostBucketsPayload(bucketKey, /*allow*/null, PostBucketsPayload.PolicyKeyEnum.Persistent);
 
-            await _refreshTokenPolicy.ExecuteAsync(async () =>
+            return _refreshTokenPolicy.ExecuteAsync(async () =>
             {
                 var api = await GetBucketsApiAsync();
                 await api.CreateBucketAsync(payload, /* use default (US region) */ null);
             });
         }
 
-        public async Task DeleteBucketAsync(string bucketKey)
+        public Task DeleteBucketAsync(string bucketKey)
         {
-            await _refreshTokenPolicy.ExecuteAsync(async () =>
+            return _refreshTokenPolicy.ExecuteAsync(async () =>
             {
                 var api = await GetBucketsApiAsync();
                 await api.DeleteBucketAsync(bucketKey);
             });
         }
 
-        public async Task CreateEmptyObjectAsync(string bucketKey, string objectName)
+        public Task CreateEmptyObjectAsync(string bucketKey, string objectName)
         {
-            await _refreshTokenPolicy.ExecuteAsync(async () =>
+            return _refreshTokenPolicy.ExecuteAsync(async () =>
             {
                 var api = await GetObjectsApiAsync();
                 await using var stream = new MemoryStream();
@@ -139,30 +139,30 @@ namespace WebApplication
         /// <param name="access">Requested access to the object.</param>
         /// <param name="minutesExpiration">Minutes while the URL is valid. Default is 30 minutes.</param>
         /// <returns>Signed URL</returns>
-        public async Task<string> CreateSignedUrlAsync(string bucketKey, string objectName, ObjectAccess access = ObjectAccess.Read, int minutesExpiration = 30)
+        public Task<string> CreateSignedUrlAsync(string bucketKey, string objectName, ObjectAccess access = ObjectAccess.Read, int minutesExpiration = 30)
         {
             var signature = new PostBucketsSigned(minutesExpiration);
 
-            return await _refreshTokenPolicy.ExecuteAsync(async () =>
+            return _refreshTokenPolicy.ExecuteAsync(async () =>
             {
                 var api = await GetObjectsApiAsync();
                 dynamic result = await api.CreateSignedResourceAsync(bucketKey, objectName, signature, AsString(access));
-                return result.signedUrl;
+                return result.signedUrl as string;
             });
         }
 
-        public async Task UploadObjectAsync(string bucketKey, string objectName, Stream stream)
+        public Task UploadObjectAsync(string bucketKey, string objectName, Stream stream)
         {
-            await _refreshTokenPolicy.ExecuteAsync(async () =>
+            return _refreshTokenPolicy.ExecuteAsync(async () =>
             {
                 ObjectsApi objectsApi = await GetObjectsApiAsync();
                 await objectsApi.UploadObjectAsync(bucketKey, objectName, 0, stream);
             });
         }
 
-        public async Task UploadChunkAsync(string bucketKey, Stream stream, string objectName, string contentRange, string sessionId)
+        public Task UploadChunkAsync(string bucketKey, Stream stream, string objectName, string contentRange, string sessionId)
         {
-            await _refreshTokenPolicy.ExecuteAsync(async () =>
+            return _refreshTokenPolicy.ExecuteAsync(async () =>
             {
                 var api = await GetObjectsApiAsync();
                 await api.UploadChunkAsync(bucketKey, objectName, (int) stream.Length, contentRange, sessionId, stream);
@@ -174,9 +174,9 @@ namespace WebApplication
         /// <param name="bucketKey">Bucket key.</param>
         /// <param name="oldName">Old object name.</param>
         /// <param name="newName">New object name.</param>
-        public async Task RenameObjectAsync(string bucketKey, string oldName, string newName)
+        public Task RenameObjectAsync(string bucketKey, string oldName, string newName)
         {
-            await _refreshTokenPolicy.ExecuteAsync(async () =>
+            return _refreshTokenPolicy.ExecuteAsync(async () =>
             {
                 // OSS does not support renaming, so emulate it with more ineffective operations
                 var api = await GetObjectsApiAsync();
@@ -185,9 +185,9 @@ namespace WebApplication
             });
         }
 
-        public async Task<Autodesk.Forge.Client.ApiResponse<dynamic>> GetObjectAsync(string bucketKey, string objectName)
+        public Task<Autodesk.Forge.Client.ApiResponse<dynamic>> GetObjectAsync(string bucketKey, string objectName)
         {
-            return await _refreshTokenPolicy.ExecuteAsync(async () =>
+            return _refreshTokenPolicy.ExecuteAsync(async () =>
             {
                 var api = await GetObjectsApiAsync();
                 return await api.GetObjectAsyncWithHttpInfo(bucketKey, objectName);
