@@ -56,17 +56,28 @@ namespace UpdateParametersPlugin
 
                 var parameters = JsonConvert.DeserializeObject<InventorParameters>(json);
 
+                bool changed = false;
                 dynamic dynDoc = doc;
                 foreach (var pair in parameters)
                 {
                     string paramName = pair.Key;
                     InventorParameter paramData = pair.Value;
 
-                    LogTrace($"Applying '{paramData.Value}' to '{paramName}'");
-
                     try
                     {
-                        dynDoc.ComponentDefinition.Parameters.UserParameters[paramName].Expression = paramData.Value;
+                        var userParameter = dynDoc.ComponentDefinition.Parameters.UserParameters[paramName];
+                        string expression = userParameter.Expression;
+                        if (!paramData.Value.Equals(expression))
+                        {
+                            LogTrace($"Applying '{paramData.Value}' to '{paramName}'");
+                            userParameter.Expression = paramData.Value;
+
+                            changed = true;
+                        }
+                        else
+                        {
+                            LogTrace($"Skipping '{paramName}'");
+                        }
                     }
                     catch (Exception e)
                     {
@@ -75,13 +86,21 @@ namespace UpdateParametersPlugin
                     }
                 }
 
-                LogTrace("Updating");
-                doc.Update2();
+                // don't do anything unless parameters really changed
+                if (changed)
+                {
+                    LogTrace("Updating");
+                    doc.Update2();     
 
-                LogTrace("Saving");
-                doc.Save2(true);
-                LogTrace("Closing");
-                doc.Close(true);
+                    LogTrace("Saving");
+                    doc.Save2(true);
+                    LogTrace("Closing");
+                    doc.Close(true);
+                }
+                else
+                {
+                    LogTrace("Update is not required.");
+                }
             }
         }
 
