@@ -18,26 +18,26 @@ namespace WebApplication.Processing
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly Arranger _arranger;
         private readonly FdaClient _fdaClient;
+        private readonly IForgeOSS _forgeOSS;
 
-        public ProjectWork(ILogger<ProjectWork> logger, ResourceProvider resourceProvider, IHttpClientFactory httpClientFactory, Arranger arranger, FdaClient fdaClient)
+        public ProjectWork(ILogger<ProjectWork> logger, ResourceProvider resourceProvider, IHttpClientFactory httpClientFactory, Arranger arranger, FdaClient fdaClient, IForgeOSS forgeOSS)
         {
             _logger = logger;
             _resourceProvider = resourceProvider;
             _httpClientFactory = httpClientFactory;
             _arranger = arranger;
             _fdaClient = fdaClient;
+            _forgeOSS = forgeOSS;
         }
 
         /// <summary>
         /// Adapt the project.
         /// </summary>
-        public async Task AdoptAsync(ProjectInfo projectInfo)
+        public async Task AdoptAsync(ProjectInfo projectInfo, string inputDocUrl)
         {
             _logger.LogInformation("Adopt the project");
 
             var project = _resourceProvider.GetProject(projectInfo.Name);
-
-            var inputDocUrl = await _resourceProvider.CreateSignedUrlAsync(project.OSSSourceModel);
             var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, projectInfo.TopLevelAssembly);
 
             bool success = await _fdaClient.AdoptAsync(adoptionData);
@@ -54,7 +54,7 @@ namespace WebApplication.Processing
 
                 // and now cache the generate stuff locally
                 var projectLocalStorage = new ProjectStorage(project, _resourceProvider);
-                await projectLocalStorage.EnsureLocalAsync(_httpClientFactory.CreateClient());
+                await projectLocalStorage.EnsureLocalAsync(_httpClientFactory.CreateClient(), _forgeOSS);
             }
         }
 
@@ -102,7 +102,7 @@ namespace WebApplication.Processing
         {
             _logger.LogInformation("Update the project");
 
-            var inputDocUrl = await _resourceProvider.CreateSignedUrlAsync(project.OSSSourceModel);
+            var inputDocUrl = await _forgeOSS.CreateSignedUrlAsync(_resourceProvider.BucketKey, project.OSSSourceModel);
             var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, tlaFilename, parameters);
 
             bool success = await _fdaClient.AdoptAsync(adoptionData);
@@ -115,7 +115,7 @@ namespace WebApplication.Processing
 
             // and now cache the generate stuff locally
             var projectStorage = new ProjectStorage(project, _resourceProvider);
-            await projectStorage.EnsureViewablesAsync(_httpClientFactory.CreateClient(), hash);
+            await projectStorage.EnsureViewablesAsync(_httpClientFactory.CreateClient(), _forgeOSS, hash);
         }
     }
 }

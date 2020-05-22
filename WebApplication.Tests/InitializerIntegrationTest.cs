@@ -56,7 +56,7 @@ namespace WebApplication.Tests
 
             projectsBucketKey = Guid.NewGuid().ToString();
             
-            var resourceProvider = new ResourceProvider(forgeConfigOptions, designAutomationClient, forgeOSS, projectsBucketKey);
+            var resourceProvider = new ResourceProvider(forgeConfigOptions, designAutomationClient, projectsBucketKey);
 
             var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
             var postProcessing = new PostProcessing(httpClientFactory, resourceProvider, new NullLogger<PostProcessing>());
@@ -79,7 +79,7 @@ namespace WebApplication.Tests
             };
             IOptions<DefaultProjectsConfiguration> defaultProjectsOptions = Options.Create(defaultProjectsConfiguration);
             var arranger = new Arranger(forgeOSS, httpClientFactory, resourceProvider);
-            var projectWork = new ProjectWork(new NullLogger<ProjectWork>(), resourceProvider, httpClientFactory, arranger, fdaClient);
+            var projectWork = new ProjectWork(new NullLogger<ProjectWork>(), resourceProvider, httpClientFactory, arranger, fdaClient, forgeOSS);
             initializer = new Initializer(forgeOSS, resourceProvider, new NullLogger<Initializer>(), fdaClient, 
                                             defaultProjectsOptions, httpClientFactory, projectWork);
 
@@ -87,16 +87,16 @@ namespace WebApplication.Tests
             httpClient = new HttpClient();
         }
 
-        public async Task InitializeAsync()
+        public Task InitializeAsync()
         {
-            await initializer.ClearAsync();
+            return initializer.ClearAsync();
         }
 
-        public async Task DisposeAsync()
+        public Task DisposeAsync()
         {
             testFileDirectory.Delete(true);
             httpClient.Dispose();
-            await initializer.ClearAsync();
+            return initializer.ClearAsync();
         }
 
         private async Task<string> DownloadTestComparisonFile(string url, string name)

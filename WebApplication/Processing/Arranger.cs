@@ -42,10 +42,10 @@ namespace WebApplication.Processing
         /// <param name="parameters">Inventor parameters.</param>
         public async Task<AdoptionData> ForAdoptionAsync(string docUrl, string tlaFilename, InventorParameters parameters = null)
         {
-            var urls = await Task.WhenAll(_resourceProvider.CreateSignedUrlAsync(Thumbnail, ObjectAccess.Write), 
-                                            _resourceProvider.CreateSignedUrlAsync(SVF, ObjectAccess.Write), 
-                                            _resourceProvider.CreateSignedUrlAsync(Parameters, ObjectAccess.Write),
-                                            _resourceProvider.CreateSignedUrlAsync(InputParams, ObjectAccess.ReadWrite));
+            var urls = await Task.WhenAll(CreateSignedUrlAsync(Thumbnail, ObjectAccess.Write), 
+                                            CreateSignedUrlAsync(SVF, ObjectAccess.Write), 
+                                            CreateSignedUrlAsync(Parameters, ObjectAccess.Write),
+                                            CreateSignedUrlAsync(InputParams, ObjectAccess.ReadWrite));
 
             await using var jsonStream = Json.ToStream(parameters ?? new InventorParameters());  // TODO: TEMPORARY! no need to pass parameters for "adopt" phase
             await _forge.UploadObjectAsync(_resourceProvider.BucketKey, InputParams, jsonStream);
@@ -109,7 +109,7 @@ namespace WebApplication.Processing
             var client = _clientFactory.CreateClient();
 
             // rearrange generated data according to the parameters hash
-            var url = await _resourceProvider.CreateSignedUrlAsync(Parameters);
+            var url = await CreateSignedUrlAsync(Parameters);
             using var response = await client.GetAsync(url); // TODO: find
             response.EnsureSuccessStatusCode();
 
@@ -117,6 +117,11 @@ namespace WebApplication.Processing
             var stream = await response.Content.ReadAsStreamAsync();
             var parameters = await JsonSerializer.DeserializeAsync<InventorParameters>(stream);
             return Crypto.GenerateObjectHashString(parameters);
+        }
+
+        private Task<string> CreateSignedUrlAsync(string objectName, ObjectAccess access = ObjectAccess.Read)
+        {
+            return _forge.CreateSignedUrlAsync(_bucketKey, objectName, access);
         }
     }
 }

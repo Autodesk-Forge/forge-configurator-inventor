@@ -41,31 +41,32 @@ namespace WebApplication
         public async Task InitializeAsync()
         {
             using var scope = _logger.BeginScope("Init");
-
-            // create bundles and activities
-            await _fdaClient.InitializeAsync();
-
             _logger.LogInformation("Initializing base data");
 
-            await _forge.CreateBucketAsync(_resourceProvider.BucketKey);
+            await Task.WhenAll(
+                    // create bundles and activities
+                    _fdaClient.InitializeAsync(),
+
+                    // create the bucket
+                    _forge.CreateBucketAsync(_resourceProvider.BucketKey)
+                );
+
             _logger.LogInformation($"Bucket {_resourceProvider.BucketKey} created");
 
-            // download default project files from the public location
-            // specified by the appsettings.json
-            var httpClient = _httpClientFactory.CreateClient();
-
+            // publish default project files (specified by the appsettings.json)
             foreach (DefaultProjectConfiguration defaultProjectConfig in _defaultProjectsConfiguration.Projects)
             {
                 var projectUrl = defaultProjectConfig.Url;
                 var project = _resourceProvider.GetProject(defaultProjectConfig.Name);
 
                 _logger.LogInformation($"Launching 'TransferData' for {projectUrl}");
-                string signedUrl = await _forge.CreateSignedUrlAsync(_resourceProvider.BucketKey, project.OSSSourceModel, ObjectAccess.Write);
+                string signedUrl = await _forge.CreateSignedUrlAsync(_resourceProvider.BucketKey, project.OSSSourceModel, ObjectAccess.ReadWrite);
+
                 // TransferData from s3 to oss
                 await _projectWork.FileTransferAsync(projectUrl, signedUrl);
                 _logger.LogInformation($"'TransferData' for {projectUrl} is done.");
 
-                await _projectWork.AdoptAsync(defaultProjectConfig);
+                await _projectWork.AdoptAsync(defaultProjectConfig, signedUrl);
             }
 
             _logger.LogInformation("Added default projects.");
