@@ -142,6 +142,22 @@ namespace WebApplication
         }
 
         /// <summary>
+        /// Copy OSS object.
+        /// </summary>
+        public Task CopyAsync(string bucketKey, string fromName, string toName)
+        {
+            return WithObjectsApiAsync(api => api.CopyToAsync(bucketKey, fromName, toName));
+        }
+
+        /// <summary>
+        /// Delete OSS object.
+        /// </summary>
+        public Task DeleteAsync(string bucketKey, string objectName)
+        {
+            return WithObjectsApiAsync(api => api.DeleteObjectAsync(bucketKey, objectName));
+        }
+
+        /// <summary>
         /// Run action against Buckets OSS API.
         /// </summary>
         /// <remarks>The action runs with retry policy to handle API token expiration.</remarks>

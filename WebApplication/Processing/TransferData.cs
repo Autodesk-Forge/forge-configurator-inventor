@@ -1,7 +1,6 @@
 ﻿using Autodesk.Forge.DesignAutomation.Model;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using WebApplication.Definitions;
 
 namespace WebApplication.Processing
 {

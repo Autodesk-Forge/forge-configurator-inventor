@@ -21,7 +21,7 @@ namespace WebApplication.Processing
         public readonly string Parameters = $"{Guid.NewGuid():N}.json";
         public readonly string Thumbnail = $"{Guid.NewGuid():N}.png";
         public readonly string SVF = $"{Guid.NewGuid():N}.zip";
-        public readonly string InputParams = $"{Guid.NewGuid():N}.zip";
+        public readonly string InputParams = $"{Guid.NewGuid():N}.json";
 
         /// <summary>
         /// Constructor.
@@ -77,7 +77,8 @@ namespace WebApplication.Processing
             await Task.WhenAll(_forge.RenameObjectAsync(_bucketKey, Thumbnail, project.OssAttributes.Thumbnail),
                                 _forge.RenameObjectAsync(_bucketKey, SVF, ossNames.ModelView),
                                 _forge.RenameObjectAsync(_bucketKey, Parameters, ossNames.Parameters),
-                                _forge.UploadObjectAsync(_bucketKey, project.OssAttributes.Metadata, Json.ToStream(attributes, writeIndented: true)));
+                                _forge.UploadObjectAsync(_bucketKey, project.OssAttributes.Metadata, Json.ToStream(attributes, writeIndented: true)),
+                                _forge.DeleteAsync(_bucketKey, InputParams));
 
             return hashString;
         }
@@ -96,7 +97,8 @@ namespace WebApplication.Processing
             // move data to expected places
             await Task.WhenAll(_forge.RenameObjectAsync(_bucketKey, Thumbnail, project.OssAttributes.Thumbnail),
                                 _forge.RenameObjectAsync(_bucketKey, SVF, ossNames.ModelView),
-                                _forge.RenameObjectAsync(_bucketKey, Parameters, ossNames.Parameters));
+                                _forge.RenameObjectAsync(_bucketKey, Parameters, ossNames.Parameters),
+                                _forge.DeleteAsync(_bucketKey, InputParams));
 
             return hashString;
         }

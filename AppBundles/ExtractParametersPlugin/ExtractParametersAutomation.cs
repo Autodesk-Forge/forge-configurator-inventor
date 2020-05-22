@@ -80,7 +80,7 @@ namespace ExtractParametersPlugin
                     {
                         Unit = param.Units,
                         Value = param.Expression,
-                        Values = param.ExpressionList?.GetExpressionList()
+                        Values = param.ExpressionList?.GetExpressionList() ?? new string[0]
                     };
                     parameters.Add(param.Name, parameter);
                 }
