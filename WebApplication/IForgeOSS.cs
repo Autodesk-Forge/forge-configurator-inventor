@@ -45,5 +45,10 @@ namespace WebApplication
         Task RenameObjectAsync(string bucketKey, string oldName, string newName);
 
         Task<Autodesk.Forge.Client.ApiResponse<dynamic>> GetObjectAsync(string bucketKey, string objectName);
+
+        /// <summary>
+        /// Copy OSS object.
+        /// </summary>
+        Task CopyAsync(string bucketKey, string fromName, string toName);
     }
 }
