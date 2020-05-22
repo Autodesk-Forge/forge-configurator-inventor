@@ -127,6 +127,7 @@ namespace WebApplication.Processing
 
         private async Task CopyStateAsync(Project project, string hashFrom, string hashTo)
         {
+            // see if the dir exists already
             LocalNameProvider localTo = project.LocalNameProvider(hashTo);
             if (Directory.Exists(localTo.BaseDir))
             {
@@ -142,8 +143,9 @@ namespace WebApplication.Processing
             OSSObjectNameProvider ossFrom = project.OssNameProvider(hashFrom);
             OSSObjectNameProvider ossTo = project.OssNameProvider(hashTo);
 
-            await _forgeOSS.CopyAsync(_resourceProvider.BucketKey, ossFrom.Parameters, ossTo.Parameters);
-            await _forgeOSS.CopyAsync(_resourceProvider.BucketKey, ossFrom.ModelView, ossTo.ModelView);
+            await Task.WhenAll(
+                _forgeOSS.CopyAsync(_resourceProvider.BucketKey, ossFrom.Parameters, ossTo.Parameters),
+                _forgeOSS.CopyAsync(_resourceProvider.BucketKey, ossFrom.ModelView, ossTo.ModelView));
 
             _logger.LogInformation($"Cache the project locally ({hashTo})");
         }

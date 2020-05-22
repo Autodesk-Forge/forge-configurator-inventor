@@ -50,5 +50,10 @@ namespace WebApplication
         /// Copy OSS object.
         /// </summary>
         Task CopyAsync(string bucketKey, string fromName, string toName);
+
+        /// <summary>
+        /// Delete OSS object.
+        /// </summary>
+        Task DeleteAsync(string bucketKey, string objectName);
     }
 }
