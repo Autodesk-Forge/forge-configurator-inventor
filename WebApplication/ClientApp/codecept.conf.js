@@ -19,7 +19,7 @@ const chromiumArgs = [
 ];
 
 exports.config = {
-  tests: './src/__tests__/*_test.js',
+  tests: './src/ui-tests/*_test.js',
   output: './output',
   helpers: {
     Playwright: {
