@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+const XPathElements = require('./elements_definition.js');
 
 Before((I) => {
     I.amOnPage('https://localhost:5001');
@@ -8,13 +9,11 @@ Feature('Viewer');
 
 Scenario('should check switch to model tab loads the viewer', async (I) => {
 
-    const modelTabSelector = '.tabsContainer li:nth-of-type(2) p';
-    const viewerSelector = '.canvas-wrap canvas';
     const viewerModelSelector = '#ViewerModelStructurePanel';
 
-    I.see('Model', modelTabSelector);
+    I.see('Model', XPathElements.xpTabModel);
     I.wait(3); // allow the projects combo to be loaded
-    I.click(modelTabSelector);
-    I.waitForElement(viewerSelector, 20);
-    I.waitForElement(viewerModelSelector, 20);
+    I.click(XPathElements.xpTabModel);
+    I.waitForElement(XPathElements.xpViewerCanvas, 5);
+    I.waitForElement(viewerModelSelector, 5);
 });

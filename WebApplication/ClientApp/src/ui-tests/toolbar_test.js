@@ -10,11 +10,11 @@ Feature('Forge Link');
 Scenario('should check if Autodesk Forge link works', async (I) => {
 
     // check Forge link
-    I.waitForElement({xpath: XPathElements.xpLinkAdskForge},5);
+    I.waitForElement({xpath: XPathElements.xpLinkAdskForge}, 5);
     I.click({xpath: XPathElements.xpLinkAdskForge});
 
     // wait for Autodesk Forge page
-    I.waitForElement(".adskf__navbar-logo", 5);
+    I.waitForElement(".adskf__navbar-logo", 10);
 
     // check the page name
     I.seeTitleEquals("Autodesk Forge");
@@ -24,18 +24,19 @@ Feature('Project Switcher');
 
 Scenario('should check Project switcher is loaded', async (I) => {
 
+    I.wait(3);
     // wait until project combo is displayed
-    I.waitForElement({xpath: XPathElements.xpComboProjects}, 3);
+    I.waitForElement({xpath: XPathElements.xpComboProjects}, 5);
     I.click({xpath: XPathElements.xpComboProjects});
 
     // wait until project list is displayed2
-    I.waitForElement({xpath: XPathElements.xpProjectList}, 2);
+    I.waitForElement({xpath: XPathElements.xpProjectList}, 5);
 
     // check content of PROJECTS menu
     I.see("PROJECTS", {xpath: XPathElements.xpMenuProjectsName});
 
     // check name of the first project
-    I.see("Conveyor", {xpath: XPathElements.xpProjectCoveyor});
+    I.see("Conveyor", {xpath: XPathElements.xpProjectConveyor});
 
     // check name of the second project
     I.see("Wrench", {xpath: XPathElements.xpProjectWrench});
@@ -44,14 +45,15 @@ Scenario('should check Project switcher is loaded', async (I) => {
 Scenario('should check Project switcher is correctly changed', async (I) => {
 
     // wait until project combo is displayed
-    I.waitForElement({xpath: XPathElements.xpComboProjects}, 3);
+    I.wait(3);
+    I.waitForElement({xpath: XPathElements.xpComboProjects}, 5);
     I.click({xpath: XPathElements.xpComboProjects});
 
     // wait until project list is displayed
-    I.waitForElement({xpath: XPathElements.xpProjectList}, 2);
+    I.waitForElement({xpath: XPathElements.xpProjectList}, 5);
 
     // emulate click to trigger project loading
-    I.click({xpath: XPathElements.xpProjectCoveyor});
+    I.click({xpath: XPathElements.xpProjectConveyor});
 
     // check the current project name
     I.see("Conveyor", {xpath: XPathElements.xpComboProjects});
@@ -60,7 +62,7 @@ Scenario('should check Project switcher is correctly changed', async (I) => {
     I.click({xpath: XPathElements.xpComboProjects});
 
     // wait until project list is displayed
-    I.waitForElement({xpath: XPathElements.xpProjectList}, 2);
+    I.waitForElement({xpath: XPathElements.xpProjectList}, 5);
 
     // emulate click to trigger project loading
     I.click({xpath: XPathElements.xpProjectWrench});

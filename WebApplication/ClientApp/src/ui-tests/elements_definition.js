@@ -1,8 +1,8 @@
 /* eslint-disable no-undef */
 
 module.exports = {
-     xpButtonCancel : '//div[2]/div/button[1]',
-     xpButtonUpdate : '//div[2]/div/button[2]',
+     xpButtonReset : '//div[3]/button[1]',
+     xpButtonUpdate : '//div[3]/button[2]',
      xpTabProjects : '//ul/li[1]/div',
      xpTabModel : '//ul/li[2]/div',
      xpTabBOM : '//ul/li[3]/div',
@@ -11,7 +11,7 @@ module.exports = {
      xpDivForgeViewer : '//*[@id="ForgeViewer"]',
      xpLinkAdskForge : '//div[1]/div[1]/a',
      xpComboProjects : '//p',
-     xpProjectCoveyor : '//ul/li[1]/span[2]',
+     xpProjectConveyor : '//ul/li[1]/span[2]',
      xpProjectWrench : '//ul/li[2]/span[2]',
      xpProjectList : '//div/div[2]',
      xpButtonLog : '//div/div[1]/button',
@@ -20,5 +20,6 @@ module.exports = {
      xpDivParameterContainer : '//*[@id="model"]/div/div[1]',
      xpDivProjectsButton : '//div[3]/div/div[1]/div',
      xpPopUpLog : '//div/div[2]',
-     xpMenuProjectsName : '//ul/span'
+     xpMenuProjectsName : '//ul/span',
+     xpViewerCanvas : '//*[@id="ForgeViewer"]/div/div/div[1]/canvas'
 };

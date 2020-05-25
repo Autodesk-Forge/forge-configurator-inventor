@@ -15,7 +15,7 @@ Scenario('should check if Parameter panel has Cancel and Update button', async (
     I.click({xpath: XPathElements.xpTabModel });
 
     // check that Model tab has correct content
-    I.see("Cancel",{xpath: XPathElements.xpButtonCancel });
+    I.see("Reset",{xpath: XPathElements.xpButtonReset });
     I.see("Update",{xpath: XPathElements.xpButtonUpdate });
 });
 
@@ -26,19 +26,19 @@ Scenario('should check if Stripe panel is displayed and hidden', async (I) => {
     I.wait(3); // allow the projects combo  to be  loaded - https://jira.autodesk.com/browse/INVGEN-40998
     I.click({xpath: XPathElements.xpTabModel});
 
-    // check that Model tab has a parameter
-    I.waitForElement('//*[@id="model"]/div/div[1]/div[1]/div[1]/div/input', 2);
+    // check that Model tab has a parameter - Length
+    I.waitForElement('//*[@id="model"]/div/div[1]/div[2]/div[1]/div/input', 5);
 
     // change the Lenght parameter
-    I.clearField('//div[1]/div[1]/div/input');
-    I.fillField('//div[1]/div[1]/div/input', "12500 mm");
+    I.clearField('//div[2]/div[1]/div/input');
+    I.fillField('//div[2]/div[1]/div/input', "12500 mm");
 
     // check if the Stripe element is displayed
     I.seeElement(XPathElements.xpStripeElement);
 
     // change the Lenght parameter
-    I.clearField('//div[1]/div[1]/div/input');
-    I.fillField('//div[1]/div[1]/div/input', "12000 mm");
+    I.clearField('//div[2]/div[1]/div/input');
+    I.fillField('//div[2]/div[1]/div/input', "12000 mm");
 
     // check if the Stripe element was hidden
     I.waitForInvisible(XPathElements.xpStripeElement);
