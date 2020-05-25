@@ -58,6 +58,11 @@ Demo application showcasing Configuration with Design Automation for Inventor
 * Note that the server needs to be running for integration tests
 1. In Visual Studio Code, on the Run tab, select the `Debug Jest All` configuration and click the "Start Debugging" (arrow) button
 1. Alternatively, using the command line go to WebApplication/ClientApp and execute `npm run test`
+### UI Tests
+* For UI tests we are using `CodeCeptJs` framework. All tests are stored in `ClinetApp/src/ui-tests/` and we filter all files end with `*_test.js`. 
+1. From Visual Studio Code
+    * For all UI tests Run this command: `npx codeceptjs run`
+    * For particular file you can use this command: `npx codeceptjs run src/ui-tests/<test file name>`
 
 # Additional Information
 ## Specify Forge credentials
