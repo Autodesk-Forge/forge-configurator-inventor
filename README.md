@@ -121,3 +121,10 @@ We are using npm.
 
 1. Using command line go to WebApplication/ClientApp and run `npm install <package>`
     * Note that packages are normally installed as part of the build, but only if the `npm_modules` directory is not found. This means that when new packages are added, `WebApplication/ClientApp/npm install` needs to be run again manually by other users (who did not add the new package).
+
+### Manually run linter
+* For JavaScript code: `npm run lint`
+* For CSS: `npm run lint-css`
+
+### Suppress pre-commit hook
+Use `--no-verify` command line option for git.

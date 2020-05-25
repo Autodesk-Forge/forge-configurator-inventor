@@ -9,5 +9,11 @@ namespace WebApplication.Definitions
         /// </summary>
         [JsonPropertyName("hash")]
         public string Hash { get; set; }
+
+        /// <summary>
+        /// Pathname of the top-level assembly.
+        /// </summary>
+        [JsonPropertyName("tla")]
+        public string TLA { get; set; }
     }
 }

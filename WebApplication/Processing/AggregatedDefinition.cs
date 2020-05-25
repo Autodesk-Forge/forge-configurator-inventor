@@ -44,15 +44,9 @@ namespace WebApplication.Processing
 
         protected override string OutputName => throw new NotImplementedException();
 
-        public override Dictionary<string, IArgument> ToIptArguments(AdoptionData projectData)
+        public override Dictionary<string, IArgument> ToWorkItemArgs(AdoptionData projectData)
         {
-            var all = _definitions.Select(def => def.ToIptArguments(projectData));
-            return Collections.MergeDictionaries(all);
-        }
-
-        public override Dictionary<string, IArgument> ToIamArguments(AdoptionData projectData)
-        {
-            var all = _definitions.Select(def => def.ToIamArguments(projectData));
+            var all = _definitions.Select(def => def.ToWorkItemArgs(projectData));
             return Collections.MergeDictionaries(all);
         }
 

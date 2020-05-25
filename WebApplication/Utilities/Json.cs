@@ -10,13 +10,14 @@ namespace WebApplication.Utilities
         /// Serialize data as JSON to a stream.
         /// </summary>
         /// <param name="data"></param>
+        /// <param name="writeIndented">Write indented JSON.</param>
         /// <returns>The stream. Should be disposed.</returns>
-        public static MemoryStream ToStream<T>(T data)
+        public static MemoryStream ToStream<T>(T data, bool writeIndented = false)
         {
             var memoryStream = new MemoryStream();
             using (var jsonWriter = new Utf8JsonWriter(memoryStream))
             {
-                JsonSerializer.Serialize(jsonWriter, data, typeof(T), new JsonSerializerOptions { WriteIndented = true });
+                JsonSerializer.Serialize(jsonWriter, data, typeof(T), new JsonSerializerOptions { WriteIndented = writeIndented });
             }
 
             memoryStream.Position = 0;

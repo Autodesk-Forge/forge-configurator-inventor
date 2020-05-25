@@ -56,14 +56,19 @@ namespace WebApplication.Tests
 
             projectsBucketKey = Guid.NewGuid().ToString();
             
-            var resourceProvider = new ResourceProvider(forgeConfigOptions, designAutomationClient, forgeOSS, projectsBucketKey);
-            var publisher = new Publisher(designAutomationClient, new NullLogger<Publisher>(), resourceProvider);
+            var resourceProvider = new ResourceProvider(forgeConfigOptions, designAutomationClient, projectsBucketKey);
+
+            var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
+            var postProcessing = new PostProcessing(httpClientFactory, resourceProvider, new NullLogger<PostProcessing>());
+            var publisher = new Publisher(designAutomationClient, new NullLogger<Publisher>(), resourceProvider, postProcessing);
 
             var appBundleZipPathsConfiguration = new AppBundleZipPaths
             {
-                CreateSVF = "..\\..\\..\\..\\AppBundles\\Output\\CreateSVFPlugin.bundle.zip",
-                CreateThumbnail = "..\\..\\..\\..\\AppBundles\\Output\\CreateThumbnailPlugin.bundle.zip",
-                ExtractParameters = "..\\..\\..\\..\\AppBundles\\Output\\ExtractParametersPlugin.bundle.zip"
+                EmptyExe = "..\\..\\..\\..\\WebApplication\\AppBundles\\Output\\EmptyExe.bundle.zip",
+                CreateSVF = "..\\..\\..\\..\\WebApplication\\AppBundles\\Output\\CreateSVFPlugin.bundle.zip",
+                CreateThumbnail = "..\\..\\..\\..\\WebApplication\\AppBundles\\Output\\CreateThumbnailPlugin.bundle.zip",
+                ExtractParameters = "..\\..\\..\\..\\WebApplication\\AppBundles\\Output\\ExtractParametersPlugin.bundle.zip",
+                UpdateParameters = "..\\..\\..\\..\\WebApplication\\AppBundles\\Output\\UpdateParametersPlugin.bundle.zip",
             };
             IOptions<AppBundleZipPaths> appBundleZipPathsOptions = Options.Create(appBundleZipPathsConfiguration);
 
@@ -73,25 +78,25 @@ namespace WebApplication.Tests
                 Projects = new [] { new DefaultProjectConfiguration { Url = testZippedIamUrl, TopLevelAssembly = testIamPathInZip } }
             };
             IOptions<DefaultProjectsConfiguration> defaultProjectsOptions = Options.Create(defaultProjectsConfiguration);
-            var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
             var arranger = new Arranger(forgeOSS, httpClientFactory, resourceProvider);
+            var projectWork = new ProjectWork(new NullLogger<ProjectWork>(), resourceProvider, httpClientFactory, arranger, fdaClient, forgeOSS);
             initializer = new Initializer(forgeOSS, resourceProvider, new NullLogger<Initializer>(), fdaClient, 
-                                            defaultProjectsOptions, httpClientFactory, arranger);
+                                            defaultProjectsOptions, httpClientFactory, projectWork);
 
             testFileDirectory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()));
             httpClient = new HttpClient();
         }
 
-        public async Task InitializeAsync()
+        public Task InitializeAsync()
         {
-            await initializer.ClearAsync();
+            return initializer.ClearAsync();
         }
 
-        public async Task DisposeAsync()
+        public Task DisposeAsync()
         {
             testFileDirectory.Delete(true);
             httpClient.Dispose();
-            await initializer.ClearAsync();
+            return initializer.ClearAsync();
         }
 
         private async Task<string> DownloadTestComparisonFile(string url, string name)

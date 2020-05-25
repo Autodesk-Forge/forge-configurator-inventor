@@ -13,6 +13,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WebApplication.Definitions;
+using WebApplication.Job;
 using WebApplication.Processing;
 using WebApplication.Utilities;
 
@@ -35,6 +36,10 @@ namespace WebApplication
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            services.AddSignalR(o =>
+            {
+                o.EnableDetailedErrors = true;
+            });
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -48,12 +53,14 @@ namespace WebApplication
             // https://github.com/Autodesk-Forge/forge-api-dotnet-core/blob/master/src/Autodesk.Forge.Core/ServiceCollectionExtensions.cs
             services.Configure<ForgeConfiguration>(Configuration.GetSection(ForgeSectionKey));
             services.AddSingleton<ResourceProvider>();
-            services.AddTransient<IForgeOSS, ForgeOSS>(); // ER: TODO: this will fail on token expiration, need extra work to refresh token
+            services.AddSingleton<IPostProcessing, PostProcessing>();
+            services.AddSingleton<IForgeOSS, ForgeOSS>();
             services.Configure<AppBundleZipPaths>(Configuration.GetSection(AppBundleZipPathsKey));
             services.AddSingleton<FdaClient>();
             services.Configure<DefaultProjectsConfiguration>(Configuration.GetSection(DefaultProjectsSectionKey));
             services.AddTransient<Initializer>();
             services.AddTransient<Arranger>();
+            services.AddTransient<ProjectWork>();
             services.AddSingleton<DesignAutomationClient>(provider =>
                                     {
                                         var forge = provider.GetService<IForgeOSS>();
@@ -65,6 +72,7 @@ namespace WebApplication
                                         return new DesignAutomationClient(forgeService);
                                     });
             services.AddSingleton<Publisher>();
+            services.AddSingleton<JobProcessor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -114,6 +122,7 @@ namespace WebApplication
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<Controllers.JobsHub>("/signalr/connection");
             });
 
             app.UseSpa(spa =>
