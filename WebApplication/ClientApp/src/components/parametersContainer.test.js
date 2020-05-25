@@ -22,20 +22,43 @@ const params = [
     }
 ];
 
-const baseProps = {
-    activeProject: { updateParameters: params },
-    fetchParameters: () => {}
+const fetchMock = jest.fn();
+const projectId = 1;
+
+const emptyProps = {
+    activeProject: { id: projectId },
+    fetchParameters: fetchMock
 };
 
-describe('components', () => {
-    describe('parameters constainer', () => {
-        it('should propagate data to proper properties', () => {
-            const wrapper = shallow(<ParametersContainer {...baseProps} />);
-            var wrapperComponent = wrapper.find('.parameters');
-            var children = wrapperComponent.prop('children');
-            expect(children.length).toBe(params.length);
-            expect(children[0].props.parameter).toBe(params[0]);
-            expect(children[1].props.parameter).toBe(params[1]);
-        });
+describe('parameters container', () => {
+
+    beforeEach(() => {
+        fetchMock.mockClear();
+    });
+
+    it('should show special message for empty parameters', () => {
+
+        const wrapper = shallow(<ParametersContainer {...emptyProps} />);
+        expect(fetchMock).toHaveBeenCalledWith(projectId);
+
+        const wrapperComponent = wrapper.find('.parameters');
+        const content = wrapperComponent.prop('children');
+        expect(content).toEqual("No parameters");
+    });
+
+    it('should propagate data to proper properties', () => {
+
+        // prefill props with properties
+        const props = Object.assign({ projectUpdateParameters: params }, emptyProps);
+
+        const wrapper = shallow(<ParametersContainer {...props} />);
+        expect(fetchMock).toHaveBeenCalledWith(projectId);
+
+        const wrapperComponent = wrapper.find('.parameters');
+        const children = wrapperComponent.prop('children');
+
+        expect(children).toHaveLength(2);
+        expect(children[0].props.parameter).toBe(params[0]);
+        expect(children[1].props.parameter).toBe(params[1]);
     });
 });

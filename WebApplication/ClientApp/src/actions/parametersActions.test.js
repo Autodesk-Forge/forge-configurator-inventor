@@ -1,11 +1,12 @@
-import { fetchParameters } from './parametersActions';
+import { fetchParameters, formatParameters } from './parametersActions';
+import parameterActionTypes from './parametersActions';
+import notificationTypes from '../actions/notificationActions';
 
 // the test based on https://redux.js.org/recipes/writing-tests#async-action-creators
 
 // prepare mock for Repository module
 jest.mock('../Repository');
 import repoInstance from '../Repository';
-const loadParametersMock = repoInstance.loadParameters;
 
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
@@ -14,125 +15,199 @@ import thunk from 'redux-thunk';
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
-const testProjectsNoParams = {
-    projectList: {
-        projects: [
-            {
-                id: '1',
-                label: 'Local Project 1',
-                image: 'bike.png'
-            }
-        ]
-    }
+// prepare test data
+const projectId = '1';
+
+const fakeInventorParams = {
+    p1: { value: 'unquoted', values: [] },
+    p2: { value: '"unquoted"', values: [ 'foo', '"bar"' ] },
+    p3: { value: 'a' },
+    p4: { value: null },
 };
 
-const testProjectsEmptyParams = {
-    projectList: {
-        projects: [
-            {
-                id: '1',
-                label: 'Local Project 1',
-                image: 'bike.png',
-                parameters: [],
-                updateParameters: []
-            }
-        ]
-    }
-};
+// set expected value for the mock
+const loadParametersMock = repoInstance.loadParameters;
 
-const testProjectsHasParams = {
-    projectList: {
-        projects: [
-            {
-                id: '1',
-                label: 'Local Project 1',
-                image: 'bike.png',
-                parameters: [ { name: 'a parameter here' } ],
-                updateParameters: [ { name: 'a parameteter here' } ]
-            }
-        ]
-    }
-};
-
-const testParameters = [
-    { name: 'parameter one' },
-    { name: 'parameter two' }
-];
 
 describe('fetchParameters', () => {
 
+    let cachedParameters;
+    let store;
+
     beforeEach(() => {
+
         loadParametersMock.mockClear();
+
+        // prepare empty 'updated parameters' data
+        const fakeState = {
+            updateParameters: {}
+        };
+        cachedParameters = fakeState.updateParameters;
+
+        store = mockStore(fakeState);
+        store.getState = () => fakeState;
     });
 
-    it('should fetch parameters from the server if there are none in the project', () => {
+    describe('success', () => {
 
-        // set expected value for the mock
-        loadParametersMock.mockReturnValue(testParameters);
+        beforeEach(() => {
 
-        const store = mockStore(testProjectsNoParams);
-        store.getState = () => testProjectsNoParams;
+            loadParametersMock.mockReturnValue(fakeInventorParams);
+        });
 
-        return store
-            .dispatch(fetchParameters('1')) // demand parameters loading
-            .then(() => {
+        it('should fetch parameters from the server if there are none in the project', () => {
 
-                // ensure that the mock called once
-                expect(loadParametersMock).toHaveBeenCalledTimes(1);
+            return store
+                .dispatch(fetchParameters(projectId)) // demand parameters loading
+                .then(() => {
 
-                const actions = store.getActions();
-                const updateAction = actions.find(a => a.type === 'PARAMETERS_UPDATED');
+                    // ensure that the mock called once
+                    expect(loadParametersMock).toHaveBeenCalledTimes(1);
 
-                // check expected actions and their types
-                expect(updateAction.projectId).toEqual('1');
-                expect(updateAction.parameters.length).toEqual(2); // not testing for exact content, as adaptParameters messes them up
+                    const actions = store.getActions();
+                    const updateAction = actions.find(a => a.type === parameterActionTypes.PARAMETERS_UPDATED);
+
+                    // check expected actions and their types
+                    expect(updateAction.projectId).toEqual(projectId);
+                    expect(updateAction.parameters).toHaveLength(4); // not testing for exact content, as adaptParameters messes them up
+                });
+        });
+
+        it('should fetch parameters from the server if there is empty parameter array in the project', () => {
+
+            cachedParameters[projectId] = [];
+
+            return store
+                .dispatch(fetchParameters(projectId)) // demand parameters loading
+                .then(() => {
+
+                    // ensure that the mock called once
+                    expect(loadParametersMock).toHaveBeenCalledTimes(1);
+
+                    const actions = store.getActions();
+                    const updateAction = actions.find(a => a.type === parameterActionTypes.PARAMETERS_UPDATED);
+
+                    // check expected actions and their types
+                    expect(updateAction.projectId).toEqual(projectId);
+                    expect(updateAction.parameters).toHaveLength(4); // not testing for exact content, as adaptParameters messes them up
+            });
+        });
+
+        it('should NOT fetch parameters from the server if there are SOME in the project', () => {
+
+            cachedParameters[projectId] = [{ name: 'JawOffset', value: '10 mm', units: 'mm' }];
+
+            return store
+                .dispatch(fetchParameters(projectId)) // demand parameters loading
+                .then(() => {
+
+                    // ensure that the mock does not called
+                    expect(loadParametersMock).toHaveBeenCalledTimes(0);
+
+                    const actions = store.getActions();
+
+                    // check no update parameters is called
+                    expect(actions.some(a => a.type === parameterActionTypes.PARAMETERS_UPDATED)).toEqual(false);
+            });
+        });
+
+        // validate conversion from Inventor parameters to internal format
+        describe('conversion', () => {
+
+            it('should load simple parameter', () => {
+
+                const simpleParam = { JawOffset: { value: '10 mm', unit: 'mm' } };
+                loadParametersMock.mockReturnValue(simpleParam);
+
+                return store
+                    .dispatch(fetchParameters(projectId)) // demand parameters loading
+                    .then(() => {
+
+                        const action = store.getActions().find(a => a.type === parameterActionTypes.PARAMETERS_UPDATED);
+
+                        // check expected actions and their types
+                        expect(action.parameters[0]).toMatchObject({ name: 'JawOffset', value: '10 mm', units: 'mm' });
+                });
+            });
+
+            it('should load complex parameter', () => {
+
+                const choiceParam = {
+                    WrenchSz: {
+                        value: '"Small"',
+                        unit: 'Text',
+                        values: ['"Large"', '"Medium"', '"Small"']
+                    }
+                };
+                loadParametersMock.mockReturnValue(choiceParam);
+
+                return store
+                    .dispatch(fetchParameters(projectId)) // demand parameters loading
+                    .then(() => {
+
+                        const action = store.getActions().find(a => a.type === parameterActionTypes.PARAMETERS_UPDATED);
+
+                        const result = {
+                            name: 'WrenchSz',
+                            value: 'Small', // note it's unquoted // ER: potential problem with backward conversion
+                            units: 'Text',
+                            allowedValues: [ 'Large', 'Medium', 'Small' ] // note it's unquoted // ER: potential problem with backward conversion
+                        };
+                        expect(action.parameters[0]).toMatchObject(result);
+                });
+            });
+
+
+        });
+
+        // validate conversion from internal format back to Inventor parameters
+        describe('conversion back', () => {
+
+            it('correctly convert parameters', () => {
+
+                const internalParameters = [
+                    {
+                        name: 'WrenchSz',
+                        value: 'Small',
+                        units: 'Text',
+                        allowedValues: ['Large', 'Medium', 'Small']
+                    }
+                ];
+
+                const invParameters = {
+                    WrenchSz: {
+                        value: '"Small"',
+                        unit: 'Text',
+                        values: ['"Large"', '"Medium"', '"Small"']
+                    }
+                };
+
+                const formatted = formatParameters(internalParameters);
+                expect(formatted).toMatchObject(invParameters);
+            });
         });
     });
 
-    it('should fetch parameters from the server if there is empty parameter array in the project', () => {
+    describe('errors', () => {
 
-        // set expected value for the mock
-        loadParametersMock.mockReturnValue(testParameters);
+        it('should handle server error and log it', () => {
 
-        const store = mockStore(testProjectsEmptyParams);
-        store.getState = () => testProjectsEmptyParams;
+            loadParametersMock.mockImplementation(() => { throw new Error('123456'); });
 
-        return store
-            .dispatch(fetchParameters('1')) // demand parameters loading
-            .then(() => {
+            return store
+                .dispatch(fetchParameters('someProjectId')) // demand parameters loading
+                .then(() => {
 
-                // ensure that the mock called once
-                expect(loadParametersMock).toHaveBeenCalledTimes(1);
+                    // find logged error
+                    const logAction = store.getActions().find(a => a.type === notificationTypes.ADD_ERROR);
 
-                const actions = store.getActions();
-                const updateAction = actions.find(a => a.type === 'PARAMETERS_UPDATED');
+                    expect(logAction).toBeDefined();
 
-                // check expected actions and their types
-                expect(updateAction.projectId).toEqual('1');
-                expect(updateAction.parameters.length).toEqual(2); // not testing for exact content, as adaptParameters messes them up
+                    // log message should contains project ID and error message
+                    const errorMessage = logAction.info;
+                    expect(errorMessage).toMatch(/someProjectId/);
+                    expect(errorMessage).toMatch(/123456/);
+                });
         });
-    });
-
-    it('should NOT fetch parameters from the server if there are SOME in the project', () => {
-
-        // set expected value for the mock
-        loadParametersMock.mockReturnValue(testParameters);
-
-        const store = mockStore(testProjectsHasParams);
-        store.getState = () => testProjectsHasParams;
-
-        return store
-            .dispatch(fetchParameters('1', store.getState)) // demand parameters loading
-            .then(() => {
-
-                // ensure that the mock called once
-                expect(loadParametersMock).toHaveBeenCalledTimes(0);
-
-                const actions = store.getActions();
-
-                // check no update parameters is called
-                expect(actions.some(a => a.type === 'PARAMETERS_UPDATED')).toEqual(false);
         });
-    });
-
 });

@@ -2,19 +2,34 @@
     display: flex;
     flex-flow: column;
     width: 296px;
-    padding: 16px;
     background-color: white;
 }
 
 .parameters {
-    flex: auto;
     overflow: auto;
+    padding: 16px;
+    flex: auto;
+}
+
+.pencilContainer {
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.parametersSeparator {
+    margin-top: 8px;
+    margin-bottom: 0px;
+    width: calc(100% - 16px);
 }
 
 .parameter {
     padding-bottom: 16px;
-    font-size: 14px;
-    color: rgb(60,60,60);
+    font-size: 12px;
+    font-family: ArtifaktElement, sans-serif;
+    font-weight: 300;
+    color:#3c3c3c;
+    line-height: 18px;
 }
 
 .parameter.checkbox {
@@ -30,19 +45,11 @@
     line-height: 16px;
 }
 
-.buttonsContainer {
-    flex: none;
-    width: 203px; /* somehow deduced from the .parametersContainer width: 296px; minus it's paddings margins etc */
-    margin-bottom: 14px;
-}
-
 .buttonsContainer.hidden {
     display: none;
 }
 
-.buttonsContainer .buttons {
+.buttonsContainer {
     display: flex;
-    flex-flow: row nowrap;
-    justify-content: space-around;
-    align-items: center;
+    padding: 16px;
 }

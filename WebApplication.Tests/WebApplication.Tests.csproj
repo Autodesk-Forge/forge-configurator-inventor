@@ -12,7 +12,7 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
     <PackageReference Include="coverlet.collector" Version="1.2.0" />
     <PackageReference Include="Autodesk.Forge" Version="1.7.0" />
-    <PackageReference Include="Autodesk.Forge.DesignAutomation" Version="3.0.1" />
+    <PackageReference Include="Autodesk.Forge.DesignAutomation" Version="3.0.2" />
   </ItemGroup>
 
   <ItemGroup>

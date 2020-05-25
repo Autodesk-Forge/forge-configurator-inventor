@@ -4,9 +4,11 @@
 
     public class AppBundleZipPaths
     {
+        public string EmptyExe { get; set; }
         public string CreateSVF { get; set; }
         public string CreateThumbnail { get; set; }
         public string ExtractParameters { get; set; }
+        public string UpdateParameters { get; set; }
     }
 
     public class DefaultProjectsConfiguration
@@ -14,11 +16,8 @@
         public DefaultProjectConfiguration[] Projects { get; set; }
     }
 
-    public class DefaultProjectConfiguration
+    public class DefaultProjectConfiguration : ProjectInfo
     {
         public string Url { get; set; }
-        public string TopLevelAssembly { get; set; }
-
-        public string Name { get; set; }
     }
 }

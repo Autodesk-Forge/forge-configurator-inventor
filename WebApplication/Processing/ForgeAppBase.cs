@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Autodesk.Forge.DesignAutomation.Model;
 using WebApplication.Definitions;
@@ -11,7 +12,7 @@ namespace WebApplication.Processing
     /// </summary>
     public abstract class ForgeAppBase
     {
-        public readonly string Engine = "Autodesk.Inventor+24"; // use version 24
+        public string Engine { protected set; get; } = "Autodesk.Inventor+24"; // use version 24
         public readonly string Label = "alpha";
 
         public abstract string Id { get; }
@@ -73,22 +74,49 @@ namespace WebApplication.Processing
         }
 
         /// <summary>
-        /// Run work items.
+        /// Run work item and wait for the completion.
         /// </summary>
         /// <param name="args">Work item arguments.</param>
-        protected Task<WorkItemStatus> RunAsync(Dictionary<string, IArgument> args)
+        protected async Task<bool> RunAsync(Dictionary<string, IArgument> args)
         {
-            return Publisher.RunWorkItemAsync(args, this);
+            WorkItemStatus status = await Publisher.RunWorkItemAsync(args, this);
+            return status.Status == Status.Success;
         }
 
         /// <summary>
         /// Process IPT or Zipped IAM file.
         /// </summary>
-        public Task<WorkItemStatus> ProcessAsync(AdoptionData projectData)
+        public Task<bool> ProcessAsync(AdoptionData projectData)
         {
-            var args = projectData.IsAssembly ? ToIamArguments(projectData) : ToIptArguments(projectData);
+            var args = ToWorkItemArgs(projectData);
 
             return RunAsync(args);
+        }
+
+        public virtual Dictionary<string, IArgument> ToWorkItemArgs(AdoptionData projectData)
+        {
+            var args = new Dictionary<string, IArgument>();
+            AddInputArgs(args, projectData);
+
+            if (HasOutput)
+            {
+                AddOutputArgs(args, projectData);
+            }
+
+            return args;
+        }
+
+        protected virtual void AddOutputArgs(IDictionary<string, IArgument> args, AdoptionData projectData)
+        {
+            args.Add(OutputParameterName, new XrefTreeArgument { Verb = Verb.Put, Url = OutputUrl(projectData) });
+        }
+
+        protected virtual void AddInputArgs(IDictionary<string, IArgument> args, AdoptionData projectData)
+        {
+            if (projectData.IsAssembly)
+                args.Add(InputDocParameterName, new XrefTreeArgument { PathInZip = projectData.TLA, LocalName = "zippedIam.zip", Url = projectData.InputDocUrl });
+            else
+                args.Add(InputDocParameterName, new XrefTreeArgument { Url = projectData.InputDocUrl });
         }
 
         /// <summary>
@@ -107,58 +135,18 @@ namespace WebApplication.Processing
         public virtual List<string> ActivityCommandLine =>
             new List<string>
             {
-                $"$(engine.path)\\InventorCoreConsole.exe /al $(appbundles[{ActivityId}].path) /i $(args[{InputParameterName}].path)"
+                $"$(engine.path)\\InventorCoreConsole.exe /al $(appbundles[{ActivityId}].path) /i \"$(args[{InputDocParameterName}].path)\""
             };
 
         /// <summary>
         /// Pick required output URL from the adoption data (which contains everything).
         /// </summary>
-        protected abstract string OutputUrl(AdoptionData projectData);
-
-        public Dictionary<string, IArgument> ToIptArguments(string url, string outputUrl)
-        {
-            return new Dictionary<string, IArgument>
-            {
-                {
-                    InputParameterName,
-                    new XrefTreeArgument { Url = url }
-                },
-                {
-                    OutputParameterName,
-                    new XrefTreeArgument { Verb = Verb.Put, Url = outputUrl }
-                }
-            };
-        }
-
-        public Dictionary<string, IArgument> ToIamArguments(string url, string pathInZip, string outputUrl)
-        {
-            return new Dictionary<string, IArgument>
-            {
-                {
-                    InputParameterName,
-                    new XrefTreeArgument { PathInZip = pathInZip, LocalName = "zippedIam.zip", Url = url }
-                },
-                {
-                    OutputParameterName,
-                    new XrefTreeArgument { Verb = Verb.Put, Url = outputUrl }
-                }
-            };
-        }
-
-        public virtual Dictionary<string, IArgument> ToIptArguments(AdoptionData projectData)
-        {
-            return ToIptArguments(projectData.InputUrl, OutputUrl(projectData));
-        }
-
-        public virtual Dictionary<string, IArgument> ToIamArguments(AdoptionData projectData)
-        {
-            return ToIamArguments(projectData.InputUrl, projectData.TLA, OutputUrl(projectData));
-        }
+        protected virtual string OutputUrl(AdoptionData projectData) => throw new NotImplementedException();
 
         /// <summary>
-        /// Name of the input parameter.
+        /// Parameter name for input document.
         /// </summary>
-        public const string InputParameterName = "InventorDoc";
+        public const string InputDocParameterName = "InventorDoc";
 
         /// <summary>
         /// Name of the output parameter.
@@ -168,36 +156,41 @@ namespace WebApplication.Processing
         /// <summary>
         /// Activity parameters.
         /// </summary>
-        public virtual Dictionary<string, Parameter> ActivityParams =>
-            new Dictionary<string, Parameter>
+        public virtual Dictionary<string, Parameter> ActivityParams
+        {
+            get
             {
+                var activityParams = new Dictionary<string, Parameter>
+                                        {
+                                            {
+                                                InputDocParameterName,
+                                                new Parameter
+                                                {
+                                                    Verb = Verb.Get,
+                                                    Description = "IPT or IAM (in ZIP) file to process"
+                                                }
+                                            }
+                                        };
+
+                if (HasOutput)
                 {
-                    InputParameterName,
-                    new Parameter
-                    {
-                        Verb = Verb.Get,
-                        Description = "IPT or IAM (in ZIP) file to process"
-                    }
-                },
-                {
-                    OutputParameterName,
-                    new Parameter
-                    {
-                        Verb = Verb.Put,
-                        LocalName = OutputName,
-                        Zip = IsOutputZip
-                    }
+                    activityParams.Add(OutputParameterName, new Parameter { Verb = Verb.Put, LocalName = OutputName, Zip = IsOutputZip });
                 }
-            };
+
+                return activityParams;
+            }
+        }
 
         /// <summary>
         /// Filename of output (processing result of Inventor add-on).
         /// </summary>
-        protected abstract string OutputName { get; }
+        protected virtual string OutputName => throw new NotImplementedException();
 
         /// <summary>
         /// If output should be compressed as ZIP.
         /// </summary>
         protected virtual bool IsOutputZip => false;
+
+        protected virtual bool HasOutput => true;
     }
 }

@@ -33,19 +33,19 @@ describe('components', () => {
   describe('parameter', () => {
     it('test editbox', () => {
         const wrapper = shallow(<Parameter parameter={param1}/>);
-        var wrapperComponent = wrapper.find('Input');
+        const wrapperComponent = wrapper.find('Input');
         expect(wrapperComponent.length).toEqual(1);
         expect(wrapperComponent.prop("value")).toEqual(param1.value);
       });
     it('test listbox', () => {
         const wrapper = shallow(<Parameter parameter={param2}/>);
-        var wrapperComponent = wrapper.find('Dropdown');
+        const wrapperComponent = wrapper.find('Dropdown');
         expect(wrapperComponent.length).toEqual(1);
         expect(wrapperComponent.prop("value")).toEqual(param2.value);
       });
     it('test checkbox', () => {
         const wrapper = shallow(<Parameter parameter={param3}/>);
-        var wrapperComponent = wrapper.find('Checkbox');
+        const wrapperComponent = wrapper.find('Checkbox');
         expect(wrapperComponent.length).toEqual(1);
         expect(wrapperComponent.prop("checked")).toEqual(true);
       });

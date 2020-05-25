@@ -1,93 +1,81 @@
-import {showUpdateNotification} from './mainReducer';
+import {parametersEditedMessageVisible} from './mainReducer';
+import * as uiFlagsTestStates from './uiFlagsReducer.test';
+import * as uiFlags from './uiFlagsReducer';
 
-const originalParameters = [
-   {
-      "name": "editedParameter",
-      "value": null,
-      "type": "xyz"
-   },
-   {
-      "name": "unchangedParameter",
-      "value": 123
-   }
-];
+const projectId = "1";
 
-function getProjectListWithProjectWithUnChangedParameters() {
-
-   const origProject = {
-      id: "1",
-      parameters: originalParameters,
-      updateParameters : originalParameters
-   };
-
-   return {
-      activeProjectId: "1",
-      projects: [
-         origProject
-      ]
-   };
-}
-
-function getProjectListWithProjectWithChangedParameters() {
-   const editedParameter = {
-      "name": "editedParameter",
-      "value": "12000 mm",
-      "type": "xyz"
-   };
-
-   const editedParameters = [
-      editedParameter,
+const originalParameters = {
+   [projectId]: [
+      {
+         "name": "editedParameter",
+         "value": null,
+         "type": "xyz"
+      },
       {
          "name": "unchangedParameter",
          "value": 123
       }
-   ];
+   ]
+};
 
-   const editProject = {
-      id: "2",
-      parameters: originalParameters,
-      updateParameters : editedParameters
-   };
+const editedParameter = {
+   "name": "editedParameter",
+   "value": "12000 mm",
+   "type": "xyz"
+};
 
-   return {
-      activeProjectId: "2",
-      projects: [
-         editProject
-      ]
-   };
-}
+const editedParameters = {
+   [projectId]: [
+      {
+         "name": "unchangedParameter",
+         "value": 123
+      },
+      editedParameter
+   ]
+};
+
+const projectList = {
+   activeProjectId: projectId,
+   projects: [
+      {id: projectId}
+   ]
+};
 
 describe('main reducer', () => {
    it('Notification strip will not be shown if parameters are not changed', () => {
       const state = {
-         dismissUpdateMessage: false,
-         projectList: getProjectListWithProjectWithUnChangedParameters()
+         uiFlagsReducer: uiFlags.initialState,
+         projectList: projectList,
+         parameters: originalParameters,
+         updateParameters: originalParameters
       };
-      expect(showUpdateNotification(state)).toEqual(false);
-
+      expect(parametersEditedMessageVisible(state)).toEqual(false);
    },
    it('Will show parameters changed notification string when paramters are changed', () => {
-
       const state = {
-         dismissUpdateMessage: false,
-         projectList: getProjectListWithProjectWithChangedParameters()
+         uiFlagsReducer: uiFlags.initialState,
+         projectList: projectList,
+         parameters: originalParameters,
+         updateParameters: editedParameters
       };
-      expect(showUpdateNotification(state)).toEqual(true);
+      expect(parametersEditedMessageVisible(state)).toEqual(true);
    }),
    it('Will not show changed parameters because user closed them', () => {
       const state = {
-         dismissUpdateMessage: true,
-         projectList: getProjectListWithProjectWithChangedParameters()
+         uiFlagsReducer: uiFlagsTestStates.stateParametersEditedMessageClosed,
+         projectList: projectList,
+         parameters: originalParameters,
+         updateParameters: editedParameters
       };
-      expect(showUpdateNotification(state)).toEqual(false);
+      expect(parametersEditedMessageVisible(state)).toEqual(false);
    }),
    it('Will not show changed parameters because user closed them permanently', () => {
       const state = {
-         dismissUpdateMessage: false,
-         showChangedParameters: false,
-         projectList: getProjectListWithProjectWithChangedParameters()
+         uiFlagsReducer: uiFlagsTestStates.stateParametersEditedMessageRejected,
+         projectList: projectList,
+         parameters: originalParameters,
+         updateParameters: editedParameters
       };
-      expect(showUpdateNotification(state)).toEqual(false);
+      expect(parametersEditedMessageVisible(state)).toEqual(false);
    }));
-
 });

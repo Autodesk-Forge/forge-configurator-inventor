@@ -39,8 +39,8 @@ describe('components', () => {
     });
 
     it('should call onChange with given handler',  () => {
-      var updateActiveProject = jest.fn();
-      var fetchParameters = jest.fn();
+      const updateActiveProject = jest.fn();
+      const fetchParameters = jest.fn();
       const props = {
         updateActiveProject,
         fetchParameters,
@@ -62,7 +62,7 @@ describe('components', () => {
     });
 
     it('should start loading projects on mount', () => {
-      var fetchProjects = jest.fn();
+      const fetchProjects = jest.fn();
 
       const props = {
         ... baseProps,

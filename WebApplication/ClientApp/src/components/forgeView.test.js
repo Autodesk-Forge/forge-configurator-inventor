@@ -5,32 +5,30 @@ import { ForgeView } from './forgeView';
 
 Enzyme.configure({ adapter: new Adapter() });
 
-const projectList = {
-  activeProjectId: '2',
-  projects: [
-      {
-          id: '1',
-          label: 'New Project',
-          image: 'new_image.png',
-          svf: 'aaa111'
-      },
-      {
-          id: '2',
-          label: 'New Project B',
-          image: 'new_image_B.png',
-          svf: 'bbb222'
-      }]
+const activeProject = {
+  id: '1',
+  label: 'New Project',
+  image: 'new_image.png',
+  svf: 'aaa111'
 };
 
 const baseProps = {
-  projectList,
-  fetchProjects: () => {}
+  activeProject
 };
 
 describe('components', () => {
-  describe('forge view', () => {
-    it('CHANGE THE DESCRIPTION ONCE YOU WILL HAVE REAL TEST', () => {
-      /*const enzymeWrapper = */shallow(<ForgeView { ...baseProps } />);
+  describe('ForgeView', () => {
+    it('ForgeView DOM core structure is as expected', () => {
+      const wrapper = shallow(<ForgeView { ...baseProps } />);
+      const handleScriptLoadMock = jest.fn();
+      wrapper.instance().handleScriptLoad = handleScriptLoadMock;
+      wrapper.instance().forceUpdate();
+      const viewer = wrapper.find('.viewer');
+      expect(viewer).toHaveLength(1);
+      const script = viewer.find('Script');
+      expect(script).toHaveLength(1);
+      script.simulate('load');
+      expect(handleScriptLoadMock).toBeCalled();
     });
   });
 });
