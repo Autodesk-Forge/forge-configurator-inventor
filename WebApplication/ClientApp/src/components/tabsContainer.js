@@ -4,6 +4,7 @@ import Tabs, { Tab } from "@hig/tabs";
 import ForgeView from './forgeView';
 import ParametersContainer from './parametersContainer';
 import PageNYI from './pageNYI';
+import Downloads from './downloads';
 import './tabs.css';
 
 class TabsContainer extends Component {
@@ -43,7 +44,7 @@ class TabsContainer extends Component {
               </Tab>
               <Tab label="Downloads">
                 <div id="downloads" className="tabContent fullheight">
-                  <PageNYI/>
+                  <Downloads/>
                 </div>
               </Tab>
             </Tabs>
