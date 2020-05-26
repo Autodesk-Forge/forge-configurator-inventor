@@ -45,7 +45,9 @@ namespace WebApplication.Tests
             ForgeConfiguration forgeConfiguration = configuration.GetSection("Forge").Get<ForgeConfiguration>();
             IOptions<ForgeConfiguration> forgeConfigOptions = Options.Create(forgeConfiguration);
 
-            forgeOSS = new ForgeOSS(forgeConfigOptions, new NullLogger<ForgeOSS>());
+            var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
+
+            forgeOSS = new ForgeOSS(httpClientFactory, forgeConfigOptions, new NullLogger<ForgeOSS>());
 
             var httpMessageHandler = new ForgeHandler(Options.Create(forgeConfiguration))
             {
@@ -58,7 +60,6 @@ namespace WebApplication.Tests
             
             var resourceProvider = new ResourceProvider(forgeConfigOptions, designAutomationClient, projectsBucketKey);
 
-            var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
             var postProcessing = new PostProcessing(httpClientFactory, resourceProvider, new NullLogger<PostProcessing>());
             var publisher = new Publisher(designAutomationClient, new NullLogger<Publisher>(), resourceProvider, postProcessing);
 
@@ -79,7 +80,7 @@ namespace WebApplication.Tests
             };
             IOptions<DefaultProjectsConfiguration> defaultProjectsOptions = Options.Create(defaultProjectsConfiguration);
             var arranger = new Arranger(forgeOSS, httpClientFactory, resourceProvider);
-            var projectWork = new ProjectWork(new NullLogger<ProjectWork>(), resourceProvider, httpClientFactory, arranger, fdaClient, forgeOSS);
+            var projectWork = new ProjectWork(new NullLogger<ProjectWork>(), resourceProvider, arranger, fdaClient, forgeOSS);
             initializer = new Initializer(forgeOSS, resourceProvider, new NullLogger<Initializer>(), fdaClient, 
                                             defaultProjectsOptions, httpClientFactory, projectWork);
 
@@ -113,7 +114,7 @@ namespace WebApplication.Tests
         private async Task CompareOutputFileBytes(string expectedResultFileName, string outputFileUrl)
         {
             // download result, compare it to expected value
-            byte[] expectedBytes = File.ReadAllBytes(expectedResultFileName);
+            byte[] expectedBytes = await File.ReadAllBytesAsync(expectedResultFileName);
             byte[] generatedOutputFileBytes = await httpClient.GetByteArrayAsync(outputFileUrl);
 
             // first confirm they are the same number of bytes

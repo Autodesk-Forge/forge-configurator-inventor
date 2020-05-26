@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using WebApplication.Definitions;
@@ -15,16 +14,14 @@ namespace WebApplication.Processing
     {
         private readonly ILogger<ProjectWork> _logger;
         private readonly ResourceProvider _resourceProvider;
-        private readonly IHttpClientFactory _httpClientFactory;
         private readonly Arranger _arranger;
         private readonly FdaClient _fdaClient;
         private readonly IForgeOSS _forgeOSS;
 
-        public ProjectWork(ILogger<ProjectWork> logger, ResourceProvider resourceProvider, IHttpClientFactory httpClientFactory, Arranger arranger, FdaClient fdaClient, IForgeOSS forgeOSS)
+        public ProjectWork(ILogger<ProjectWork> logger, ResourceProvider resourceProvider, Arranger arranger, FdaClient fdaClient, IForgeOSS forgeOSS)
         {
             _logger = logger;
             _resourceProvider = resourceProvider;
-            _httpClientFactory = httpClientFactory;
             _arranger = arranger;
             _fdaClient = fdaClient;
             _forgeOSS = forgeOSS;
@@ -54,7 +51,7 @@ namespace WebApplication.Processing
 
                 // and now cache the generate stuff locally
                 var projectLocalStorage = new ProjectStorage(project, _resourceProvider);
-                await projectLocalStorage.EnsureLocalAsync(_httpClientFactory.CreateClient(), _forgeOSS);
+                await projectLocalStorage.EnsureLocalAsync(_forgeOSS);
             }
         }
 
@@ -120,7 +117,7 @@ namespace WebApplication.Processing
 
             // and now cache the generate stuff locally
             var projectStorage = new ProjectStorage(project, _resourceProvider);
-            await projectStorage.EnsureViewablesAsync(_httpClientFactory.CreateClient(), _forgeOSS, hash);
+            await projectStorage.EnsureViewablesAsync(_forgeOSS, hash);
 
             return hash;
         }
