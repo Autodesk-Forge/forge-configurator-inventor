@@ -11,7 +11,6 @@ Feature('Parameters panel');
 Scenario('should check if Parameter panel has Cancel and Update button', async (I) => {
 
     // click on Model tab
-    I.wait(3); // allow the projects combo  to be  loaded - https://jira.autodesk.com/browse/INVGEN-40998
     I.click({xpath: XPathElements.xpTabModel });
 
     // check that Model tab has correct content
@@ -23,7 +22,6 @@ Scenario('should check if Parameter panel has Cancel and Update button', async (
 Scenario('should check if Stripe panel is displayed and hidden', async (I) => {
 
     // click on Model tab
-    I.wait(3); // allow the projects combo  to be  loaded - https://jira.autodesk.com/browse/INVGEN-40998
     I.click({xpath: XPathElements.xpTabModel});
 
     // check that Model tab has a parameter - Length
