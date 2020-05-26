@@ -5,7 +5,8 @@ export const initialState = {
 };
 
 export const getActiveProject = function(state) {
-    if (! state.projects) return undefined;
+    // when no projects available, returns empty project for correct UI initialization
+    if (! state.projects) return { };
     return getProject(state.activeProjectId, state);
 };
 
