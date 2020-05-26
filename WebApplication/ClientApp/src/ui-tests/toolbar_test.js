@@ -24,7 +24,6 @@ Feature('Project Switcher');
 
 Scenario('should check Project switcher is loaded', async (I) => {
 
-    I.wait(3);
     // wait until project combo is displayed
     I.waitForElement({xpath: XPathElements.xpComboProjects}, 5);
     I.click({xpath: XPathElements.xpComboProjects});
@@ -45,7 +44,6 @@ Scenario('should check Project switcher is loaded', async (I) => {
 Scenario('should check Project switcher is correctly changed', async (I) => {
 
     // wait until project combo is displayed
-    I.wait(3);
     I.waitForElement({xpath: XPathElements.xpComboProjects}, 5);
     I.click({xpath: XPathElements.xpComboProjects});
 
