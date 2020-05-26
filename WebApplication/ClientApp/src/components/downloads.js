@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import BaseTable, { AutoResizer } from 'react-base-table'
 import 'react-base-table/styles.css'
+import { downloadFile } from '../actions/downloadActions'
 
 const columns = [
     {
@@ -25,18 +26,22 @@ const columns = [
   
   const data = [
     {
-        id: '1',
+        id: 'updatedIam',
         icon: null,
         type: 'IAM',
         env: 'Model'
     },
     {
-        id: '2',
+        id: 'rfa',
         icon: null,
         type: 'RFA',
         env: 'Model'
     }
 ];
+
+const rowEventHandlers = {
+    onClick: (e) => { downloadFile(e.rowKey); }
+}
 
 export default class Downloads extends Component {
     render () {
@@ -47,6 +52,7 @@ export default class Downloads extends Component {
                     height={height}
                     columns={columns}
                     data={data}
+                    rowEventHandlers={rowEventHandlers}
                 />
             )}
         </AutoResizer>
