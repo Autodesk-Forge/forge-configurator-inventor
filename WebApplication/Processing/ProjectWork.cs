@@ -133,7 +133,10 @@ namespace WebApplication.Processing
 
             // copy local file structure
             LocalNameProvider localFrom = project.LocalNameProvider(hashFrom);
-            FileSystem.CopyDir(localFrom.BaseDir, localTo.BaseDir); // TODO: performance improvement - replace with symlink
+
+            // TODO: performance improvement - replace with symlink when it's supported
+            // by netcore (https://github.com/dotnet/runtime/issues/24271)
+            FileSystem.CopyDir(localFrom.BaseDir, localTo.BaseDir);
 
 
             // copy OSS files

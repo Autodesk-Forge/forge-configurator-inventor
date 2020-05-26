@@ -82,7 +82,7 @@ namespace WebApplication.Tests
             var arranger = new Arranger(forgeOSS, httpClientFactory, resourceProvider);
             var projectWork = new ProjectWork(new NullLogger<ProjectWork>(), resourceProvider, arranger, fdaClient, forgeOSS);
             initializer = new Initializer(forgeOSS, resourceProvider, new NullLogger<Initializer>(), fdaClient, 
-                                            defaultProjectsOptions, httpClientFactory, projectWork);
+                                            defaultProjectsOptions, projectWork);
 
             testFileDirectory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()));
             httpClient = new HttpClient();
