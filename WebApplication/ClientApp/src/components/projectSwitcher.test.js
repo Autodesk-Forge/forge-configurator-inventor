@@ -56,7 +56,7 @@ describe('components', () => {
       });
 
       expect(updateActiveProject).toHaveBeenLastCalledWith(5);
-      expect(fetchParameters).toHaveBeenLastCalledWith(5, true); // on project switch, we now enforce fetch parameters (the second input 'true')
+      expect(fetchParameters).toHaveBeenLastCalledWith(5);
     });
 
     });

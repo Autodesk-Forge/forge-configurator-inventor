@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace WebApplication.Controllers
+namespace WebApplication.Definitions
 {
     public class InventorParameter
     {

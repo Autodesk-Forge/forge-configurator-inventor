@@ -57,13 +57,17 @@ export class ForgeView extends Component {
             }
         });
 
+        // skip loading of svf when here is no active project svf
+        if (!this.props.activeProject.svf)
+            return;
+
         Autodesk.Viewing.Document.load(
             this.props.activeProject.svf + '/bubble.json', this.onDocumentLoadSuccess.bind(this), () => {}
         );
     }
 
     componentDidUpdate(prevProps) {
-        if (this.props.activeProject.id !== prevProps.activeProject.id) {
+        if (Autodesk && (this.props.activeProject.svf !== prevProps.activeProject.svf)) {
             Autodesk.Viewing.Document.load(
                 this.props.activeProject.svf + '/bubble.json', this.onDocumentLoadSuccess.bind(this), () => {}
             );

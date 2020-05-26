@@ -3,16 +3,14 @@ import projectListReducer, * as list from './projectListReducers';
 import {notificationReducer} from './notificationReducer';
 import parametersReducer, * as params from './parametersReducer';
 import updateParametersReducer, * as updateParams from './updateParametersReducer';
-import dismissUpdateMessageReducer from './dismissUpdateMessageReducer';
-import showChangedParametersReducer from './showChangedParametersReducer';
+import uiFlagsReducer, * as uiFlasg from './uiFlagsReducer';
 
 export const mainReducer = combineReducers({
     projectList: projectListReducer,
     notifications: notificationReducer,
     parameters: parametersReducer,
     updateParameters: updateParametersReducer,
-    dismissUpdateMessage: dismissUpdateMessageReducer,
-    showChangedParameters: showChangedParametersReducer
+    uiFlagsReducer: uiFlagsReducer
 });
 
 export const getActiveProject = function(state) {
@@ -31,18 +29,23 @@ export const getUpdateParameters = function(projectId, state) {
     return updateParams.getParameters(projectId, state.updateParameters);
 };
 
-export const showUpdateNotification = function(state) {
-    if (state.dismissUpdateMessage === true || state.showChangedParameters === false )
+export const parametersEditedMessageVisible = function(state) {
+    if (state.uiFlagsReducer.parametersEditedMessageClosed === true || state.uiFlagsReducer.parametersEditedMessageRejected === true )
         return false;
 
     const activeProject = getActiveProject(state);
-
-    if (!activeProject.parameters)
+    if (!activeProject)
         return false;
 
-    for (const parameterId in activeProject.parameters) {
-        const parameter = activeProject.parameters[parameterId];
-        const updateParameter = activeProject.updateParameters.find(updatePar => updatePar.name === parameter.name);
+    const parameters = getParameters(activeProject.id, state);
+    const updateParameters = getUpdateParameters(activeProject.id, state);
+
+    if (!parameters || !updateParameters)
+        return false;
+
+    for (const parameterId in parameters) {
+        const parameter = parameters[parameterId];
+        const updateParameter = updateParameters.find(updatePar => updatePar.name === parameter.name);
         if (parameter.value !== updateParameter.value) {
             return true;
         }
@@ -50,3 +53,8 @@ export const showUpdateNotification = function(state) {
 
     return false;
 };
+
+export const updateProgressShowing = function(state) {
+    return uiFlasg.updateProgressShowing(state.uiFlagsReducer);
+};
+

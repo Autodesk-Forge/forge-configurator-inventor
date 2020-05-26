@@ -23,9 +23,7 @@ namespace WebApplication
         Task<List<ObjectDetails>> GetBucketObjectsAsync(string bucketKey, string beginsWith = null);
         Task CreateBucketAsync(string bucketKey);
         Task DeleteBucketAsync(string bucketKey);
-        Task CreateEmptyObjectAsync(string bucketKey, string objectName);
-        Task UploadObjectAsync(string bucketKey, Stream stream, string objectName);
-        Task UploadChunkAsync(string bucketKey, Stream stream, string objectName, string contentRange, string sessionId);
+        Task UploadObjectAsync(string bucketKey, string objectName, Stream stream);
 
         /// <summary>
         /// Generate a signed URL to OSS object.
@@ -47,5 +45,15 @@ namespace WebApplication
         Task RenameObjectAsync(string bucketKey, string oldName, string newName);
 
         Task<Autodesk.Forge.Client.ApiResponse<dynamic>> GetObjectAsync(string bucketKey, string objectName);
+
+        /// <summary>
+        /// Copy OSS object.
+        /// </summary>
+        Task CopyAsync(string bucketKey, string fromName, string toName);
+
+        /// <summary>
+        /// Delete OSS object.
+        /// </summary>
+        Task DeleteAsync(string bucketKey, string objectName);
     }
 }

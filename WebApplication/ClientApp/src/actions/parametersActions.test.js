@@ -1,4 +1,4 @@
-import { fetchParameters } from './parametersActions';
+import { fetchParameters, formatParameters } from './parametersActions';
 import parameterActionTypes from './parametersActions';
 import notificationTypes from '../actions/notificationActions';
 
@@ -158,6 +158,33 @@ describe('fetchParameters', () => {
             });
 
 
+        });
+
+        // validate conversion from internal format back to Inventor parameters
+        describe('conversion back', () => {
+
+            it('correctly convert parameters', () => {
+
+                const internalParameters = [
+                    {
+                        name: 'WrenchSz',
+                        value: 'Small',
+                        units: 'Text',
+                        allowedValues: ['Large', 'Medium', 'Small']
+                    }
+                ];
+
+                const invParameters = {
+                    WrenchSz: {
+                        value: '"Small"',
+                        unit: 'Text',
+                        values: ['"Large"', '"Medium"', '"Small"']
+                    }
+                };
+
+                const formatted = formatParameters(internalParameters);
+                expect(formatted).toMatchObject(invParameters);
+            });
         });
     });
 

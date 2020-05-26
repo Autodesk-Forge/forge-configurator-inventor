@@ -5,7 +5,8 @@ namespace WebApplication.Definitions
     /// </summary>
     public class AdoptionData
     {
-        public string InputUrl { get; set; }
+        public string InputDocUrl { get; set; }
+        public string InputParamsUrl { get; set; }
 
         /// <summary>
         /// Relative path to top level assembly in ZIP with assembly.

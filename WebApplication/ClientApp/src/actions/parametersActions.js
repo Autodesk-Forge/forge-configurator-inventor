@@ -1,5 +1,8 @@
 import repo from '../Repository';
 import { addError, addLog } from './notificationActions';
+import { Jobs } from '../JobManager';
+import { showUpdateProgress } from './uiFlagsActions';
+import { updateSvf } from './projectListActions';
 
 const actionTypes = {
     PARAMETERS_UPDATED: 'PARAMETERS_UPDATED',
@@ -77,9 +80,11 @@ function adaptParameters(rawParameters) {
 }
 
 // eslint-disable-next-line no-unused-vars
-export const fetchParameters = (projectId, force = false) => async (dispatch, getState) => {
+export const fetchParameters = (projectId) => async (dispatch, getState) => {
+    if (!projectId)
+        return;
     const params = getState().updateParameters[projectId];
-    if(!force && params && params.length!==0) {
+    if(params && params.length!==0) {
         return;
     }
 
@@ -91,5 +96,66 @@ export const fetchParameters = (projectId, force = false) => async (dispatch, ge
         dispatch(updateParameters(projectId, parameters));
     } catch (error) {
         dispatch(addError('Failed to get parameters for ' + projectId + '. (' + error + ')'));
+    }
+};
+
+export function formatParameters(clientParameters) {
+    const quote = function(input) {
+        if (input == null)
+            return input;
+
+        const out = "\"".concat(input, "\"");
+        return out;
+    };
+
+    const invFormatedParameters = clientParameters.reduce( (obj, param) => {
+        const quoteValues = param.allowedValues != null && param.allowedValues.length > 0;
+        const values = quoteValues ? param.allowedValues.map(item => quote(item)) : [];
+        const value = quoteValues ? quote(param.value) : param.value;
+
+        obj[param.name] = {
+            value: value,
+            unit: param.units ? param.units : null,
+            values: values
+        };
+
+        return obj;
+    }, {});
+
+    return invFormatedParameters;
+}
+
+export const updateModelWithParameters = (projectId, data) => async (dispatch) => {
+    dispatch(addLog('updateModelWithParameters invoked'));
+
+    // update 'data' parameters back to inventor format
+    const invFormattedParameters = formatParameters(data);
+    const jobManager = Jobs();
+
+    try {
+        await jobManager.doJob(projectId, invFormattedParameters,
+            // start job
+            () => {
+                dispatch(addLog('JobManager: HubConnection started for project : ' + projectId));
+                dispatch(showUpdateProgress(true));
+            },
+            // onComplete
+            (_, updatedState) => {
+                dispatch(addLog('JobManager: Received onComplete'));
+
+                const rawParameters = updatedState.parameters;
+                const svf = updatedState.svf;
+                
+                // hide modal dialog
+                dispatch(showUpdateProgress(false));
+
+                // launch update
+                const parameters = adaptParameters(rawParameters);
+                dispatch(updateParameters(projectId, parameters));
+                dispatch(updateSvf(projectId, svf));
+            }
+        );
+    } catch (error) {
+        dispatch(addError('JobManager: Error : ' + error));
     }
 };

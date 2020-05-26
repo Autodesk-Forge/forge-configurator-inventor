@@ -9,6 +9,7 @@
     {
         public AdoptProject(Publisher publisher) :
             base(publisher,
+                    new UpdateParameters(publisher),
                     new CreateSVF(publisher),
                     new CreateThumbnail(publisher),
                     new ExtractParameters(publisher))
