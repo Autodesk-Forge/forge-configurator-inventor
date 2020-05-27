@@ -14,6 +14,12 @@ export class ParametersContainer extends Component {
         this.props.fetchParameters(this.props.activeProject.id);
     }
 
+    componentDidUpdate(prevProps) {
+        // fetch parameters when params UI was active before projects initialized
+        if (this.props.activeProject.id !== prevProps.activeProject.id)
+            this.props.fetchParameters(this.props.activeProject.id);
+    }
+
     updateClicked() {
         this.props.updateModelWithParameters(this.props.activeProject.id, this.props.projectUpdateParameters);
     }

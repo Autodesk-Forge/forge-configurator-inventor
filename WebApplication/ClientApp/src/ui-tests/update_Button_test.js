@@ -11,7 +11,6 @@ Feature('Update Button');
 Scenario('should check if Update button displays a message', (I) => {
 
     // click on Model tab
-    I.wait(3); // allow the projects combo  to be  loaded - https://jira.autodesk.com/browse/INVGEN-40998
     I.click({xpath: XPathElements.xpTabModel});
 
     // Click on Update button

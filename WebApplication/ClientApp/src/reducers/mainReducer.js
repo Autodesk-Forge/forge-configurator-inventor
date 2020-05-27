@@ -34,6 +34,8 @@ export const parametersEditedMessageVisible = function(state) {
         return false;
 
     const activeProject = getActiveProject(state);
+    if (!activeProject)
+        return false;
 
     const parameters = getParameters(activeProject.id, state);
     const updateParameters = getUpdateParameters(activeProject.id, state);
