@@ -1,0 +1,37 @@
+{
+    "name": "sdra-test",
+    "source": {
+        "type": "CODEPIPELINE",
+        "buildspec": "AWS-Deployment/BuildSpecs/buildspec-tests-docker.yml",
+        "insecureSsl": false
+    },
+    "artifacts": {
+        "type": "CODEPIPELINE",
+        "name": "sdra-test",
+        "packaging": "NONE",
+        "encryptionDisabled": false
+    },
+    "cache": {
+        "type": "NO_CACHE"
+    },
+    "environment": {
+        "type": "LINUX_CONTAINER",
+        "image": "aws/codebuild/amazonlinux2-x86_64-standard:3.0",
+        "computeType": "BUILD_GENERAL1_SMALL",
+        "privilegedMode": true,
+        "imagePullCredentialsType": "CODEBUILD"
+    },
+    "serviceRole": "<role>",
+    "timeoutInMinutes": 60,
+    "queuedTimeoutInMinutes": 480,
+    "logsConfig": {
+        "cloudWatchLogs": {
+            "status": "ENABLED"
+        },
+        "s3Logs": {
+            "status": "ENABLED",
+            "location": "sdra-build/sdra-tests-log",
+            "encryptionDisabled": true
+        }
+    }
+}

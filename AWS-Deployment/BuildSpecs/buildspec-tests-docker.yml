@@ -1,0 +1,19 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      docker: 18
+  pre_build:
+    commands:
+  build:
+    commands:
+      - echo Tests started on `date`
+      - echo Getting AppBundles Zips
+      - aws s3 cp --recursive s3://sdra-build/AppBundles/ ./WebApplication/AppBundles
+      - echo Building Docker test image...
+      - docker build .
+  post_build:
+    commands:
+      - echo Tests completed on `date`
+artifacts:
+  files:
