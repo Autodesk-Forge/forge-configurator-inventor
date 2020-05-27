@@ -145,7 +145,7 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
 
                 const rawParameters = updatedState.parameters;
                 const svf = updatedState.svf;
-                
+
                 // hide modal dialog
                 dispatch(showUpdateProgress(false));
 

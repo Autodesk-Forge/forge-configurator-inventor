@@ -7,6 +7,7 @@ export const downloadFile = (fileType) => {
 
         case'rfa': {
             console.log('RFA requested');
+            break;
         }
 
         default:

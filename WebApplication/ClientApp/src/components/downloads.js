@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import BaseTable, { AutoResizer, Column } from 'react-base-table'
-import 'react-base-table/styles.css'
-import { downloadFile } from '../actions/downloadActions'
+import 'react-base-table/styles.css';
+import { downloadFile } from '../actions/downloadActions';
 
 const Icon = ({ iconname }) => (
     <div>
@@ -17,7 +17,7 @@ const columns = [
         cellRenderer: ({ cellData: iconname }) => <Icon iconname={iconname} />,
         align: Column.Alignment.RIGHT,
         width: 100,
-    },    
+    },
     {
         key: 'type',
         title: 'File Type',
@@ -33,8 +33,8 @@ const columns = [
         width: 200,
     }
 ];
-  
-  const data = [
+
+const data = [
     {
         id: 'updatedIam',
         icon: 'products-and-services-24.svg',
@@ -51,10 +51,10 @@ const columns = [
 
 const rowEventHandlers = {
     onClick: (e) => { downloadFile(e.rowKey); }
-}
+};
 
 export default class Downloads extends Component {
-    render () {
+    render() {
         return <AutoResizer>
             {({ width, height }) => {
                 // reduce size by 16 (twice the default border of tabContent)
@@ -67,7 +67,7 @@ export default class Downloads extends Component {
                     data={data}
                     rowEventHandlers={rowEventHandlers}
                 />
-            }}
-        </AutoResizer>
+            )}
+        </AutoResizer>;
     }
-};
+}
