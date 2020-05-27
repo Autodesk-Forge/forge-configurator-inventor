@@ -11,7 +11,7 @@ phases:
       - echo Getting AppBundles Zips
       - aws s3 cp --recursive s3://sdra-build/AppBundles/ ./WebApplication/AppBundles
       - echo Building Docker test image...
-      - docker build .
+      - docker build --build-arg FORGE_CLIENT_ID=${FORGE_CLIENT_ID} --build-arg FORGE_CLIENT_SECRET=${FORGE_CLIENT_SECRET} .
   post_build:
     commands:
       - echo Tests completed on `date`

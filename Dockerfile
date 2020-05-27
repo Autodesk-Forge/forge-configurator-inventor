@@ -11,6 +11,10 @@ COPY . /sln
 WORKDIR /sln
 
 # run backend tests (this also builds and installs dependencies)
+ARG FORGE_CLIENT_ID
+ENV FORGE_CLIENT_ID ${FORGE_CLIENT_ID}
+ARG FORGE_CLIENT_SECRET
+ENV FORGE_CLIENT_SECRET ${FORGE_CLIENT_SECRET}
 RUN dotnet test
 
 # run frontend-lint
