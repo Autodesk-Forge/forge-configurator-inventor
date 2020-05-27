@@ -10,9 +10,9 @@ namespace WebApplication.Processing
         public override string Id => nameof(CreateThumbnail);
         public override string Description => "Generate thumbnail from Inventor document";
 
-        protected override string OutputUrl(AdoptionData projectData)
+        protected override string OutputUrl(ProcessingArgs projectData)
         {
-            return projectData.ThumbnailUrl;
+            return (projectData as AdoptionData).ThumbnailUrl; // TODO: use generics
         }
 
         protected override string OutputName => "thumbnail.png";

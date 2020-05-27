@@ -86,37 +86,37 @@ namespace WebApplication.Processing
         /// <summary>
         /// Process IPT or Zipped IAM file.
         /// </summary>
-        public Task<bool> ProcessAsync(AdoptionData projectData)
+        public Task<bool> ProcessAsync(ProcessingArgs data)
         {
-            var args = ToWorkItemArgs(projectData);
+            var args = ToWorkItemArgs(data);
 
             return RunAsync(args);
         }
 
-        public virtual Dictionary<string, IArgument> ToWorkItemArgs(AdoptionData projectData)
+        public virtual Dictionary<string, IArgument> ToWorkItemArgs(ProcessingArgs data)
         {
             var args = new Dictionary<string, IArgument>();
-            AddInputArgs(args, projectData);
+            AddInputArgs(args, data);
 
             if (HasOutput)
             {
-                AddOutputArgs(args, projectData);
+                AddOutputArgs(args, data);
             }
 
             return args;
         }
 
-        protected virtual void AddOutputArgs(IDictionary<string, IArgument> args, AdoptionData projectData)
+        protected virtual void AddOutputArgs(IDictionary<string, IArgument> args, ProcessingArgs data)
         {
-            args.Add(OutputParameterName, new XrefTreeArgument { Verb = Verb.Put, Url = OutputUrl(projectData) });
+            args.Add(OutputParameterName, new XrefTreeArgument { Verb = Verb.Put, Url = OutputUrl(data) });
         }
 
-        protected virtual void AddInputArgs(IDictionary<string, IArgument> args, AdoptionData projectData)
+        protected virtual void AddInputArgs(IDictionary<string, IArgument> args, ProcessingArgs data)
         {
-            if (projectData.IsAssembly)
-                args.Add(InputDocParameterName, new XrefTreeArgument { PathInZip = projectData.TLA, LocalName = "zippedIam.zip", Url = projectData.InputDocUrl });
+            if (data.IsAssembly)
+                args.Add(InputDocParameterName, new XrefTreeArgument { PathInZip = data.TLA, LocalName = "zippedIam.zip", Url = data.InputDocUrl });
             else
-                args.Add(InputDocParameterName, new XrefTreeArgument { Url = projectData.InputDocUrl });
+                args.Add(InputDocParameterName, new XrefTreeArgument { Url = data.InputDocUrl });
         }
 
         /// <summary>
@@ -139,9 +139,9 @@ namespace WebApplication.Processing
             };
 
         /// <summary>
-        /// Pick required output URL from the adoption data (which contains everything).
+        /// Pick required output URL from the processing data (which contains everything).
         /// </summary>
-        protected virtual string OutputUrl(AdoptionData projectData) => throw new NotImplementedException();
+        protected virtual string OutputUrl(ProcessingArgs data) => throw new NotImplementedException();
 
         /// <summary>
         /// Parameter name for input document.
@@ -156,29 +156,27 @@ namespace WebApplication.Processing
         /// <summary>
         /// Activity parameters.
         /// </summary>
-        public virtual Dictionary<string, Parameter> ActivityParams
+        public virtual Dictionary<string, Parameter> GetActivityParams()
         {
-            get
+            var activityParams = new Dictionary<string, Parameter>
             {
-                var activityParams = new Dictionary<string, Parameter>
-                                        {
-                                            {
-                                                InputDocParameterName,
-                                                new Parameter
-                                                {
-                                                    Verb = Verb.Get,
-                                                    Description = "IPT or IAM (in ZIP) file to process"
-                                                }
-                                            }
-                                        };
-
-                if (HasOutput)
                 {
-                    activityParams.Add(OutputParameterName, new Parameter { Verb = Verb.Put, LocalName = OutputName, Zip = IsOutputZip });
+                    InputDocParameterName,
+                    new Parameter
+                    {
+                        Verb = Verb.Get,
+                        Description = "IPT or IAM (in ZIP) file to process"
+                    }
                 }
+            };
 
-                return activityParams;
+            if (HasOutput)
+            {
+                activityParams.Add(OutputParameterName,
+                    new Parameter {Verb = Verb.Put, LocalName = OutputName, Zip = IsOutputZip});
             }
+
+            return activityParams;
         }
 
         /// <summary>

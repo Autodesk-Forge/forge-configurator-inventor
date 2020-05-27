@@ -51,6 +51,10 @@ namespace WebApplication.Processing
         {
             return _adoptWork.ProcessAsync(projectData);
         }
+        public Task<bool> UpdateAsync(AdoptionData projectData) // TODO: should be UpdateData
+        {
+            return _adoptWork.ProcessAsync(projectData);
+        }
 
         internal Task<bool> TransferAsync(string source, string target)
         {

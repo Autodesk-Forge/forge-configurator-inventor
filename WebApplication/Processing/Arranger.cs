@@ -22,6 +22,7 @@ namespace WebApplication.Processing
         public readonly string Thumbnail = $"{Guid.NewGuid():N}.png";
         public readonly string SVF = $"{Guid.NewGuid():N}.zip";
         public readonly string InputParams = $"{Guid.NewGuid():N}.json";
+        public readonly string OutputModel = $"{Guid.NewGuid():N}.zip";
 
         /// <summary>
         /// Constructor.
@@ -45,7 +46,9 @@ namespace WebApplication.Processing
             var urls = await Task.WhenAll(CreateSignedUrlAsync(Thumbnail, ObjectAccess.Write), 
                                             CreateSignedUrlAsync(SVF, ObjectAccess.Write), 
                                             CreateSignedUrlAsync(Parameters, ObjectAccess.Write),
-                                            CreateSignedUrlAsync(InputParams, ObjectAccess.ReadWrite));
+                                            CreateSignedUrlAsync(InputParams, ObjectAccess.ReadWrite),
+                                            CreateSignedUrlAsync(OutputModel, ObjectAccess.ReadWrite)
+                );
 
             await using var jsonStream = Json.ToStream(parameters ?? new InventorParameters());  // TODO: TEMPORARY! no need to pass parameters for "adopt" phase
             await _forge.UploadObjectAsync(_resourceProvider.BucketKey, InputParams, jsonStream);
@@ -54,6 +57,34 @@ namespace WebApplication.Processing
             {
                 InputDocUrl       = docUrl,
                 ThumbnailUrl      = urls[0],
+                SvfUrl            = urls[1],
+                ParametersJsonUrl = urls[2],
+                ModelUrl          = urls[4],
+                TLA               = tlaFilename
+            };
+        }
+
+        /// <summary>
+        /// Create adoption data.
+        /// </summary>
+        /// <param name="docUrl">URL to the input Inventor document (IPT or zipped IAM)</param>
+        /// <param name="tlaFilename">Top level assembly in the ZIP. (if any)</param>
+        /// <param name="parameters">Inventor parameters.</param>
+        public async Task<UpdateData> ForUpdateAsync(string docUrl, string tlaFilename, InventorParameters parameters = null)
+        {
+            var urls = await Task.WhenAll(
+                                            CreateSignedUrlAsync(OutputModel, ObjectAccess.Write),
+                                            CreateSignedUrlAsync(SVF, ObjectAccess.Write),
+                                            CreateSignedUrlAsync(Parameters, ObjectAccess.Write),
+                                            CreateSignedUrlAsync(InputParams, ObjectAccess.ReadWrite));
+
+            await using var jsonStream = Json.ToStream(parameters ?? new InventorParameters());  // TODO: TEMPORARY! no need to pass parameters for "adopt" phase
+            await _forge.UploadObjectAsync(_resourceProvider.BucketKey, InputParams, jsonStream);
+
+            return new UpdateData
+            {
+                InputDocUrl       = docUrl,
+                ModelUrl          = urls[0],
                 SvfUrl            = urls[1],
                 ParametersJsonUrl = urls[2],
                 InputParamsUrl    = urls[3],
