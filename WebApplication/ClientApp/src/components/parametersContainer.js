@@ -4,7 +4,7 @@ import './parametersContainer.css';
 import Parameter from './parameter';
 import { getActiveProject, getParameters, getUpdateParameters, updateProgressShowing } from '../reducers/mainReducer';
 import { fetchParameters, resetParameters, updateModelWithParameters } from '../actions/parametersActions';
-import { showUpdateProgress } from '../actions/uiFlagsActions'
+import { showUpdateProgress } from '../actions/uiFlagsActions';
 import Button from '@hig/button';
 import Modal from '@hig/modal';
 

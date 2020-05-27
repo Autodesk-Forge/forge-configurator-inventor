@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import BaseTable, { AutoResizer } from 'react-base-table'
-import 'react-base-table/styles.css'
-import { downloadFile } from '../actions/downloadActions'
+import BaseTable, { AutoResizer } from 'react-base-table';
+import 'react-base-table/styles.css';
+import { downloadFile } from '../actions/downloadActions';
 
 const columns = [
     {
@@ -9,7 +9,7 @@ const columns = [
         title: '',
         dataKey: 'icon',
         width: 100,
-    },    
+    },
     {
         key: 'type',
         title: 'File Type',
@@ -23,8 +23,8 @@ const columns = [
         width: 200,
     }
 ];
-  
-  const data = [
+
+const data = [
     {
         id: 'updatedIam',
         icon: null,
@@ -41,10 +41,10 @@ const columns = [
 
 const rowEventHandlers = {
     onClick: (e) => { downloadFile(e.rowKey); }
-}
+};
 
 export default class Downloads extends Component {
-    render () {
+    render() {
         return <AutoResizer>
             {({ width, height }) => (
                 <BaseTable
@@ -55,6 +55,6 @@ export default class Downloads extends Component {
                     rowEventHandlers={rowEventHandlers}
                 />
             )}
-        </AutoResizer>
+        </AutoResizer>;
     }
-};
+}

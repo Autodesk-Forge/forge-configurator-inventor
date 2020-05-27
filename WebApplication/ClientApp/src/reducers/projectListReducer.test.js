@@ -41,10 +41,10 @@ describe('projectList reducer', () => {
     });
 
     it('keeps active project during project list update', () => {
-         const secondProjectActive = { ...list.initialState, activeProjectId: '2' };
+        const secondProjectActive = { ...list.initialState, activeProjectId: '2' };
 
-         // new data that include also the current active project
-         const newList = [
+        // new data that include also the current active project
+        const newList = [
             {
                 id: '3',
                 label: 'Local Project 3',
@@ -59,7 +59,7 @@ describe('projectList reducer', () => {
             }
         ];
 
-         const expectedResult = {
+        const expectedResult = {
             activeProjectId: '2',
             projects: newList
         };
@@ -83,7 +83,7 @@ describe('projectList reducer', () => {
             activeProject
         ];
 
-         const projectList = {
+        const projectList = {
             activeProjectId: '2',
             projects: projects
         };
@@ -98,7 +98,7 @@ describe('projectList reducer', () => {
                 id : '1',
                 svf: 'oldSvf'
             }]
-        }
+        };
 
         expect(projectListReducer(projectList, updateSvf("1", "newSvf")).projects[0].svf).toEqual("newSvf");
     });

@@ -31,7 +31,7 @@ export default function(state = initialState, action) {
             const projects = state.projects.map((project) => {
                 return project.id !== action.activeProjectId ? project : {
                     ...project, svf: action.svf
-                }
+                };
             });
             return { ...state, projects };
         }
