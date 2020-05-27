@@ -14,6 +14,7 @@ const columns = [
         key: 'icon',
         title: '',
         dataKey: 'icon',
+        // eslint-disable-next-line react/display-name
         cellRenderer: ({ cellData: iconname }) => <Icon iconname={iconname} />,
         align: Column.Alignment.RIGHT,
         width: 100,
