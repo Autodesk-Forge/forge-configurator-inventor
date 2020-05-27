@@ -56,15 +56,18 @@ const rowEventHandlers = {
 export default class Downloads extends Component {
     render () {
         return <AutoResizer>
-            {({ width, height }) => (
-                <BaseTable
-                    width={width}
-                    height={height}
+            {({ width, height }) => {
+                // reduce size by 16 (twice the default border of tabContent)
+                const newWidth = width-16;
+                const newHeight = height-16;
+                return <BaseTable
+                    width={newWidth}
+                    height={newHeight}
                     columns={columns}
                     data={data}
                     rowEventHandlers={rowEventHandlers}
                 />
-            )}
+            }}
         </AutoResizer>
     }
 };
