@@ -66,8 +66,8 @@ export default class Downloads extends Component {
                     columns={columns}
                     data={data}
                     rowEventHandlers={rowEventHandlers}
-                />
-            )}
+                />;
+            }}
         </AutoResizer>;
     }
 }
