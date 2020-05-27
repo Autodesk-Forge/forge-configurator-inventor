@@ -10,7 +10,7 @@ Files used only for Autodesk AWS deployment
   * `aws codebuild create-project --cli-input-json file://codebuild-test-project.json`
 * Update a CodeBuild project property (examples)
   * `aws codebuild update-project --name "sdra-test" --source "{\"type\": \"CODEPIPELINE\", \"buildspec\": \"AWS-Deployment/BuildSpecs/buildspec-tests-docker.yml\"}"`
-  * `aws codebuild update-project --name "sdra-test" --environment "{\"type\": \"LINUX_CONTAINER\", \"image\": \"aws/codebuild/amazonlinux2-x86_64-standard:3.0\", \"computeType\": \"BUILD_GENERAL1_SMALL\", \"environmentVariables\": [{\"name\":\"FORGE_CLIENT_ID\",\"value\":\"<id>\"}, {\"name\":\"FORGE_CLIENT_SECRET\",\"value\":\"<secret>\"}]}"`
+  * `aws codebuild update-project --name "sdra-test" --environment "{\"type\": \"LINUX_CONTAINER\", \"image\": \"aws/codebuild/amazonlinux2-x86_64-standard:3.0\", \"computeType\": \"BUILD_GENERAL1_SMALL\", \"environmentVariables\": [{\"name\":\"FORGE_CLIENT_ID\",\"value\":\"<id>\"}, {\"name\":\"FORGE_CLIENT_SECRET\",\"value\":\"<secret>\"}], \"privilegedMode\": true, \"imagePullCredentialsType\": \"CODEBUILD\"}"`
 * Create a new CodePipeline pipeline
   * `aws codepipeline create-pipeline --cli-input-json file://codepipeline.json`
 * Update a CodePipeline pipeline
