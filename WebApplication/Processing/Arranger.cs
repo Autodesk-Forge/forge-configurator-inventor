@@ -120,8 +120,7 @@ namespace WebApplication.Processing
             var ossNames = project.OssNameProvider(hashString);
 
             // move data to expected places
-            await Task.WhenAll(_forge.RenameObjectAsync(_bucketKey, Thumbnail, project.OssAttributes.Thumbnail),
-                                _forge.RenameObjectAsync(_bucketKey, SVF, ossNames.ModelView),
+            await Task.WhenAll(_forge.RenameObjectAsync(_bucketKey, SVF, ossNames.ModelView),
                                 _forge.RenameObjectAsync(_bucketKey, Parameters, ossNames.Parameters),
                                 _forge.RenameObjectAsync(_bucketKey, OutputModel, ossNames.CurrentModel),
                                 _forge.DeleteAsync(_bucketKey, InputParams));

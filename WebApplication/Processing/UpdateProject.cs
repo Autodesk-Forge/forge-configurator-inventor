@@ -1,5 +1,11 @@
 ﻿namespace WebApplication.Processing
 {
+    /// <summary>
+    /// Update project:
+    /// - generate SVF
+    /// - extract parameters
+    /// - save current model
+    /// </summary>
     public class UpdateProject : AggregatedDefinition
     {
         public UpdateProject(Publisher publisher) :

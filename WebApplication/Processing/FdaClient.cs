@@ -11,6 +11,7 @@ namespace WebApplication.Processing
         private readonly CreateThumbnail _thumbnailWork;
         private readonly ExtractParameters _parametersWork;
         private readonly AdoptProject _adoptWork;
+        private readonly UpdateProject _updateProjectWork;
         private readonly AppBundleZipPaths _paths;
         private readonly UpdateParameters _updateParametersWork;
 
@@ -22,6 +23,7 @@ namespace WebApplication.Processing
             _parametersWork = new ExtractParameters(publisher);
             _adoptWork = new AdoptProject(publisher);
             _updateParametersWork = new UpdateParameters(publisher);
+            _updateProjectWork = new UpdateProject(publisher);
             _paths = appBundleZipPathsOptionsAccessor.Value;
         }
 
@@ -34,6 +36,7 @@ namespace WebApplication.Processing
             await _parametersWork.InitializeAsync(_paths.ExtractParameters);
             await _updateParametersWork.InitializeAsync(_paths.UpdateParameters);
             await _adoptWork.InitializeAsync(null /* does not matter */);
+            await _updateProjectWork.InitializeAsync(null /* does not matter */);
         }
 
         public async Task CleanUpAsync()
@@ -45,15 +48,16 @@ namespace WebApplication.Processing
             await _parametersWork.CleanUpAsync();
             await _updateParametersWork.CleanUpAsync();
             await _adoptWork.CleanUpAsync();
+            await _updateProjectWork.CleanUpAsync();
         }
 
         public Task<bool> AdoptAsync(AdoptionData projectData)
         {
             return _adoptWork.ProcessAsync(projectData);
         }
-        public Task<bool> UpdateAsync(UpdateData projectData) // TODO: should be UpdateData
+        public Task<bool> UpdateAsync(UpdateData projectData)
         {
-            return _adoptWork.ProcessAsync(projectData);
+            return _updateProjectWork.ProcessAsync(projectData);
         }
 
         internal Task<bool> TransferAsync(string source, string target)
