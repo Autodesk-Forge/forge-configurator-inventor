@@ -5,7 +5,9 @@ using System.Runtime.InteropServices;
 using Inventor;
 using Autodesk.Forge.DesignAutomation.Inventor.Utils;
 using System.Collections.Generic;
+using System.IO;
 using Newtonsoft.Json;
+using Path = System.IO.Path;
 
 namespace ExtractParametersPlugin
 {
@@ -45,15 +47,38 @@ namespace ExtractParametersPlugin
                 using (new HeartBeat())
                 {
                     dynamic dynDoc = doc;
-                    string parameters = GetParamsAsJson(dynDoc.ComponentDefinition.Parameters.UserParameters);
+                    string paramsJson = GetParamsAsJson(dynDoc.ComponentDefinition.Parameters.UserParameters);
 
-                    System.IO.File.WriteAllText("documentParams.json", parameters);
+                    System.IO.File.WriteAllText("documentParams.json", paramsJson);
+
+                    SaveModelCopy(doc);
                 }
             }
             catch (Exception e)
             {
                 LogError("Processing failed. " + e.ToString());
             }
+        }
+
+        private static void SaveModelCopy(Document doc)
+        {
+            if (doc.DocumentType != DocumentTypeEnum.kAssemblyDocumentObject)
+            {
+                LogError("Only assembly documents are supported right now.");
+                return;
+            }
+
+            var currentDirectory = Directory.GetCurrentDirectory();
+            var outputDir = Path.Combine(currentDirectory, "ModelCopy");
+
+            var currentFullName = doc.FullFileName;
+            var relativeName = currentFullName.Substring(currentDirectory.Length + 1);
+
+            var destFileName = Path.Combine(outputDir, relativeName);
+            LogTrace($"Save '{currentFullName}' to '{destFileName}'");
+            doc.SaveAs(destFileName, SaveCopyAs: true);
+
+            // TODO: this saves only TLA!!!
         }
 
         public string GetParamsAsJson(dynamic userParameters)
