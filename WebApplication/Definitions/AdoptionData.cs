@@ -17,7 +17,7 @@ namespace WebApplication.Definitions
         /// </summary>
         public bool IsAssembly => ! string.IsNullOrEmpty(TLA);
 
-        public string ModelUrl { get; set; } // TODO: temporary!
+        public string OutputModelUrl { get; set; } // TODO: temporary!
     }
 
     /// <summary>
@@ -34,6 +34,6 @@ namespace WebApplication.Definitions
     public class UpdateData : ProcessingArgs
     {
         public string InputParamsUrl { get; set; }
-//        public string ModelUrl { get; set; }
+//        public string OutputModelUrl { get; set; }
     }
 }

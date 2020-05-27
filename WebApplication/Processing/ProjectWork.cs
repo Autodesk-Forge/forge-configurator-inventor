@@ -41,6 +41,7 @@ namespace WebApplication.Processing
             if (! success)
             {
                 _logger.LogError($"Failed to process '{project.Name}' project.");
+                // TODO: should we fail hard?
             }
             else
             {
@@ -62,7 +63,7 @@ namespace WebApplication.Processing
         {
             var incomingHash = Crypto.GenerateObjectHashString(parameters);
             //_logger.LogInformation(JsonSerializer.Serialize(parameters));
-            _logger.LogInformation($"Parameters hash is {incomingHash}");
+            _logger.LogInformation($"Incoming parameters hash is {incomingHash}");
 
             var project = _resourceProvider.GetProject(projectInfo.Name);
             var localNames = project.LocalNameProvider(incomingHash);
@@ -105,10 +106,12 @@ namespace WebApplication.Processing
             _logger.LogInformation("Update the project");
 
             var inputDocUrl = await _forgeOSS.CreateSignedUrlAsync(_resourceProvider.BucketKey, project.OSSSourceModel);
-            var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, tlaFilename, parameters);
+            UpdateData updateData = await _arranger.ForUpdateAsync(inputDocUrl, tlaFilename, parameters);
 
-            bool success = await _fdaClient.AdoptAsync(adoptionData);
+            bool success = await _fdaClient.UpdateAsync(updateData);
             if (! success) throw new ApplicationException($"Failed to update {project.Name}");
+
+            _logger.LogInformation("Moving files around");
 
             // rearrange generated data according to the parameters hash
             string hash = await _arranger.MoveViewablesAsync(project);
@@ -134,7 +137,7 @@ namespace WebApplication.Processing
             // copy local file structure
             LocalNameProvider localFrom = project.LocalNameProvider(hashFrom);
 
-            // TODO: performance improvement - replace with symlink when it's supported
+            // SOMEDAY: performance improvement - replace with symlink when it's supported
             // by netcore (https://github.com/dotnet/runtime/issues/24271)
             FileSystem.CopyDir(localFrom.BaseDir, localTo.BaseDir);
 
