@@ -53,7 +53,7 @@ Scenario('should check if all Tabs are loaded after click', async (I) => {
     I.click({xpath: XPathElements.xpTabDownloads});
 
     // check that Downloads tab has correct content
-    I.see("The page is not yet implemented\nPlease switch to the Model tab", {xpath: "//*[@id='downloads']"});
+    I.seeElement('#downloads .BaseTable');
 
     // click on Project tab
     I.click({xpath: XPathElements.xpTabProjects});

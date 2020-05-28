@@ -55,12 +55,12 @@ Demo application showcasing Configuration with Design Automation for Inventor
     * Open a test file in the `WebApplication.Tests` directory and click on either `Run Test` or `Debug Test` above one of the methods decorated with the `[Fact]` attribute. Or, above the class declaration click on either `Run All Tests` or `Debug All Tests`
 1. From the command line, in either the root or `WebApplication.Tests` directory run `dotnet test`
 ### Frontend
-* Note that the server needs to be running for integration tests
 1. In Visual Studio Code, on the Run tab, select the `Debug Jest All` configuration and click the "Start Debugging" (arrow) button
-1. Alternatively, using the command line go to WebApplication/ClientApp and execute `npm run test`
+1. Alternatively, using the command line go to WebApplication/ClientApp and execute `npm test`
 ### UI Tests
-* For UI tests we are using `CodeCeptJs` framework. All tests are stored in `ClinetApp/src/ui-tests/` and we filter all files end with `*_test.js`. 
-1. From Visual Studio Code
+* For UI tests we are using `CodeCeptJs` framework. All tests are stored in `ClientApp/src/ui-tests/` and we filter all files end with `*_test.js`. 
+* Note that the server needs to be running for these tests
+1. From the `WebApplication/ClientApp` directory:
     * For all UI tests Run this command: `npx codeceptjs run`
     * For particular file you can use this command: `npx codeceptjs run src/ui-tests/<test file name>`
 
