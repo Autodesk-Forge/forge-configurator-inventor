@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="48px" height="48px" viewBox="0 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>icons/modal/Assembly icon</title>
+    <defs>
+        <filter x="-8.3%" y="-8.3%" width="116.7%" height="116.7%" filterUnits="objectBoundingBox" id="filter-1">
+            <feOffset dx="0" dy="1" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="0.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.189226676 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+    </defs>
+    <g id="icons/modal/Assembly-icon" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g filter="url(#filter-1)">
+            <rect id="Rectangle" x="0" y="0" width="48" height="48"></rect>
+            <g id="box" transform="translate(3.000000, 22.000000)" fill-rule="nonzero">
+                <path d="M24.5,-0.5 L5.79289322,-0.5 L-0.5,5.79289322 L-0.5,24.5 L18.2071068,24.5 L24.5,18.2071068 L24.5,-0.5 Z" id="Path" stroke="#D4DBE1" fill="#ECF0F3"></path>
+                <polygon id="Path-2" fill="#F2F7FA" points="6 0 24 0 18 6 0 6"></polygon>
+                <polygon id="Path-3" fill="#D4DBE1" points="18 6 24 0 24 18 18 24"></polygon>
+            </g>
+            <g id="box" transform="translate(22.000000, 22.000000)" fill-rule="nonzero">
+                <path d="M24.5,-0.5 L5.79289322,-0.5 L-0.5,5.79289322 L-0.5,24.5 L18.2071068,24.5 L24.5,18.2071068 L24.5,-0.5 Z" id="Path" stroke="#CCD9E0" fill="#ECF0F3"></path>
+                <polygon id="Path-2" fill="#F2F7FA" points="6 0 24 0 18 6 0 6"></polygon>
+                <polygon id="Path-3" fill="#D4DBE1" points="18 6 24 0 24 18 18 24"></polygon>
+            </g>
+            <g id="blue-box" transform="translate(3.000000, 3.000000)" fill-rule="nonzero">
+                <path d="M24.5,-0.5 L5.79289322,-0.5 L-0.5,5.79289322 L-0.5,24.5 L18.2071068,24.5 L24.5,18.2071068 L24.5,-0.5 Z" id="Path" stroke="#6AC0E7" fill="#9BD5EF"></path>
+                <polygon id="Path-2" fill="#CDEAF7" points="6 0 24 0 18 6 0 6"></polygon>
+                <polygon id="Path-3" fill="#6AC0E7" points="18 6 24 0 24 18 18 24"></polygon>
+            </g>
+            <path d="M27.5,2.5 L8.79289322,2.5 L2.5,8.79289322 L2.5,46.5 L40.2071068,46.5 L46.5,40.2071068 L46.5,21.5 L27.5,21.5 L27.5,2.5 Z" id="Path-4" stroke="#2E4258"></path>
+        </g>
+    </g>
+</svg>

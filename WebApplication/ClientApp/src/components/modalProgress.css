@@ -1,0 +1,19 @@
+.modalContent {
+    display: flex;
+    padding: 20px 0px 24px 0px;
+}
+
+.modalIcon {
+    width: 48px;
+    height: 48px;
+}
+
+.modalAction {
+    padding-left: 24px;
+    width: 100%;
+    align-self: center;
+}
+
+.modalProgress {
+    margin-top: 8px;
+}
