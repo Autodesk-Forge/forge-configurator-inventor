@@ -103,7 +103,7 @@
                         },
                         "runOrder": 1,
                         "configuration": {
-                            "EnvironmentVariables": "[{\"name\":\"PipelineExecutionId\",\"value\":\"#{codepipeline.PipelineExecutionId}\",\"type\":\"PLAINTEXT\"},{\"name\":\"pipelineName\",\"value\":\"sdra-docker\",\"type\":\"PLAINTEXT\"},{\"name\":\"environmentName\",\"value\":\"<environmentName>\",\"type\":\"PLAINTEXT\"}]",
+                            "EnvironmentVariables": "[{\"name\":\"PipelineExecutionId\",\"value\":\"#{codepipeline.PipelineExecutionId}\",\"type\":\"PLAINTEXT\"},{\"name\":\"pipelineName\",\"value\":\"<name>\",\"type\":\"PLAINTEXT\"},{\"name\":\"environmentName\",\"value\":\"<environmentName>\",\"type\":\"PLAINTEXT\"}]",
                             "PrimarySource": "SourceArtifact",
                             "ProjectName": "sdra-deploy"
                         },
