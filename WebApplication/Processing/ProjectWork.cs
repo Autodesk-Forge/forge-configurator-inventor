@@ -17,14 +17,17 @@ namespace WebApplication.Processing
         private readonly Arranger _arranger;
         private readonly FdaClient _fdaClient;
         private readonly IForgeOSS _forgeOSS;
+        private readonly DtoGenerator _dtoGenerator;
 
-        public ProjectWork(ILogger<ProjectWork> logger, ResourceProvider resourceProvider, Arranger arranger, FdaClient fdaClient, IForgeOSS forgeOSS)
+        public ProjectWork(ILogger<ProjectWork> logger, ResourceProvider resourceProvider, Arranger arranger, FdaClient fdaClient,
+                            IForgeOSS forgeOSS, DtoGenerator dtoGenerator)
         {
             _logger = logger;
             _resourceProvider = resourceProvider;
             _arranger = arranger;
             _fdaClient = fdaClient;
             _forgeOSS = forgeOSS;
+            _dtoGenerator = dtoGenerator;
         }
 
         /// <summary>
@@ -61,12 +64,12 @@ namespace WebApplication.Processing
         /// </summary>
         public async Task<ProjectStateDTO> DoSmartUpdateAsync(ProjectInfo projectInfo, InventorParameters parameters)
         {
-            var incomingHash = Crypto.GenerateObjectHashString(parameters);
+            var hash = Crypto.GenerateObjectHashString(parameters);
             //_logger.LogInformation(JsonSerializer.Serialize(parameters));
-            _logger.LogInformation($"Incoming parameters hash is {incomingHash}");
+            _logger.LogInformation($"Incoming parameters hash is {hash}");
 
             var project = _resourceProvider.GetProject(projectInfo.Name);
-            var localNames = project.LocalNameProvider(incomingHash);
+            var localNames = project.LocalNameProvider(hash);
 
             // check if the data cached already
             if (Directory.Exists(localNames.SvfDir))
@@ -76,18 +79,20 @@ namespace WebApplication.Processing
             else
             {
                 var resultingHash = await UpdateAsync(project, projectInfo.TopLevelAssembly, parameters);
-                if (! incomingHash.Equals(resultingHash, StringComparison.Ordinal))
+                if (! hash.Equals(resultingHash, StringComparison.Ordinal))
                 {
                     _logger.LogInformation($"Update returned different parameters. Hash is {resultingHash}.");
-                    await CopyStateAsync(project, resultingHash, incomingHash);
+                    await CopyStateAsync(project, resultingHash, hash);
+
+                    // update 
+                    hash = resultingHash;
                 }
             }
 
-            return new ProjectStateDTO
-                    {
-                        Svf = _resourceProvider.ToDataUrl(localNames.SvfDir),
-                        Parameters = Json.DeserializeFile<InventorParameters>(localNames.Parameters)
-                    };
+            var dto = _dtoGenerator.MakeProjectDTO<ProjectStateDTO>(project, hash);
+            dto.Parameters = Json.DeserializeFile<InventorParameters>(localNames.Parameters);
+
+            return dto;
         }
 
         public async Task FileTransferAsync(string source, string target)

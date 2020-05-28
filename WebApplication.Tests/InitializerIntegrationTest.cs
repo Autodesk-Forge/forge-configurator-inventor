@@ -80,7 +80,9 @@ namespace WebApplication.Tests
             };
             IOptions<DefaultProjectsConfiguration> defaultProjectsOptions = Options.Create(defaultProjectsConfiguration);
             var arranger = new Arranger(forgeOSS, httpClientFactory, resourceProvider);
-            var projectWork = new ProjectWork(new NullLogger<ProjectWork>(), resourceProvider, arranger, fdaClient, forgeOSS);
+
+            // TODO: linkGenerator should be mocked
+            var projectWork = new ProjectWork(new NullLogger<ProjectWork>(), resourceProvider, arranger, fdaClient, forgeOSS, new DtoGenerator(resourceProvider, linkGenerator: null));
             initializer = new Initializer(forgeOSS, resourceProvider, new NullLogger<Initializer>(), fdaClient, 
                                             defaultProjectsOptions, projectWork);
 
