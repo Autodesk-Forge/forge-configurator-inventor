@@ -25,10 +25,9 @@ RUN npm run lint
 RUN npm test
 
 # run server in background and wait for it to start up
+RUN apt-get update -y
+RUN apt-get install chromium -y
+RUN mkdir -p /root/.cache/ms-playwright/chromium-764964/chrome-linux
+RUN ln /usr/bin/chromium /root/.cache/ms-playwright/chromium-764964/chrome-linux/chrome
 WORKDIR /sln/WebApplication
-RUN dotnet run clear=true initialize=true &
-RUN sleep 5m
-
-# run frontend-ui-tests
-WORKDIR /sln/WebApplication/ClientApp
-RUN npx codeceptjs run
+RUN ./docker-test.sh
