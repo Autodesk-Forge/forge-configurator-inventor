@@ -8,9 +8,6 @@ Before((I) => {
 Feature('Downloads');
 
 Scenario('should check switch to downloads tab shows the downloads links', async (I) => {
-
-    const viewerModelSelector = '#ViewerModelStructurePanel';
-
     I.see('Downloads', XPathElements.xpTabDownloads);
     I.click(XPathElements.xpTabDownloads);
     I.waitForElement('.BaseTable');
