@@ -14,5 +14,7 @@ namespace WebApplication.Definitions
         /// URL to SVF directory.
         /// </summary>
         public string Svf { get; set; }
+
+        public string ModelDownloadUrl { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Autodesk.Forge.Model;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using WebApplication.Definitions;
 using WebApplication.Utilities;
@@ -16,12 +17,14 @@ namespace WebApplication.Controllers
         private readonly ILogger<ProjectsController> _logger;
         private readonly IForgeOSS _forge;
         private readonly ResourceProvider _resourceProvider;
+        private readonly LinkGenerator _linkGenerator;
 
-        public ProjectsController(ILogger<ProjectsController> logger, IForgeOSS forge, ResourceProvider resourceProvider)
+        public ProjectsController(ILogger<ProjectsController> logger, IForgeOSS forge, ResourceProvider resourceProvider, LinkGenerator linkGenerator)
         {
             _logger = logger;
             _forge = forge;
             _resourceProvider = resourceProvider;
+            _linkGenerator = linkGenerator;
         }
 
         [HttpGet("")]
@@ -37,12 +40,15 @@ namespace WebApplication.Controllers
                 ProjectStorage projectStorage = _resourceProvider.GetProjectStorage(projectName);
                 Project project = projectStorage.Project;
 
+                var modelDownloadUrl = _linkGenerator.GetPathByAction(HttpContext, controller: "Download", action: "Model", values: new { projectName = projectName, hash = projectStorage.Metadata.Hash });
+
                 var dto = new ProjectDTO
                 {
                     Id = project.Name,
                     Label = project.Name,
                     Image = _resourceProvider.ToDataUrl(project.LocalAttributes.Thumbnail),
-                    Svf = _resourceProvider.ToDataUrl(projectStorage.GetLocalNames().SvfDir)
+                    Svf = _resourceProvider.ToDataUrl(projectStorage.GetLocalNames().SvfDir),
+                    ModelDownloadUrl = modelDownloadUrl
                 };
                 projectDTOs.Add(dto);
             }
