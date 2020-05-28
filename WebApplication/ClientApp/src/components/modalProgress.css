@@ -11,7 +11,8 @@
 .modalAction {
     padding-left: 24px;
     width: 100%;
-    align-self: center;
+    padding-top: 8px;
+    padding-bottom: 8px;
 }
 
 .modalProgress {
