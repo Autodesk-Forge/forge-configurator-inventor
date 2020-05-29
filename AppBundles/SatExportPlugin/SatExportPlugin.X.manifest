@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+  <assemblyIdentity name="SatExportPlugin" version="1.0.0.0"></assemblyIdentity>
+  <clrClass clsid="{506ce94e-88ba-4891-b989-d4cf85ba0f5f}" progid="SatExportPlugin.PluginServer" threadingModel="Both" name="SatExportPlugin.PluginServer"></clrClass>
+  <file name="SatExportPlugin.dll" hashalg="SHA1"></file>
+</assembly>
