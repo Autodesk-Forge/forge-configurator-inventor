@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import BaseTable, { AutoResizer, Column } from 'react-base-table';
 import 'react-base-table/styles.css';
 import { downloadFile } from '../actions/downloadActions';
-import { getActiveProject } from '../reducers/mainReducer';
 
 const Icon = ({ iconname }) => (
     <div>
@@ -51,15 +50,7 @@ const data = [
     }
 ];
 
-const rowEventHandlers = {
-    onClick: (e) => { downloadFile(e.rowKey); }
-};
-
 export class Downloads extends Component {
-
-    constructor(props) {
-        super(props);
-    }
 
     render() {
         return <AutoResizer>
@@ -72,20 +63,13 @@ export class Downloads extends Component {
                     height={newHeight}
                     columns={columns}
                     data={data}
-                    rowEventHandlers={rowEventHandlers}
+                    rowEventHandlers={{
+                        onClick: (e) => { this.props.downloadFile(e.rowKey); }
+                    }}
                 />;
             }}
         </AutoResizer>;
     }
 }
 
-export default connect(function (store){
-    return {
-
-        // the project contains `modelDownloadUrl` and (I think)
-        // we need to render <a> inside the table, so click on it will start download
-        // at least it's recommended solution from https://stackoverflow.com/questions/50694881/how-to-download-file-in-react-js
-
-        activeProject: getActiveProject(store)
-    };
-  })(Downloads);
+export default connect(null, { downloadFile })(Downloads);
