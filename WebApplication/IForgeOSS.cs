@@ -55,5 +55,10 @@ namespace WebApplication
         /// Delete OSS object.
         /// </summary>
         Task DeleteAsync(string bucketKey, string objectName);
+
+        /// <summary>
+        /// Download OSS file.
+        /// </summary>
+        Task DownloadFileAsync(string bucketKey, string objectName, string localFullName);
     }
 }

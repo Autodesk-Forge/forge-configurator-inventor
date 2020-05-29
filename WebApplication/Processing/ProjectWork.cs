@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using WebApplication.Definitions;
@@ -15,19 +14,20 @@ namespace WebApplication.Processing
     {
         private readonly ILogger<ProjectWork> _logger;
         private readonly ResourceProvider _resourceProvider;
-        private readonly IHttpClientFactory _httpClientFactory;
         private readonly Arranger _arranger;
         private readonly FdaClient _fdaClient;
         private readonly IForgeOSS _forgeOSS;
+        private readonly DtoGenerator _dtoGenerator;
 
-        public ProjectWork(ILogger<ProjectWork> logger, ResourceProvider resourceProvider, IHttpClientFactory httpClientFactory, Arranger arranger, FdaClient fdaClient, IForgeOSS forgeOSS)
+        public ProjectWork(ILogger<ProjectWork> logger, ResourceProvider resourceProvider, Arranger arranger, FdaClient fdaClient,
+                            IForgeOSS forgeOSS, DtoGenerator dtoGenerator)
         {
             _logger = logger;
             _resourceProvider = resourceProvider;
-            _httpClientFactory = httpClientFactory;
             _arranger = arranger;
             _fdaClient = fdaClient;
             _forgeOSS = forgeOSS;
+            _dtoGenerator = dtoGenerator;
         }
 
         /// <summary>
@@ -44,6 +44,7 @@ namespace WebApplication.Processing
             if (! success)
             {
                 _logger.LogError($"Failed to process '{project.Name}' project.");
+                // TODO: should we fail hard?
             }
             else
             {
@@ -54,7 +55,7 @@ namespace WebApplication.Processing
 
                 // and now cache the generate stuff locally
                 var projectLocalStorage = new ProjectStorage(project, _resourceProvider);
-                await projectLocalStorage.EnsureLocalAsync(_httpClientFactory.CreateClient(), _forgeOSS);
+                await projectLocalStorage.EnsureLocalAsync(_forgeOSS);
             }
         }
 
@@ -63,12 +64,12 @@ namespace WebApplication.Processing
         /// </summary>
         public async Task<ProjectStateDTO> DoSmartUpdateAsync(ProjectInfo projectInfo, InventorParameters parameters)
         {
-            var incomingHash = Crypto.GenerateObjectHashString(parameters);
+            var hash = Crypto.GenerateObjectHashString(parameters);
             //_logger.LogInformation(JsonSerializer.Serialize(parameters));
-            _logger.LogInformation($"Parameters hash is {incomingHash}");
+            _logger.LogInformation($"Incoming parameters hash is {hash}");
 
             var project = _resourceProvider.GetProject(projectInfo.Name);
-            var localNames = project.LocalNameProvider(incomingHash);
+            var localNames = project.LocalNameProvider(hash);
 
             // check if the data cached already
             if (Directory.Exists(localNames.SvfDir))
@@ -78,18 +79,20 @@ namespace WebApplication.Processing
             else
             {
                 var resultingHash = await UpdateAsync(project, projectInfo.TopLevelAssembly, parameters);
-                if (! incomingHash.Equals(resultingHash, StringComparison.Ordinal))
+                if (! hash.Equals(resultingHash, StringComparison.Ordinal))
                 {
                     _logger.LogInformation($"Update returned different parameters. Hash is {resultingHash}.");
-                    await CopyStateAsync(project, resultingHash, incomingHash);
+                    await CopyStateAsync(project, resultingHash, hash);
+
+                    // update 
+                    hash = resultingHash;
                 }
             }
 
-            return new ProjectStateDTO
-                    {
-                        Svf = _resourceProvider.ToDataUrl(localNames.SvfDir),
-                        Parameters = Json.DeserializeFile<InventorParameters>(localNames.Parameters)
-                    };
+            var dto = _dtoGenerator.MakeProjectDTO<ProjectStateDTO>(project, hash);
+            dto.Parameters = Json.DeserializeFile<InventorParameters>(localNames.Parameters);
+
+            return dto;
         }
 
         public async Task FileTransferAsync(string source, string target)
@@ -108,10 +111,12 @@ namespace WebApplication.Processing
             _logger.LogInformation("Update the project");
 
             var inputDocUrl = await _forgeOSS.CreateSignedUrlAsync(_resourceProvider.BucketKey, project.OSSSourceModel);
-            var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, tlaFilename, parameters);
+            UpdateData updateData = await _arranger.ForUpdateAsync(inputDocUrl, tlaFilename, parameters);
 
-            bool success = await _fdaClient.AdoptAsync(adoptionData);
+            bool success = await _fdaClient.UpdateAsync(updateData);
             if (! success) throw new ApplicationException($"Failed to update {project.Name}");
+
+            _logger.LogInformation("Moving files around");
 
             // rearrange generated data according to the parameters hash
             string hash = await _arranger.MoveViewablesAsync(project);
@@ -120,7 +125,7 @@ namespace WebApplication.Processing
 
             // and now cache the generate stuff locally
             var projectStorage = new ProjectStorage(project, _resourceProvider);
-            await projectStorage.EnsureViewablesAsync(_httpClientFactory.CreateClient(), _forgeOSS, hash);
+            await projectStorage.EnsureViewablesAsync(_forgeOSS, hash);
 
             return hash;
         }
@@ -136,7 +141,10 @@ namespace WebApplication.Processing
 
             // copy local file structure
             LocalNameProvider localFrom = project.LocalNameProvider(hashFrom);
-            FileSystem.CopyDir(localFrom.BaseDir, localTo.BaseDir); // TODO: performance improvement - replace with symlink
+
+            // SOMEDAY: performance improvement - replace with symlink when it's supported
+            // by netcore (https://github.com/dotnet/runtime/issues/24271)
+            FileSystem.CopyDir(localFrom.BaseDir, localTo.BaseDir);
 
 
             // copy OSS files

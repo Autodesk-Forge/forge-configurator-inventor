@@ -2,14 +2,8 @@
 
 namespace WebApplication.Definitions
 {
-    public class ProjectStateDTO
+    public class ProjectStateDTO : ProjectDTOBase
     {
-        /// <summary>
-        /// URL to SVF directory.
-        /// </summary>
-        [JsonPropertyName("svf")]
-        public string Svf { get; set; }
-
         /// <summary>
         /// Parameters.
         /// </summary>

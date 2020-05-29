@@ -61,6 +61,7 @@ namespace WebApplication
             services.AddTransient<Initializer>();
             services.AddTransient<Arranger>();
             services.AddTransient<ProjectWork>();
+            services.AddTransient<DtoGenerator>();
             services.AddSingleton<DesignAutomationClient>(provider =>
                                     {
                                         var forge = provider.GetService<IForgeOSS>();

@@ -32,21 +32,18 @@ namespace WebApplication.Processing
             }
         }
 
-        public override Dictionary<string, Parameter> ActivityParams
+        public override Dictionary<string, Parameter> GetActivityParams()
         {
-            get
-            {
-                // merge parameters into a single dictionary
-                var all = _definitions.Select(def => def.ActivityParams);
-                return Collections.MergeDictionaries(all);
-            }
+            // merge parameters into a single dictionary
+            var all = _definitions.Select(def => def.GetActivityParams());
+            return Collections.MergeDictionaries(all);
         }
 
         protected override string OutputName => throw new NotImplementedException();
 
-        public override Dictionary<string, IArgument> ToWorkItemArgs(AdoptionData projectData)
+        public override Dictionary<string, IArgument> ToWorkItemArgs(ProcessingArgs data)
         {
-            var all = _definitions.Select(def => def.ToWorkItemArgs(projectData));
+            var all = _definitions.Select(def => def.ToWorkItemArgs(data));
             return Collections.MergeDictionaries(all);
         }
 
@@ -55,7 +52,7 @@ namespace WebApplication.Processing
             return _definitions.SelectMany(def => def.GetBundles(nickname)).ToList();
         }
 
-        protected override string OutputUrl(AdoptionData projectData)
+        protected override string OutputUrl(ProcessingArgs projectData)
         {
             throw new NotImplementedException();
         }
