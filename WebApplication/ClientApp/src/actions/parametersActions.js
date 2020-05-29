@@ -79,7 +79,6 @@ function adaptParameters(rawParameters) {
     });
 }
 
-// eslint-disable-next-line no-unused-vars
 export const fetchParameters = (projectId) => async (dispatch, getState) => {
     if (!projectId)
         return;
