@@ -58,13 +58,28 @@ RUN apt-get install -y apt-transport-https
 RUN apt-get update
 RUN apt-get install -y dotnet-sdk-3.
 
-# Run everything after as non-privileged user.
-# USER pwuser
+# copy all the code from the solution level
+COPY . /sln
+WORKDIR /sln
+RUN chown -R pwuser:pwuser /sln/*
 
-# set env parameters
+# Run everything after as non-privileged user.
+USER pwuser
+
+# run backend tests (this also builds and installs dependencies)
 ARG FORGE_CLIENT_ID
 ENV FORGE_CLIENT_ID ${FORGE_CLIENT_ID}
 ARG FORGE_CLIENT_SECRET
 ENV FORGE_CLIENT_SECRET ${FORGE_CLIENT_SECRET}
+RUN dotnet test
 
-# ENTRYPOINT ["/sln/docker-test.sh"]
+# run frontend-lint
+WORKDIR /sln/WebApplication/ClientApp
+RUN npm run lint
+
+# run frontend-tests
+RUN npm test
+
+# run server in background and wait for it to start up
+WORKDIR /sln/WebApplication
+ENTRYPOINT ["./docker-test.sh"]
