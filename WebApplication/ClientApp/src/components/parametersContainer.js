@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import './parametersContainer.css';
 import Parameter from './parameter';
-import { getActiveProject, getParameters, getUpdateParameters, updateProgressShowing } from '../reducers/mainReducer';
+import { getActiveProject, getParameters, getUpdateParameters } from '../reducers/mainReducer';
 import { fetchParameters, resetParameters, updateModelWithParameters } from '../actions/parametersActions';
 import { showUpdateProgress } from '../actions/uiFlagsActions';
 import Button from '@hig/button';
-import Modal from '@hig/modal';
+import ModalProgress from './modalProgress';
 
 export class ParametersContainer extends Component {
 
@@ -22,10 +22,6 @@ export class ParametersContainer extends Component {
 
     updateClicked() {
         this.props.updateModelWithParameters(this.props.activeProject.id, this.props.projectUpdateParameters);
-    }
-
-    onCloseClick() {
-        this.props.showUpdateProgress(false);
     }
 
     render() {
@@ -60,7 +56,7 @@ export class ParametersContainer extends Component {
                         width="grow"
                         onClick={() => {this.updateClicked();}}
                     />
-                    <Modal open={this.props.updateProgressShowing} title="Wait please" onCloseClick={() => this.onCloseClick()}>Model is now being updated based on the changed parameters.</Modal>
+                    <ModalProgress/>
                 </div>
             </div>
         );
@@ -73,7 +69,6 @@ export default connect(function (store) {
     return {
         activeProject: activeProject,
         projectSourceParameters: getParameters(activeProject.id, store),
-        projectUpdateParameters: getUpdateParameters(activeProject.id, store),
-        updateProgressShowing: updateProgressShowing(store)
+        projectUpdateParameters: getUpdateParameters(activeProject.id, store)
     };
 }, { fetchParameters, resetParameters, updateModelWithParameters, showUpdateProgress })(ParametersContainer);
