@@ -132,12 +132,14 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
     const invFormattedParameters = formatParameters(data);
     const jobManager = Jobs();
 
+    // launch progress dialog immediately before we started connection to the server
+    dispatch(showUpdateProgress(true));
+
     try {
         await jobManager.doJob(projectId, invFormattedParameters,
             // start job
             () => {
                 dispatch(addLog('JobManager: HubConnection started for project : ' + projectId));
-                dispatch(showUpdateProgress(true));
             },
             // onComplete
             (_, updatedState) => {
