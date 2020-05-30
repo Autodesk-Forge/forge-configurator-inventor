@@ -56,4 +56,6 @@ ENV FORGE_CLIENT_ID ${FORGE_CLIENT_ID}
 ARG FORGE_CLIENT_SECRET
 ENV FORGE_CLIENT_SECRET ${FORGE_CLIENT_SECRET}
 
+# set script to run when the container starts
+RUN chmod +x docker-test2.sh
 ENTRYPOINT ["./docker-test2.sh"]
