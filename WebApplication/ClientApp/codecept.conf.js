@@ -15,7 +15,8 @@ const chromiumArgs = [
   '--allow-insecure-localhost',
   '--disable-device-discovery-notifications',
   '--window-size=1920,1080',
-  '--window-posizition=200,0'
+  '--window-posizition=200,0',
+  '--no-sandbox'
 ];
 
 exports.config = {
@@ -24,7 +25,7 @@ exports.config = {
   helpers: {
     Playwright: {
       url: 'https://localhost:5001',
-      show: true,
+      show: false,
       browser: 'chromium',
       chromium: {args: chromiumArgs}
     }

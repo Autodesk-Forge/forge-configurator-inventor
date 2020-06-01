@@ -8,6 +8,7 @@ phases:
       - commitMessageDashes="${commitMessage/Merge pull request /}"
       - commitMessageDashes="${commitMessageDashes// /_}"
       - commitMessageDashes="${commitMessageDashes//$'\n'/_}"
+      - commitMessageDashes="${commitMessageDashes/\//_}"
       - versionLabel=$CODEBUILD_BUILD_NUMBER-${CODEBUILD_RESOLVED_SOURCE_VERSION:0:7}-${commitMessageDashes:0:15}
       - bucket=$(cut -d'/' -f1 <<< $bucketAndFile)
       - folder1=$(cut -d'/' -f2 <<< $bucketAndFile)

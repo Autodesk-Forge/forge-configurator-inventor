@@ -4,7 +4,7 @@ import {addError, addLog} from './notificationActions';
 const actionTypes = {
     PROJECT_LIST_UPDATED: 'PROJECT_LIST_UPDATED',
     ACTIVE_PROJECT_UPDATED: 'ACTIVE_PROJECT_UPDATED',
-    UPDATE_SVF: 'UPDATE_SVF'
+    UPDATE_PROJECT: 'UPDATE_PROJECT'
 };
 
 export default actionTypes;
@@ -23,10 +23,10 @@ export const updateActiveProject = activeProjectId => {
     };
 };
 
-export const updateSvf = (activeProjectId, svf) => {
+export const updateProject = (activeProjectId, data) => {
     return {
-        type: actionTypes.UPDATE_SVF,
-        activeProjectId, svf
+        type: actionTypes.UPDATE_PROJECT,
+        activeProjectId, data
     };
 };
 
