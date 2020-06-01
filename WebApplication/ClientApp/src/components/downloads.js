@@ -12,11 +12,6 @@ const Icon = ({ iconname }) => (
 
 const iconRenderer = ({ cellData: iconname }) => <Icon iconname={iconname} />;
 
-const typeCellRenderer = function( e ) {
-    return <a href={e.rowData.downloadUrl}>{e.cellData}</a>;
-};
-
-
 const columns = [
     {
         key: 'icon',
@@ -30,7 +25,7 @@ const columns = [
         key: 'type',
         title: 'File Type',
         dataKey: 'type',
-        cellRenderer: typeCellRenderer,
+        cellRenderer: ( { rowData } ) => rowData.link,
         align: Column.Alignment.LEFT,
         width: 150,
     },
@@ -45,28 +40,33 @@ const columns = [
 
 export class Downloads extends Component {
     render() {
+        let iamDownloadHyperlink = null;
+        const iamDownloadLink = <a href={this.props.activeProject.modelDownloadUrl} onClick={(e) => { e.stopPropagation(); }} ref = {(h) => {
+            iamDownloadHyperlink = h;
+        }}>IAM</a>;
+
+        const rfaDownloadLink = <a href="#" onClick={(e) => { e.preventDefault(); }}>RFA</a>;
 
         const data = [
             {
                 id: 'updatedIam',
                 icon: 'products-and-services-24.svg',
                 type: 'IAM',
-                downloadUrl: this.props.activeProject.modelDownloadUrl,
                 env: 'Model',
-                clickHandler: (e) => {
+                link: iamDownloadLink,
+                clickHandler: () => {
+                    iamDownloadHyperlink.click();
                     console.log('IAM');
-                    console.log(e);
                 }
             },
             {
                 id: 'rfa',
                 icon: 'products-and-services-24.svg',
                 type: 'RFA',
-                downloadUrl: '#',
                 env: 'Model',
-                clickHandler: (e) => {
+                link: rfaDownloadLink,
+                clickHandler: () => {
                     console.log('RFA');
-                    console.log(e);
                 }
             }
         ];
@@ -82,7 +82,7 @@ export class Downloads extends Component {
                     columns={columns}
                     data={data}
                     rowEventHandlers={{
-                        onClick: (e) => { e.rowData.clickHandler(e); }
+                        onClick: ({ rowData }) => { rowData.clickHandler(); }
                     }}
                 />;
             }}
