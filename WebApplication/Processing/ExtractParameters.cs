@@ -35,7 +35,7 @@ namespace WebApplication.Processing
         public override Dictionary<string, Parameter> GetActivityParams()
         {
             Dictionary<string, Parameter> activityParams = base.GetActivityParams();
-            activityParams.Add(OutputModelParameterName, new Parameter { Verb = Verb.Put, LocalName = "ModelCopy", Zip = true });
+            activityParams.Add(OutputModelParameterName, new Parameter { Verb = Verb.Put, LocalName = ZipName, Zip = true });
             return activityParams;
         }
     }
