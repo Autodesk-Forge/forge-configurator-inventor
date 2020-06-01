@@ -81,7 +81,7 @@ namespace WebApplication.Processing
                 Engine = config.Engine,
                 Description = config.Description,
                 CommandLine = config.ActivityCommandLine,
-                Parameters = config.ActivityParams
+                Parameters = config.GetActivityParams()
             };
 
             Trace($"Creating activity '{config.ActivityId}'");

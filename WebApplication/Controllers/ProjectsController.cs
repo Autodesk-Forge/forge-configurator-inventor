@@ -16,12 +16,14 @@ namespace WebApplication.Controllers
         private readonly ILogger<ProjectsController> _logger;
         private readonly IForgeOSS _forge;
         private readonly ResourceProvider _resourceProvider;
+        private readonly DtoGenerator _dtoGenerator;
 
-        public ProjectsController(ILogger<ProjectsController> logger, IForgeOSS forge, ResourceProvider resourceProvider)
+        public ProjectsController(ILogger<ProjectsController> logger, IForgeOSS forge, ResourceProvider resourceProvider, DtoGenerator dtoGenerator)
         {
             _logger = logger;
             _forge = forge;
             _resourceProvider = resourceProvider;
+            _dtoGenerator = dtoGenerator;
         }
 
         [HttpGet("")]
@@ -37,13 +39,11 @@ namespace WebApplication.Controllers
                 ProjectStorage projectStorage = _resourceProvider.GetProjectStorage(projectName);
                 Project project = projectStorage.Project;
 
-                var dto = new ProjectDTO
-                {
-                    Id = project.Name,
-                    Label = project.Name,
-                    Image = _resourceProvider.ToDataUrl(project.LocalAttributes.Thumbnail),
-                    Svf = _resourceProvider.ToDataUrl(projectStorage.GetLocalNames().SvfDir)
-                };
+                var dto = _dtoGenerator.MakeProjectDTO<ProjectDTO>(project, projectStorage.Metadata.Hash);
+                dto.Id = project.Name;
+                dto.Label = project.Name;
+                dto.Image = _resourceProvider.ToDataUrl(project.LocalAttributes.Thumbnail);
+
                 projectDTOs.Add(dto);
             }
 

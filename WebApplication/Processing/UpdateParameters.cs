@@ -22,7 +22,7 @@ namespace WebApplication.Processing
                 $"$(engine.path)\\InventorCoreConsole.exe /al $(appbundles[{ActivityId}].path) /i \"$(args[{InputDocParameterName}].path)\" \"$(args[{InventorParameters}].path)\" /p"
             };
 
-        public override Dictionary<string, Parameter> ActivityParams =>
+        public override Dictionary<string, Parameter> GetActivityParams() =>
             new Dictionary<string, Parameter>
             {
                 {
@@ -42,10 +42,12 @@ namespace WebApplication.Processing
         {
         }
 
-        public override Dictionary<string, IArgument> ToWorkItemArgs(AdoptionData projectData)
+        public override Dictionary<string, IArgument> ToWorkItemArgs(ProcessingArgs data)
         {
-            var workItemArgs = base.ToWorkItemArgs(projectData);
-            if (projectData.InputParamsUrl != null)
+            var workItemArgs = base.ToWorkItemArgs(data);
+
+            UpdateData projectData = data as UpdateData;
+            if (projectData.InputParamsUrl != null) // TODO: use generics
             {
                 workItemArgs.Add(InventorParameters, new XrefTreeArgument { Url = projectData.InputParamsUrl });
             }

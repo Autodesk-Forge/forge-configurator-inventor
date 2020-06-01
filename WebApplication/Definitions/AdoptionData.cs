@@ -1,19 +1,14 @@
 namespace WebApplication.Definitions
 {
-    /// <summary>
-    /// All data required for project adoption.
-    /// </summary>
-    public class AdoptionData
+    public class ProcessingArgs
     {
         public string InputDocUrl { get; set; }
-        public string InputParamsUrl { get; set; }
 
         /// <summary>
         /// Relative path to top level assembly in ZIP with assembly.
         /// </summary>
         public string TLA { get; set; }
 
-        public string ThumbnailUrl { get; set; }
         public string SvfUrl { get; set; }
         public string ParametersJsonUrl { get; set; }
 
@@ -21,5 +16,24 @@ namespace WebApplication.Definitions
         /// If job data contains assembly.
         /// </summary>
         public bool IsAssembly => ! string.IsNullOrEmpty(TLA);
+
+        public string OutputModelUrl { get; set; } // TODO: temporary!
+    }
+
+    /// <summary>
+    /// All data required for project adoption.
+    /// </summary>
+    public class AdoptionData : ProcessingArgs
+    {
+        public string ThumbnailUrl { get; set; }
+    }
+
+    /// <summary>
+    /// All data required for project update.
+    /// </summary>
+    public class UpdateData : ProcessingArgs
+    {
+        public string InputParamsUrl { get; set; }
+//        public string OutputModelUrl { get; set; }
     }
 }

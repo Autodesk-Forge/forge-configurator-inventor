@@ -22,6 +22,7 @@ namespace WebApplication.Processing
         public readonly string Thumbnail = $"{Guid.NewGuid():N}.png";
         public readonly string SVF = $"{Guid.NewGuid():N}.zip";
         public readonly string InputParams = $"{Guid.NewGuid():N}.json";
+        public readonly string OutputModel = $"{Guid.NewGuid():N}.zip";
 
         /// <summary>
         /// Constructor.
@@ -39,21 +40,45 @@ namespace WebApplication.Processing
         /// </summary>
         /// <param name="docUrl">URL to the input Inventor document (IPT or zipped IAM)</param>
         /// <param name="tlaFilename">Top level assembly in the ZIP. (if any)</param>
-        /// <param name="parameters">Inventor parameters.</param>
-        public async Task<AdoptionData> ForAdoptionAsync(string docUrl, string tlaFilename, InventorParameters parameters = null)
+        public async Task<AdoptionData> ForAdoptionAsync(string docUrl, string tlaFilename)
         {
             var urls = await Task.WhenAll(CreateSignedUrlAsync(Thumbnail, ObjectAccess.Write), 
                                             CreateSignedUrlAsync(SVF, ObjectAccess.Write), 
                                             CreateSignedUrlAsync(Parameters, ObjectAccess.Write),
-                                            CreateSignedUrlAsync(InputParams, ObjectAccess.ReadWrite));
-
-            await using var jsonStream = Json.ToStream(parameters ?? new InventorParameters());  // TODO: TEMPORARY! no need to pass parameters for "adopt" phase
-            await _forge.UploadObjectAsync(_resourceProvider.BucketKey, InputParams, jsonStream);
+                                            CreateSignedUrlAsync(OutputModel, ObjectAccess.Write));
 
             return new AdoptionData
             {
                 InputDocUrl       = docUrl,
                 ThumbnailUrl      = urls[0],
+                SvfUrl            = urls[1],
+                ParametersJsonUrl = urls[2],
+                OutputModelUrl    = urls[3],
+                TLA               = tlaFilename
+            };
+        }
+
+        /// <summary>
+        /// Create adoption data.
+        /// </summary>
+        /// <param name="docUrl">URL to the input Inventor document (IPT or zipped IAM)</param>
+        /// <param name="tlaFilename">Top level assembly in the ZIP. (if any)</param>
+        /// <param name="parameters">Inventor parameters.</param>
+        public async Task<UpdateData> ForUpdateAsync(string docUrl, string tlaFilename, InventorParameters parameters)
+        {
+            var urls = await Task.WhenAll(
+                                            CreateSignedUrlAsync(OutputModel, ObjectAccess.Write),
+                                            CreateSignedUrlAsync(SVF, ObjectAccess.Write),
+                                            CreateSignedUrlAsync(Parameters, ObjectAccess.Write),
+                                            CreateSignedUrlAsync(InputParams, ObjectAccess.ReadWrite));
+
+            await using var jsonStream = Json.ToStream(parameters);
+            await _forge.UploadObjectAsync(_resourceProvider.BucketKey, InputParams, jsonStream);
+
+            return new UpdateData
+            {
+                InputDocUrl       = docUrl,
+                OutputModelUrl    = urls[0],
                 SvfUrl            = urls[1],
                 ParametersJsonUrl = urls[2],
                 InputParamsUrl    = urls[3],
@@ -77,8 +102,8 @@ namespace WebApplication.Processing
             await Task.WhenAll(_forge.RenameObjectAsync(_bucketKey, Thumbnail, project.OssAttributes.Thumbnail),
                                 _forge.RenameObjectAsync(_bucketKey, SVF, ossNames.ModelView),
                                 _forge.RenameObjectAsync(_bucketKey, Parameters, ossNames.Parameters),
-                                _forge.UploadObjectAsync(_bucketKey, project.OssAttributes.Metadata, Json.ToStream(attributes, writeIndented: true)),
-                                _forge.DeleteAsync(_bucketKey, InputParams));
+                                _forge.RenameObjectAsync(_bucketKey, OutputModel, ossNames.CurrentModel),
+                                _forge.UploadObjectAsync(_bucketKey, project.OssAttributes.Metadata, Json.ToStream(attributes, writeIndented: true)));
 
             return hashString;
         }
@@ -95,9 +120,9 @@ namespace WebApplication.Processing
             var ossNames = project.OssNameProvider(hashString);
 
             // move data to expected places
-            await Task.WhenAll(_forge.RenameObjectAsync(_bucketKey, Thumbnail, project.OssAttributes.Thumbnail),
-                                _forge.RenameObjectAsync(_bucketKey, SVF, ossNames.ModelView),
+            await Task.WhenAll(_forge.RenameObjectAsync(_bucketKey, SVF, ossNames.ModelView),
                                 _forge.RenameObjectAsync(_bucketKey, Parameters, ossNames.Parameters),
+                                _forge.RenameObjectAsync(_bucketKey, OutputModel, ossNames.CurrentModel),
                                 _forge.DeleteAsync(_bucketKey, InputParams));
 
             return hashString;

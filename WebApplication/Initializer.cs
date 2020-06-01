@@ -1,11 +1,11 @@
 using System;
 using System.IO;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Autodesk.Forge.Client;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Polly;
 using WebApplication.Definitions;
 using WebApplication.Processing;
 using WebApplication.Utilities;
@@ -19,21 +19,18 @@ namespace WebApplication
         private readonly ILogger<Initializer> _logger;
         private readonly DefaultProjectsConfiguration _defaultProjectsConfiguration;
         private readonly FdaClient _fdaClient;
-        private readonly IHttpClientFactory _httpClientFactory;
         private readonly ProjectWork _projectWork;
 
         /// <summary>
         /// Constructor.
         /// </summary>
         public Initializer(IForgeOSS forge, ResourceProvider resourceProvider, ILogger<Initializer> logger,
-                            FdaClient fdaClient, IOptions<DefaultProjectsConfiguration> optionsAccessor,
-                            IHttpClientFactory httpClientFactory, ProjectWork projectWork)
+                            FdaClient fdaClient, IOptions<DefaultProjectsConfiguration> optionsAccessor, ProjectWork projectWork)
         {
             _forge = forge;
             _resourceProvider = resourceProvider;
             _logger = logger;
             _fdaClient = fdaClient;
-            _httpClientFactory = httpClientFactory;
             _projectWork = projectWork;
             _defaultProjectsConfiguration = optionsAccessor.Value;
         }
@@ -53,6 +50,15 @@ namespace WebApplication
 
             _logger.LogInformation($"Bucket {_resourceProvider.BucketKey} created");
 
+            // OSS bucket might be not ready yet, so repeat attempts
+            var waitForBucketPolicy = Policy
+                .Handle<ApiException>(e => e.ErrorCode == StatusCodes.Status404NotFound)
+                .WaitAndRetryAsync(
+                    retryCount: 4,
+                    retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                    (exception, timeSpan) => _logger.LogWarning("Cannot get fresh OSS bucket. Repeating")
+                ); 
+
             // publish default project files (specified by the appsettings.json)
             foreach (DefaultProjectConfiguration defaultProjectConfig in _defaultProjectsConfiguration.Projects)
             {
@@ -60,7 +66,8 @@ namespace WebApplication
                 var project = _resourceProvider.GetProject(defaultProjectConfig.Name);
 
                 _logger.LogInformation($"Launching 'TransferData' for {projectUrl}");
-                string signedUrl = await _forge.CreateSignedUrlAsync(_resourceProvider.BucketKey, project.OSSSourceModel, ObjectAccess.ReadWrite);
+                string signedUrl = await waitForBucketPolicy.ExecuteAsync(() => 
+                                    _forge.CreateSignedUrlAsync(_resourceProvider.BucketKey, project.OSSSourceModel, ObjectAccess.ReadWrite));
 
                 // TransferData from s3 to oss
                 await _projectWork.FileTransferAsync(projectUrl, signedUrl);

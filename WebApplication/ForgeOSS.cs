@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Autodesk.Forge;
@@ -21,6 +22,7 @@ namespace WebApplication
     /// </summary>
     public class ForgeOSS : IForgeOSS
     {
+        private readonly IHttpClientFactory _clientFactory;
         private readonly ILogger<ForgeOSS> _logger;
         private static readonly Scope[] _scope = { Scope.DataRead, Scope.DataWrite, Scope.BucketCreate, Scope.BucketDelete, Scope.BucketRead };
 
@@ -37,8 +39,9 @@ namespace WebApplication
         /// <summary>
         /// Constructor.
         /// </summary>
-        public ForgeOSS(IOptions<ForgeConfiguration> optionsAccessor, ILogger<ForgeOSS> logger)
+        public ForgeOSS(IHttpClientFactory clientFactory, IOptions<ForgeConfiguration> optionsAccessor, ILogger<ForgeOSS> logger)
         {
+            _clientFactory = clientFactory;
             _logger = logger;
             Configuration = optionsAccessor.Value.Validate();
 
@@ -106,13 +109,7 @@ namespace WebApplication
         /// <returns>Signed URL</returns>
         public async Task<string> CreateSignedUrlAsync(string bucketKey, string objectName, ObjectAccess access = ObjectAccess.Read, int minutesExpiration = 30)
         {
-            var signature = new PostBucketsSigned(minutesExpiration);
-
-            return await WithObjectsApiAsync(async api =>
-            {
-                dynamic result = await api.CreateSignedResourceAsync(bucketKey, objectName, signature, AsString(access));
-                return result.signedUrl;
-            });
+            return await WithObjectsApiAsync(async api => await GetSignedUrl(api, bucketKey, objectName, access, minutesExpiration));
         }
 
         public Task UploadObjectAsync(string bucketKey, string objectName, Stream stream)
@@ -155,6 +152,22 @@ namespace WebApplication
         public Task DeleteAsync(string bucketKey, string objectName)
         {
             return WithObjectsApiAsync(api => api.DeleteObjectAsync(bucketKey, objectName));
+        }
+
+
+        /// <summary>
+        /// Download OSS file.
+        /// </summary>
+        public Task DownloadFileAsync(string bucketKey, string objectName, string localFullName)
+        {
+            return WithObjectsApiAsync(async api =>
+                    {
+                        string url = await GetSignedUrl(api, bucketKey, objectName);
+
+                        // and download the file
+                        var client = _clientFactory.CreateClient();
+                        await client.DownloadAsync(url, localFullName);
+                    });
         }
 
         /// <summary>
@@ -222,6 +235,17 @@ namespace WebApplication
             // The JSON response from the oAuth server is the Data variable and has already been parsed into a DynamicDictionary object.
             dynamic bearer = response.Data;
             return bearer.access_token;
+        }
+
+        /// <summary>
+        /// Generate signed URL for the OSS object.
+        /// </summary>
+        private static async Task<string> GetSignedUrl(IObjectsApi api, string bucketKey, string objectName,
+                                                            ObjectAccess access = ObjectAccess.Read, int minutesExpiration = 30)
+        {
+            var signature = new PostBucketsSigned(minutesExpiration);
+            dynamic result = await api.CreateSignedResourceAsync(bucketKey, objectName, signature, AsString(access));
+            return result.signedUrl;
         }
     }
 }

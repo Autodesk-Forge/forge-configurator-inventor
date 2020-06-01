@@ -24,16 +24,16 @@ namespace WebApplication.Processing
                 $"$(appbundles[{ActivityId}].path)\\EmptyExePlugin.bundle\\Contents\\EmptyExePlugin.exe"
             };
 
-        public override Dictionary<string, Parameter> ActivityParams =>
+        public override Dictionary<string, Parameter> GetActivityParams() =>
             new Dictionary<string, Parameter>
             {
                 {
                     "source",
-                    new Parameter { Verb = Verb.Get, Description = "source location", LocalName = "fileForTransfer" }
+                    new Parameter {Verb = Verb.Get, Description = "source location", LocalName = "fileForTransfer"}
                 },
                 {
                     "target",
-                    new Parameter { Verb = Verb.Put, Description = "target location", LocalName = "fileForTransfer" }
+                    new Parameter {Verb = Verb.Put, Description = "target location", LocalName = "fileForTransfer"}
                 }
             };
 

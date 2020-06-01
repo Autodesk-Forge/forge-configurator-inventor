@@ -10,7 +10,7 @@ namespace WebApplication.Processing
         public override string Id => nameof(CreateSVF);
         public override string Description => "Generate SVF from Inventor document";
 
-        protected override string OutputUrl(AdoptionData projectData)
+        protected override string OutputUrl(ProcessingArgs projectData)
         {
             return projectData.SvfUrl;
         }
