@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Autodesk Inc.")]
 [assembly: AssemblyProduct("SatExportPlugin")]
-[assembly: AssemblyCopyright("Copyright © Autodesk Inc. 2019")]
+[assembly: AssemblyCopyright("Copyright © Autodesk Inc. 2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
