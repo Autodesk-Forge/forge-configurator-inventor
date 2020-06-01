@@ -2,13 +2,18 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import BaseTable, { AutoResizer, Column } from 'react-base-table';
 import 'react-base-table/styles.css';
-import { downloadFile } from '../actions/downloadActions';
+import { getActiveProject } from '../reducers/mainReducer';
 
 const Icon = ({ iconname }) => (
     <div>
       <img src={iconname} alt=''/>
     </div>
   );
+
+const typeCellRenderer = function( e ) {
+    return <a href={e.rowData.downloadUrl}>{e.cellData}</a>;
+};
+
 
 const columns = [
     {
@@ -23,6 +28,7 @@ const columns = [
         key: 'type',
         title: 'File Type',
         dataKey: 'type',
+        cellRenderer: typeCellRenderer,
         align: Column.Alignment.LEFT,
         width: 150,
     },
@@ -35,24 +41,34 @@ const columns = [
     }
 ];
 
-const data = [
-    {
-        id: 'updatedIam',
-        icon: 'products-and-services-24.svg',
-        type: 'IAM',
-        env: 'Model'
-    },
-    {
-        id: 'rfa',
-        icon: 'products-and-services-24.svg',
-        type: 'RFA',
-        env: 'Model'
-    }
-];
-
 export class Downloads extends Component {
-
     render() {
+
+        const data = [
+            {
+                id: 'updatedIam',
+                icon: 'products-and-services-24.svg',
+                type: 'IAM',
+                downloadUrl: this.props.activeProject.modelDownloadUrl,
+                env: 'Model',
+                clickHandler: (e) => {
+                    console.log('IAM');
+                    console.log(e);
+                }
+            },
+            {
+                id: 'rfa',
+                icon: 'products-and-services-24.svg',
+                type: 'RFA',
+                downloadUrl: '#',
+                env: 'Model',
+                clickHandler: (e) => {
+                    console.log('RFA');
+                    console.log(e);
+                }
+            }
+        ];
+
         return <AutoResizer>
             {({ width, height }) => {
                 // reduce size by 16 (twice the default border of tabContent)
@@ -64,7 +80,7 @@ export class Downloads extends Component {
                     columns={columns}
                     data={data}
                     rowEventHandlers={{
-                        onClick: (e) => { this.props.downloadFile(e.rowKey); }
+                        onClick: (e) => { e.rowData.clickHandler(e); }
                     }}
                 />;
             }}
@@ -72,4 +88,9 @@ export class Downloads extends Component {
     }
 }
 
-export default connect(null, { downloadFile })(Downloads);
+export default connect(function(store) {
+    const activeProject = getActiveProject(store);
+    return {
+        activeProject: activeProject
+    };
+})(Downloads);
