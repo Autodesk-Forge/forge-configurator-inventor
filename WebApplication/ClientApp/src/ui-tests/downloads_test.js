@@ -13,8 +13,8 @@ Scenario('should check switch to downloads tab shows the downloads links', async
     I.waitForElement('.BaseTable');
     I.seeNumberOfElements('.BaseTable__row', 2);
     // all expected download types are available
-    I.see('IAM', '.BaseTable__row-cell-text');
-    I.see('RFA', '.BaseTable__row-cell-text');
+    I.see('IAM', '.BaseTable__row-cell a');
+    I.see('RFA', '.BaseTable__row-cell a');
     // check icons
     I.seeNumberOfElements({ css: '[src="products-and-services-24.svg"]'}, 2);
 });
