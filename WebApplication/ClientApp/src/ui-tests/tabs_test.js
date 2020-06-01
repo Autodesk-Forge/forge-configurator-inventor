@@ -27,14 +27,11 @@ Scenario('should check if All tabs are avaiable', async (I) => {
 
 Scenario('should check if all Tabs are loaded after click', async (I) => {
 
-    // we need to have Combo Projects loaded first - https://jira.autodesk.com/browse/INVGEN-40998
-    I.waitForVisible({xpath: XPathElements.xpComboProjects}, 5);
-
     // click on Model tab
     I.click({xpath: XPathElements.xpTabModel});
 
     // check that Model tab has correct content
-    I.waitForVisible({xpath: XPathElements.xpDivParameterContainer}, 5);
+    I.waitForVisible({xpath: XPathElements.xpDivParameterContainer}, 20);
     I.seeElement({xpath: XPathElements.xpDivForgeViewer});
 
     // click on BOM tab
