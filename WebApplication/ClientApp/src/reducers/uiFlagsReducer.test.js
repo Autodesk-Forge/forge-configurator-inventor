@@ -1,10 +1,8 @@
 import {closeParametersEditedMessage, rejectParametersEditedMessage} from '../actions/uiFlagsActions';
 import uiFlagsReducer, * as uiFlags from './uiFlagsReducer';
 import { editParameter, resetParameters } from '../actions/parametersActions';
+import { stateParametersEditedMessageClosed, stateParametersEditedMessageNotRejected, stateParametersEditedMessageRejected } from './uiFlagsTestStates';
 
-export const stateParametersEditedMessageClosed = {...uiFlags.initialState, parametersEditedMessageClosed: true}; // not shown
-export const stateParametersEditedMessageRejected = {...uiFlags.initialState, parametersEditedMessageRejected: true}; // not shown
-export const stateParametersEditedMessageNotRejected = {...uiFlags.initialState, parametersEditedMessageRejected: false}; // shown
 
 describe('uiFlags reducer', () => {
    it('check dismiss', () => {
