@@ -10,8 +10,6 @@ const Icon = ({ iconname }) => (
     </div>
   );
 
-const typeCellRenderer = ( { rowData } ) => rowData.link;
-
 const columns = [
     {
         key: 'icon',
@@ -25,7 +23,7 @@ const columns = [
         key: 'type',
         title: 'File Type',
         dataKey: 'type',
-        cellRenderer: (typeCellRenderer),
+        cellRenderer: ( { rowData } ) => rowData.link,
         align: Column.Alignment.LEFT,
         width: 150,
     },
@@ -41,12 +39,11 @@ const columns = [
 export class Downloads extends Component {
     render() {
         let iamDownloadHyperlink = null;
-        
-        const iamDownloadLink = <a href={this.props.activeProject.modelDownloadUrl} onClick={(e) => { e.stopPropagation() }} ref = {(h) => {
+        const iamDownloadLink = <a href={this.props.activeProject.modelDownloadUrl} onClick={(e) => { e.stopPropagation(); }} ref = {(h) => {
             iamDownloadHyperlink = h;
-        }}>IAM</a>
+        }}>IAM</a>;
 
-        const rfaDownloadLink = <a href="#" onClick={(e) => {e.preventDefault()}}>RFA</a>
+        const rfaDownloadLink = <a href="#" onClick={(e) => { e.preventDefault(); }}>RFA</a>;
 
         const data = [
             {
@@ -58,7 +55,6 @@ export class Downloads extends Component {
                 clickHandler: () => {
                     iamDownloadHyperlink.click();
                     console.log('IAM');
-                    console.log();
                 }
             },
             {
@@ -69,7 +65,6 @@ export class Downloads extends Component {
                 link: rfaDownloadLink,
                 clickHandler: () => {
                     console.log('RFA');
-                    console.log();
                 }
             }
         ];
