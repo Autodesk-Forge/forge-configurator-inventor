@@ -16,4 +16,4 @@ Files used only for Autodesk AWS deployment
 * Update a CodePipeline pipeline
   * `aws codepipeline update-pipeline --cli-input-json file://codepipeline.json`
 ## References
-* chrome.json and Bionic Dockerfile are used from the https://github.com/microsoft/playwright/tree/4652b9e2483209e963c10111d26b79f8fb06d92d/docs/docker
+* chrome.json and Bionic Dockerfile are used from the https://github.com/microsoft/playwright/tree/master/docs/docker
