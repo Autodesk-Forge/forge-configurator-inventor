@@ -84,7 +84,11 @@
     ],
     "moduleNameMapper": {
       "\\.(css|less)$": "identity-obj-proxy"
-    }
+    },
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "<rootDir>/src/ui-tests"
+    ]
   },
   "babel": {
     "presets": [
