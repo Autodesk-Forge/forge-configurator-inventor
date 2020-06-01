@@ -24,6 +24,11 @@ export class ParametersContainer extends Component {
         this.props.updateModelWithParameters(this.props.activeProject.id, this.props.projectUpdateParameters);
     }
 
+    onProgressCloseClick() {
+        // close is not supported now
+        //this.props.showUpdateProgress(false);
+    }
+
     render() {
         const parameterList = this.props.activeProject ? this.props.projectUpdateParameters : [];
         const buttonsContainerClass = parameterList ? "buttonsContainer" : "buttonsContainer hidden";
@@ -56,7 +61,17 @@ export class ParametersContainer extends Component {
                         width="grow"
                         onClick={() => {this.updateClicked();}}
                     />
-                    <ModalProgress/>
+                    <ModalProgress
+                        title="Updating Project"
+                        label={this.props.activeProject.id}
+                        icon="Assembly icon.svg"
+                        onClose={this.onProgressCloseClick}/>
+                    {/* for testing of download progress UI only - WILL BE REMOVED
+                    <ModalProgress
+                        title="Preparing Archive"
+                        label="some output name"
+                        icon="Archive.svg"
+                        onClose={this.onProgressCloseClick}/> */}
                 </div>
             </div>
         );

@@ -134,6 +134,8 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
 
     // launch progress dialog immediately before we started connection to the server
     dispatch(showUpdateProgress(true));
+    // DO NOT MERGE THIS, JUST FOR TESTING !!!!!!!!!
+    return;
 
     try {
         await jobManager.doJob(projectId, invFormattedParameters,
