@@ -7,14 +7,16 @@ const Icon = ({ iconname }) => (
     <div>
       <img src={iconname} alt=''/>
     </div>
-  )
+);
+
+const iconRenderer = ({ cellData: iconname }) => <Icon iconname={iconname} />;
 
 const columns = [
     {
         key: 'icon',
         title: '',
         dataKey: 'icon',
-        cellRenderer: ({ cellData: iconname }) => <Icon iconname={iconname} />,
+        cellRenderer: iconRenderer,
         align: Column.Alignment.RIGHT,
         width: 100,
     },

@@ -1,0 +1,126 @@
+{
+    "pipeline": {
+        "name": "<name>",
+        "roleArn": "<role>",
+        "artifactStore": {
+            "type": "S3",
+            "location": "codepipeline-us-west-2-510482250803"
+        },
+        "stages": [
+            {
+                "name": "Source",
+                "actions": [
+                    {
+                        "name": "Source",
+                        "actionTypeId": {
+                            "category": "Source",
+                            "owner": "ThirdParty",
+                            "provider": "GitHub",
+                            "version": "1"
+                        },
+                        "runOrder": 1,
+                        "configuration": {
+                            "Branch": "<branch>",
+                            "OAuthToken": "<token>",
+                            "Owner": "Developer-Autodesk",
+                            "PollForSourceChanges": "false",
+                            "Repo": "forge-configurator-inventor"
+                        },
+                        "outputArtifacts": [
+                            {
+                                "name": "SourceArtifact"
+                            }
+                        ],
+                        "inputArtifacts": [],
+                        "region": "us-west-2"
+                    }
+                ]
+            },
+            {
+                "name": "Build",
+                "actions": [
+                    {
+                        "name": "Build",
+                        "actionTypeId": {
+                            "category": "Build",
+                            "owner": "AWS",
+                            "provider": "CodeBuild",
+                            "version": "1"
+                        },
+                        "runOrder": 1,
+                        "configuration": {
+                            "ProjectName": "sdra-build"
+                        },
+                        "outputArtifacts": [
+                            {
+                                "name": "BuildArtifact"
+                            }
+                        ],
+                        "inputArtifacts": [
+                            {
+                                "name": "SourceArtifact"
+                            }
+                        ],
+                        "region": "us-west-2"
+                    }
+                ]
+            },
+            {
+                "name": "Test",
+                "actions": [
+                    {
+                        "name": "Test",
+                        "actionTypeId": {
+                            "category": "Test",
+                            "owner": "AWS",
+                            "provider": "CodeBuild",
+                            "version": "1"
+                        },
+                        "runOrder": 1,
+                        "configuration": {
+                            "ProjectName": "sdra-test"
+                        },
+                        "outputArtifacts": [],
+                        "inputArtifacts": [
+                            {
+                                "name": "SourceArtifact"
+                            }
+                        ],
+                        "region": "us-west-2"
+                    }
+                ]
+            },
+            {
+                "name": "Deploy",
+                "actions": [
+                    {
+                        "name": "Deploy",
+                        "actionTypeId": {
+                            "category": "Build",
+                            "owner": "AWS",
+                            "provider": "CodeBuild",
+                            "version": "1"
+                        },
+                        "runOrder": 1,
+                        "configuration": {
+                            "EnvironmentVariables": "[{\"name\":\"PipelineExecutionId\",\"value\":\"#{codepipeline.PipelineExecutionId}\",\"type\":\"PLAINTEXT\"},{\"name\":\"pipelineName\",\"value\":\"<name>\",\"type\":\"PLAINTEXT\"},{\"name\":\"environmentName\",\"value\":\"<environmentName>\",\"type\":\"PLAINTEXT\"}]",
+                            "PrimarySource": "SourceArtifact",
+                            "ProjectName": "sdra-deploy"
+                        },
+                        "outputArtifacts": [],
+                        "inputArtifacts": [
+                            {
+                                "name": "SourceArtifact"
+                            },
+                            {
+                                "name": "BuildArtifact"
+                            }
+                        ],
+                        "region": "us-west-2"
+                    }
+                ]
+            }
+        ],
+        "version": 2
+    }
+}

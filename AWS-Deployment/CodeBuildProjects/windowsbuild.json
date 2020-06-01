@@ -1,0 +1,39 @@
+{
+    "name": "sdra-windows-build",
+    "arn": "<arn>",
+    "source": {
+        "type": "CODEPIPELINE",
+        "buildspec": "version: 0.2\n\nphases:\n  install:\n    commands:\n      - aws s3 cp s3://sdra-build/buildExtras.zip ./\n      - expand-archive -path .\\buildExtras.zip -destinationpath ./\n      - dir\n  build:\n    commands:\n      - msbuild -restore:true\n",
+        "insecureSsl": false
+    },
+    "artifacts": {
+        "type": "CODEPIPELINE",
+        "name": "sdra-windows-build",
+        "packaging": "NONE",
+        "encryptionDisabled": false
+    },
+    "cache": {
+        "type": "NO_CACHE"
+    },
+    "environment": {
+        "type": "WINDOWS_CONTAINER",
+        "image": "624240287035.dkr.ecr.us-west-2.amazonaws.com/sdra-windows-build:4.8",
+        "computeType": "BUILD_GENERAL1_MEDIUM",
+        "environmentVariables": [],
+        "privilegedMode": false,
+        "imagePullCredentialsType": "SERVICE_ROLE"
+    },
+    "serviceRole": "<role>",
+    "timeoutInMinutes": 60,
+    "queuedTimeoutInMinutes": 480,
+    "encryptionKey": "<key>",
+    "logsConfig": {
+        "cloudWatchLogs": {
+            "status": "ENABLED"
+        },
+        "s3Logs": {
+            "status": "DISABLED",
+            "encryptionDisabled": false
+        }
+    }
+}
