@@ -72,9 +72,9 @@ namespace SatExportPlugin
             }
 
             TranslationContext oContext = inventorApplication.TransientObjects.CreateTranslationContext();
-            NameValueMap oIgesMap = inventorApplication.TransientObjects.CreateNameValueMap();
+            NameValueMap map = inventorApplication.TransientObjects.CreateNameValueMap();
 
-            if (SAT_AddIn.get_HasSaveCopyAsOptions(doc, oContext, oIgesMap))
+            if (SAT_AddIn.get_HasSaveCopyAsOptions(doc, oContext, map))
             {
                 LogTrace("SAT: Set context type");
                 oContext.Type = IOMechanismEnum.kFileBrowseIOMechanism;
@@ -85,9 +85,9 @@ namespace SatExportPlugin
                 LogTrace("SAT save to: " + currentDirectory + "\\export.sat");
                 oData.FileName = currentDirectory + "\\export.sat";
 
-                oIgesMap.set_Value("GeometryType", 1);
+                map.set_Value("GeometryType", 1);
 
-                SAT_AddIn.SaveCopyAs(doc, oContext, oIgesMap, oData);
+                SAT_AddIn.SaveCopyAs(doc, oContext, map, oData);
                 LogTrace("SAT exported.");
             }
         }
