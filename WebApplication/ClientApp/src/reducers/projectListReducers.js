@@ -27,10 +27,10 @@ export default function(state = initialState, action) {
         case projectListActionTypes.ACTIVE_PROJECT_UPDATED: {
             return { ...state, activeProjectId: action.activeProjectId};
         }
-        case projectListActionTypes.UPDATE_SVF: {
+        case projectListActionTypes.UPDATE_PROJECT: {
             const projects = state.projects.map((project) => {
                 return project.id !== action.activeProjectId ? project : {
-                    ...project, svf: action.svf
+                    ...project, ...action.data
                 };
             });
             return { ...state, projects };

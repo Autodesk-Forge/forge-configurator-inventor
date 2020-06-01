@@ -1,5 +1,5 @@
 import projectListReducer, * as list from './projectListReducers';
-import {updateProjectList, updateActiveProject, updateSvf} from '../actions/projectListActions';
+import {updateProjectList, updateActiveProject, updateProject} from '../actions/projectListActions';
 
 describe('projectList reducer', () => {
     test('should return the initial state', () => {
@@ -100,6 +100,19 @@ describe('projectList reducer', () => {
             }]
         };
 
-        expect(projectListReducer(projectList, updateSvf("1", "newSvf")).projects[0].svf).toEqual("newSvf");
+        expect(projectListReducer(projectList, updateProject("1", { "svf": "newSvf" })).projects[0].svf).toEqual("newSvf");
+    });
+
+    it('correctly updates the downloadModelUrl', () => {
+        const projectList = {
+            activeProjectId: '1',
+            projects: [{
+                id : '1',
+                svf: 'oldSvf'
+                // no downloadModelUrl at all intentionally
+            }]
+        };
+
+        expect(projectListReducer(projectList, updateProject("1", { "downloadModelUrl": "newUrl" })).projects[0].downloadModelUrl).toEqual("newUrl");
     });
 });

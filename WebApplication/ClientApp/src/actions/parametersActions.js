@@ -2,7 +2,7 @@ import repo from '../Repository';
 import { addError, addLog } from './notificationActions';
 import { Jobs } from '../JobManager';
 import { showUpdateProgress } from './uiFlagsActions';
-import { updateSvf } from './projectListActions';
+import { updateProject } from './projectListActions';
 
 const actionTypes = {
     PARAMETERS_UPDATED: 'PARAMETERS_UPDATED',
@@ -79,7 +79,6 @@ function adaptParameters(rawParameters) {
     });
 }
 
-// eslint-disable-next-line no-unused-vars
 export const fetchParameters = (projectId) => async (dispatch, getState) => {
     if (!projectId)
         return;
@@ -144,17 +143,13 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
             // onComplete
             (_, updatedState) => {
                 dispatch(addLog('JobManager: Received onComplete'));
-
-                const rawParameters = updatedState.parameters;
-                const svf = updatedState.svf;
-
                 // hide modal dialog
                 dispatch(showUpdateProgress(false));
 
                 // launch update
-                const parameters = adaptParameters(rawParameters);
+                const parameters = adaptParameters(updatedState.parameters);
                 dispatch(updateParameters(projectId, parameters));
-                dispatch(updateSvf(projectId, svf));
+                dispatch(updateProject(projectId, { "svf": updatedState.svf, "modelDownloadUrl": updatedState.modelDownloadUrl }));
             }
         );
     } catch (error) {
