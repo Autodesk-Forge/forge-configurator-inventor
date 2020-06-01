@@ -1,11 +1,8 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 
 import Modal from '@hig/modal';
 import ProgressBar from '@hig/progress-bar';
 import Typography from "@hig/typography";
-import { updateProgressShowing } from '../reducers/mainReducer';
-import { showUpdateProgress } from '../actions/uiFlagsActions'
 import './modalProgress.css';
 import merge from "lodash.merge";
 
@@ -24,7 +21,7 @@ export class ModalProgress extends Component {
 
         return (
           <Modal
-              open={this.props.updateProgressShowing}
+              open={this.props.open}
               title={this.props.title}
               onCloseClick={this.props.onClose}
               percentComplete={null}
@@ -41,8 +38,4 @@ export class ModalProgress extends Component {
     }
 }
 
-export default connect(function (store) {
-    return {
-      updateProgressShowing: updateProgressShowing(store)
-    };
-}, { showUpdateProgress })(ModalProgress);
+export default ModalProgress;

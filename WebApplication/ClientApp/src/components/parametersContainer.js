@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import './parametersContainer.css';
 import Parameter from './parameter';
-import { getActiveProject, getParameters, getUpdateParameters } from '../reducers/mainReducer';
+import { getActiveProject, getParameters, getUpdateParameters, updateProgressShowing } from '../reducers/mainReducer';
 import { fetchParameters, resetParameters, updateModelWithParameters } from '../actions/parametersActions';
 import { showUpdateProgress } from '../actions/uiFlagsActions';
 import Button from '@hig/button';
@@ -62,16 +62,11 @@ export class ParametersContainer extends Component {
                         onClick={() => {this.updateClicked();}}
                     />
                     <ModalProgress
+                        open={this.props.updateProgressShowing}
                         title="Updating Project"
                         label={this.props.activeProject.id}
                         icon="Assembly icon.svg"
-                        onClose={this.onProgressCloseClick}/>
-                    {/* for testing of download progress UI only - WILL BE REMOVED
-                    <ModalProgress
-                        title="Preparing Archive"
-                        label="some output name"
-                        icon="Archive.svg"
-                        onClose={this.onProgressCloseClick}/> */}
+                        onClose={() => this.onProgressCloseClick()}/>
                 </div>
             </div>
         );
@@ -83,6 +78,7 @@ export default connect(function (store) {
 
     return {
         activeProject: activeProject,
+        updateProgressShowing: updateProgressShowing(store),
         projectSourceParameters: getParameters(activeProject.id, store),
         projectUpdateParameters: getUpdateParameters(activeProject.id, store)
     };

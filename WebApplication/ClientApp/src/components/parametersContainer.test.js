@@ -36,11 +36,28 @@ describe('parameters container', () => {
         fetchMock.mockClear();
     });
 
+    it('verify fetchParameters called immediatelly when component rendered', () => {
+        shallow(<ParametersContainer {...emptyProps} />);
+        expect(fetchMock).toHaveBeenCalledWith(projectId);
+    });
+
+    it('verify fetchParameters called immediatelly when active projecte id was changed', () => {
+        const noProj = {
+            activeProject: {},
+            fetchParameters: fetchMock
+        };
+
+        const wrapper = shallow(<ParametersContainer {...noProj} />);
+        fetchMock.mockClear();
+
+        const updatedProps = Object.assign(noProj, { activeProject: { id: 2 } });
+        wrapper.setProps(updatedProps);
+        expect(fetchMock).toHaveBeenCalledWith(2);
+    });
+
     it('should show special message for empty parameters', () => {
 
         const wrapper = shallow(<ParametersContainer {...emptyProps} />);
-        expect(fetchMock).toHaveBeenCalledWith(projectId);
-
         const wrapperComponent = wrapper.find('.parameters');
         const content = wrapperComponent.prop('children');
         expect(content).toEqual("No parameters");
@@ -52,8 +69,6 @@ describe('parameters container', () => {
         const props = Object.assign({ projectUpdateParameters: params }, emptyProps);
 
         const wrapper = shallow(<ParametersContainer {...props} />);
-        expect(fetchMock).toHaveBeenCalledWith(projectId);
-
         const wrapperComponent = wrapper.find('.parameters');
         const children = wrapperComponent.prop('children');
 
