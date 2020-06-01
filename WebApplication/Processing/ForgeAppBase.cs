@@ -114,7 +114,7 @@ namespace WebApplication.Processing
         protected virtual void AddInputArgs(IDictionary<string, IArgument> args, ProcessingArgs data)
         {
             if (data.IsAssembly)
-                args.Add(InputDocParameterName, new XrefTreeArgument { PathInZip = data.TLA, LocalName = "zippedIam.zip", Url = data.InputDocUrl });
+                args.Add(InputDocParameterName, new XrefTreeArgument { PathInZip = data.TLA, LocalName = ZipName, Url = data.InputDocUrl });
             else
                 args.Add(InputDocParameterName, new XrefTreeArgument { Url = data.InputDocUrl });
         }
@@ -147,6 +147,12 @@ namespace WebApplication.Processing
         /// Parameter name for input document.
         /// </summary>
         public const string InputDocParameterName = "InventorDoc";
+
+        /// <summary>
+        /// Where zip stored at DA servers.
+        /// </summary>
+        /// <remarks>NOTE: arg name is misleading, this actually is a dirname, where the zip is extracted.</remarks>
+        protected const string ZipName = "zippedIam.zip";
 
         /// <summary>
         /// Name of the output parameter.

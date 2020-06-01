@@ -51,34 +51,19 @@ namespace ExtractParametersPlugin
 
                     System.IO.File.WriteAllText("documentParams.json", paramsJson);
 
-                    SaveModelCopy(doc);
+                    // save current state
+                    LogTrace("Updating");
+                    doc.Update2();
+                    LogTrace("Saving");
+                    doc.Save2(SaveDependents: true);
+                    LogTrace("Closing");
+                    doc.Close(true);
                 }
             }
             catch (Exception e)
             {
                 LogError("Processing failed. " + e.ToString());
             }
-        }
-
-        private static void SaveModelCopy(Document doc)
-        {
-            if (doc.DocumentType != DocumentTypeEnum.kAssemblyDocumentObject)
-            {
-                LogError("Only assembly documents are supported right now.");
-                return;
-            }
-
-            var currentDirectory = Directory.GetCurrentDirectory();
-            var outputDir = Path.Combine(currentDirectory, "ModelCopy");
-
-            var currentFullName = doc.FullFileName;
-            var relativeName = currentFullName.Substring(currentDirectory.Length + 1);
-
-            var destFileName = Path.Combine(outputDir, relativeName);
-            LogTrace($"Save '{currentFullName}' to '{destFileName}'");
-            doc.SaveAs(destFileName, SaveCopyAs: true);
-
-            // TODO: this saves only TLA!!!
         }
 
         public string GetParamsAsJson(dynamic userParameters)

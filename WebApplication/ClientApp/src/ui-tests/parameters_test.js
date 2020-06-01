@@ -25,7 +25,7 @@ Scenario('should check if Stripe panel is displayed and hidden', async (I) => {
     I.click({xpath: XPathElements.xpTabModel});
 
     // check that Model tab has a parameter - Length
-    I.waitForElement('//*[@id="model"]/div/div[1]/div[2]/div[1]/div/input', 5);
+    I.waitForElement('//*[@id="model"]/div/div[1]/div[2]/div[1]/div/input', 20);
 
     // change the Lenght parameter
     I.clearField('//div[2]/div[1]/div/input');
