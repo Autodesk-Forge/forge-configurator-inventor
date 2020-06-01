@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import BaseTable, { AutoResizer, Column } from 'react-base-table'
+import { connect } from 'react-redux';
+import BaseTable, { AutoResizer, Column } from 'react-base-table';
 import 'react-base-table/styles.css';
-import { downloadFile } from '../actions/downloadActions';
+import { getActiveProject } from '../reducers/mainReducer';
 
 const Icon = ({ iconname }) => (
     <div>
@@ -24,6 +25,7 @@ const columns = [
         key: 'type',
         title: 'File Type',
         dataKey: 'type',
+        cellRenderer: ( { rowData } ) => rowData.link,
         align: Column.Alignment.LEFT,
         width: 150,
     },
@@ -36,27 +38,39 @@ const columns = [
     }
 ];
 
-const data = [
-    {
-        id: 'updatedIam',
-        icon: 'products-and-services-24.svg',
-        type: 'IAM',
-        env: 'Model'
-    },
-    {
-        id: 'rfa',
-        icon: 'products-and-services-24.svg',
-        type: 'RFA',
-        env: 'Model'
-    }
-];
-
-const rowEventHandlers = {
-    onClick: (e) => { downloadFile(e.rowKey); }
-};
-
-export default class Downloads extends Component {
+export class Downloads extends Component {
     render() {
+        let iamDownloadHyperlink = null;
+        const iamDownloadLink = <a href={this.props.activeProject.modelDownloadUrl} onClick={(e) => { e.stopPropagation(); }} ref = {(h) => {
+            iamDownloadHyperlink = h;
+        }}>IAM</a>;
+
+        const rfaDownloadLink = <a href="#" onClick={(e) => { e.preventDefault(); }}>RFA</a>;
+
+        const data = [
+            {
+                id: 'updatedIam',
+                icon: 'products-and-services-24.svg',
+                type: 'IAM',
+                env: 'Model',
+                link: iamDownloadLink,
+                clickHandler: () => {
+                    iamDownloadHyperlink.click();
+                    console.log('IAM');
+                }
+            },
+            {
+                id: 'rfa',
+                icon: 'products-and-services-24.svg',
+                type: 'RFA',
+                env: 'Model',
+                link: rfaDownloadLink,
+                clickHandler: () => {
+                    console.log('RFA');
+                }
+            }
+        ];
+
         return <AutoResizer>
             {({ width, height }) => {
                 // reduce size by 16 (twice the default border of tabContent)
@@ -67,9 +81,18 @@ export default class Downloads extends Component {
                     height={newHeight}
                     columns={columns}
                     data={data}
-                    rowEventHandlers={rowEventHandlers}
+                    rowEventHandlers={{
+                        onClick: ({ rowData }) => { rowData.clickHandler(); }
+                    }}
                 />;
             }}
         </AutoResizer>;
     }
 }
+
+export default connect(function(store) {
+    const activeProject = getActiveProject(store);
+    return {
+        activeProject: activeProject
+    };
+})(Downloads);
