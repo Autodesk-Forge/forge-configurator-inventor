@@ -39,7 +39,7 @@ Scenario('should check if Stripe panel is displayed and hidden', async (I) => {
     I.fillField('//div[2]/div[1]/div/input', "12000 mm");
 
     // check if the Stripe element was hidden
-    I.waitForInvisible(XPathElements.xpStripeElement);
+    I.waitForInvisible(XPathElements.xpStripeElement, 3);
 });
 
 
