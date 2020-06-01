@@ -52,7 +52,7 @@ export class Downloads extends Component {
 
     onProgressCloseClick() {
         // close is not supported now
-        this.props.hideRFAModalProgress();
+        //this.props.hideRFAModalProgress();
     }
 
     async startRFAJob(projectId) {
@@ -66,13 +66,13 @@ export class Downloads extends Component {
                     addLog('JobManager: HubConnection started for project : ' + projectId);
                 },
                 // onComplete
-                () => {
+                (/* ???? */) => {
                     addLog('JobManager: Received onComplete');
 
                     // hide modal dialog
-                    //this.props.hideRFAModalProgress();
+                    this.props.hideRFAModalProgress();
 
-                    // prepare URL
+                    // prepare URL, what parameters we will receive ????
                 }
             );
         } catch (error) {
