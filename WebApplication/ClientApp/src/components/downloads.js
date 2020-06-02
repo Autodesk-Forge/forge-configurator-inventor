@@ -17,7 +17,7 @@ const Icon = ({ iconname }) => (
 
 const iconRenderer = ({ cellData: iconname }) => <Icon iconname={iconname} />;
 
-const columns = [
+export const downloadColumns = [
     {
         key: 'icon',
         title: '',
@@ -42,6 +42,20 @@ const columns = [
         width: 200,
     }
 ];
+
+export class DownloadsTable extends Component {
+    render() {
+        return <BaseTable
+            width={this.props.width}
+            height={this.props.height}
+            columns={this.props.columns}
+            data={this.props.data}
+            rowEventHandlers={{
+                onClick: ({ rowData }) => { rowData.clickHandler(); }
+            }}
+    />;
+    }
+}
 
 export class Downloads extends Component {
 
@@ -138,15 +152,13 @@ export class Downloads extends Component {
                     // reduce size by 16 (twice the default border of tabContent)
                     const newWidth = width-16;
                     const newHeight = height-16;
-                    return <BaseTable
-                        width={newWidth}
-                        height={newHeight}
-                        columns={columns}
-                        data={data}
-                        rowEventHandlers={{
-                            onClick: ({ rowData }) => { rowData.clickHandler(); }
-                        }}
-                    />;
+                    const props = {
+                        'width': newWidth,
+                        'height': newHeight,
+                        'columns': downloadsColumns,
+                        'data': data
+                    }
+                    return <DownloadsTable { ...props} />
                 }}
             </AutoResizer>;
                 {this.props.rfaProgressProjectId && <ModalProgress
