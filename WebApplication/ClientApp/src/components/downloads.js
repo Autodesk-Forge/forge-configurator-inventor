@@ -86,7 +86,14 @@ export class Downloads extends Component {
             iamDownloadHyperlink = h;
         }}>IAM</a>;
 
-        const rfaDownloadLink = <a href="#" onClick={(e) => { e.preventDefault(); }}>RFA</a>;
+        let rfaDownloadHyperlink = null;
+        const hasRFAlink = false; // read real rfa link
+        const rfaDownloadLink =
+        <a
+            href={hasRFAlink ? this.props.activeProject.rfaDownloadUrl : "#"}
+            onClick={(e) => { hasRFAlink ? e.stopPropagation() : e.preventDefault(); }} ref = {(h) => {
+            rfaDownloadHyperlink = h;
+        }}>RFA</a>;
 
         const data = [
             {
@@ -106,9 +113,19 @@ export class Downloads extends Component {
                 type: 'RFA',
                 env: 'Model',
                 link: rfaDownloadLink,
-                clickHandler: () => {
-                    this.props.showRFAModalProgress(this.props.activeProject.id);
-                    this.startRFAJob(this.props.activeProject.id);
+                clickHandler: async () => {
+
+                    // check if we have RFA link
+                    // yes, use it
+                    if (hasRFAlink) {
+                        rfaDownloadHyperlink.click();
+                    } else {
+                        this.props.showRFAModalProgress(this.props.activeProject.id);
+                        await this.startRFAJob(this.props.activeProject.id);
+
+                        // create new href and click
+                    }
+
                     console.log('RFA');
                 }
             }
