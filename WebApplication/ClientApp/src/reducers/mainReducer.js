@@ -59,6 +59,6 @@ export const updateProgressShowing = function(state) {
 };
 
 export const rfaProgressProjectId = function(state) {
-    return uiFlasg.rfaProgressProjectId(state.uiFlagsReducer);
+    return uiFlags.rfaProgressProjectId(state.uiFlagsReducer);
 };
 
