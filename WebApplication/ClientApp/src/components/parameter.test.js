@@ -49,5 +49,56 @@ describe('components', () => {
         expect(wrapperComponent.length).toEqual(1);
         expect(wrapperComponent.prop("checked")).toEqual(true);
       });
+
+      it('test onEditChange called when changed value', () => {
+        const editParameterMock = jest.fn();
+        const props = {
+          parameter: param1,
+          activeProject: { id: "1" },
+          editParameter: editParameterMock
+        };
+
+        const wrapper = shallow(<Parameter {...props}/>);
+        const input = wrapper.find('Input');
+        expect(input.length).toEqual(1);
+
+        input.simulate('change', {target: {value : '111'}});
+        expect(editParameterMock).toHaveBeenCalledWith("1", {"name": "editbox", "value": "111"});
+      });
+
+      it('test onComboChange called when changed value', () => {
+        const editParameterMock = jest.fn();
+        const props = {
+          parameter: param2,
+          activeProject: { id: "1" },
+          editParameter: editParameterMock
+        };
+
+        const wrapper = shallow(<Parameter {...props}/>);
+        const input = wrapper.find('Dropdown');
+        expect(input.length).toEqual(1);
+
+        input.simulate('change', 'blue');
+        expect(editParameterMock).toHaveBeenCalledWith("1", {"name": "listbox", "value": "blue"});
+      });
+
+      it('test onCheckboxChange called when changed value', () => {
+        const editCheckBoxMock = jest.fn();
+        const props = {
+          parameter: param3,
+          activeProject: { id: "1" },
+          editParameter: editCheckBoxMock
+        };
+
+        const wrapper = shallow(<Parameter {...props}/>);
+        const input = wrapper.find('Checkbox');
+        expect(input.length).toEqual(1);
+
+        input.simulate('change', null);
+        expect(editCheckBoxMock).toHaveBeenCalledWith("1", {"name": "checkbox", "value": "False"});
+        editCheckBoxMock.mockClear();
+        input.simulate('change', 'True');
+        expect(editCheckBoxMock).toHaveBeenCalledWith("1", {"name": "checkbox", "value": "True"});
+      });
   });
 });

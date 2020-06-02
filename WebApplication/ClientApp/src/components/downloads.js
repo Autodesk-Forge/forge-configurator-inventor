@@ -160,6 +160,7 @@ export class Downloads extends Component {
     }
 }
 
+/* istanbul ignore next */
 export default connect(function(store) {
     const activeProject = getActiveProject(store);
     return {

@@ -9,7 +9,7 @@ import merge from "lodash.merge";
 export class ModalProgress extends Component {
 
     render() {
-        const modalStyles = styles =>
+        const modalStyles = /* istanbul ignore next */ styles =>
         merge(styles, {
           modal: {
                 window: { // by design

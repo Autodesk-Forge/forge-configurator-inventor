@@ -73,6 +73,7 @@ export class ParametersContainer extends Component {
     }
 }
 
+/* istanbul ignore next */
 export default connect(function (store) {
     const activeProject = getActiveProject(store);
 

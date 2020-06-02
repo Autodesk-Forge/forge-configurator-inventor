@@ -81,6 +81,7 @@ export class Parameter extends Component {
     }
 }
 
+/* istanbul ignore next */
 export default connect(function (store){
     return {
         activeProject: getActiveProject(store)

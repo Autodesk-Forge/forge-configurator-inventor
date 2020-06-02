@@ -2,6 +2,7 @@ import React from 'react';
 import Enzyme, { shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import { ParametersContainer } from './parametersContainer';
+import ModalProgress from './modalProgress';
 
 Enzyme.configure({ adapter: new Adapter() });
 
@@ -75,5 +76,49 @@ describe('parameters container', () => {
         expect(children).toHaveLength(2);
         expect(children[0].props.parameter).toBe(params[0]);
         expect(children[1].props.parameter).toBe(params[1]);
+    });
+
+    it('verify update button connected', () => {
+        const fnMock = jest.fn();
+        const props = {
+            activeProject: { id: projectId },
+            fetchParameters: () => {},
+            updateModelWithParameters: fnMock,
+            projectUpdateParameters: null
+        };
+
+        const wrapper = shallow(<ParametersContainer {...props} />);
+        const wrapperComponent = wrapper.find({ title: 'Update' });
+        wrapperComponent.simulate('click');
+        expect(fnMock).toHaveBeenCalledWith(projectId, props.projectUpdateParameters);
+    });
+
+    it('verify reset button connected', () => {
+        const fnMock = jest.fn();
+        const props = {
+            activeProject: { id: projectId },
+            fetchParameters: () => {},
+            resetParameters: fnMock,
+            projectSourceParameters: null
+        };
+
+        const wrapper = shallow(<ParametersContainer {...props} />);
+        const wrapperComponent = wrapper.find({ title: 'Reset' });
+        wrapperComponent.simulate('click');
+        expect(fnMock).toHaveBeenCalledWith(projectId, props.projectSourceParameters);
+    });
+
+    it('verify when modal close called, here is no operation called NOW', () => {
+        const fnMock = jest.fn();
+        const props = {
+            activeProject: { id: projectId },
+            fetchParameters: () => {},
+            showUpdateProgress: fnMock
+        };
+
+        const wrapper = shallow(<ParametersContainer {...props} />);
+        const wrapperComponent = wrapper.find(ModalProgress);
+        wrapperComponent.props().onClose();
+        expect(fnMock).toHaveBeenCalledTimes(0);
     });
 });
