@@ -8,7 +8,7 @@ using WebApplication.Utilities;
 namespace WebApplication.Processing
 {
     /// <summary>
-    /// Business logic for project tasks (adapt, update parameters)
+    /// Business logic for project tasks (adapt, update parameters, rfa generation)
     /// </summary>
     public class ProjectWork
     {
@@ -94,6 +94,28 @@ namespace WebApplication.Processing
 
             return dto;
         }
+
+
+        /// <summary>
+        /// Generate RFA ()
+        /// </summary>
+        public async Task<string> GenerateRfaAsync(ProjectInfo projectInfo, string hash)
+        {           
+            _logger.LogInformation($"Genrating RFA for hash {hash}");
+
+            var project = _resourceProvider.GetProject(projectInfo.Name);
+            var ossNameProvider = project.OssNameProvider(hash);
+
+            var inputDocUrl = await _forgeOSS.CreateSignedUrlAsync(_resourceProvider.BucketKey, ossNameProvider.CurrentModel);
+            ProcessingArgs rfaData = await _arranger.ForRfaAsync(inputDocUrl, projectInfo.TopLevelAssembly);
+
+            bool success = await _fdaClient.GenerateRfa(rfaData);
+            if (!success) throw new ApplicationException($"Failed to update {project.Name}");
+
+            var ossRfa = ossNameProvider.Rfa;
+            await _forgeOSS.CreateSignedUrlAsync(_resourceProvider.BucketKey, ossRfa);
+        }
+
 
         public async Task FileTransferAsync(string source, string target)
         {

@@ -87,14 +87,15 @@ namespace WebApplication.Utilities
     /// </summary>
     public class OSSObjectNameProvider : OssNameConverter
     {
-        public OSSObjectNameProvider(string projectName, string parametersHash) : 
-                base($"{ONC.CacheFolder}-{projectName}-{parametersHash}") {}
+        public OSSObjectNameProvider(string projectName, string parametersHash) :
+                base($"{ONC.CacheFolder}-{projectName}-{parametersHash}")
+        { }
 
         /// <summary>
         /// Filename for ZIP with current model state.
         /// </summary>
         public string CurrentModel => ToFullName("model.zip");
-        
+
         /// <summary>
         /// Filename for ZIP with SVF model.
         /// </summary>
@@ -106,6 +107,8 @@ namespace WebApplication.Utilities
         public string Parameters => ToFullName(LocalName.Parameters);
 
         public string DownloadsPath => ToFullName(ONC.DownloadsFolder);
+
+        public string Rfa => ToFullName("result.rfa");
     }
 
     /// <summary>

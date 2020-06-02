@@ -23,6 +23,8 @@ namespace WebApplication.Processing
         public readonly string SVF = $"{Guid.NewGuid():N}.zip";
         public readonly string InputParams = $"{Guid.NewGuid():N}.json";
         public readonly string OutputModel = $"{Guid.NewGuid():N}.zip";
+        public readonly string OutputSAT = $"{Guid.NewGuid():N}.sat";
+        public readonly string OutputRFA = $"{Guid.NewGuid():N}.rfa";
 
         /// <summary>
         /// Constructor.
@@ -106,6 +108,23 @@ namespace WebApplication.Processing
                                 _forge.UploadObjectAsync(_bucketKey, project.OssAttributes.Metadata, Json.ToStream(attributes, writeIndented: true)));
 
             return hashString;
+        }
+
+        internal async Task<ProcessingArgs> ForRfaAsync(string inputDocUrl, string topLevelAssembly)
+        {
+            var urls = await Task.WhenAll(  CreateSignedUrlAsync(OutputSAT, ObjectAccess.ReadWrite),
+                                            CreateSignedUrlAsync(OutputRFA, ObjectAccess.Write));
+
+            return new ProcessingArgs
+            {
+                InputDocUrl = inputDocUrl,
+                OutputModelUrl = null,
+                SvfUrl = null,
+                ParametersJsonUrl = null,
+                TLA = topLevelAssembly,
+                SatUrl = urls[0],
+                RfaUrl = urls[1]
+            };
         }
 
         /// <summary>

@@ -1,5 +1,6 @@
 namespace WebApplication.Definitions
 {
+    //TODO: split the update urls and rfa urls
     public class ProcessingArgs
     {
         public string InputDocUrl { get; set; }
@@ -18,6 +19,8 @@ namespace WebApplication.Definitions
         public bool IsAssembly => ! string.IsNullOrEmpty(TLA);
 
         public string OutputModelUrl { get; set; } // TODO: temporary!
+        public string SatUrl { get; internal set; }
+        public string RfaUrl { get; internal set; }
     }
 
     /// <summary>

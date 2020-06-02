@@ -55,12 +55,12 @@ export class Downloads extends Component {
         //this.props.hideRFAModalProgress();
     }
 
-    async startRFAJob(projectId) {
+    async startRFAJob(projectId, hash) {
         const jobManager = Jobs();
 
         // launch signalR to make RFA here and wait for result
         try {
-            await jobManager.doRFAJob(projectId,
+            await jobManager.doRFAJob(projectId, hash,
                 // start job
                 () => {
                     addLog('JobManager: HubConnection started for project : ' + projectId);
@@ -121,7 +121,7 @@ export class Downloads extends Component {
                         rfaDownloadHyperlink.click();
                     } else {
                         this.props.showRFAModalProgress(this.props.activeProject.id);
-                        await this.startRFAJob(this.props.activeProject.id);
+                        await this.startRFAJob(this.props.activeProject.id, this.props.activeProject.hash);
 
                         // create new href and click
                     }

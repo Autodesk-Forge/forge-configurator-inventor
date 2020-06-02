@@ -149,7 +149,7 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
                 // launch update
                 const parameters = adaptParameters(updatedState.parameters);
                 dispatch(updateParameters(projectId, parameters));
-                dispatch(updateProject(projectId, { "svf": updatedState.svf, "modelDownloadUrl": updatedState.modelDownloadUrl }));
+                dispatch(updateProject(projectId, updatedState));
             }
         );
     } catch (error) {
