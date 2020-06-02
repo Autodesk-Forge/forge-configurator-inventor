@@ -155,7 +155,7 @@ export class Downloads extends Component {
                     const props = {
                         'width': newWidth,
                         'height': newHeight,
-                        'columns': downloadsColumns,
+                        'columns': downloadColumns,
                         'data': data
                     }
                     return <DownloadsTable { ...props} />
