@@ -135,7 +135,7 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
     dispatch(showUpdateProgress(true));
 
     try {
-        await jobManager.doJob(projectId, invFormattedParameters,
+        await jobManager.doUpdateJob(projectId, invFormattedParameters,
             // start job
             () => {
                 dispatch(addLog('JobManager: HubConnection started for project : ' + projectId));
