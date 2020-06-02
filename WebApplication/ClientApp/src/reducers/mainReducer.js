@@ -3,7 +3,7 @@ import projectListReducer, * as list from './projectListReducers';
 import {notificationReducer} from './notificationReducer';
 import parametersReducer, * as params from './parametersReducer';
 import updateParametersReducer, * as updateParams from './updateParametersReducer';
-import uiFlagsReducer, * as uiFlasg from './uiFlagsReducer';
+import uiFlagsReducer, * as uiFlags from './uiFlagsReducer';
 
 export const mainReducer = combineReducers({
     projectList: projectListReducer,
@@ -55,7 +55,7 @@ export const parametersEditedMessageVisible = function(state) {
 };
 
 export const updateProgressShowing = function(state) {
-    return uiFlasg.updateProgressShowing(state.uiFlagsReducer);
+    return uiFlags.updateProgressShowing(state.uiFlagsReducer);
 };
 
 export const rfaProgressProjectId = function(state) {
