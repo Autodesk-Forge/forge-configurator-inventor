@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# exit when any command fails
+set -e
+
 # run backend tests (this also builds and installs dependencies)
 echo "**** running backend tests ****"
 dotnet test
@@ -11,7 +14,7 @@ npm run lint
 
 # run frontend-tests
 echo "**** running frontend tests ****"
-npm test
+npm test -- --coverage
 
 # run server in background and wait for it to start up
 cd ..
@@ -23,4 +26,4 @@ sleep 5m
 # run frontend-ui-tests
 cd ./ClientApp
 echo "**** running the UI tests ****"
-npx codeceptjs run --verbose
+npx codeceptjs run
