@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import './parametersContainer.css';
 import Parameter from './parameter';
-import { getActiveProject, getParameters, getUpdateParameters } from '../reducers/mainReducer';
+import { getActiveProject, getParameters, getUpdateParameters, updateProgressShowing } from '../reducers/mainReducer';
 import { fetchParameters, resetParameters, updateModelWithParameters } from '../actions/parametersActions';
 import { showUpdateProgress } from '../actions/uiFlagsActions';
 import Button from '@hig/button';
@@ -22,6 +22,11 @@ export class ParametersContainer extends Component {
 
     updateClicked() {
         this.props.updateModelWithParameters(this.props.activeProject.id, this.props.projectUpdateParameters);
+    }
+
+    onProgressCloseClick() {
+        // close is not supported now
+        //this.props.showUpdateProgress(false);
     }
 
     render() {
@@ -56,18 +61,25 @@ export class ParametersContainer extends Component {
                         width="grow"
                         onClick={() => {this.updateClicked();}}
                     />
-                    <ModalProgress/>
+                    <ModalProgress
+                        open={this.props.updateProgressShowing}
+                        title="Updating Project"
+                        label={this.props.activeProject.id}
+                        icon="Assembly icon.svg"
+                        onClose={() => this.onProgressCloseClick()}/>
                 </div>
             </div>
         );
     }
 }
 
+/* istanbul ignore next */
 export default connect(function (store) {
     const activeProject = getActiveProject(store);
 
     return {
         activeProject: activeProject,
+        updateProgressShowing: updateProgressShowing(store),
         projectSourceParameters: getParameters(activeProject.id, store),
         projectUpdateParameters: getUpdateParameters(activeProject.id, store)
     };

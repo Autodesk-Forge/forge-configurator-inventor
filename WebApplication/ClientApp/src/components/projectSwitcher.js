@@ -36,6 +36,7 @@ export class ProjectSwitcher extends Component {
     }
 }
 
+/* istanbul ignore next */
 export default connect(function (store){
     return {
       projectList: store.projectList

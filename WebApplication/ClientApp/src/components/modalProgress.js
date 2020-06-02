@@ -1,23 +1,15 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 
 import Modal from '@hig/modal';
 import ProgressBar from '@hig/progress-bar';
 import Typography from "@hig/typography";
-import { getActiveProject, updateProgressShowing } from '../reducers/mainReducer';
-import { showUpdateProgress } from '../actions/uiFlagsActions'
 import './modalProgress.css';
 import merge from "lodash.merge";
 
 export class ModalProgress extends Component {
 
-    onCloseClick() {
-      // close is not supported now
-      //this.props.showUpdateProgress(false);
-    }
-
     render() {
-        const modalStyles = styles =>
+        const modalStyles = /* istanbul ignore next */ styles =>
         merge(styles, {
           modal: {
                 window: { // by design
@@ -29,15 +21,15 @@ export class ModalProgress extends Component {
 
         return (
           <Modal
-              open={this.props.updateProgressShowing}
-              title="Updating Project"
-              onCloseClick={() => {this.onCloseClick();}}
+              open={this.props.open}
+              title={this.props.title}
+              onCloseClick={this.props.onClose}
               percentComplete={null}
               stylesheet={modalStyles}>
               <div className="modalContent">
-                  <img className="modalIcon" src="Assembly icon.svg"/>
+                  <img className="modalIcon" src={this.props.icon}/>
                   <Typography className="modalAction" fontWeight="bold">
-                      {this.props.activeProject.id ? this.props.activeProject.id : "Missing active project name."}
+                      {this.props.label ? this.props.label : "Missing label."}
                       <ProgressBar className="modalProgress"/>
                   </Typography>
               </div>
@@ -46,11 +38,4 @@ export class ModalProgress extends Component {
     }
 }
 
-export default connect(function (store) {
-    const activeProject = getActiveProject(store);
-
-    return {
-      activeProject: activeProject,
-      updateProgressShowing: updateProgressShowing(store)
-    };
-}, { showUpdateProgress })(ModalProgress);
+export default ModalProgress;

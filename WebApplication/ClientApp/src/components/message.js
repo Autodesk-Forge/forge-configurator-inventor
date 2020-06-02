@@ -79,6 +79,7 @@ export class Message extends Component {
     }
 }
 
+/* istanbul ignore next */
 export default connect(function (store) {
     return {
         activeProject: getActiveProject(store),

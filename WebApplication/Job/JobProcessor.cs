@@ -28,12 +28,15 @@ namespace WebApplication.Job
             _projectWork = projectWork;
         }
 
-        public Task AddNewJob(JobItem job)
+        public Task AddNewJob(JobItemBase job)
         {
-            return ProcessJobAsync(job);
+            job.DefaultPrjConfig = _defaultProjectsConfiguration;
+            job.PrjWork = _projectWork;
+
+            return job.ProcessJobAsync(_logger, _hubContext);
         }
 
-        private async Task ProcessJobAsync(JobItem job)
+        private async Task ProcessJobAsync(UpdateModelJobItem job)
         {
             _logger.LogInformation($"ProcessJob {job.Id} for project {job.ProjectId} started.");
 
