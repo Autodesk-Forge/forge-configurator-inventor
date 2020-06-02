@@ -1,5 +1,5 @@
 import React from 'react';
-import Enzyme, { shallow } from 'enzyme';
+import Enzyme, { shallow, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import { Downloads, DownloadsTable, downloadColumns as columns } from './downloads';
 
@@ -63,9 +63,8 @@ describe('components', () => {
       });
 
       it('renders DownloadsTable', () => {
-        const wrapper = shallow(<DownloadsTable { ...tableProps } />);
+        const wrapper = mount(<DownloadsTable { ...tableProps } />);
 
-        //console.log(wrapper.debug());
         const wrapperComponent = wrapper.find('BaseTable');
         expect(wrapperComponent.prop('width')).toEqual(100);
         expect(wrapperComponent.prop('height')).toEqual(50);
@@ -73,10 +72,25 @@ describe('components', () => {
         expect(wrapperComponent.prop('data').length).toEqual(2);
         expect(wrapperComponent.prop('rowEventHandlers').onClick).toBeDefined();
 
-        // what to test next?
-        const iamRow = wrapperComponent.find('IAM');
-        console.log(iamRow.debug());  
-        //expect(iamRow.length).toEqual(1);
+        const tableRows = wrapperComponent.find('TableRow');
+        // console.log(tableRows.debug());  
+        expect(tableRows.length).toEqual(2);
+
+        tableRows.forEach((row, index) => {
+            const icon = row.find('Icon');
+            expect(icon.prop('iconname')).toEqual(data[index].icon);
+
+            const hyperlink = row.find('a');
+            switch(index) {
+                case 0:
+                    expect(hyperlink.prop('href')).toEqual(activeProject.modelDownloadUrl);
+                    break;
+
+                case 1:
+                    expect(hyperlink.prop('href')).toEqual('#');                    
+                    break;
+            } 
+        });     
     });
   });
 });
