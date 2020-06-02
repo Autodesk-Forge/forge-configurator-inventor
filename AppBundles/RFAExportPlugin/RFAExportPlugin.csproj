@@ -37,7 +37,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="DesignAutomationBridge, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Autodesk.Forge.DesignAutomation.Revit.2020.0.0-beta1\lib\net47\DesignAutomationBridge.dll</HintPath>
+      <HintPath>..\..\packages\Autodesk.Forge.DesignAutomation.Revit.2020.0.0\lib\net47\DesignAutomationBridge.dll</HintPath>
     </Reference>
     <Reference Include="RevitAPI, Version=19.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\..\packages\Revit.RevitApi.x64.2019.0.0\lib\net45\RevitAPI.dll</HintPath>
@@ -56,7 +56,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
     <Content Include="PackageContents.xml" />
     <Content Include="RFAExportAutomation.addin">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
