@@ -69,7 +69,9 @@ namespace WebApplication.Tests
                 CreateSVF = "../../../../WebApplication/AppBundles/CreateSVFPlugin.bundle.zip",
                 CreateThumbnail = "../../../../WebApplication/AppBundles/CreateThumbnailPlugin.bundle.zip",
                 ExtractParameters = "../../../../WebApplication/AppBundles/ExtractParametersPlugin.bundle.zip",
-                UpdateParameters = "../../../../WebApplication/AppBundles/UpdateParametersPlugin.bundle.zip"
+                UpdateParameters = "../../../../WebApplication/AppBundles/UpdateParametersPlugin.bundle.zip",
+                CreateSAT = "../../../../WebApplication/AppBundles/SatExportPlugin.bundle.zip",
+                CreateRFA = "../../../../WebApplication/AppBundles/RFAExportPlugin.bundle.zip"
             };
             IOptions<AppBundleZipPaths> appBundleZipPathsOptions = Options.Create(appBundleZipPathsConfiguration);
 
