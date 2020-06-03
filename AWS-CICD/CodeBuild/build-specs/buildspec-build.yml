@@ -1,31 +1,17 @@
 version: 0.2
+
 phases:
   install:
-    runtime-versions:
-      docker: 18
-  pre_build:
     commands:
-      - echo Logging in to Amazon ECR...
-      - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
+      - aws s3 cp s3://sdra-build/buildExtras.zip ./
+      - expand-archive -path .\buildExtras.zip -destinationpath ./
   build:
     commands:
-      - echo Build started on `date`
-      - IMAGE_TAG=${CODEBUILD_RESOLVED_SOURCE_VERSION:0:7}
-      - echo Building AppBundles on Windows EC2 machine
-      - chmod +x ./AWS-CICD/execOnEc2.sh
-      - ./AWS-CICD/execOnEc2.sh i-0de2e9cf0030fd80b 'C:/Users/Administrator/sdra-windows-build/compile.ps1 '$CODEBUILD_RESOLVED_SOURCE_VERSION
-      - echo Getting AppBundles Zips
-      - aws s3 cp --recursive s3://sdra-build/AppBundles/ ./WebApplication/AppBundles
-      - echo Building Docker test image...
-      - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG --build-arg COMMIT_ID=$CODEBUILD_RESOLVED_SOURCE_VERSION -f ./AWS-CICD/Dockerfile.build .
-      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+      - msbuild -restore /property:Configuration=Release
+      - msbuild /property:Configuration=Release /Target:Publish
   post_build:
     commands:
-      - echo Build completed on `date`
-      - echo Pushing the Docker image...
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
-      - sed -i 's/latest/'$IMAGE_TAG'/g' ./AWS-CICD/Dockerrun.aws.json
+      - Remove-Item WebApplication/ClientApp/node_modules -Recurse 
 artifacts:
   files:
-    - Dockerrun.aws.json
-  base-directory: AWS-CICD
+    - '**/*'

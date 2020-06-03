@@ -1,15 +1,19 @@
 {
-    "name": "sdra-build",
+    "name": "sdra-image",
     "source": {
         "type": "CODEPIPELINE",
-        "buildspec": "AWS-CICD/CodeBuild/build-specs/buildspec-build.yml",
+        "buildspec": "AWS-CICD/CodeBuild/build-specs/buildspec-image.yml",
         "insecureSsl": false
     },
+    "secondarySourceVersions": [],
     "artifacts": {
         "type": "CODEPIPELINE",
-        "name": "sdra-build",
+        "name": "sdra-docker",
         "packaging": "NONE",
         "encryptionDisabled": false
+    },
+    "cache": {
+        "type": "NO_CACHE"
     },
     "environment": {
         "type": "LINUX_CONTAINER",
@@ -39,7 +43,7 @@
         },
         "s3Logs": {
             "status": "ENABLED",
-            "location": "sdra-build/sdra-build-log",
+            "location": "sdra-build/sdra-docker",
             "encryptionDisabled": true
         }
     }
