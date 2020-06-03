@@ -236,3 +236,5 @@ Output/
 
 # preserve `LocalCache` dir
 WebApplication/LocalCache/
+
+AWS-CICD/scripts/config.json

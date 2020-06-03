@@ -1,7 +1,7 @@
 {
     "pipeline": {
-        "name": "<name>",
-        "roleArn": "<role>",
+        "name": "<pipeline_name>",
+        "roleArn": "<code_pipeline_service_role_arn>",
         "artifactStore": {
             "type": "S3",
             "location": "codepipeline-us-west-2-510482250803"
@@ -21,7 +21,7 @@
                         "runOrder": 1,
                         "configuration": {
                             "Branch": "<branch>",
-                            "OAuthToken": "<token>",
+                            "OAuthToken": "<github_token>",
                             "Owner": "Developer-Autodesk",
                             "PollForSourceChanges": "false",
                             "Repo": "forge-configurator-inventor"
@@ -103,7 +103,7 @@
                         },
                         "runOrder": 1,
                         "configuration": {
-                            "EnvironmentVariables": "[{\"name\":\"PipelineExecutionId\",\"value\":\"#{codepipeline.PipelineExecutionId}\",\"type\":\"PLAINTEXT\"},{\"name\":\"pipelineName\",\"value\":\"<name>\",\"type\":\"PLAINTEXT\"},{\"name\":\"environmentName\",\"value\":\"<environmentName>\",\"type\":\"PLAINTEXT\"}]",
+                            "EnvironmentVariables": "[{\"name\":\"PipelineExecutionId\",\"value\":\"#{codepipeline.PipelineExecutionId}\",\"type\":\"PLAINTEXT\"},{\"name\":\"pipelineName\",\"value\":\"<pipeline_name>\",\"type\":\"PLAINTEXT\"},{\"name\":\"environmentName\",\"value\":\"<environment_name>\",\"type\":\"PLAINTEXT\"}]",
                             "PrimarySource": "SourceArtifact",
                             "ProjectName": "sdra-deploy"
                         },
@@ -121,6 +121,6 @@
                 ]
             }
         ],
-        "version": 2
+        "version": 3
     }
 }
