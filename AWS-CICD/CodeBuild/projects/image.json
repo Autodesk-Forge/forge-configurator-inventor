@@ -1,0 +1,52 @@
+{
+    "name": "sdra-docker",
+    "source": {
+        "type": "CODEPIPELINE",
+        "buildspec": "AWS-CICD\\CodeBuild\\build-specs\\buildspec-image.yml",
+        "insecureSsl": false
+    },
+    "secondarySourceVersions": [],
+    "artifacts": {
+        "type": "CODEPIPELINE",
+        "name": "sdra-docker",
+        "packaging": "NONE",
+        "encryptionDisabled": false
+    },
+    "cache": {
+        "type": "NO_CACHE"
+    },
+    "environment": {
+        "type": "LINUX_CONTAINER",
+        "image": "aws/codebuild/amazonlinux2-x86_64-standard:3.0",
+        "computeType": "BUILD_GENERAL1_SMALL",
+        "environmentVariables": [
+            {
+                "name": "IMAGE_REPO_NAME",
+                "value": "sdra",
+                "type": "PLAINTEXT"
+            },
+            {
+                "name": "AWS_ACCOUNT_ID",
+                "value": "624240287035",
+                "type": "PLAINTEXT"
+            }
+        ],
+        "privilegedMode": true,
+        "imagePullCredentialsType": "CODEBUILD"
+    },
+    "serviceRole": "arn:aws:iam::624240287035:role/service-role/sdra-docker-service-role",
+    "timeoutInMinutes": 60,
+    "queuedTimeoutInMinutes": 480,
+    "encryptionKey": "arn:aws:kms:us-west-2:624240287035:alias/aws/s3",
+    "tags": [],
+    "logsConfig": {
+        "cloudWatchLogs": {
+            "status": "ENABLED"
+        },
+        "s3Logs": {
+            "status": "ENABLED",
+            "location": "sdra-build/sdra-docker",
+            "encryptionDisabled": false
+        }
+    }
+}
