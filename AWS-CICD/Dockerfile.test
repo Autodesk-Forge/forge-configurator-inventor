@@ -57,5 +57,5 @@ ARG FORGE_CLIENT_SECRET
 ENV FORGE_CLIENT_SECRET ${FORGE_CLIENT_SECRET}
 
 # set script to run when the container starts
-RUN chmod +x docker-test.sh
-ENTRYPOINT ["./docker-test.sh"]
+RUN chmod +x ./AWS-CICD/docker-test.sh
+ENTRYPOINT ["./AWS-CICD/docker-test.sh"]
