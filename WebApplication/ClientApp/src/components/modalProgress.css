@@ -3,6 +3,10 @@
     padding: 12px 0px 24px 0px;
 }
 
+.modalLink {
+    display: flex;
+}
+
 .modalAction {
     padding-left: 24px;
     width: 275px;
