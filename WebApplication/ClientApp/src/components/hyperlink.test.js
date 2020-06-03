@@ -10,7 +10,6 @@ describe('components', () => {
     it('verify that when clicked link, called passed function(used for close modal UI)', () => {
         const onUrlClickMock = jest.fn();
         const props = {
-          autostart: false,
           href: "",
           prefix: "P ",
           link: "link",
@@ -26,7 +25,6 @@ describe('components', () => {
     it('verify that is automatically started download of specified link', () => {
         const onAutostartMock = jest.fn();
         const props = {
-          autostart: true,
           href: "link to file",
           prefix: "P ",
           link: "link text",
