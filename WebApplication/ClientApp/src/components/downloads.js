@@ -66,8 +66,8 @@ export class Downloads extends Component {
                     addLog('JobManager: HubConnection started for project : ' + projectId);
                 },
                 // onComplete
-                (/* ???? */) => {
-                    addLog('JobManager: Received onComplete');
+                (rfaUrl) => {
+                    addLog('JobManager: Received onComplete ' + rfaUrl);
 
                     // hide modal dialog
                     this.props.hideRFAModalProgress();

@@ -38,12 +38,12 @@ class JobManager {
         if (onStart)
             onStart();
 
-        connection.on("onComplete", (id) => {
+        connection.on("onComplete", (rfaUrl) => {
             // stop connection
             connection.stop();
 
             if (onComplete)
-                onComplete(id);
+                onComplete(rfaUrl);
         });
 
         await connection.invoke('CreateRFAJob', projectId, hash);

@@ -110,10 +110,9 @@ namespace WebApplication.Processing
             ProcessingArgs rfaData = await _arranger.ForRfaAsync(inputDocUrl, projectInfo.TopLevelAssembly);
 
             bool success = await _fdaClient.GenerateRfa(rfaData);
-            if (!success) throw new ApplicationException($"Failed to update {project.Name}");
+            if (!success) throw new ApplicationException($"Failed to generate rfa for project {project.Name} and hash {hash}");
 
-            var ossRfa = ossNameProvider.Rfa;
-            await _forgeOSS.CreateSignedUrlAsync(_resourceProvider.BucketKey, ossRfa);
+            return await _arranger.MoveRfaAsync(project, hash);
         }
 
 

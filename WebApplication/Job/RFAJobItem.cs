@@ -33,7 +33,7 @@ namespace WebApplication.Job
             _logger.LogInformation($"ProcessJob (RFA) {this.Id} for project {this.ProjectId} completed.");
 
             // send that we are done to client
-            await hubContext.Clients.All.SendAsync("onComplete", this.Id);
+            await hubContext.Clients.All.SendAsync("onComplete", rfaUrl);
         }
     }
 }

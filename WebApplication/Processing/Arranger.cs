@@ -110,6 +110,14 @@ namespace WebApplication.Processing
             return hashString;
         }
 
+        internal async Task<string> MoveRfaAsync(Project project, string hash)
+        {
+            var ossNames = project.OssNameProvider(hash);
+            await Task.WhenAll(_forge.RenameObjectAsync(_bucketKey, OutputRFA, ossNames.Rfa),
+                                _forge.DeleteAsync(_bucketKey, OutputSAT));
+            return await _forge.CreateSignedUrlAsync(_bucketKey, ossNames.Rfa);
+        }
+
         internal async Task<ProcessingArgs> ForRfaAsync(string inputDocUrl, string topLevelAssembly)
         {
             var urls = await Task.WhenAll(  CreateSignedUrlAsync(OutputSAT, ObjectAccess.ReadWrite),
