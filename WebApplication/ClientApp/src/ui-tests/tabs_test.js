@@ -7,7 +7,7 @@ Before((I) => {
 
 Feature('Tabs');
 
-Scenario('should check if All tabs are avaiable', async (I) => {
+Scenario('should check if All tabs are available', async (I) => {
 
     // check if exists the Projects tab
     I.see("Projects", {xpath: XPathElements.xpTabProjects});
@@ -31,7 +31,7 @@ Scenario('should check if all Tabs are loaded after click', async (I) => {
     I.click({xpath: XPathElements.xpTabModel});
 
     // check that Model tab has correct content
-    I.waitForVisible({xpath: XPathElements.xpDivParameterContainer}, 20);
+    I.waitForVisible({xpath: XPathElements.xpDivParameterContainer}, 30);
     I.seeElement({xpath: XPathElements.xpDivForgeViewer});
 
     // click on BOM tab
