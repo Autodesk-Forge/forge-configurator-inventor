@@ -3,14 +3,9 @@
     padding: 12px 0px 24px 0px;
 }
 
-.modalIcon {
-    width: 48px;
-    height: 48px;
-}
-
 .modalAction {
     padding-left: 24px;
-    width: 100%;
+    width: 275px;
     padding-top: 8px;
     padding-bottom: 8px;
 }

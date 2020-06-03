@@ -5,13 +5,18 @@ class JobManager {
         this.jobs = new Map();
     }
 
-    async doJob(projectId, parameters, onStart, onComplete) {
+    async startConnection() {
         const connection = new signalR.HubConnectionBuilder()
         .withUrl('/signalr/connection')
         .configureLogging(signalR.LogLevel.Trace)
         .build();
 
         await connection.start();
+        return connection;
+    }
+
+    async doUpdateJob(projectId, parameters, onStart, onComplete) {
+        const connection = await this.startConnection();
 
         if (onStart)
             onStart();
@@ -24,7 +29,24 @@ class JobManager {
                 onComplete(id, updatedState);
         });
 
-        await connection.invoke('CreateJob', projectId, parameters);
+        await connection.invoke('CreateUpdateJob', projectId, parameters);
+    }
+
+    async doRFAJob(projectId, temporaryUrl, onStart, onComplete) {
+        const connection = await this.startConnection();
+
+        if (onStart)
+            onStart();
+
+        connection.on("onComplete", (_, rfaUrl) => {
+            // stop connection
+            connection.stop();
+
+            if (onComplete)
+                onComplete(rfaUrl);
+        });
+
+        await connection.invoke('CreateRFAJob', projectId, temporaryUrl);
     }
 }
 

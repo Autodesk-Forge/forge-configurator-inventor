@@ -5,7 +5,10 @@ export const actionTypes = {
     REJECT_PARAMETERS_EDITED_MESSAGE: 'REJECT_PARAMETERS_EDITED_MESSAGE',
     FETCH_SHOW_PARAMETERS_CHANGED: 'FETCH_SHOW_PARAMETERS_CHANGED',
     CLOSE_PARAMETERS_EDITED_MESSAGE: 'CLOSE_PARAMETERS_EDITED_MESSAGE',
-    SHOW_UPDATE_PROGRESS: 'SHOW_UPDATE_PROGRESS'
+    SHOW_UPDATE_PROGRESS: 'SHOW_UPDATE_PROGRESS',
+    SHOW_RFA_PROGRESS: 'SHOW_RFA_PROGRESS',
+    HIDE_RFA_PROGRESS: 'HIDE_RFA_PROGRESS',
+    SET_RFA_LINK: 'SET_RFA_LINK'
 };
 
 export default actionTypes;
@@ -46,5 +49,19 @@ export const showUpdateProgress = (visible) => {
     return {
         type: actionTypes.SHOW_UPDATE_PROGRESS,
         visible
+    };
+};
+
+export const showRFAModalProgress = (visible) => {
+    return {
+        type: actionTypes.SHOW_RFA_PROGRESS,
+        visible
+    };
+};
+
+export const setRFALink = (url) => {
+    return {
+        type: actionTypes.SET_RFA_LINK,
+        url
     };
 };

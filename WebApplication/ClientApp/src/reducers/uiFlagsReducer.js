@@ -4,11 +4,21 @@ import uiFlagsActionTypes from '../actions/uiFlagsActions';
 export const initialState = {
    parametersEditedMessageClosed: false,
    parametersEditedMessageRejected: false,
-   updateProgressShowing: false
+   updateProgressShowing: false,
+   rfaProgressShowing: null,
+   rfaDownloadUrl: null
 };
 
 export const updateProgressShowing = function(state) {
    return state.updateProgressShowing;
+};
+
+export const rfaProgressShowing = function(state) {
+   return state.rfaProgressShowing;
+};
+
+export const rfaDownloadUrl = function(state) {
+   return state.rfaDownloadUrl;
 };
 
 export default function(state = initialState, action) {
@@ -23,6 +33,10 @@ export default function(state = initialState, action) {
          return { ...state, parametersEditedMessageRejected: action.show };
       case uiFlagsActionTypes.SHOW_UPDATE_PROGRESS:
          return { ...state, updateProgressShowing: action.visible};
+      case uiFlagsActionTypes.SHOW_RFA_PROGRESS:
+         return { ...state, rfaProgressShowing: action.visible, rfaDownloadUrl: null};
+      case uiFlagsActionTypes.SET_RFA_LINK:
+         return { ...state, rfaDownloadUrl: action.url};
       default:
          return state;
   }

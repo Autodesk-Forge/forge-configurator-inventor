@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+  <AddIn Type="DBApplication">
+    <Name>RFAExportPlugin</Name>
+    <Assembly>RFAExportPlugin.dll</Assembly>
+    <AddInId>d7fe1983-8f10-4983-98e2-c3cc332fc999</AddInId>
+    <FullClassName>RFAExportPlugin.RFAExportAutomation</FullClassName>
+    <Description>"RFAExportPlugin"</Description>
+    <VendorId>FPD</VendorId>
+    <VendorDescription>
+    </VendorDescription>
+  </AddIn>
+</RevitAddIns>

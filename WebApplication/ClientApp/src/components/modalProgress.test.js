@@ -5,14 +5,15 @@ import { ModalProgress } from './modalProgress';
 
 Enzyme.configure({ adapter: new Adapter() });
 
-const projectId = "test_project_id";
 const props = {
-    activeProject: { id: projectId }
+    title: "modal progress dialog title",
+    label: "name of file in progress",
+    icon: "Archive.svg"
 };
 
 describe('modal progress ', () => {
 
-    it('should show message with activeProject.id', () => {
+    it('should show message from props.label', () => {
 
         const wrapper = shallow(<ModalProgress {...props} />);
 
@@ -20,19 +21,19 @@ describe('modal progress ', () => {
         const children = wrapperComponent.prop('children');
 
         expect(children).toHaveLength(2);
-        expect(children[0]).toBe(projectId);
+        expect(children[0]).toBe(props.label);
     });
 
-    it('should show message that active project name is missing', () => {
+    it('should show message that props.label is missing', () => {
 
-        const propsNoId = { activeProject: { id: null }};
+        const propsNoTitle = { title: null };
 
-        const wrapper = shallow(<ModalProgress {...propsNoId} />);
+        const wrapper = shallow(<ModalProgress {...propsNoTitle} />);
 
         const wrapperComponent = wrapper.find('.modalAction');
         const children = wrapperComponent.prop('children');
 
         expect(children).toHaveLength(2);
-        expect(children[0]).toBe("Missing active project name.");
+        expect(children[0]).toBe("Missing label.");
     });
 });
