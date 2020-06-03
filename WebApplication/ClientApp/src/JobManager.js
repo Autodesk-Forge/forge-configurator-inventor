@@ -32,21 +32,21 @@ class JobManager {
         await connection.invoke('CreateUpdateJob', projectId, parameters);
     }
 
-    async doRFAJob(projectId, onStart, onComplete) {
+    async doRFAJob(projectId, temporaryUrl, onStart, onComplete) {
         const connection = await this.startConnection();
 
         if (onStart)
             onStart();
 
-        connection.on("onComplete", (id) => {
+        connection.on("onComplete", (_, rfaUrl) => {
             // stop connection
             connection.stop();
 
             if (onComplete)
-                onComplete(id);
+                onComplete(rfaUrl);
         });
 
-        await connection.invoke('CreateRFAJob', projectId);
+        await connection.invoke('CreateRFAJob', projectId, temporaryUrl);
     }
 }
 

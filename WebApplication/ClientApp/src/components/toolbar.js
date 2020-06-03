@@ -18,7 +18,7 @@ const PlaceCenterContainer = styled.div`
   display: flex;
 `;
 
-export default class Toolbar extends Component {
+export class Toolbar extends Component {
 
   render () {
     return (
@@ -57,3 +57,5 @@ export default class Toolbar extends Component {
         );
   }
 }
+
+export default Toolbar;
