@@ -2,12 +2,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import BaseTable, { AutoResizer, Column } from 'react-base-table';
 import 'react-base-table/styles.css';
-import { getActiveProject } from '../reducers/mainReducer';
-import { rfaProgressProjectId } from '../reducers/mainReducer';
-import { showRFAModalProgress, hideRFAModalProgress } from '../actions/uiFlagsActions';
+import { getActiveProject, rfaProgressShowing, rfaDownloadUrl } from '../reducers/mainReducer';
+import { getRFADownloadLink } from '../actions/downloadActions';
+import { showRFAModalProgress } from '../actions/uiFlagsActions';
 import ModalProgress from './modalProgress';
-import { Jobs } from '../JobManager';
-import { addError, addLog } from '../actions/notificationActions';
 
 const Icon = ({ iconname }) => (
     <div>
@@ -17,7 +15,7 @@ const Icon = ({ iconname }) => (
 
 const iconRenderer = ({ cellData: iconname }) => <Icon iconname={iconname} />;
 
-const columns = [
+export const downloadColumns = [
     {
         key: 'icon',
         title: '',
@@ -43,41 +41,24 @@ const columns = [
     }
 ];
 
+export class DownloadsTable extends Component {
+    render() {
+        return <BaseTable
+            width={this.props.width}
+            height={this.props.height}
+            columns={this.props.columns}
+            data={this.props.data}
+            rowEventHandlers={{
+                onClick: ({ rowData }) => { rowData.clickHandler(); }
+            }}
+    />;
+    }
+}
+
 export class Downloads extends Component {
 
-    constructor(props) {
-        super(props);
-        this.startRFAJob = this.startRFAJob.bind(this);
-    }
-
     onProgressCloseClick() {
-        // close is not supported now
-        //this.props.hideRFAModalProgress();
-    }
-
-    async startRFAJob(projectId, hash) {
-        const jobManager = Jobs();
-
-        // launch signalR to make RFA here and wait for result
-        try {
-            await jobManager.doRFAJob(projectId, hash,
-                // start job
-                () => {
-                    addLog('JobManager: HubConnection started for project : ' + projectId);
-                },
-                // onComplete
-                (rfaUrl) => {
-                    addLog('JobManager: Received onComplete ' + rfaUrl);
-
-                    // hide modal dialog
-                    this.props.hideRFAModalProgress();
-
-                    // prepare URL, what parameters we will receive ????
-                }
-            );
-        } catch (error) {
-            addError('JobManager: Error : ' + error);
-        }
+        this.props.showRFAModalProgress(false);
     }
 
     render() {
@@ -86,14 +67,8 @@ export class Downloads extends Component {
             iamDownloadHyperlink = h;
         }}>IAM</a>;
 
-        let rfaDownloadHyperlink = null;
-        const hasRFAlink = false; // read real rfa link
         const rfaDownloadLink =
-        <a
-            href={hasRFAlink ? this.props.activeProject.rfaDownloadUrl : "#"}
-            onClick={(e) => { hasRFAlink ? e.stopPropagation() : e.preventDefault(); }} ref = {(h) => {
-            rfaDownloadHyperlink = h;
-        }}>RFA</a>;
+        <a href="" onClick={(e) => { e.preventDefault(); }}>RFA</a>;
 
         const data = [
             {
@@ -104,7 +79,7 @@ export class Downloads extends Component {
                 link: iamDownloadLink,
                 clickHandler: () => {
                     iamDownloadHyperlink.click();
-                    console.log('IAM');
+                    //console.log('IAM');
                 }
             },
             {
@@ -114,19 +89,12 @@ export class Downloads extends Component {
                 env: 'Model',
                 link: rfaDownloadLink,
                 clickHandler: async () => {
-
-                    // check if we have RFA link
-                    // yes, use it
-                    if (hasRFAlink) {
-                        rfaDownloadHyperlink.click();
-                    } else {
-                        this.props.showRFAModalProgress(this.props.activeProject.id);
-                        await this.startRFAJob(this.props.activeProject.id, this.props.activeProject.hash);
-
-                        // create new href and click
-                    }
-
-                    console.log('RFA');
+                    this.props.getRFADownloadLink(this.props.activeProject.id,
+                        // ----- TEMPORARY send modelDownloadUrl to backend to get it back as RFA url
+                        // until it is implemented on the backend
+                        this.props.activeProject.modelDownloadUrl
+                        // ----- TEMPORARY
+                        );
                 }
             }
         ];
@@ -138,23 +106,23 @@ export class Downloads extends Component {
                     // reduce size by 16 (twice the default border of tabContent)
                     const newWidth = width-16;
                     const newHeight = height-16;
-                    return <BaseTable
-                        width={newWidth}
-                        height={newHeight}
-                        columns={columns}
-                        data={data}
-                        rowEventHandlers={{
-                            onClick: ({ rowData }) => { rowData.clickHandler(); }
-                        }}
-                    />;
+                    const props = {
+                        'width': newWidth,
+                        'height': newHeight,
+                        'columns': downloadColumns,
+                        'data': data
+                    };
+                    return <DownloadsTable { ...props} />;
                 }}
             </AutoResizer>;
-                {this.props.rfaProgressProjectId && <ModalProgress
+                {this.props.rfaProgressShowing && <ModalProgress
                     open={true}
                     title="Preparing Archive"
-                    label={this.props.rfaProgressProjectId}
+                    label={this.props.activeProject.id}
                     icon='/Archive.svg'
-                    onClose={() => this.onProgressCloseClick()}/>}
+                    onClose={() => this.onProgressCloseClick()}
+                    url={this.props.rfaDownloadUrl}
+                    />}
         </React.Fragment>
         );
     }
@@ -165,6 +133,7 @@ export default connect(function(store) {
     const activeProject = getActiveProject(store);
     return {
         activeProject: activeProject,
-        rfaProgressProjectId: rfaProgressProjectId(store)
+        rfaProgressShowing: rfaProgressShowing(store),
+        rfaDownloadUrl: rfaDownloadUrl(store)
     };
-}, { Downloads, showRFAModalProgress, hideRFAModalProgress })(Downloads);
+}, { Downloads, getRFADownloadLink, showRFAModalProgress })(Downloads);

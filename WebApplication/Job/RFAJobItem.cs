@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using WebApplication.Controllers;
 using WebApplication.Definitions;
 using WebApplication.Job;
+using WebApplication.Utilities;
 
 namespace WebApplication.Job
 {

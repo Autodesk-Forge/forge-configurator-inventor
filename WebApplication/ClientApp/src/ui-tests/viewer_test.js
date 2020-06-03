@@ -13,6 +13,6 @@ Scenario('should check switch to model tab loads the viewer', async (I) => {
 
     I.see('Model', XPathElements.xpTabModel);
     I.click(XPathElements.xpTabModel);
-    I.waitForElement(XPathElements.xpViewerCanvas, 5);
-    I.waitForElement(viewerModelSelector, 5);
+    I.waitForElement(XPathElements.xpViewerCanvas, 10);
+    I.waitForElement(viewerModelSelector, 10);
 });

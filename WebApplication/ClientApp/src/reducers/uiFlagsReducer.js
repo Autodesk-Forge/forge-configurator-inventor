@@ -5,15 +5,20 @@ export const initialState = {
    parametersEditedMessageClosed: false,
    parametersEditedMessageRejected: false,
    updateProgressShowing: false,
-   rfaProgressProjectId: null
+   rfaProgressShowing: null,
+   rfaDownloadUrl: null
 };
 
 export const updateProgressShowing = function(state) {
    return state.updateProgressShowing;
 };
 
-export const rfaProgressProjectId = function(state) {
-   return state.rfaProgressProjectId;
+export const rfaProgressShowing = function(state) {
+   return state.rfaProgressShowing;
+};
+
+export const rfaDownloadUrl = function(state) {
+   return state.rfaDownloadUrl;
 };
 
 export default function(state = initialState, action) {
@@ -29,10 +34,10 @@ export default function(state = initialState, action) {
       case uiFlagsActionTypes.SHOW_UPDATE_PROGRESS:
          return { ...state, updateProgressShowing: action.visible};
       case uiFlagsActionTypes.SHOW_RFA_PROGRESS:
-         return { ...state, rfaProgressProjectId: action.projectId};
-      case uiFlagsActionTypes.HIDE_RFA_PROGRESS:
-         return { ...state, rfaProgressProjectId: null};
-            default:
+         return { ...state, rfaProgressShowing: action.visible, rfaDownloadUrl: null};
+      case uiFlagsActionTypes.SET_RFA_LINK:
+         return { ...state, rfaDownloadUrl: action.url};
+      default:
          return state;
   }
 }

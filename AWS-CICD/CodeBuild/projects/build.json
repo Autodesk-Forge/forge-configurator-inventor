@@ -1,9 +1,8 @@
 {
     "name": "sdra-build",
-    "arn": "<arn>",
     "source": {
         "type": "CODEPIPELINE",
-        "buildspec": "WebApplication/buildspec-docker.yml",
+        "buildspec": "AWS-CICD/CodeBuild/build-specs/buildspec-build.yml",
         "insecureSsl": false
     },
     "artifacts": {
@@ -11,9 +10,6 @@
         "name": "sdra-build",
         "packaging": "NONE",
         "encryptionDisabled": false
-    },
-    "cache": {
-        "type": "NO_CACHE"
     },
     "environment": {
         "type": "LINUX_CONTAINER",
@@ -27,17 +23,16 @@
             },
             {
                 "name": "AWS_ACCOUNT_ID",
-                "value": "<account>",
+                "value": "<aws_account>",
                 "type": "PLAINTEXT"
             }
         ],
         "privilegedMode": true,
         "imagePullCredentialsType": "CODEBUILD"
     },
-    "serviceRole": "<role>",
+    "serviceRole": "<code_build_service_role_arn>",
     "timeoutInMinutes": 60,
     "queuedTimeoutInMinutes": 480,
-    "encryptionKey": "<key>",
     "logsConfig": {
         "cloudWatchLogs": {
             "status": "ENABLED"
