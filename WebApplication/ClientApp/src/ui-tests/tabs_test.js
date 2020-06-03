@@ -31,7 +31,7 @@ Scenario('should check if all Tabs are loaded after click', async (I) => {
     I.click({xpath: XPathElements.xpTabModel});
 
     // check that Model tab has correct content
-    I.waitForVisible({xpath: XPathElements.xpDivParameterContainer}, 30);
+    I.waitForVisible({xpath: XPathElements.xpDivParameterContainer}, 240);
     I.seeElement({xpath: XPathElements.xpDivForgeViewer});
 
     // click on BOM tab
