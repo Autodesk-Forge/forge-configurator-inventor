@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Autodesk.Forge.Client;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using WebApplication.Definitions;
 using WebApplication.Utilities;
@@ -101,10 +103,19 @@ namespace WebApplication.Processing
         /// </summary>
         public async Task<string> GenerateRfaAsync(ProjectInfo projectInfo, string hash)
         {           
-            _logger.LogInformation($"Genrating RFA for hash {hash}");
+            _logger.LogInformation($"Generating RFA for hash {hash}");
 
             var project = _resourceProvider.GetProject(projectInfo.Name);
             var ossNameProvider = project.OssNameProvider(hash);
+
+            try
+            {
+                return await _forgeOSS.CreateSignedUrlAsync(_resourceProvider.BucketKey, ossNameProvider.Rfa);
+            }
+            catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
+            {
+                // the file does not exist, so just swallow
+            }
 
             var inputDocUrl = await _forgeOSS.CreateSignedUrlAsync(_resourceProvider.BucketKey, ossNameProvider.CurrentModel);
             ProcessingArgs rfaData = await _arranger.ForRfaAsync(inputDocUrl, projectInfo.TopLevelAssembly);

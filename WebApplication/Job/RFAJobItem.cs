@@ -2,12 +2,8 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using WebApplication.Controllers;
-using WebApplication.Definitions;
-using WebApplication.Job;
-using WebApplication.Utilities;
 
 namespace WebApplication.Job
 {
@@ -21,9 +17,9 @@ namespace WebApplication.Job
             this.hash = hash;
         }
 
-        public async override Task ProcessJobAsync(ILogger<JobProcessor> _logger, IHubContext<JobsHub> hubContext)
+        public override async Task ProcessJobAsync(ILogger<JobProcessor> logger, IHubContext<JobsHub> hubContext)
         {
-            _logger.LogInformation($"ProcessJob (RFA) {this.Id} for project {this.ProjectId} started.");
+            logger.LogInformation($"ProcessJob (RFA) {this.Id} for project {this.ProjectId} started.");
             var projectConfig = DefaultPrjConfig.Projects.FirstOrDefault(cfg => cfg.Name == this.ProjectId);
             if (projectConfig == null)
             {
@@ -31,7 +27,7 @@ namespace WebApplication.Job
             }
             string rfaUrl = await PrjWork.GenerateRfaAsync(projectConfig, this.hash);
 
-            _logger.LogInformation($"ProcessJob (RFA) {this.Id} for project {this.ProjectId} completed.");
+            logger.LogInformation($"ProcessJob (RFA) {this.Id} for project {this.ProjectId} completed. ({rfaUrl})");
 
             // send that we are done to client
             await hubContext.Clients.All.SendAsync("onComplete", rfaUrl);

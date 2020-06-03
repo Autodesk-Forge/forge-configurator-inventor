@@ -110,6 +110,10 @@ namespace WebApplication.Processing
             return hashString;
         }
 
+        /// <summary>
+        /// Move temporary OSS files to the correct places.
+        /// </summary>
+        /// <returns>Signed URL to the RFA output</returns>
         internal async Task<string> MoveRfaAsync(Project project, string hash)
         {
             var ossNames = project.OssNameProvider(hash);

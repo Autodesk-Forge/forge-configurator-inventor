@@ -38,7 +38,7 @@ class JobManager {
         if (onStart)
             onStart();
 
-        connection.on("onComplete", (_, rfaUrl) => {
+        connection.on("onComplete", (rfaUrl) => {
             // stop connection
             connection.stop();
 
