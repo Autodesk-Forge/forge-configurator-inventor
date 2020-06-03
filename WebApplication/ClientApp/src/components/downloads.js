@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import BaseTable, { AutoResizer, Column } from 'react-base-table';
 import 'react-base-table/styles.css';
-import { getActiveProject, rfaProgressProjectId, rfaDownloadUrl } from '../reducers/mainReducer';
+import { getActiveProject, rfaProgressShowing, rfaDownloadUrl } from '../reducers/mainReducer';
 import { getRFADownloadLink } from '../actions/downloadActions';
-import { hideRFAModalProgress } from '../actions/uiFlagsActions';
+import { showRFAModalProgress } from '../actions/uiFlagsActions';
 import ModalProgress from './modalProgress';
 
 const Icon = ({ iconname }) => (
@@ -58,7 +58,7 @@ export class DownloadsTable extends Component {
 export class Downloads extends Component {
 
     onProgressCloseClick() {
-        this.props.hideRFAModalProgress();
+        this.props.showRFAModalProgress(false);
     }
 
     render() {
@@ -115,10 +115,10 @@ export class Downloads extends Component {
                     return <DownloadsTable { ...props} />;
                 }}
             </AutoResizer>;
-                {this.props.rfaProgressProjectId && <ModalProgress
+                {this.props.rfaProgressShowing && <ModalProgress
                     open={true}
                     title="Preparing Archive"
-                    label={this.props.rfaProgressProjectId}
+                    label={this.props.activeProject.id}
                     icon='/Archive.svg'
                     onClose={() => this.onProgressCloseClick()}
                     url={this.props.rfaDownloadUrl}
@@ -133,7 +133,7 @@ export default connect(function(store) {
     const activeProject = getActiveProject(store);
     return {
         activeProject: activeProject,
-        rfaProgressProjectId: rfaProgressProjectId(store),
+        rfaProgressShowing: rfaProgressShowing(store),
         rfaDownloadUrl: rfaDownloadUrl(store)
     };
-}, { Downloads, getRFADownloadLink, hideRFAModalProgress })(Downloads);
+}, { Downloads, getRFADownloadLink, showRFAModalProgress })(Downloads);

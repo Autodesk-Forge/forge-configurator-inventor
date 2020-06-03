@@ -52,16 +52,10 @@ export const showUpdateProgress = (visible) => {
     };
 };
 
-export const showRFAModalProgress = (projectId) => {
+export const showRFAModalProgress = (visible) => {
     return {
         type: actionTypes.SHOW_RFA_PROGRESS,
-        projectId
-    };
-};
-
-export const hideRFAModalProgress = () => {
-    return {
-        type: actionTypes.HIDE_RFA_PROGRESS
+        visible
     };
 };
 

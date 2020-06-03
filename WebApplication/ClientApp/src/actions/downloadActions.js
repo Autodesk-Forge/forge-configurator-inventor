@@ -8,7 +8,7 @@ export const getRFADownloadLink = (projectId, temporaryUrl) => async (dispatch) 
     const jobManager = Jobs();
 
     // show progress
-    dispatch(showRFAModalProgress(projectId));
+    dispatch(showRFAModalProgress(true));
 
     // launch signalR to make RFA here and wait for result
     try {
