@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 
+/* istanbul ignore file */
+
 /** Shared component for "Not Yet Implemented" pages */
 export default class PageNYI extends Component {
     render() {

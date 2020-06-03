@@ -7,7 +7,8 @@ export const actionTypes = {
     CLOSE_PARAMETERS_EDITED_MESSAGE: 'CLOSE_PARAMETERS_EDITED_MESSAGE',
     SHOW_UPDATE_PROGRESS: 'SHOW_UPDATE_PROGRESS',
     SHOW_RFA_PROGRESS: 'SHOW_RFA_PROGRESS',
-    HIDE_RFA_PROGRESS: 'HIDE_RFA_PROGRESS'
+    HIDE_RFA_PROGRESS: 'HIDE_RFA_PROGRESS',
+    SET_RFA_LINK: 'SET_RFA_LINK'
 };
 
 export default actionTypes;
@@ -61,5 +62,12 @@ export const showRFAModalProgress = (projectId) => {
 export const hideRFAModalProgress = () => {
     return {
         type: actionTypes.HIDE_RFA_PROGRESS
+    };
+};
+
+export const setRFALink = (url) => {
+    return {
+        type: actionTypes.SET_RFA_LINK,
+        url
     };
 };

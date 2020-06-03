@@ -2,7 +2,10 @@ import React, { Component } from 'react';
 
 /** Dummy component for Project page stub */
 export default class ProjectList extends Component {
-  render() { return (<div style={{ textAlign: 'center', paddingTop: '30px', color: '#777' }}><h3>The page is not yet implemented<br/>Please switch to the Model tab</h3></div>); }
+  render() {
+    /* istanbul ignore next */
+    return (<div style={{ textAlign: 'center', paddingTop: '30px', color: '#777' }}><h3>The page is not yet implemented<br/>Please switch to the Model tab</h3></div>);
+  }
 }
 
 //import {connect} from 'react-redux';

@@ -24,12 +24,12 @@ namespace WebApplication.Controllers
             _jobProcessor.AddNewJob(new UpdateModelJobItem(projectId, parameters));
         }
 
-        public void CreateRFAJob(string projectId)
+        public void CreateRFAJob(string projectId, string temporaryUrl)
         {
             _logger.LogInformation($"invoked CreateRFAJob, connectionId : {Context.ConnectionId}");
             // create job
             // add to jobprocessor (run in thread inside)
-            _jobProcessor.AddNewJob(new RFAJobItem(projectId));
+            _jobProcessor.AddNewJob(new RFAJobItem(projectId, temporaryUrl));
         }
     }
 }

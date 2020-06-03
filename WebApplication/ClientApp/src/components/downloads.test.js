@@ -10,7 +10,7 @@ const activeProject = {
     label: 'New Project',
     modelDownloadUrl: 'a/b/c'
   };
-  
+
   const baseProps = {
     activeProject
   };
@@ -18,10 +18,7 @@ const activeProject = {
   // get rid of these fake data ?
 
   const iamClickHandler = jest.fn();
-  let iamDownloadHyperlink = null;
-  const iamDownloadLink = <a href={activeProject.modelDownloadUrl} onClick={(e) => { e.stopPropagation(); }} ref = {(h) => {
-    iamDownloadHyperlink = h;
-}}>IAM</a>;
+  const iamDownloadLink = <a href={activeProject.modelDownloadUrl} onClick={(e) => { e.stopPropagation(); }}>IAM</a>;
 
   const rfaClickHandler = jest.fn();
   const rfaDownloadLink = <a href="#" onClick={(e) => { e.preventDefault(); }}>RFA</a>;
@@ -52,7 +49,7 @@ const activeProject = {
     'height': 50,
     'columns': columns,
     'data': data
-  }
+  };
 
 describe('components', () => {
   describe('Downloands', () => {
@@ -90,10 +87,10 @@ describe('components', () => {
                     break;
 
                 case 1:
-                    expect(hyperlink.prop('href')).toEqual('#');                    
+                    expect(hyperlink.prop('href')).toEqual('#');
                     break;
-            } 
-        });     
+            }
+        });
     });
   });
 });

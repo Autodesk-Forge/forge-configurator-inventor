@@ -19,6 +19,13 @@ export class ModalProgress extends Component {
             }
         });
 
+        const done = this.props.url !== null;
+        const iconAsBackgroundImage = {
+            width: '48px',
+            height: '48px',
+            backgroundImage: 'url(' + this.props.icon + ')',
+          };
+
         return (
           <Modal
               open={this.props.open}
@@ -27,12 +34,13 @@ export class ModalProgress extends Component {
               percentComplete={null}
               stylesheet={modalStyles}>
               <div className="modalContent">
-                  <img className="modalIcon" src={this.props.icon}/>
+                  <div style={iconAsBackgroundImage}/>
                   <Typography className="modalAction" fontWeight="bold">
                       {this.props.label ? this.props.label : "Missing label."}
-                      <ProgressBar className="modalProgress"/>
+                      {!done && <ProgressBar className="modalProgress"/>}
                   </Typography>
               </div>
+              {done && <Typography><a href={this.props.url}>Click here</a> to download RFA model.</Typography>}
           </Modal>
         );
     }
