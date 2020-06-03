@@ -49,7 +49,7 @@
                         },
                         "runOrder": 1,
                         "configuration": {
-                            "ProjectName": "sdra-build"
+                            "ProjectName": "sdra-windows-build"
                         },
                         "outputArtifacts": [
                             {
@@ -66,12 +66,38 @@
                 ]
             },
             {
+                "name": "Image",
+                "actions": [
+                    {
+                        "name": "Image",
+                        "actionTypeId": {
+                            "category": "Build",
+                            "owner": "AWS",
+                            "provider": "CodeBuild",
+                            "version": "1"
+                        },
+                        "runOrder": 1,
+                        "configuration": {
+                            "EnvironmentVariables": "[{\"name\":\"CommitId\",\"value\":\"#{SourceVariables.CommitId}\",\"type\":\"PLAINTEXT\"}]",
+                            "ProjectName": "sdra-image"
+                        },
+                        "outputArtifacts": [],
+                        "inputArtifacts": [
+                            {
+                                "name": "BuildArtifact"
+                            }
+                        ],
+                        "region": "us-west-2"
+                    }
+                ]
+            },
+            {
                 "name": "Test",
                 "actions": [
                     {
                         "name": "Test",
                         "actionTypeId": {
-                            "category": "Test",
+                            "category": "Build",
                             "owner": "AWS",
                             "provider": "CodeBuild",
                             "version": "1"
@@ -121,6 +147,6 @@
                 ]
             }
         ],
-        "version": 3
+        "version": 27
     }
 }

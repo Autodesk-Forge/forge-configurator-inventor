@@ -1,8 +1,8 @@
 {
-    "name": "sdra-docker",
+    "name": "sdra-image",
     "source": {
         "type": "CODEPIPELINE",
-        "buildspec": "AWS-CICD\\CodeBuild\\build-specs\\buildspec-image.yml",
+        "buildspec": "AWS-CICD/CodeBuild/build-specs/buildspec-image.yml",
         "insecureSsl": false
     },
     "secondarySourceVersions": [],
@@ -34,7 +34,7 @@
         "privilegedMode": true,
         "imagePullCredentialsType": "CODEBUILD"
     },
-    "serviceRole": "arn:aws:iam::624240287035:role/service-role/sdra-docker-service-role",
+    "serviceRole": "arn:aws:iam::624240287035:role/sdra-image-service-role",
     "timeoutInMinutes": 60,
     "queuedTimeoutInMinutes": 480,
     "encryptionKey": "arn:aws:kms:us-west-2:624240287035:alias/aws/s3",
