@@ -27,18 +27,16 @@
             },
             {
                 "name": "AWS_ACCOUNT_ID",
-                "value": "624240287035",
+                "value": "<aws_account>",
                 "type": "PLAINTEXT"
             }
         ],
         "privilegedMode": true,
         "imagePullCredentialsType": "CODEBUILD"
     },
-    "serviceRole": "arn:aws:iam::624240287035:role/sdra-image-service-role",
+    "serviceRole": "<code_build_service_role_arn>",
     "timeoutInMinutes": 60,
     "queuedTimeoutInMinutes": 480,
-    "encryptionKey": "arn:aws:kms:us-west-2:624240287035:alias/aws/s3",
-    "tags": [],
     "logsConfig": {
         "cloudWatchLogs": {
             "status": "ENABLED"
@@ -46,7 +44,7 @@
         "s3Logs": {
             "status": "ENABLED",
             "location": "sdra-build/sdra-docker",
-            "encryptionDisabled": false
+            "encryptionDisabled": true
         }
     }
 }
