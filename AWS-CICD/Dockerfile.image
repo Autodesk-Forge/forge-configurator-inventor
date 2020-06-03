@@ -1,5 +1,6 @@
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
-COPY app/ app/
+COPY WebApplication/bin/Release/netcoreapp3.1/publish app/
+COPY WebApplication/AppBundles app/AppBundles
 COPY amazon-cloudwatch-agent.deb /app
 WORKDIR /app
 
