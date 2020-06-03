@@ -22,7 +22,7 @@ namespace RFAExportPlugin
         // path of template file(i.e)template file where your SAT file will be imported
         string RFA_TEMPLATE = "MetricGenericModel.rft";
 
-        public ExternalDBApplicationResult OnStartup(Autodesk.Revit.ApplicationServices.ControlledApplication app)
+        public ExternalDBApplicationResult OnStartup(ControlledApplication app)
         {
             DesignAutomationBridge.DesignAutomationReadyEvent += HandleDesignAutomationReadyEvent;
 
@@ -46,9 +46,11 @@ namespace RFAExportPlugin
 
         private void ConvertSAT2RFA()
         {
-            string assemblyPath = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            string fullPath = System.IO.Path.Combine(assemblyPath, RFA_TEMPLATE);
-            //Get the documnet from the data(i.e)templatefile document
+            // the template is included into the appbundle
+            string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string fullPath = Path.Combine(assemblyPath, RFA_TEMPLATE);
+
+            //Get the document from the data(i.e) template file document
             Document doc = _rvtApp.NewFamilyDocument(fullPath);
 
             //check document is not null

@@ -9,12 +9,12 @@ namespace WebApplication.Job
 {
     internal class RFAJobItem : JobItemBase
     {
-        private readonly string hash;
+        private readonly string _hash;
 
         public RFAJobItem(string projectId, string hash)
             :base(projectId)
         {
-            this.hash = hash;
+            this._hash = hash;
         }
 
         public override async Task ProcessJobAsync(ILogger<JobProcessor> logger, IHubContext<JobsHub> hubContext)
@@ -25,7 +25,7 @@ namespace WebApplication.Job
             {
                 throw new ApplicationException($"Attempt to get unknown project ({this.ProjectId})");
             }
-            string rfaUrl = await PrjWork.GenerateRfaAsync(projectConfig, this.hash);
+            string rfaUrl = await PrjWork.GenerateRfaAsync(projectConfig, this._hash);
 
             logger.LogInformation($"ProcessJob (RFA) {this.Id} for project {this.ProjectId} completed. ({rfaUrl})");
 

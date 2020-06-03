@@ -88,8 +88,7 @@ namespace WebApplication.Utilities
     public class OSSObjectNameProvider : OssNameConverter
     {
         public OSSObjectNameProvider(string projectName, string parametersHash) :
-                base($"{ONC.CacheFolder}-{projectName}-{parametersHash}")
-        { }
+                base($"{ONC.CacheFolder}-{projectName}-{parametersHash}") {}
 
         /// <summary>
         /// Filename for ZIP with current model state.

@@ -108,6 +108,7 @@ namespace WebApplication.Processing
             var project = _resourceProvider.GetProject(projectInfo.Name);
             var ossNameProvider = project.OssNameProvider(hash);
 
+            // check if RFA file is already generated
             try
             {
                 return await _forgeOSS.CreateSignedUrlAsync(_resourceProvider.BucketKey, ossNameProvider.Rfa);
@@ -117,6 +118,7 @@ namespace WebApplication.Processing
                 // the file does not exist, so just swallow
             }
 
+            // OK, nothing in cache - generate it now
             var inputDocUrl = await _forgeOSS.CreateSignedUrlAsync(_resourceProvider.BucketKey, ossNameProvider.CurrentModel);
             ProcessingArgs rfaData = await _arranger.ForRfaAsync(inputDocUrl, projectInfo.TopLevelAssembly);
 
