@@ -57,11 +57,18 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Autodesk.Forge.DesignAutomation.Revit">
+      <PrivateAssets>all</PrivateAssets>
       <Version>2020.0.1</Version>
     </PackageReference>
     <PackageReference Include="Revit.RevitApi.x64">
+      <PrivateAssets>all</PrivateAssets>
       <Version>2019.0.0</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="MetricGenericModel.rft">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

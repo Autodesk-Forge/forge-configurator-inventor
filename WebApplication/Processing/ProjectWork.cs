@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Autodesk.Forge.Client;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using WebApplication.Definitions;
 using WebApplication.Utilities;
@@ -8,7 +10,7 @@ using WebApplication.Utilities;
 namespace WebApplication.Processing
 {
     /// <summary>
-    /// Business logic for project tasks (adapt, update parameters)
+    /// Business logic for project tasks (adapt, update parameters, rfa generation)
     /// </summary>
     public class ProjectWork
     {
@@ -94,6 +96,38 @@ namespace WebApplication.Processing
 
             return dto;
         }
+
+
+        /// <summary>
+        /// Generate RFA ()
+        /// </summary>
+        public async Task<string> GenerateRfaAsync(ProjectInfo projectInfo, string hash)
+        {           
+            _logger.LogInformation($"Generating RFA for hash {hash}");
+
+            var project = _resourceProvider.GetProject(projectInfo.Name);
+            var ossNameProvider = project.OssNameProvider(hash);
+
+            // check if RFA file is already generated
+            try
+            {
+                return await _forgeOSS.CreateSignedUrlAsync(_resourceProvider.BucketKey, ossNameProvider.Rfa);
+            }
+            catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
+            {
+                // the file does not exist, so just swallow
+            }
+
+            // OK, nothing in cache - generate it now
+            var inputDocUrl = await _forgeOSS.CreateSignedUrlAsync(_resourceProvider.BucketKey, ossNameProvider.CurrentModel);
+            ProcessingArgs rfaData = await _arranger.ForRfaAsync(inputDocUrl, projectInfo.TopLevelAssembly);
+
+            bool success = await _fdaClient.GenerateRfa(rfaData);
+            if (!success) throw new ApplicationException($"Failed to generate rfa for project {project.Name} and hash {hash}");
+
+            return await _arranger.MoveRfaAsync(project, hash);
+        }
+
 
         public async Task FileTransferAsync(string source, string target)
         {

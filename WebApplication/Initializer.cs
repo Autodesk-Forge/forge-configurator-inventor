@@ -40,12 +40,22 @@ namespace WebApplication
             using var scope = _logger.BeginScope("Init");
             _logger.LogInformation("Initializing base data");
 
+            // OSS bucket might fail to create, so repeat attempts
+            var createBucketPolicy = Policy
+                .Handle<ApiException>()
+                .WaitAndRetryAsync(
+                    retryCount: 4,
+                    retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                    (exception, timeSpan) => _logger.LogWarning("Cannot create OSS bucket. Repeating")
+                );
+
             await Task.WhenAll(
                     // create bundles and activities
                     _fdaClient.InitializeAsync(),
 
                     // create the bucket
-                    _forge.CreateBucketAsync(_resourceProvider.BucketKey)
+                    createBucketPolicy.ExecuteAsync(() =>
+                        _forge.CreateBucketAsync(_resourceProvider.BucketKey))
                 );
 
             _logger.LogInformation($"Bucket {_resourceProvider.BucketKey} created");

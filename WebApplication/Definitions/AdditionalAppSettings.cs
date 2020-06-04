@@ -9,6 +9,8 @@
         public string CreateThumbnail { get; set; }
         public string ExtractParameters { get; set; }
         public string UpdateParameters { get; set; }
+        public string CreateSAT { get; set; }
+        public string CreateRFA { get; set; }
     }
 
     public class DefaultProjectsConfiguration
