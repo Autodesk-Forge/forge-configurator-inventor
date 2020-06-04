@@ -4,7 +4,6 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using WebApplication.Definitions;
 using WebApplication.Processing;
-using WebApplication.Controllers;
 using System.Threading.Tasks;
 
 namespace WebApplication.Job
@@ -16,25 +15,25 @@ namespace WebApplication.Job
         public UpdateModelJobItem(string projectId, InventorParameters parameters)
             : base(projectId)
         {
-            this.Parameters = parameters;
+            Parameters = parameters;
         }
 
-        public async override Task ProcessJobAsync(ILogger<JobProcessor> _logger, IHubContext<JobsHub> hubContext)
+        public override async Task ProcessJobAsync(ILogger logger, IClientProxy clientProxy)
         {
-            _logger.LogInformation($"ProcessJob (Update) {this.Id} for project {this.ProjectId} started.");
+            logger.LogInformation($"ProcessJob (Update) {Id} for project {ProjectId} started.");
 
-            var projectConfig = DefaultPrjConfig.Projects.FirstOrDefault(cfg => cfg.Name == this.ProjectId);
+            var projectConfig = DefaultPrjConfig.Projects.FirstOrDefault(cfg => cfg.Name == ProjectId);
             if (projectConfig == null)
             {
-                throw new ApplicationException($"Attempt to get unknown project ({this.ProjectId})");
+                throw new ApplicationException($"Attempt to get unknown project ({ProjectId})");
             }
 
-            ProjectStateDTO updatedState = await PrjWork.DoSmartUpdateAsync(projectConfig, this.Parameters);
+            ProjectStateDTO updatedState = await PrjWork.DoSmartUpdateAsync(projectConfig, Parameters);
 
-            _logger.LogInformation($"ProcessJob (Update) {this.Id} for project {this.ProjectId} completed.");
+            logger.LogInformation($"ProcessJob (Update) {Id} for project {ProjectId} completed.");
 
             // send that we are done to client
-            await hubContext.Clients.All.SendAsync("onComplete", this.Id, updatedState);
+            await clientProxy.SendAsync("onComplete", Id, updatedState);
         }
     }
 }

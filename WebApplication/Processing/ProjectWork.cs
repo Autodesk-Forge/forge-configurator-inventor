@@ -102,7 +102,7 @@ namespace WebApplication.Processing
         /// Generate RFA ()
         /// </summary>
         public async Task<string> GenerateRfaAsync(ProjectInfo projectInfo, string hash)
-        {           
+        {
             _logger.LogInformation($"Generating RFA for hash {hash}");
 
             var project = _resourceProvider.GetProject(projectInfo.Name);
