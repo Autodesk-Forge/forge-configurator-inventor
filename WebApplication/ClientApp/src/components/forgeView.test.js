@@ -9,14 +9,14 @@ const viewerDocumentMock = {
   getRoot: () => ({
     getDefaultGeometry: () => ''
   })
-}
+};
 
 const loadDocumentNodeMock = jest.fn();
 
 class GuiViewer3DMock {
-  addEventListener = jest.fn();
-  loadDocumentNode = loadDocumentNodeMock;
-  start = jest.fn();
+  addEventListener() {}
+  loadDocumentNode() { loadDocumentNodeMock(); }
+  start() {}
 }
 
 const AutodeskMock = {
@@ -31,7 +31,7 @@ const AutodeskMock = {
       }
     }
   }
-}
+};
 
 beforeEach(() => {
   loadDocumentNodeMock.mockClear();
@@ -39,8 +39,8 @@ beforeEach(() => {
 
 describe('components', () => {
   describe('ForgeView', () => {
-    it('load gets called when svf provided', () => {      
-      const baseProps = { activeProject: { svf: 'aaa111' } };  
+    it('load gets called when svf provided', () => {
+      const baseProps = { activeProject: { svf: 'aaa111' } };
       const wrapper = shallow(<ForgeView { ...baseProps } />);
 
       const viewer = wrapper.find('.viewer');
@@ -54,20 +54,20 @@ describe('components', () => {
     });
 
     it('load gets called when svf changes', () => {
-      const baseProps = { activeProject: { svf: 'aaa111' } };  
+      const baseProps = { activeProject: { svf: 'aaa111' } };
       const wrapper = shallow(<ForgeView { ...baseProps } />);
 
       window.Autodesk = AutodeskMock;
       const script = wrapper.find('Script');
       script.simulate('load');
 
-      const updateProps = { activeProject: { svf: 'newurl' } };  
+      const updateProps = { activeProject: { svf: 'newurl' } };
       wrapper.setProps(updateProps);
       expect(loadDocumentNodeMock).toHaveBeenCalledTimes(2);
     });
 
     it('returns without loading when svf is null', () => {
-      const baseProps = { activeProject: { svf: null } };  
+      const baseProps = { activeProject: { svf: null } };
       const wrapper = shallow(<ForgeView { ...baseProps } />);
 
       window.Autodesk = AutodeskMock;
@@ -75,6 +75,6 @@ describe('components', () => {
       script.simulate('load');
 
       expect(loadDocumentNodeMock).toHaveBeenCalledTimes(0);
-    });    
+    });
   });
 });
