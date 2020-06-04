@@ -41,20 +41,6 @@ export const downloadColumns = [
     }
 ];
 
-export class DownloadsTable extends Component {
-    render() {
-        return <BaseTable
-            width={this.props.width}
-            height={this.props.height}
-            columns={this.props.columns}
-            data={this.props.data}
-            rowEventHandlers={{
-                onClick: ({ rowData }) => { rowData.clickHandler(); }
-            }}
-    />;
-    }
-}
-
 export class Downloads extends Component {
 
     onProgressCloseClick() {
@@ -101,15 +87,17 @@ export class Downloads extends Component {
                     // reduce size by 16 (twice the default border of tabContent)
                     const newWidth = width-16;
                     const newHeight = height-16;
-                    const props = {
-                        'width': newWidth,
-                        'height': newHeight,
-                        'columns': downloadColumns,
-                        'data': data
-                    };
-                    return <DownloadsTable { ...props} />;
+                    return <BaseTable
+                        width={newWidth}
+                        height={newHeight}
+                        columns={downloadColumns}
+                        data={data}
+                        rowEventHandlers={{
+                            onClick: ({ rowData }) => { rowData.clickHandler(); }
+                        }}
+                    />;
                 }}
-            </AutoResizer>;
+            </AutoResizer>
                 {this.props.rfaProgressShowing && <ModalProgress
                     open={true}
                     title="Preparing Archive"

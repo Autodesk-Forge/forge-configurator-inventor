@@ -1,0 +1,45 @@
+{
+    "projects": [
+        {
+            "name": "sdra-windows-build",
+            "source": {
+                "type": "CODEPIPELINE",
+                "buildspec": "AWS-CICD/CodeBuild/build-specs/buildspec-build.yml",
+                "insecureSsl": false
+            },
+            "secondarySourceVersions": [],
+            "artifacts": {
+                "type": "CODEPIPELINE",
+                "name": "sdra-windows-build",
+                "packaging": "NONE",
+                "encryptionDisabled": false
+            },
+            "cache": {
+                "type": "NO_CACHE"
+            },
+            "environment": {
+                "type": "WINDOWS_CONTAINER",
+                "image": "624240287035.dkr.ecr.us-west-2.amazonaws.com/sdra-windows-build:4.8",
+                "computeType": "BUILD_GENERAL1_MEDIUM",
+                "environmentVariables": [],
+                "privilegedMode": false,
+                "imagePullCredentialsType": "SERVICE_ROLE"
+            },
+            "serviceRole": "arn:aws:iam::624240287035:role/service-role/codebuild-sdra-build-service-role",
+            "timeoutInMinutes": 60,
+            "queuedTimeoutInMinutes": 480,
+            "encryptionKey": "arn:aws:kms:us-west-2:624240287035:alias/aws/s3",
+            "tags": [],
+            "logsConfig": {
+                "cloudWatchLogs": {
+                    "status": "ENABLED"
+                },
+                "s3Logs": {
+                    "status": "DISABLED",
+                    "encryptionDisabled": false
+                }
+            }
+        }
+    ],
+    "projectsNotFound": []
+}

@@ -1,96 +1,72 @@
 import React from 'react';
 import Enzyme, { shallow, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
-import { Downloads, DownloadsTable, downloadColumns as columns } from './downloads';
+import { Downloads, downloadColumns } from './downloads';
 
 Enzyme.configure({ adapter: new Adapter() });
 
-const activeProject = {
-    id: '1',
-    label: 'New Project',
-    modelDownloadUrl: 'a/b/c'
-  };
-
-  const baseProps = {
-    activeProject
-  };
-
-  // get rid of these fake data ?
-
-  const iamClickHandler = jest.fn();
-  const iamDownloadLink = <a href={activeProject.modelDownloadUrl} onClick={(e) => { e.stopPropagation(); }}>IAM</a>;
-
-  const rfaClickHandler = jest.fn();
-  const rfaDownloadLink = <a href="#" onClick={(e) => { e.preventDefault(); }}>RFA</a>;
-
-  const data = [
-    {
-        id: 'updatedIam',
-        icon: 'products-and-services-24.svg',
-        type: 'IAM',
-        env: 'Model',
-        link: iamDownloadLink,
-        clickHandler: iamClickHandler
-    },
-    {
-        id: 'rfa',
-        icon: 'products-and-services-24.svg',
-        type: 'RFA',
-        env: 'Model',
-        link: rfaDownloadLink,
-        clickHandler: rfaClickHandler
+const props = {
+    activeProject: {
+        modelDownloadUrl: 'a/b/c/'
     }
-];
+}
 
-// end of fake data
+describe('Downloads components', () => {
+  it('Resizer reduces size', () => {
+    const wrapper = shallow(<Downloads { ...props } />);
+    const as = wrapper.find('AutoResizer');
+    const bt = as.renderProp('children')( {width: 100, height: 200} );
+    expect(bt.prop('width')).toEqual(84);
+    expect(bt.prop('height')).toEqual(184);
+  });
 
-  const tableProps = {
-    'width': 100,
-    'height': 50,
-    'columns': columns,
-    'data': data
-  };
+  it('Row event handlers calls the inner function', () => {
+    const wrapper = shallow(<Downloads { ...props } />);
+    const as = wrapper.find('AutoResizer');
+    const bt = as.renderProp('children')( {width: 100, height: 200} );
+    const jestfce = jest.fn();
+    bt.prop('rowEventHandlers').onClick({ rowData: { clickHandler: jestfce }});
+    expect(jestfce).toHaveBeenCalledTimes(1);
+  });
 
-describe('components', () => {
-  describe('Downloands', () => {
-    it('renders Downloads AutoResizer', () => {
-        const wrapper = shallow(<Downloads { ...baseProps } />);
-        const wrapperComponent = wrapper.find('AutoResizer');
-        expect(wrapperComponent.length).toEqual(1);
-      });
+  it('Base table has expected columns', () => {
+    const wrapper = shallow(<Downloads { ...props } />);
+    const as = wrapper.find('AutoResizer');
+    const bt = as.renderProp('children')( {width: 100, height: 200} );
+    expect(bt.prop('columns')).toEqual(downloadColumns);
+  });
 
-      it('passes base props to base table', () => {
-        const wrapper = shallow(<DownloadsTable { ...tableProps } />);
+  it('Base table has expected data', () => {
+    const wrapper = shallow(<Downloads { ...props } />);
+    const as = wrapper.find('AutoResizer');
+    const bt = as.renderProp('children')( {width: 100, height: 200} );
+    const btdata = bt.prop('data');
 
-        const wrapperComponent = wrapper.find('BaseTable');
-        expect(wrapperComponent.prop('width')).toEqual(100);
-        expect(wrapperComponent.prop('height')).toEqual(50);
-        expect(wrapperComponent.prop('columns').length).toEqual(3);
-        expect(wrapperComponent.prop('data').length).toEqual(2);
-        expect(wrapperComponent.prop('rowEventHandlers').onClick).toBeDefined();
-      });
+    const iam = btdata[0];
+    expect(iam.id).toEqual('updatedIam');
+    const iamlink = shallow(iam.link);
+    expect(iamlink.prop('href')).toEqual(props.activeProject.modelDownloadUrl);
+    const stopPropagation = jest.fn();
+    iamlink.simulate('click', { stopPropagation });
+    expect(stopPropagation).toHaveBeenCalled();
+    // iam.clickHandler();
 
-      it('has the correct row data', () => {
-        const wrapper = mount(<DownloadsTable { ...tableProps } />);
-        const wrapperComponent = wrapper.find('BaseTable');
-        const tableRows = wrapperComponent.find('TableRow');
-        expect(tableRows.length).toEqual(2);
+    const rfa = btdata[1];
+    expect(rfa.id).toEqual('rfa');
+    const rfalink = shallow(rfa.link);
+    expect(rfalink.prop('href')).toEqual('');
+    const preventDefault = jest.fn();
+    rfalink.simulate('click', { preventDefault });
+    expect(preventDefault).toHaveBeenCalled();
+  });
 
-        tableRows.forEach((row, index) => {
-            const icon = row.find('Icon');
-            expect(icon.prop('iconname')).toEqual(data[index].icon);
-
-            const hyperlink = row.find('a');
-            switch(index) {
-                case 0:
-                    expect(hyperlink.prop('href')).toEqual(activeProject.modelDownloadUrl);
-                    break;
-
-                case 1:
-                    expect(hyperlink.prop('href')).toEqual('#');
-                    break;
-            }
-        });
-    });
+  it('Base table renders expected count of links and icons', () => {
+    const wrapper = mount(<Downloads { ...props } />);
+    const as = wrapper.find('AutoResizer');
+    const bt = as.renderProp('children')( {width: 100, height: 200} );
+    const icons = bt.find('Icon');
+    const hyperlinks = bt.find('a');
+    expect(icons.length).toEqual(2);
+    expect(hyperlinks.length).toEqual(2);
   });
 });

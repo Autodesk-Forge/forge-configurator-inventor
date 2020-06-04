@@ -8,8 +8,6 @@ phases:
   build:
     commands:
       - echo Tests started on `date`
-      - echo Getting AppBundles Zips
-      - aws s3 cp --recursive s3://sdra-build/AppBundles/ ./WebApplication/AppBundles
       - echo Building Docker test image...
       - docker build --build-arg FORGE_CLIENT_ID=${FORGE_CLIENT_ID} --build-arg FORGE_CLIENT_SECRET=${FORGE_CLIENT_SECRET} --tag test-runner -f ./AWS-CICD/Dockerfile.test .
       - echo Running container that executes the tests...
