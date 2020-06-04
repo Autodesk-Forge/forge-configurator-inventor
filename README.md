@@ -1,6 +1,9 @@
 # Forge Configurator Inventor
 Demo application showcasing Configuration with Design Automation for Inventor
 
+## Architecture
+See [high level diagram](architecture.png)
+
 ## Prerequisites
 
 ### Web Application 
