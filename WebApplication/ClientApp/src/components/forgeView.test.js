@@ -16,19 +16,37 @@ const baseProps = {
   activeProject
 };
 
+class GuiViewer3DMock {
+  addEventListener = jest.fn();
+  loadDocumentNode = jest.fn();
+  start = jest.fn();
+}
+
+const AutodeskMock = {
+  Viewing: {
+    GuiViewer3D: GuiViewer3DMock,
+    Initializer: (_, handleViewerInit) => {
+      handleViewerInit();
+    },
+    Document: {
+      load: jest.fn()
+    }
+  }
+}
+
 describe('components', () => {
   describe('ForgeView', () => {
     it('ForgeView DOM core structure is as expected', () => {
       const wrapper = shallow(<ForgeView { ...baseProps } />);
-      const handleScriptLoadMock = jest.fn();
-      wrapper.instance().handleScriptLoad = handleScriptLoadMock;
-      wrapper.instance().forceUpdate();
+
       const viewer = wrapper.find('.viewer');
       expect(viewer).toHaveLength(1);
       const script = viewer.find('Script');
       expect(script).toHaveLength(1);
+
+      window.Autodesk = AutodeskMock;
       script.simulate('load');
-      expect(handleScriptLoadMock).toBeCalled();
+      expect(AutodeskMock.Viewing.Document.load).toBeCalled();
     });
   });
 });
