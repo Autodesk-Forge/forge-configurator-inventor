@@ -146,10 +146,15 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
                 // hide modal dialog
                 dispatch(showUpdateProgress(false));
 
+                // parameters and "base project state" should be handled differently,
+                // so split the incoming updated state to pieces.
+                const { parameters, ...baseProjectState } = updatedState;
+
                 // launch update
-                const parameters = adaptParameters(updatedState.parameters);
-                dispatch(updateParameters(projectId, parameters));
-                dispatch(updateProject(projectId, { "svf": updatedState.svf, "modelDownloadUrl": updatedState.modelDownloadUrl }));
+                const adaptedParams = adaptParameters(parameters);
+                dispatch(updateParameters(projectId, adaptedParams));
+
+                dispatch(updateProject(projectId, baseProjectState));
             }
         );
     } catch (error) {

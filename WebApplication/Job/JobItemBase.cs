@@ -15,12 +15,12 @@ namespace WebApplication.Job
         public string ProjectId { get; }
         public string Id { get; }
 
-        public JobItemBase(string projectId)
+        protected JobItemBase(string projectId)
         {
             this.ProjectId = projectId;
             this.Id = Guid.NewGuid().ToString();
         }
 
-        public abstract Task ProcessJobAsync(ILogger<JobProcessor> _logger, IHubContext<JobsHub> hubContext);
+        public abstract Task ProcessJobAsync(ILogger<JobProcessor> logger, IHubContext<JobsHub> hubContext);
     }
 }

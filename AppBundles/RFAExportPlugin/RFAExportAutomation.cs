@@ -5,6 +5,7 @@ using DesignAutomationFramework;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 
 namespace RFAExportPlugin
 {
@@ -19,9 +20,9 @@ namespace RFAExportPlugin
         string RFA_TEMP = "Output.rfa";
 
         // path of template file(i.e)template file where your SAT file will be imported
-        string RFA_TEMPLATE = "FamilyTemplate.rft";
+        string RFA_TEMPLATE = "MetricGenericModel.rft";
 
-        public ExternalDBApplicationResult OnStartup(Autodesk.Revit.ApplicationServices.ControlledApplication app)
+        public ExternalDBApplicationResult OnStartup(ControlledApplication app)
         {
             DesignAutomationBridge.DesignAutomationReadyEvent += HandleDesignAutomationReadyEvent;
 
@@ -45,8 +46,12 @@ namespace RFAExportPlugin
 
         private void ConvertSAT2RFA()
         {
-            //Get the documnet from the data(i.e)templatefile document
-            Document doc = _rvtApp.NewFamilyDocument(RFA_TEMPLATE);
+            // the template is included into the appbundle
+            string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string fullPath = Path.Combine(assemblyPath, RFA_TEMPLATE);
+
+            //Get the document from the data(i.e) template file document
+            Document doc = _rvtApp.NewFamilyDocument(fullPath);
 
             //check document is not null
             if (doc == null)
