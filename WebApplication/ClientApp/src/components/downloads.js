@@ -75,12 +75,7 @@ export class Downloads extends Component {
                 env: 'Model',
                 link: rfaDownloadLink,
                 clickHandler: async () => {
-                    this.props.getRFADownloadLink(this.props.activeProject.id,
-                        // ----- TEMPORARY send modelDownloadUrl to backend to get it back as RFA url
-                        // until it is implemented on the backend
-                        this.props.activeProject.modelDownloadUrl
-                        // ----- TEMPORARY
-                        );
+                    this.props.getRFADownloadLink(this.props.activeProject.id, this.props.activeProject.hash);
                 }
             }
         ];

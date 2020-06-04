@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using WebApplication.Definitions;
 
@@ -8,6 +9,8 @@ namespace WebApplication.Processing
     {
         private readonly TransferData _transferData;
         private readonly CreateSVF _svfWork;
+        private readonly CreateSAT _satWork;
+        private readonly CreateRFA _rfaWork;
         private readonly CreateThumbnail _thumbnailWork;
         private readonly ExtractParameters _parametersWork;
         private readonly AdoptProject _adoptWork;
@@ -19,6 +22,8 @@ namespace WebApplication.Processing
         {
             _transferData = new TransferData(publisher);
             _svfWork = new CreateSVF(publisher);
+            _satWork = new CreateSAT(publisher);
+            _rfaWork = new CreateRFA(publisher);
             _thumbnailWork = new CreateThumbnail(publisher);
             _parametersWork = new ExtractParameters(publisher);
             _adoptWork = new AdoptProject(publisher);
@@ -32,6 +37,8 @@ namespace WebApplication.Processing
             // create bundles and activities
             await _transferData.InitializeAsync(_paths.EmptyExe);
             await _svfWork.InitializeAsync(_paths.CreateSVF);
+            await _satWork.InitializeAsync(_paths.CreateSAT);
+            await _rfaWork.InitializeAsync(_paths.CreateRFA);
             await _thumbnailWork.InitializeAsync(_paths.CreateThumbnail);
             await _parametersWork.InitializeAsync(_paths.ExtractParameters);
             await _updateParametersWork.InitializeAsync(_paths.UpdateParameters);
@@ -44,6 +51,8 @@ namespace WebApplication.Processing
             // delete bundles and activities
             await _transferData.CleanUpAsync();
             await _svfWork.CleanUpAsync();
+            await _satWork.CleanUpAsync();
+            await _rfaWork.CleanUpAsync();
             await _thumbnailWork.CleanUpAsync();
             await _parametersWork.CleanUpAsync();
             await _updateParametersWork.CleanUpAsync();
@@ -63,6 +72,16 @@ namespace WebApplication.Processing
         internal Task<bool> TransferAsync(string source, string target)
         {
             return _transferData.ProcessAsync(source, target);
+        }
+
+        internal async Task<bool> GenerateRfa(ProcessingArgs rfaData)
+        {
+            await _satWork.ProcessAsync(rfaData);
+
+            //TODO: This is realy ugly, we need to change it
+            rfaData.InputDocUrl = rfaData.SatUrl;
+            rfaData.TLA = null;
+            return await _rfaWork.ProcessAsync(rfaData);
         }
     }
 }

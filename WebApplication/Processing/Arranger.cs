@@ -23,6 +23,8 @@ namespace WebApplication.Processing
         public readonly string SVF = $"{Guid.NewGuid():N}.zip";
         public readonly string InputParams = $"{Guid.NewGuid():N}.json";
         public readonly string OutputModel = $"{Guid.NewGuid():N}.zip";
+        public readonly string OutputSAT = $"{Guid.NewGuid():N}.sat";
+        public readonly string OutputRFA = $"{Guid.NewGuid():N}.rfa";
 
         /// <summary>
         /// Constructor.
@@ -106,6 +108,35 @@ namespace WebApplication.Processing
                                 _forge.UploadObjectAsync(_bucketKey, project.OssAttributes.Metadata, Json.ToStream(attributes, writeIndented: true)));
 
             return hashString;
+        }
+
+        /// <summary>
+        /// Move temporary OSS files to the correct places.
+        /// </summary>
+        /// <returns>Signed URL to the RFA output</returns>
+        internal async Task<string> MoveRfaAsync(Project project, string hash)
+        {
+            var ossNames = project.OssNameProvider(hash);
+            await Task.WhenAll(_forge.RenameObjectAsync(_bucketKey, OutputRFA, ossNames.Rfa),
+                                _forge.DeleteAsync(_bucketKey, OutputSAT));
+            return await _forge.CreateSignedUrlAsync(_bucketKey, ossNames.Rfa);
+        }
+
+        internal async Task<ProcessingArgs> ForRfaAsync(string inputDocUrl, string topLevelAssembly)
+        {
+            var urls = await Task.WhenAll(  CreateSignedUrlAsync(OutputSAT, ObjectAccess.ReadWrite),
+                                            CreateSignedUrlAsync(OutputRFA, ObjectAccess.Write));
+
+            return new ProcessingArgs
+            {
+                InputDocUrl = inputDocUrl,
+                OutputModelUrl = null,
+                SvfUrl = null,
+                ParametersJsonUrl = null,
+                TLA = topLevelAssembly,
+                SatUrl = urls[0],
+                RfaUrl = urls[1]
+            };
         }
 
         /// <summary>

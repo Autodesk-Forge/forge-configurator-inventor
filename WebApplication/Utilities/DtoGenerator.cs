@@ -30,8 +30,9 @@ namespace WebApplication.Utilities
             return new TProjectDTOBase
                     {
                         Svf = _resourceProvider.ToDataUrl(project.LocalNameProvider(hash).SvfDir),
-                        ModelDownloadUrl = modelDownloadUrl
-                    };
+                        ModelDownloadUrl = modelDownloadUrl,
+                        Hash = hash
+            };
         }
     }
 }
