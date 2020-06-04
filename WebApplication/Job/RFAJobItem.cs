@@ -3,6 +3,8 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApplication.Definitions;
+using WebApplication.Processing;
 
 namespace WebApplication.Job
 {
@@ -10,25 +12,27 @@ namespace WebApplication.Job
     {
         private readonly string _hash;
 
-        public RFAJobItem(string projectId, string hash): base(projectId)
+        public RFAJobItem(ILogger logger, string projectId, string hash, ProjectWork projectWork,
+            DefaultProjectsConfiguration defaultProjectsConfiguration, IClientProxy clientProxy)
+            : base(logger, projectId, projectWork, defaultProjectsConfiguration, clientProxy)
         {
             _hash = hash;
         }
 
-        public override async Task ProcessJobAsync(ILogger logger, IClientProxy clientProxy)
+        public override async Task ProcessJobAsync()
         {
-            logger.LogInformation($"ProcessJob (RFA) {Id} for project {ProjectId} started.");
+            Logger.LogInformation($"ProcessJob (RFA) {Id} for project {ProjectId} started.");
             var projectConfig = DefaultPrjConfig.Projects.FirstOrDefault(cfg => cfg.Name == ProjectId);
             if (projectConfig == null)
             {
                 throw new ApplicationException($"Attempt to get unknown project ({ProjectId})");
             }
-            string rfaUrl = await PrjWork.GenerateRfaAsync(projectConfig, _hash);
 
-            logger.LogInformation($"ProcessJob (RFA) {Id} for project {ProjectId} completed. ({rfaUrl})");
+            string rfaUrl = await ProjectWork.GenerateRfaAsync(projectConfig, _hash);
+            Logger.LogInformation($"ProcessJob (RFA) {Id} for project {ProjectId} completed. ({rfaUrl})");
 
             // send that we are done to client
-            await clientProxy.SendAsync("onComplete", rfaUrl);
+            await SendSuccessAsync(rfaUrl);
         }
     }
 }

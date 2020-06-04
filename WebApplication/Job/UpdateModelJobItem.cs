@@ -3,8 +3,8 @@ using System;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using WebApplication.Definitions;
-using WebApplication.Processing;
 using System.Threading.Tasks;
+using WebApplication.Processing;
 
 namespace WebApplication.Job
 {
@@ -12,15 +12,17 @@ namespace WebApplication.Job
     {
         public InventorParameters Parameters { get; }
 
-        public UpdateModelJobItem(string projectId, InventorParameters parameters)
-            : base(projectId)
+        public UpdateModelJobItem(ILogger logger, string projectId, InventorParameters parameters,
+            ProjectWork projectWork,
+            DefaultProjectsConfiguration defaultProjectsConfiguration, IClientProxy clientProxy)
+            : base(logger, projectId, projectWork, defaultProjectsConfiguration, clientProxy)
         {
             Parameters = parameters;
         }
 
-        public override async Task ProcessJobAsync(ILogger logger, IClientProxy clientProxy)
+        public override async Task ProcessJobAsync()
         {
-            logger.LogInformation($"ProcessJob (Update) {Id} for project {ProjectId} started.");
+            Logger.LogInformation($"ProcessJob (Update) {Id} for project {ProjectId} started.");
 
             var projectConfig = DefaultPrjConfig.Projects.FirstOrDefault(cfg => cfg.Name == ProjectId);
             if (projectConfig == null)
@@ -28,12 +30,12 @@ namespace WebApplication.Job
                 throw new ApplicationException($"Attempt to get unknown project ({ProjectId})");
             }
 
-            ProjectStateDTO updatedState = await PrjWork.DoSmartUpdateAsync(projectConfig, Parameters);
+            ProjectStateDTO updatedState = await ProjectWork.DoSmartUpdateAsync(projectConfig, Parameters);
 
-            logger.LogInformation($"ProcessJob (Update) {Id} for project {ProjectId} completed.");
+            Logger.LogInformation($"ProcessJob (Update) {Id} for project {ProjectId} completed.");
 
             // send that we are done to client
-            await clientProxy.SendAsync("onComplete", Id, updatedState);
+            await SendSuccessAsync(Id, updatedState);
         }
     }
 }

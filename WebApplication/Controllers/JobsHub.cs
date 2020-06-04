@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -18,32 +19,38 @@ namespace WebApplication.Controllers
         {
             _logger = logger;
             _projectWork = projectWork;
-
             _defaultProjectsConfiguration = options.Value;
         }
 
-        public void CreateUpdateJob(string projectId, InventorParameters parameters)
+        public Task CreateUpdateJob(string projectId, InventorParameters parameters)
         {
             _logger.LogInformation($"invoked CreateJob, connectionId : {Context.ConnectionId}");
-            // create job
-            // add to jobprocessor (run in thread inside)
-            AddNewJob(new UpdateModelJobItem(projectId, parameters));
+
+            // create job and run it
+            var job = new UpdateModelJobItem(_logger, projectId, parameters, _projectWork, _defaultProjectsConfiguration, Clients.All); // TODO: is it correct to use `Clients.All`?
+            return RunJobAsync(job);
         }
 
-        public void CreateRFAJob(string projectId, string hash)
+        public Task CreateRFAJob(string projectId, string hash)
         {
             _logger.LogInformation($"invoked CreateRFAJob, connectionId : {Context.ConnectionId}");
-            // create job
-            // add to jobprocessor (run in thread inside)
-            AddNewJob(new RFAJobItem(projectId, hash));
+
+            // create job and run it
+            var job = new RFAJobItem(_logger, projectId, hash, _projectWork, _defaultProjectsConfiguration, Clients.All);
+            return RunJobAsync(job);
         }
 
-        public Task AddNewJob(JobItemBase job)
+        public async Task RunJobAsync(JobItemBase job)
         {
-            job.DefaultPrjConfig = _defaultProjectsConfiguration;
-            job.PrjWork = _projectWork;
-
-            return job.ProcessJobAsync(_logger, Clients.All);
+            try
+            {
+                await job.ProcessJobAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"Processing failed for {job.Id}");
+                await Clients.All.SendAsync("onError", job.Id, e.Message);
+            }
         }
     }
 }
