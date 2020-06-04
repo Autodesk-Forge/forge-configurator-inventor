@@ -101,7 +101,7 @@ namespace WebApplication.Processing
         /// <summary>
         /// Generate RFA ()
         /// </summary>
-        public async Task<string> GenerateRfaAsync(ProjectInfo projectInfo, string hash)
+        public async Task GenerateRfaAsync(ProjectInfo projectInfo, string hash)
         {
             _logger.LogInformation($"Generating RFA for hash {hash}");
 
@@ -111,7 +111,9 @@ namespace WebApplication.Processing
             // check if RFA file is already generated
             try
             {
-                return await _forgeOSS.CreateSignedUrlAsync(_resourceProvider.BucketKey, ossNameProvider.Rfa);
+                // TODO: this might be ineffective as some "get details" API call
+                await _forgeOSS.CreateSignedUrlAsync(_resourceProvider.BucketKey, ossNameProvider.Rfa);
+                return;
             }
             catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
             {
@@ -125,7 +127,7 @@ namespace WebApplication.Processing
             bool success = await _fdaClient.GenerateRfa(rfaData);
             if (!success) throw new ApplicationException($"Failed to generate rfa for project {project.Name} and hash {hash}");
 
-            return await _arranger.MoveRfaAsync(project, hash);
+            await _arranger.MoveRfaAsync(project, hash);
         }
 
 

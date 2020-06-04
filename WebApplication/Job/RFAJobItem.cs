@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
 using WebApplication.Definitions;
 using WebApplication.Processing;
 
@@ -11,15 +11,17 @@ namespace WebApplication.Job
     internal class RFAJobItem : JobItemBase
     {
         private readonly string _hash;
+        private readonly LinkGenerator _linkGenerator;
 
         public RFAJobItem(ILogger logger, string projectId, string hash, ProjectWork projectWork,
-            DefaultProjectsConfiguration defaultProjectsConfiguration, IClientProxy clientProxy)
-            : base(logger, projectId, projectWork, defaultProjectsConfiguration, clientProxy)
+            DefaultProjectsConfiguration defaultProjectsConfiguration, LinkGenerator linkGenerator)
+            : base(logger, projectId, projectWork, defaultProjectsConfiguration)
         {
             _hash = hash;
+            _linkGenerator = linkGenerator;
         }
 
-        public override async Task ProcessJobAsync()
+        public override async Task ProcessJobAsync(IResultSender resultSender)
         {
             Logger.LogInformation($"ProcessJob (RFA) {Id} for project {ProjectId} started.");
             var projectConfig = DefaultPrjConfig.Projects.FirstOrDefault(cfg => cfg.Name == ProjectId);
@@ -28,11 +30,17 @@ namespace WebApplication.Job
                 throw new ApplicationException($"Attempt to get unknown project ({ProjectId})");
             }
 
-            string rfaUrl = await ProjectWork.GenerateRfaAsync(projectConfig, _hash);
-            Logger.LogInformation($"ProcessJob (RFA) {Id} for project {ProjectId} completed. ({rfaUrl})");
+            await ProjectWork.GenerateRfaAsync(projectConfig, _hash);
+            Logger.LogInformation($"ProcessJob (RFA) {Id} for project {ProjectId} completed.");
 
-            // send that we are done to client
-            await SendSuccessAsync(rfaUrl);
+            // TODO: this url can be generated right away... we can simply acknowledge that OSS file is ready,
+            // without generating URL here
+            string rfaUrl = _linkGenerator.GetPathByAction(controller: "Download",
+                                                            action: "RFA",
+                                                            values: new {projectName = ProjectId, hash = _hash});
+
+            // send resulting URL to the client
+            await resultSender.SendSuccess1Async(rfaUrl);
         }
     }
 }

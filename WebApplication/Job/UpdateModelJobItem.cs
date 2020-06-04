@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.SignalR;
-using System;
+﻿using System;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using WebApplication.Definitions;
@@ -14,13 +13,13 @@ namespace WebApplication.Job
 
         public UpdateModelJobItem(ILogger logger, string projectId, InventorParameters parameters,
             ProjectWork projectWork,
-            DefaultProjectsConfiguration defaultProjectsConfiguration, IClientProxy clientProxy)
-            : base(logger, projectId, projectWork, defaultProjectsConfiguration, clientProxy)
+            DefaultProjectsConfiguration defaultProjectsConfiguration)
+            : base(logger, projectId, projectWork, defaultProjectsConfiguration)
         {
             Parameters = parameters;
         }
 
-        public override async Task ProcessJobAsync()
+        public override async Task ProcessJobAsync(IResultSender resultSender)
         {
             Logger.LogInformation($"ProcessJob (Update) {Id} for project {ProjectId} started.");
 
@@ -35,7 +34,7 @@ namespace WebApplication.Job
             Logger.LogInformation($"ProcessJob (Update) {Id} for project {ProjectId} completed.");
 
             // send that we are done to client
-            await SendSuccessAsync(Id, updatedState);
+            await resultSender.SendSuccess2Async(Id, updatedState);
         }
     }
 }
