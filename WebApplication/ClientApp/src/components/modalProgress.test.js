@@ -36,4 +36,25 @@ describe('modal progress ', () => {
         expect(children).toHaveLength(2);
         expect(children[0]).toBe("Missing label.");
     });
+
+    it('check Done button when specified download url', () => {
+
+        const props = { url: "someUrl" };
+
+        const wrapper = shallow(<ModalProgress {...props} />);
+
+        const button = wrapper.find('Button');
+        expect(button.prop('title')).toBe('Done');
+    });
+
+    it('check that here is NO button available when not used download url', () => {
+
+        const props = { url: null };
+
+        const wrapper = shallow(<ModalProgress {...props} />);
+
+        const button = wrapper.find('Button');
+        expect(button.length).toBe(0);
+    });
+
 });

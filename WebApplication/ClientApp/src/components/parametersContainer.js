@@ -65,7 +65,7 @@ export class ParametersContainer extends Component {
                         open={this.props.updateProgressShowing}
                         title="Updating Project"
                         label={this.props.activeProject.id}
-                        icon="Assembly icon.svg"
+                        icon="/Assembly_icon.svg"
                         onClose={() => this.onProgressCloseClick()}/>
                 </div>
             </div>
