@@ -5,6 +5,8 @@ import ProgressBar from '@hig/progress-bar';
 import Typography from "@hig/typography";
 import './modalProgress.css';
 import merge from "lodash.merge";
+import HyperLink from './hyperlink';
+import Button from '@hig/button';
 
 export class ModalProgress extends Component {
 
@@ -19,7 +21,7 @@ export class ModalProgress extends Component {
             }
         });
 
-        const done = this.props.url !== null;
+        const done = this.props.url != null;
         const iconAsBackgroundImage = {
             width: '48px',
             height: '48px',
@@ -27,7 +29,8 @@ export class ModalProgress extends Component {
           };
 
         return (
-          <Modal
+            <Typography>
+            <Modal
               open={this.props.open}
               title={this.props.title}
               onCloseClick={this.props.onClose}
@@ -40,8 +43,28 @@ export class ModalProgress extends Component {
                       {!done && <ProgressBar className="modalProgress"/>}
                   </Typography>
               </div>
-              {done && <Typography><a href={this.props.url}>Click here</a> to download RFA model.</Typography>}
+              {(done && this.props.url) &&
+                <div className="modalLink">
+                    <React.Fragment>
+                    <HyperLink
+                    onAutostart={(downloadHyperlink) => {
+                        downloadHyperlink.click();
+                    }}
+                    prefix="Download should start automatically, if it doesn't, "
+                    link="click here" href={this.props.url}
+                    suffix=" to download it manually."/>
+                    <Button className="button" style={
+                        { width: '102px', height: '36px', borderRadius: '2px', marginLeft: '12px'}}
+                        type="secondary"
+                        size="small"
+                        title="Done"
+                        onClick={this.props.onClose}
+                    />
+                    </React.Fragment>
+              </div>
+              }
           </Modal>
+          </Typography>
         );
     }
 }
