@@ -3,11 +3,6 @@
 module.exports = {
      xpButtonReset : '//div[3]/button[1]',
      xpButtonUpdate : '//div[3]/button[2]',
-     xpTabProjects : '//ul/li[1]/div',
-     xpTabModel : '//ul/li[2]/div',
-     xpTabBOM : '//ul/li[3]/div',
-     xpTabDrawing : '//ul/li[4]/div',
-     xpTabDownloads : '//ul/li[5]/div',
      xpDivForgeViewer : '//*[@id="ForgeViewer"]',
      xpLinkAdskForge : '//div[1]/div[1]/a',
      xpComboProjects : '//p',
@@ -21,5 +16,10 @@ module.exports = {
      xpDivProjectsButton : '//div[3]/div/div[1]/div',
      xpPopUpLog : '//div/div[2]',
      xpMenuProjectsName : '//ul/span',
-     xpViewerCanvas : '//*[@id="ForgeViewer"]/div/div/div[1]/canvas'
+     xpViewerCanvas : '//*[@id="ForgeViewer"]/div/div/div[1]/canvas',
+     projectsTab : locate('li').find('p').withText('Projects'),
+     modelTab : locate('li').find('p').withText('Model'),
+     bomTab : locate('li').find('p').withText('BOM'),
+     drawingTab : locate('li').find('p').withText('Drawing'),
+     downloadsTab : locate('li').find('p').withText('Downloads'),
 };
