@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using WebApplication.Definitions;
 using WebApplication.Job;
 using WebApplication.Processing;
@@ -39,6 +38,8 @@ namespace WebApplication.Controllers
             {
                 _hub = hub;
             }
+
+            // TODO: to clarify - is it correct to use `_hub.Clients.All`? Can it notify ALL connected clients with different jobs?
 
             public Task SendSuccessAsync()
             {
@@ -86,15 +87,13 @@ namespace WebApplication.Controllers
         private readonly ILogger<JobsHub> _logger;
         private readonly ProjectWork _projectWork;
         private readonly LinkGenerator _linkGenerator;
-        private readonly DefaultProjectsConfiguration _defaultProjectsConfiguration;
         private readonly Sender _sender;
 
-        public JobsHub(ILogger<JobsHub> logger, IOptions<DefaultProjectsConfiguration> options, ProjectWork projectWork, LinkGenerator linkGenerator)
+        public JobsHub(ILogger<JobsHub> logger, ProjectWork projectWork, LinkGenerator linkGenerator)
         {
             _logger = logger;
             _projectWork = projectWork;
             _linkGenerator = linkGenerator;
-            _defaultProjectsConfiguration = options.Value;
 
             _sender = new Sender(this);
         }
@@ -104,7 +103,7 @@ namespace WebApplication.Controllers
             _logger.LogInformation($"invoked CreateJob, connectionId : {Context.ConnectionId}");
 
             // create job and run it
-            var job = new UpdateModelJobItem(_logger, projectId, parameters, _projectWork, _defaultProjectsConfiguration); // TODO: is it correct to use `Clients.All`?
+            var job = new UpdateModelJobItem(_logger, projectId, parameters, _projectWork); // TODO: is it correct to use `Clients.All`?
             return RunJobAsync(job);
         }
 
@@ -113,7 +112,7 @@ namespace WebApplication.Controllers
             _logger.LogInformation($"invoked CreateRFAJob, connectionId : {Context.ConnectionId}");
 
             // create job and run it
-            var job = new RFAJobItem(_logger, projectId, hash, _projectWork, _defaultProjectsConfiguration, _linkGenerator);
+            var job = new RFAJobItem(_logger, projectId, hash, _projectWork, _linkGenerator);
             return RunJobAsync(job);
         }
 

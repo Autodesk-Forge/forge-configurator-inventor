@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using WebApplication.Definitions;
 using System.Threading.Tasks;
 using WebApplication.Processing;
@@ -11,10 +9,8 @@ namespace WebApplication.Job
     {
         public InventorParameters Parameters { get; }
 
-        public UpdateModelJobItem(ILogger logger, string projectId, InventorParameters parameters,
-            ProjectWork projectWork,
-            DefaultProjectsConfiguration defaultProjectsConfiguration)
-            : base(logger, projectId, projectWork, defaultProjectsConfiguration)
+        public UpdateModelJobItem(ILogger logger, string projectId, InventorParameters parameters, ProjectWork projectWork)
+            : base(logger, projectId, projectWork)
         {
             Parameters = parameters;
         }
@@ -23,13 +19,7 @@ namespace WebApplication.Job
         {
             Logger.LogInformation($"ProcessJob (Update) {Id} for project {ProjectId} started.");
 
-            var projectConfig = DefaultPrjConfig.Projects.FirstOrDefault(cfg => cfg.Name == ProjectId);
-            if (projectConfig == null)
-            {
-                throw new ApplicationException($"Attempt to get unknown project ({ProjectId})");
-            }
-
-            ProjectStateDTO updatedState = await ProjectWork.DoSmartUpdateAsync(projectConfig, Parameters);
+            ProjectStateDTO updatedState = await ProjectWork.DoSmartUpdateAsync(Parameters, ProjectId);
 
             Logger.LogInformation($"ProcessJob (Update) {Id} for project {ProjectId} completed.");
 

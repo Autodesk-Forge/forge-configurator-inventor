@@ -3,7 +3,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
-using WebApplication.Definitions;
 using WebApplication.Processing;
 
 namespace WebApplication.Job
@@ -13,9 +12,8 @@ namespace WebApplication.Job
         private readonly string _hash;
         private readonly LinkGenerator _linkGenerator;
 
-        public RFAJobItem(ILogger logger, string projectId, string hash, ProjectWork projectWork,
-            DefaultProjectsConfiguration defaultProjectsConfiguration, LinkGenerator linkGenerator)
-            : base(logger, projectId, projectWork, defaultProjectsConfiguration)
+        public RFAJobItem(ILogger logger, string projectId, string hash, ProjectWork projectWork, LinkGenerator linkGenerator)
+            : base(logger, projectId, projectWork)
         {
             _hash = hash;
             _linkGenerator = linkGenerator;
@@ -24,13 +22,8 @@ namespace WebApplication.Job
         public override async Task ProcessJobAsync(IResultSender resultSender)
         {
             Logger.LogInformation($"ProcessJob (RFA) {Id} for project {ProjectId} started.");
-            var projectConfig = DefaultPrjConfig.Projects.FirstOrDefault(cfg => cfg.Name == ProjectId);
-            if (projectConfig == null)
-            {
-                throw new ApplicationException($"Attempt to get unknown project ({ProjectId})");
-            }
 
-            await ProjectWork.GenerateRfaAsync(projectConfig, _hash);
+            await ProjectWork.GenerateRfaAsync(ProjectId, _hash);
             Logger.LogInformation($"ProcessJob (RFA) {Id} for project {ProjectId} completed.");
 
             // TODO: this url can be generated right away... we can simply acknowledge that OSS file is ready,
