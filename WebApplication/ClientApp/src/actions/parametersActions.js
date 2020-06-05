@@ -141,7 +141,7 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
                 dispatch(addLog('JobManager: HubConnection started for project : ' + projectId));
             },
             // onComplete
-            (_, updatedState) => {
+            updatedState => {
                 dispatch(addLog('JobManager: Received onComplete'));
                 // hide modal dialog
                 dispatch(showUpdateProgress(false));
