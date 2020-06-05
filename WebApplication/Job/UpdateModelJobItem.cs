@@ -34,7 +34,7 @@ namespace WebApplication.Job
             Logger.LogInformation($"ProcessJob (Update) {Id} for project {ProjectId} completed.");
 
             // send that we are done to client
-            await resultSender.SendSuccess2Async(Id, updatedState);
+            await resultSender.SendSuccessAsync(Id, updatedState);
         }
     }
 }

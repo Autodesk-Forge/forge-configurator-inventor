@@ -40,7 +40,7 @@ namespace WebApplication.Job
                                                             values: new {projectName = ProjectId, hash = _hash});
 
             // send resulting URL to the client
-            await resultSender.SendSuccess1Async(rfaUrl);
+            await resultSender.SendSuccessAsync(rfaUrl);
         }
     }
 }

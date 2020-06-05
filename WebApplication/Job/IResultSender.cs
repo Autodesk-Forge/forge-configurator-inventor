@@ -10,9 +10,13 @@ namespace WebApplication.Job
     /// </remarks>
     public interface IResultSender
     {
-        Task SendSuccess0Async();
-        Task SendSuccess1Async(object arg0);
-        Task SendSuccess2Async(object arg0, object arg1);
-        Task SendSuccess3Async(object arg0, object arg1, object arg2);
+        Task SendSuccessAsync();
+        Task SendSuccessAsync(object arg0);
+        Task SendSuccessAsync(object arg0, object arg1);
+        Task SendSuccessAsync(object arg0, object arg1, object arg2);
+        Task SendErrorAsync();
+        Task SendErrorAsync(object arg0);
+        Task SendErrorAsync(object arg0, object arg1);
+        Task SendErrorAsync(object arg0, object arg1, object arg2);
     }
 }
