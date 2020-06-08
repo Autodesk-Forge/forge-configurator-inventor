@@ -129,7 +129,7 @@ namespace WebApplication.Processing
             ProcessingArgs satData = await _arranger.ForSatAsync(inputDocUrl, storage.Metadata.TLA);
             ProcessingArgs rfaData = await _arranger.ForRfaAsync(satData.SatUrl);
 
-            bool success = await _fdaClient.GenerateRfa(rfaData, satData);
+            bool success = await _fdaClient.GenerateRfa(satData, rfaData);
             if (!success) throw new ApplicationException($"Failed to generate rfa for project {project.Name} and hash {hash}");
 
             await _arranger.MoveRfaAsync(project, hash);

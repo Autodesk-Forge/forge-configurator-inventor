@@ -75,7 +75,7 @@ namespace WebApplication.Processing
             return _transferData.ProcessAsync(source, target);
         }
 
-        internal async Task<bool> GenerateRfa(ProcessingArgs rfaData, ProcessingArgs satData)
+        internal async Task<bool> GenerateRfa(ProcessingArgs satData, ProcessingArgs rfaData)
         {
             bool success = await _satWork.ProcessAsync(satData);
             if (! success) throw new ApplicationException("Failed to generate SAT file");
