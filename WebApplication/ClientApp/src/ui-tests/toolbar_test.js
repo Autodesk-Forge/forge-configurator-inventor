@@ -23,10 +23,9 @@ Scenario('should check if Autodesk Forge link works', async (I) => {
 Feature('Project Switcher');
 
 Scenario('should check Project switcher is loaded', async (I) => {
-
     // wait until project combo is displayed
     I.waitForElement({xpath: XPathElements.xpComboProjects}, 5);
-    I.click({xpath: XPathElements.xpComboProjects});
+    I.click({css: 'img[alt=Conveyor]'});
 
     // wait until project list is displayed2
     I.waitForElement({xpath: XPathElements.xpProjectList}, 5);
@@ -45,7 +44,7 @@ Scenario('should check Project switcher is correctly changed', async (I) => {
 
     // wait until project combo is displayed
     I.waitForElement({xpath: XPathElements.xpComboProjects}, 5);
-    I.click({xpath: XPathElements.xpComboProjects});
+    I.click({css: 'img[alt=Conveyor]'});
 
     // wait until project list is displayed
     I.waitForElement({xpath: XPathElements.xpProjectList}, 5);
@@ -57,7 +56,7 @@ Scenario('should check Project switcher is correctly changed', async (I) => {
     I.see("Conveyor", {xpath: XPathElements.xpComboProjects});
 
     // click to show popup menu with list of projects
-    I.click({xpath: XPathElements.xpComboProjects});
+    I.click({css: 'img[alt=Conveyor]'});
 
     // wait until project list is displayed
     I.waitForElement({xpath: XPathElements.xpProjectList}, 5);
