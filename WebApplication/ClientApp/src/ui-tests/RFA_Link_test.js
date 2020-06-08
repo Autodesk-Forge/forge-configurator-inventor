@@ -5,12 +5,12 @@ Before((I) => {
     I.amOnPage('/');
 });
 
-const progressDialog = locate('article').withAttr({ role: 'document' });
+const progressDialog = locate('div').withAttr({ role: 'dialog' });
 const divDownloads = locate('div').withAttr({ id: 'downloads' });
-const dataFileWrench = locate('p').withText('Wrench');
-const dataFileConveyor = locate('p').withText('Conveyor');
+const titleDataFileForWrench = locate('p').withText('Wrench').inside(progressDialog);
+const titleDataFileFroConveyor = locate('p').withText('Conveyor').inside(progressDialog);
 const linkRFA = locate('a').withText('RFA');
-const clickHere = locate('section').find('a').withText('Click here');
+//const clickHere = locate('section').find('a').withText('Click here');
 
 Feature('Downloads');
 
@@ -33,7 +33,7 @@ Scenario('should check downloads tab with RFA link for Conveyor', async (I) => {
 
     // check if Progress download window is displayed with correct data
     I.waitForElement(progressDialog, 30);
-    I.seeElement(dataFileConveyor);
+    I.seeElement(titleDataFileFroConveyor);
 
     // wait for a link to download a file
     //I.waitForElement(clickHere, 50);
@@ -61,7 +61,7 @@ Scenario('should check downloads tab with RFA link for Wrench', async (I) => {
 
     // check if Progress download window is displayed with correct data
     I.waitForElement(progressDialog, 30);
-    I.seeElement(dataFileWrench);
+    I.seeElement(titleDataFileForWrench);
 
     // wait for a link to download a file
     //I.waitForElement(clickHere, 50);
