@@ -21,12 +21,12 @@ class JobManager {
         if (onStart)
             onStart();
 
-        connection.on("onComplete", (id, updatedState) => {
+        connection.on("onComplete", (updatedState) => {
             // stop connection
             connection.stop();
 
             if (onComplete)
-                onComplete(id, updatedState);
+                onComplete(updatedState);
         });
 
         await connection.invoke('CreateUpdateJob', projectId, parameters);
