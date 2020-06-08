@@ -100,11 +100,12 @@ export class Downloads extends Component {
             </AutoResizer>
                 {this.props.rfaProgressShowing && <ModalProgress
                     open={true}
-                    title="Preparing Archive"
+                    title="Preparing RFA"
                     label={this.props.activeProject.id}
                     icon='/Archive.svg'
                     onClose={() => this.onProgressCloseClick()}
                     url={this.props.rfaDownloadUrl}
+                    onUrlClick={() => this.onProgressCloseClick()}
                     />}
         </React.Fragment>
         );

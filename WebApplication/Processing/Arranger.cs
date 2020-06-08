@@ -113,13 +113,11 @@ namespace WebApplication.Processing
         /// <summary>
         /// Move temporary OSS files to the correct places.
         /// </summary>
-        /// <returns>Signed URL to the RFA output</returns>
-        internal async Task<string> MoveRfaAsync(Project project, string hash)
+        internal Task MoveRfaAsync(Project project, string hash)
         {
             var ossNames = project.OssNameProvider(hash);
-            await Task.WhenAll(_forge.RenameObjectAsync(_bucketKey, OutputRFA, ossNames.Rfa),
-                                _forge.DeleteAsync(_bucketKey, OutputSAT));
-            return await _forge.CreateSignedUrlAsync(_bucketKey, ossNames.Rfa);
+            return Task.WhenAll(_forge.RenameObjectAsync(_bucketKey, OutputRFA, ossNames.Rfa),
+                            _forge.DeleteAsync(_bucketKey, OutputSAT));
         }
 
         internal async Task<ProcessingArgs> ForRfaAsync(string inputDocUrl, string topLevelAssembly)

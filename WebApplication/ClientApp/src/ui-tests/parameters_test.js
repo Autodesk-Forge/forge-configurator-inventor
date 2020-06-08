@@ -8,7 +8,7 @@ Before((I) => {
 
 Feature('Parameters panel');
 
-Scenario('should check if Parameter panel has Cancel and Update button', async (I) => {
+Scenario('should check if Parameter panel has Reset and Update button', async (I) => {
 
     // click on Model tab
     I.click( locators.modelTab );
