@@ -38,9 +38,7 @@ namespace WebApplication.Processing
         /// <summary>
         /// Constructor.
         /// </summary>
-        public UpdateParameters(Publisher publisher) : base(publisher)
-        {
-        }
+        public UpdateParameters(Publisher publisher) : base(publisher) {}
 
         public override Dictionary<string, IArgument> ToWorkItemArgs(ProcessingArgs data)
         {

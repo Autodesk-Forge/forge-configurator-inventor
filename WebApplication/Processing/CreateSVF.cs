@@ -10,11 +10,7 @@ namespace WebApplication.Processing
         public override string Id => nameof(CreateSVF);
         public override string Description => "Generate SVF from Inventor document";
 
-        protected override string OutputUrl(ProcessingArgs projectData)
-        {
-            return projectData.SvfUrl;
-        }
-
+        protected override string OutputUrl(ProcessingArgs projectData) => projectData.SvfUrl;
         protected override string OutputName => "SvfOutput";
         protected override bool IsOutputZip => true;
 

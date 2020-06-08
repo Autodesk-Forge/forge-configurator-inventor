@@ -64,6 +64,7 @@ namespace WebApplication.Processing
         {
             return _adoptWork.ProcessAsync(projectData);
         }
+
         public Task<bool> UpdateAsync(UpdateData projectData)
         {
             return _updateProjectWork.ProcessAsync(projectData);
@@ -74,13 +75,11 @@ namespace WebApplication.Processing
             return _transferData.ProcessAsync(source, target);
         }
 
-        internal async Task<bool> GenerateRfa(ProcessingArgs rfaData)
+        internal async Task<bool> GenerateRfa(ProcessingArgs rfaData, ProcessingArgs satData)
         {
-            await _satWork.ProcessAsync(rfaData);
+            bool success = await _satWork.ProcessAsync(satData);
+            if (! success) throw new ApplicationException("Failed to generate SAT file");
 
-            //TODO: This is realy ugly, we need to change it
-            rfaData.InputDocUrl = rfaData.SatUrl;
-            rfaData.TLA = null;
             return await _rfaWork.ProcessAsync(rfaData);
         }
     }
