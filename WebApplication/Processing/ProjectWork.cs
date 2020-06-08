@@ -64,13 +64,15 @@ namespace WebApplication.Processing
         /// <summary>
         /// Update project state with the parameters (or take it from cache).
         /// </summary>
-        public async Task<ProjectStateDTO> DoSmartUpdateAsync(ProjectInfo projectInfo, InventorParameters parameters)
+        public async Task<ProjectStateDTO> DoSmartUpdateAsync(InventorParameters parameters, string projectId)
         {
             var hash = Crypto.GenerateObjectHashString(parameters);
             //_logger.LogInformation(JsonSerializer.Serialize(parameters));
             _logger.LogInformation($"Incoming parameters hash is {hash}");
 
-            var project = _resourceProvider.GetProject(projectInfo.Name);
+            var storage = _resourceProvider.GetProjectStorage(projectId);
+            var project = storage.Project;
+
             var localNames = project.LocalNameProvider(hash);
 
             // check if the data cached already
@@ -80,7 +82,7 @@ namespace WebApplication.Processing
             }
             else
             {
-                var resultingHash = await UpdateAsync(project, projectInfo.TopLevelAssembly, parameters);
+                var resultingHash = await UpdateAsync(project, storage.Metadata.TLA, parameters);
                 if (! hash.Equals(resultingHash, StringComparison.Ordinal))
                 {
                     _logger.LogInformation($"Update returned different parameters. Hash is {resultingHash}.");
@@ -99,19 +101,23 @@ namespace WebApplication.Processing
 
 
         /// <summary>
-        /// Generate RFA ()
+        /// Generate RFA (or take it from cache).
         /// </summary>
-        public async Task<string> GenerateRfaAsync(ProjectInfo projectInfo, string hash)
-        {           
+        public async Task GenerateRfaAsync(string projectName, string hash)
+        {
             _logger.LogInformation($"Generating RFA for hash {hash}");
 
-            var project = _resourceProvider.GetProject(projectInfo.Name);
+            ProjectStorage storage = _resourceProvider.GetProjectStorage(projectName);
+            Project project = storage.Project;
+
             var ossNameProvider = project.OssNameProvider(hash);
 
             // check if RFA file is already generated
             try
             {
-                return await _forgeOSS.CreateSignedUrlAsync(_resourceProvider.BucketKey, ossNameProvider.Rfa);
+                // TODO: this might be ineffective as some "get details" API call
+                await _forgeOSS.CreateSignedUrlAsync(_resourceProvider.BucketKey, ossNameProvider.Rfa);
+                return;
             }
             catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
             {
@@ -120,12 +126,12 @@ namespace WebApplication.Processing
 
             // OK, nothing in cache - generate it now
             var inputDocUrl = await _forgeOSS.CreateSignedUrlAsync(_resourceProvider.BucketKey, ossNameProvider.CurrentModel);
-            ProcessingArgs rfaData = await _arranger.ForRfaAsync(inputDocUrl, projectInfo.TopLevelAssembly);
+            ProcessingArgs rfaData = await _arranger.ForRfaAsync(inputDocUrl, storage.Metadata.TLA);
 
             bool success = await _fdaClient.GenerateRfa(rfaData);
             if (!success) throw new ApplicationException($"Failed to generate rfa for project {project.Name} and hash {hash}");
 
-            return await _arranger.MoveRfaAsync(project, hash);
+            await _arranger.MoveRfaAsync(project, hash);
         }
 
 

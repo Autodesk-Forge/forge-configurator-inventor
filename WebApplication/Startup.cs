@@ -73,7 +73,6 @@ namespace WebApplication
                                         return new DesignAutomationClient(forgeService);
                                     });
             services.AddSingleton<Publisher>();
-            services.AddSingleton<JobProcessor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using WebApplication.Utilities;
@@ -21,16 +22,29 @@ namespace WebApplication.Controllers
         }
 
         [HttpGet("{projectName}/{hash}/model")]
-        public async Task<ActionResult> Model(string projectName, string hash)
+        public Task<RedirectResult> Model(string projectName, string hash)
+        {
+            return RedirectToOssObject(projectName, hash, ossNames => ossNames.CurrentModel);
+        }
+
+        [HttpGet("{projectName}/{hash}/rfa")]
+        public Task<RedirectResult> RFA(string projectName, string hash)
+        {
+            return RedirectToOssObject(projectName, hash, ossNames => ossNames.Rfa);
+        }
+
+        private async Task<RedirectResult> RedirectToOssObject(string projectName, string hash, Func<OSSObjectNameProvider, string> nameExtractor )
         {
             Project project = _resourceProvider.GetProject(projectName);
-            string modelOssName = project.OssNameProvider(hash).CurrentModel;
 
-            _logger.LogInformation($"Downloading '{modelOssName}'");
+            var ossNameProvider = project.OssNameProvider(hash);
+            string ossObjectName = nameExtractor(ossNameProvider);
 
-            var url = await _forgeOSS.CreateSignedUrlAsync(_resourceProvider.BucketKey, modelOssName);
+            _logger.LogInformation($"Downloading '{ossObjectName}'");
 
-            // TODO: FIX: file will be downloaded as `cache-Wrench-3CEEF3FDD5135E1F5EF39BF000B62D673B5438FE-model.zip`
+            var url = await _forgeOSS.CreateSignedUrlAsync(_resourceProvider.BucketKey, ossObjectName);
+
+            // TODO: FIX: file will be downloaded as `cache-Wrench-3CEEF3FDD5135E1F5EF39BF000B62D673B5438FE-xxxxxx.zip`
             return Redirect(url);
         }
     }

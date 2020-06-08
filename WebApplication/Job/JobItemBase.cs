@@ -1,26 +1,25 @@
-﻿using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
-using WebApplication.Controllers;
-using WebApplication.Definitions;
 using WebApplication.Processing;
 
 namespace WebApplication.Job
 {
     public abstract class JobItemBase
     {
-        public DefaultProjectsConfiguration DefaultPrjConfig { get; set; }
-        public ProjectWork PrjWork { get; set; }
+        protected ILogger Logger { get; }
+        protected ProjectWork ProjectWork { get; }
         public string ProjectId { get; }
         public string Id { get; }
 
-        protected JobItemBase(string projectId)
+        protected JobItemBase(ILogger logger, string projectId, ProjectWork projectWork)
         {
-            this.ProjectId = projectId;
-            this.Id = Guid.NewGuid().ToString();
+            ProjectId = projectId;
+            Id = Guid.NewGuid().ToString();
+            ProjectWork = projectWork;
+            Logger = logger;
         }
 
-        public abstract Task ProcessJobAsync(ILogger<JobProcessor> logger, IHubContext<JobsHub> hubContext);
+        public abstract Task ProcessJobAsync(IResultSender resultSender);
     }
 }
