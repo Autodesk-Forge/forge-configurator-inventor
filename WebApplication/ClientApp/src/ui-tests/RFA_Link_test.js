@@ -6,10 +6,11 @@ Before((I) => {
 });
 
 const progressDialog = locate('div').withAttr({ role: 'dialog' });
+const rowForRFA = locate('div').withAttr({role: 'gridcell'});
 const divDownloads = locate('div').withAttr({ id: 'downloads' });
 const titleDataFileForWrench = locate('p').withText('Wrench').inside(progressDialog);
 const titleDataFileFroConveyor = locate('p').withText('Conveyor').inside(progressDialog);
-const linkRFA = locate('a').withText('RFA');
+const linkRFA = locate('a').withText('RFA').inside(rowForRFA);
 //const clickHere = locate('section').find('a').withText('Click here');
 
 Feature('Downloads');
