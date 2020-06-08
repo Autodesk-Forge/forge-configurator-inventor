@@ -25,9 +25,12 @@ exports.config = {
   helpers: {
     Playwright: {
       url: 'https://localhost:5001',
-      show: false,
+      show: true,
       browser: 'chromium',
-      chromium: {args: chromiumArgs}
+      chromium: {args: chromiumArgs},
+      MyHelper: {
+        require: './src/ui-tests/helpers/playwright'
+      }
     }
   },
   include: {

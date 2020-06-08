@@ -2,7 +2,7 @@
 const locators = require('./elements_definition.js');
 
 Before((I) => {
-    I.amOnPage('https://localhost:5001');
+    I.amOnPage('/');
 });
 
 Feature('Tabs');
@@ -31,8 +31,8 @@ Scenario('should check if all Tabs are loaded after click', async (I) => {
     I.click( locators.modelTab);
 
     // check that Model tab has correct content
-    I.waitForVisible( locators.xpDivParameterContainer, 240);
-    I.seeElement( locators.xpDivForgeViewer);
+    I.waitForVisible( locators.ParametersContainer, 240);
+    I.seeElement( locators.ForgeViewer);
 
     // click on BOM tab
     I.click( locators.bomTab);

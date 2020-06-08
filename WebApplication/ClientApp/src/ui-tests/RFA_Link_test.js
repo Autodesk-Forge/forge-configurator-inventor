@@ -2,7 +2,7 @@
 const locators = require('./elements_definition.js');
 
 Before((I) => {
-    I.amOnPage('https://localhost:5001');
+    I.amOnPage('/');
 });
 
 const progressDialog = locate('article').withAttr({ role: 'document' });
@@ -36,12 +36,10 @@ Scenario('should check downloads tab with RFA link for Conveyor', async (I) => {
     I.seeElement(dataFileConveyor);
 
     // wait for a link to download a file
-    I.waitForElement(clickHere, 30);
+    //I.waitForElement(clickHere, 50);
 });
 
 Scenario('should check downloads tab with RFA link for Wrench', async (I) => {
-
-    I.wait(2);
 
     // wait until project combo is displayed
     I.selectProject('Wrench');
@@ -66,5 +64,5 @@ Scenario('should check downloads tab with RFA link for Wrench', async (I) => {
     I.seeElement(dataFileWrench);
 
     // wait for a link to download a file
-    I.waitForElement(clickHere, 30);
+    //I.waitForElement(clickHere, 50);
 });

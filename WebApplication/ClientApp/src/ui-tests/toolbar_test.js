@@ -2,7 +2,7 @@
 const locators = require('./elements_definition.js');
 
 Before((I) => {
-    I.amOnPage('https://localhost:5001');
+    I.amOnPage('/');
 });
 
 Feature('Forge Link');
@@ -10,7 +10,7 @@ Feature('Forge Link');
 Scenario('should check if Autodesk Forge link works', async (I) => {
 
     // check Forge link
-    I.waitForElement( locators.xpLinkAdskForge, 5);
+    I.waitForElement( locators.xpLinkAdskForge, 10);
     I.click( locators.xpLinkAdskForge);
 
     // wait for Autodesk Forge page
@@ -26,14 +26,14 @@ Scenario('should check Project switcher is loaded', async (I) => {
 
     // wait until project combo is displayed
     I.wait(3);
-    I.waitForElement( locators.xpComboProjects, 5);
+    I.waitForElement( locators.xpComboProjects, 10);
     I.click( locators.xpComboProjects);
 
     // wait until project list is displayed2
-    I.waitForElement( locators.xpProjectList, 5);
+    I.waitForElement( locators.xpProjectList, 10);
 
     // check content of PROJECTS menu
-    I.see("PROJECTS", locators.xpMenuProjectsName);
+    I.see("PROJECTS", locators.xpProjectList);
 
     // check name of the first project
     I.see("Conveyor", locators.xpProjectConveyor);
@@ -46,11 +46,11 @@ Scenario('should check Project switcher is correctly changed', async (I) => {
 
     // wait until project combo is displayed
     I.wait(3);
-    I.waitForElement( locators.xpComboProjects, 5);
+    I.waitForElement( locators.xpComboProjects, 10);
     I.click( locators.xpComboProjects);
 
     // wait until project list is displayed
-    I.waitForElement( locators.xpProjectList, 5);
+    I.waitForElement( locators.xpProjectList, 10);
 
     // emulate click to trigger project loading
     I.click( locators.xpProjectConveyor);
@@ -62,7 +62,7 @@ Scenario('should check Project switcher is correctly changed', async (I) => {
     I.click( locators.xpComboProjects);
 
     // wait until project list is displayed
-    I.waitForElement( locators.xpProjectList, 5);
+    I.waitForElement( locators.xpProjectList, 10);
 
     // emulate click to trigger project loading
     I.click( locators.xpProjectWrench);

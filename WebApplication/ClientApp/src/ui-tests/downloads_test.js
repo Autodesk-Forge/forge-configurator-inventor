@@ -2,7 +2,7 @@
 const locators = require('./elements_definition.js');
 
 Before((I) => {
-    I.amOnPage('https://localhost:5001');
+    I.amOnPage('/');
 });
 
 Feature('Downloads');

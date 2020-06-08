@@ -1,22 +1,26 @@
 /* eslint-disable no-undef */
 
+//If the locator is an object, it should have a single element,
+// with the key signifying the locator type (id, name, css, xpath, link, react, or class)
+// and the value being the locator itself. This is called a "strict" locator.
+// https://codecept.io/locators/#css-and-xpath
+
 module.exports = {
-     xpButtonReset : '//div[3]/button[1]',
-     xpButtonUpdate : '//div[3]/button[2]',
-     xpDivForgeViewer : '//*[@id="ForgeViewer"]',
-     xpLinkAdskForge : '//div[1]/div[1]/a',
-     xpComboProjects : '//p',
-     xpProjectConveyor : '//ul/li[1]/span[2]',
-     xpProjectWrench : '//ul/li[2]/span[2]',
-     xpProjectList : '//div/div[2]',
-     xpButtonLog : '//div/div[1]/button',
-     xpStripeElement : '//*[@id="model"]/div/div[2]/div[1]',
-     xpDivParameterList : '//*[@id="model"]/div/div[1]/div[1]',
-     xpDivParameterContainer : '//*[@id="model"]/div/div[1]',
-     xpDivProjectsButton : '//div[3]/div/div[1]/div',
-     xpPopUpLog : '//div/div[2]',
-     xpMenuProjectsName : '//ul/span',
-     xpViewerCanvas : '//*[@id="ForgeViewer"]/div/div/div[1]/canvas',
+     xpButtonReset : locate('button').find('span').withText('Reset'),
+     xpButtonUpdate : locate('button').find('span').withText('Update'),
+     ForgeViewer : '#ForgeViewer',
+     xpLinkAdskForge : '//a[@href="https://forge.autodesk.com"]',
+     xpComboProjects : './/div[contains(@role,"button") and (.//p[contains(., "Conveyor")] or .//p[contains(., "Wrench")])]',
+     xpProjectConveyor : '//li[contains(@role,"menuitem") and .//span[contains(., "Conveyor")]]',
+     xpProjectWrench : '//li[contains(@role,"menuitem") and .//span[contains(., "Wrench")]]',
+     xpProjectList : '//ul[contains(.//span, "Projects")]',
+     xpButtonLog : '//button[contains(@title, "Log")]',
+     xpStripeElement : '//div[contains(@role,"alert") and .//*[local-name()="svg"]]',
+     PrametersList : '.parameters',
+     ParametersContainer : '.parametersContainer',
+     xpPopUpLog : '//div[contains(h3, "Navigation Action")]',
+     xpMenuProjectsName : '//ul[contains(.//span, "Projects")]',
+     xpViewerCanvas : '//*[@id="ForgeViewer"] //canvas',
      projectsTab : locate('li').find('p').withText('Projects'),
      modelTab : locate('li').find('p').withText('Model'),
      bomTab : locate('li').find('p').withText('BOM'),

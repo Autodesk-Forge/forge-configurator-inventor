@@ -2,7 +2,7 @@
 // in this file you can append custom step methods to 'I' object
 
 module.exports = function() {
-  const projectsCombo = locate('div').withAttr({role: 'button'});
+  const projectsCombo = '//div[@role="button"] //*[local-name()="svg"]';
   const projectList = locate('span').withText('Projects');
 
 
