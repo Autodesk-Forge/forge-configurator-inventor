@@ -1,8 +1,8 @@
 /* eslint-disable no-undef */
-const XPathElements = require('./elements_definition.js');
+const locators = require('./elements_definition.js');
 
 Before((I) => {
-    I.amOnPage('https://localhost:5001');
+    I.amOnPage('/');
 });
 
 Feature('Update Button');
@@ -11,11 +11,11 @@ Feature('Update Button');
 Scenario('should check if Update button displays a message', (I) => {
 
     // click on Model tab
-    I.click({xpath: XPathElements.xpTabModel});
+    I.click( locators.modelTab);
 
     // Click on Update button
-    I.see("Update", XPathElements.xpButtonUpdate);
-    I.click( XPathElements.xpButtonUpdate);
+    I.see("Update", locators.xpButtonUpdate);
+    I.click( locators.xpButtonUpdate);
 
     // TO DO
     // check an action after Click on Update button - not implemneted yet

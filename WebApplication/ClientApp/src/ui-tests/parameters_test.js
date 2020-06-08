@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
-const XPathElements = require('./elements_definition.js');
+const locators = require('./elements_definition.js');
 
 Before((I) => {
-    I.amOnPage('https://localhost:5001');
+    I.amOnPage('/');
 });
 
 Feature('Parameters panel');
@@ -11,18 +11,18 @@ Feature('Parameters panel');
 Scenario('should check if Parameter panel has Reset and Update button', async (I) => {
 
     // click on Model tab
-    I.click({xpath: XPathElements.xpTabModel });
+    I.click( locators.modelTab );
 
     // check that Model tab has correct content
-    I.see("Reset",{xpath: XPathElements.xpButtonReset });
-    I.see("Update",{xpath: XPathElements.xpButtonUpdate });
+    I.see("Reset", locators.xpButtonReset );
+    I.see("Update", locators.xpButtonUpdate );
 });
 
 //ensure that Stripe panel is not diabled!!!
 Scenario('should check if Stripe panel is displayed and hidden', async (I) => {
 
     // click on Model tab
-    I.click({xpath: XPathElements.xpTabModel});
+    I.click( locators.modelTab );
 
     // check that Model tab has a parameter - Length
     I.waitForElement('//*[@id="model"]/div/div[1]/div[2]/div[1]/div/input', 20);
@@ -32,14 +32,14 @@ Scenario('should check if Stripe panel is displayed and hidden', async (I) => {
     I.fillField('//div[2]/div[1]/div/input', "12500 mm");
 
     // check if the Stripe element is displayed
-    I.seeElement(XPathElements.xpStripeElement);
+    I.seeElement(locators.xpStripeElement);
 
     // change the Lenght parameter
     I.clearField('//div[2]/div[1]/div/input');
     I.fillField('//div[2]/div[1]/div/input', "12000 mm");
 
     // check if the Stripe element was hidden
-    I.waitForInvisible(XPathElements.xpStripeElement, 3);
+    I.waitForInvisible(locators.xpStripeElement, 3);
 });
 
 
