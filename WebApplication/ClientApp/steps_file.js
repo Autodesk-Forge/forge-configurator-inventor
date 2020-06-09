@@ -1,6 +1,8 @@
 /* eslint-disable no-undef */
 // in this file you can append custom step methods to 'I' object
 
+const locators = require('./src/ui-tests/elements_definition.js');
+
 module.exports = function() {
   const projectsCombo = '//div[@role="button"] //*[local-name()="svg"]';
   const projectList = locate('span').withText('Projects');
@@ -29,6 +31,11 @@ module.exports = function() {
 
         // emulate click to trigger project loading
         this.click( getProjectLocator(name));
+    },
+    clickToModelTab() {
+      this.click(locators.modelTab);
+      this.waitForVisible('//div[@id="ForgeViewer"]//div[@class="spinner"]', 15);
+      this.waitForInvisible('//div[@id="ForgeViewer"]//div[@class="spinner"]', 15);
     }
 
   });
