@@ -56,5 +56,6 @@ Scenario('should check if all Tabs are loaded after click', async (I) => {
     I.click( locators.projectsTab);
 
     // check that Project tab has correct content
-    I.see("The page is not yet implemented\nPlease switch to the Model tab", {xpath: "//*[@id='project-list']"});
+    I.seeElement('#project-list .BaseTable');
+    I.waitForText('Wrench', 5); // wait for projects to be loaded, the second one should not be visible anywhere else
 });
