@@ -12,7 +12,7 @@ Scenario('should check switch to model tab loads the viewer', async (I) => {
     const viewerModelSelector = '#ViewerModelStructurePanel';
 
     I.see('Model', locators.modelTab);
-    I.click(locators.modelTab);
+    I.clickToModelTab();
     I.waitForElement(locators.xpViewerCanvas, 10);
     I.waitForElement(viewerModelSelector, 10);
 });

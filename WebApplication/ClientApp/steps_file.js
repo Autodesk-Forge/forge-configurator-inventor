@@ -6,7 +6,7 @@ const locators = require('./src/ui-tests/elements_definition.js');
 module.exports = function() {
   const projectsCombo = '//div[@role="button"] //*[local-name()="svg"]';
   const projectList = locate('span').withText('Projects');
-
+  const forgeViewerSpinner = '//div[@id="ForgeViewer"]//div[@class="spinner"]';
 
   // returns Project name locator
   function getProjectLocator(name)
@@ -32,10 +32,15 @@ module.exports = function() {
         // emulate click to trigger project loading
         this.click( getProjectLocator(name));
     },
-    clickToModelTab() {
+    clickToModelTab() { // we create this method because we need to wait for viewer - https://jira.autodesk.com/browse/INVGEN-41877
+      // click on Model tab
       this.click(locators.modelTab);
-      this.waitForVisible('//div[@id="ForgeViewer"]//div[@class="spinner"]', 15);
-      this.waitForInvisible('//div[@id="ForgeViewer"]//div[@class="spinner"]', 15);
+
+      // wait for spinner element to be visible
+      this.waitForVisible(forgeViewerSpinner, 15);
+
+      // wait for spinner to be hidden
+      this.waitForInvisible(forgeViewerSpinner, 30);
     }
 
   });
