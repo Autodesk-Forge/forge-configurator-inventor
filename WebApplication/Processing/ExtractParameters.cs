@@ -15,10 +15,7 @@ namespace WebApplication.Processing
         public override string Description => "Extract Parameters and Save Inventor document";
 
         protected override string OutputName => "documentParams.json";
-        protected override string OutputUrl(ProcessingArgs projectData)
-        {
-            return projectData.ParametersJsonUrl;
-        }
+        protected override string OutputUrl(ProcessingArgs projectData) => projectData.ParametersJsonUrl;
 
         /// <summary>
         /// Constructor.
