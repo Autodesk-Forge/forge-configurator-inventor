@@ -10,7 +10,7 @@ module.exports = {
      xpButtonUpdate : locate('button').find('span').withText('Update'),
      ForgeViewer : '#ForgeViewer',
      xpLinkAdskForge : '//a[@href="https://forge.autodesk.com"]',
-     xpComboProjects : './/div[contains(@role,"button") and //*[local-name()="svg"]]',
+     xpComboProjects : '//div[@role="button"] //*[local-name()="svg"]',
      xpProjectConveyor : '//li[contains(@role,"menuitem") and .//span[contains(., "Conveyor")]]',
      xpProjectWrench : '//li[contains(@role,"menuitem") and .//span[contains(., "Wrench")]]',
      xpProjectList : '//ul[contains(.//span, "Projects")]',

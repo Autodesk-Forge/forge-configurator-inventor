@@ -4,8 +4,7 @@
 const locators = require('./src/ui-tests/elements_definition.js');
 
 module.exports = function() {
-  const projectsCombo = '//div[@role="button"] //*[local-name()="svg"]';
-  const projectList = locate('span').withText('Projects');
+
   const forgeViewerSpinner = '//div[@id="ForgeViewer"]//div[@class="spinner"]';
 
   // returns Project name locator
@@ -23,11 +22,11 @@ module.exports = function() {
     selectProject(name){
 
         // wait until project combo is displayed
-        this.waitForElement( projectsCombo, 10);
-        this.click( projectsCombo );
+        this.waitForElement( locators.xpComboProjects, 10);
+        this.click( locators.xpComboProjects );
 
         // wait until project list is displayed
-        this.waitForElement(projectList, 10);
+        this.waitForElement(locators.xpProjectList, 10);
 
         // emulate click to trigger project loading
         this.click( getProjectLocator(name));

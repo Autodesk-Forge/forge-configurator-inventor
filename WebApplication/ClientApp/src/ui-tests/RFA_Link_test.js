@@ -13,7 +13,7 @@ const titleDataFileFroConveyor = locate('p').withText('Conveyor').inside(progres
 const linkRFA = locate('a').withText('RFA').inside(rowForRFA);
 //const clickHere = locate('section').find('a').withText('Click here');
 
-Feature('Downloads');
+Feature('Downloads RFA');
 
 Scenario('should check downloads tab with RFA link for Conveyor', async (I) => {
 
