@@ -106,7 +106,7 @@ namespace WebApplication.Controllers
             _logger.LogInformation($"invoked CreateJob, connectionId : {Context.ConnectionId}");
 
             // create job and run it
-            var job = new UpdateModelJobItem(_logger, projectId, parameters, _projectWork); // TODO: is it correct to use `Clients.All`?
+            var job = new UpdateModelJobItem(_logger, projectId, parameters, _projectWork);
             return RunJobAsync(job);
         }
 
