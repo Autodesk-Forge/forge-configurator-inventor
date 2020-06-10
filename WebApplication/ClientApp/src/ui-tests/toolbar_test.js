@@ -8,21 +8,6 @@ Before((I) => {
     I.amOnPage('/');
 });
 
-Feature('Forge Link');
-
-Scenario('should check if Autodesk Forge link works', async (I) => {
-
-    // check Forge link
-    I.waitForElement( locators.xpLinkAdskForge, 10);
-    I.click( locators.xpLinkAdskForge);
-
-    // wait for Autodesk Forge page
-    I.waitForElement(".adskf__navbar-logo", 10);
-
-    // check the page name
-    I.seeTitleEquals("Autodesk Forge");
-});
-
 Feature('Project Switcher');
 
 Scenario('should check Project switcher is loaded', async (I) => {
