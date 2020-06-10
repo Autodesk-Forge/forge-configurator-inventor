@@ -11,7 +11,7 @@ Feature('Update Button');
 Scenario('should check if Update button displays a message', (I) => {
 
     // click on Model tab
-    I.click( locators.modelTab);
+    I.clickToModelTab();
 
     // Click on Update button
     I.see("Update", locators.xpButtonUpdate);
