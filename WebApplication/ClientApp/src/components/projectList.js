@@ -1,51 +1,69 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import BaseTable, { AutoResizer, Column } from 'react-base-table';
+import 'react-base-table/styles.css';
 
-/** Dummy component for Project page stub */
-export default class ProjectList extends Component {
+const Icon = ({ iconname }) => (
+  <div>
+    <img src={iconname} alt='' width='16px' height='18px' />
+  </div>
+);
+
+const iconRenderer = ({ cellData: iconname }) => <Icon iconname={iconname} />;
+
+export const projectListColumns = [
+  {
+      key: 'icon',
+      title: '',
+      dataKey: 'icon',
+      cellRenderer: iconRenderer,
+      align: Column.Alignment.RIGHT,
+      width: 100,
+  },
+  {
+      key: 'label',
+      title: 'Package',
+      dataKey: 'label',
+      align: Column.Alignment.LEFT,
+      width: 200,
+  }
+];
+
+export class ProjectList extends Component {
   render() {
-    /* istanbul ignore next */
-    return (<div style={{ textAlign: 'center', paddingTop: '30px', color: '#777' }}><h3>The page is not yet implemented<br/>Please switch to the Model tab</h3></div>);
+    let data = [];
+    if(this.props.projectList.projects) {
+      data = this.props.projectList.projects.map((project) => (
+        {
+          id: project.id,
+          icon: 'Archive.svg',
+          label: project.label,
+          clickHandler: () => {}
+        }
+      ));
+    }
+
+    return (
+      <AutoResizer>
+        {({ width, height }) => {
+            // reduce size by 16 (twice the default border of tabContent)
+            const newWidth = width-16;
+            const newHeight = height-16;
+            return <BaseTable
+                width={newWidth}
+                height={newHeight}
+                columns={projectListColumns}
+                data={data}
+            />;
+        }}
+      </AutoResizer>
+    );
   }
 }
 
-//import {connect} from 'react-redux';
-//import PropTypes from 'prop-types';
-
-// /** Dummy class to display project list */
-// class ProjectList extends Component {
-
-//       const projects = this.props.projectList.projects;
-//       const infos = this.props.notifications;
-
-//       if (! projects) {
-
-//         return (<span>No projects loaded</span>);
-//       } else {
-
-//         return (
-//           <div>
-//             <ul>
-//               {
-//                 projects.map((project) => (<li key={project.id}>{project.label}</li>))
-//               }
-//             </ul>
-//             {
-//               infos.map((info, index) => (<div key={index}>{info}</div>))
-//             }
-//           </div>
-//         );
-//       }
-//     }
-// }
-
-// ProjectList.propTypes = {
-//   projectList: PropTypes.object,
-//   notifications: PropTypes.array
-// };
-
-// export default connect(function (store) {
-//   return {
-//     projectList: store.projectList,
-//     notifications: store.notifications
-//   };
-// })(ProjectList);
+/* istanbul ignore next */
+export default connect(function (store) {
+  return {
+    projectList: store.projectList
+  };
+})(ProjectList);
