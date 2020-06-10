@@ -7,11 +7,27 @@ phases:
       - expand-archive -path .\buildExtras.zip -destinationpath ./
   build:
     commands:
+      - echo "**** Building ****"
       - msbuild -restore /property:Configuration=Release
       - msbuild /property:Configuration=Release /Target:Publish
+      - echo "**** running backend tests ****"
+      - dotnet test
+      - echo "**** running linter ****"
+      - cd WebApplication/ClientApp
+      - npm run lint
+      - echo "**** running frontend tests ****"
+      - npm test -- --coverage
+      - echo "**** Starting the server ****"
+      - cd ..
+      - Start-Process -NoNewWindow dotnet run clear=true initialize=true
+      - echo Waiting 5 minutes
+      - sleep 300
+      - echo "**** running the UI tests ****"
+      - cd ClientApp
+      - npx codeceptjs run      
   post_build:
     commands:
-      - Remove-Item WebApplication/ClientApp/node_modules -Recurse 
+      - dir
 artifacts:
   files:
     - '**/*'
