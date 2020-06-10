@@ -28,7 +28,7 @@ phases:
       - npx codeceptjs run
   post_build:
     commands:
-      - cd $slnDir/WebApplication/ClientApp
+      - cd $slnDir/WebApplication/ClientApp/output
       - dir
 artifacts:
   files:
