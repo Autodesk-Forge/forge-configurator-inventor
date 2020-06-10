@@ -7,6 +7,7 @@ phases:
       - expand-archive -path .\buildExtras.zip -destinationpath ./
   build:
     commands:
+      - $slnDir=$PWD.ToString()
       - echo "**** Building ****"
       - msbuild -restore /property:Configuration=Release
       - msbuild /property:Configuration=Release /Target:Publish
@@ -24,10 +25,10 @@ phases:
       - sleep 300
       - echo "**** running the UI tests ****"
       - cd ClientApp
-      - npx codeceptjs run      
+      - npx codeceptjs run
   post_build:
     commands:
-      - cd WebApplication/ClientApp
+      - cd $slnDir/WebApplication/ClientApp
       - dir
 artifacts:
   files:
