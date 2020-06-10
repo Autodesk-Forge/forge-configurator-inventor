@@ -32,6 +32,11 @@ namespace WebApplication.Controllers
             /// </summary>
             private const string OnError = "onError";
 
+            /// <summary>
+            /// Where to send response.
+            /// Notify only the client, who send the job request.
+            /// </summary>
+            private IClientProxy Destination => _hub.Clients.Caller;
             private readonly Hub _hub;
 
             public Sender(Hub hub)
@@ -39,46 +44,44 @@ namespace WebApplication.Controllers
                 _hub = hub;
             }
 
-            // TODO: to clarify - is it correct to use `_hub.Clients.All`? Can it notify ALL connected clients with different jobs?
-
             public Task SendSuccessAsync()
             {
-                return _hub.Clients.All.SendAsync(OnComplete);
+                return Destination.SendAsync(OnComplete);
             }
 
             public Task SendSuccessAsync(object arg0)
             {
-                return _hub.Clients.All.SendAsync(OnComplete, arg0);
+                return Destination.SendAsync(OnComplete, arg0);
             }
 
             public Task SendSuccessAsync(object arg0, object arg1)
             {
-                return _hub.Clients.All.SendAsync(OnComplete, arg0, arg1);
+                return Destination.SendAsync(OnComplete, arg0, arg1);
             }
 
             public Task SendSuccessAsync(object arg0, object arg1, object arg2)
             {
-                return _hub.Clients.All.SendAsync(OnComplete, arg0, arg1, arg2);
+                return Destination.SendAsync(OnComplete, arg0, arg1, arg2);
             }
 
             public Task SendErrorAsync()
             {
-                return _hub.Clients.All.SendAsync(OnError);
+                return Destination.SendAsync(OnError);
             }
 
             public Task SendErrorAsync(object arg0)
             {
-                return _hub.Clients.All.SendAsync(OnError, arg0);
+                return Destination.SendAsync(OnError, arg0);
             }
 
             public Task SendErrorAsync(object arg0, object arg1)
             {
-                return _hub.Clients.All.SendAsync(OnError, arg0, arg1);
+                return Destination.SendAsync(OnError, arg0, arg1);
             }
 
             public Task SendErrorAsync(object arg0, object arg1, object arg2)
             {
-                return _hub.Clients.All.SendAsync(OnError, arg0, arg1, arg2);
+                return Destination.SendAsync(OnError, arg0, arg1, arg2);
             }
         }
 
@@ -103,7 +106,7 @@ namespace WebApplication.Controllers
             _logger.LogInformation($"invoked CreateJob, connectionId : {Context.ConnectionId}");
 
             // create job and run it
-            var job = new UpdateModelJobItem(_logger, projectId, parameters, _projectWork); // TODO: is it correct to use `Clients.All`?
+            var job = new UpdateModelJobItem(_logger, projectId, parameters, _projectWork);
             return RunJobAsync(job);
         }
 
