@@ -21,7 +21,7 @@ describe('modal progress ', () => {
         const children = wrapperComponent.prop('children');
 
         expect(children).toHaveLength(2);
-        expect(children[0]).toBe(props.label);
+        expect(children[0].props['children']).toBe(props.label);
     });
 
     it('should show message that props.label is missing', () => {
@@ -34,7 +34,7 @@ describe('modal progress ', () => {
         const children = wrapperComponent.prop('children');
 
         expect(children).toHaveLength(2);
-        expect(children[0]).toBe("Missing label.");
+        expect(children[0].props['children']).toBe("Missing label.");
     });
 
     it('check Done button when specified download url', () => {
