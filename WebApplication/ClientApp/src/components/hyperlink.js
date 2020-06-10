@@ -1,10 +1,7 @@
 import React, { Component } from 'react';
+import Typography from "@hig/typography";
 
 export class HyperLink extends Component {
-
-    constructor(){
-        super();
-    }
 
     componentDidMount() {
         if (this.props.onAutostart)
@@ -20,9 +17,9 @@ export class HyperLink extends Component {
         }}>{this.props.link}</a>;
 
       return(
-          <div style={{ width: 'fit-content'}}>
+          <Typography style={{ width: 'fit-content'}}>
             {this.props.prefix}{downloadLink}{this.props.suffix}
-          </div>
+          </Typography>
       );
     }
   }
