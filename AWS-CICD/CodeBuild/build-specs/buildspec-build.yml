@@ -19,7 +19,7 @@ phases:
       - npm test -- --coverage
       - echo "**** Starting the server ****"
       - cd ..
-      - Start-Process -NoNewWindow dotnet run clear=true initialize=true
+      - Start-Process -NoNewWindow dotnet -ArgumentList "run", "clear=true", "initialize=true"
       - echo Waiting 5 minutes
       - sleep 300
       - echo "**** running the UI tests ****"
@@ -27,6 +27,7 @@ phases:
       - npx codeceptjs run      
   post_build:
     commands:
+      - cd WebApplication/ClientApp
       - dir
 artifacts:
   files:
