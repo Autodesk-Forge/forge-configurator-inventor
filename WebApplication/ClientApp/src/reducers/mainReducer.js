@@ -4,13 +4,15 @@ import {notificationReducer} from './notificationReducer';
 import parametersReducer, * as params from './parametersReducer';
 import updateParametersReducer, * as updateParams from './updateParametersReducer';
 import uiFlagsReducer, * as uiFlags from './uiFlagsReducer';
+import profileReducer from './profileReducer';
 
 export const mainReducer = combineReducers({
     projectList: projectListReducer,
     notifications: notificationReducer,
     parameters: parametersReducer,
     updateParameters: updateParametersReducer,
-    uiFlagsReducer: uiFlagsReducer
+    uiFlagsReducer: uiFlagsReducer,
+    profile: profileReducer
 });
 
 export const getActiveProject = function(state) {
@@ -65,3 +67,7 @@ export const rfaProgressShowing = function(state) {
 export const rfaDownloadUrl = function(state) {
     return uiFlags.rfaDownloadUrl(state.uiFlagsReducer);
 };
+
+export const getProfile = function (state) {
+    return state.profile;
+}

@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import {connect} from 'react-redux';
+import {loadProfile} from '../actions/profileActions';
+import {getProfile} from '../reducers/mainReducer';
 
 import TopNav, {
     Logo,
@@ -19,12 +22,14 @@ const PlaceCenterContainer = styled.div`
 `;
 
 export class Toolbar extends Component {
-
+  componentDidMount() {
+    this.props.loadProfile();
+  }
   render () {
     return (
         <TopNav
           logo={
-            <Logo link="https://forge.autodesk.com" label="Autodesk HIG">
+            <Logo link="/login" label="Autodesk HIG">
               <PlaceCenterContainer>
                 <img src={"logo.png"} alt=""/>
                 <LogoText>
@@ -49,7 +54,7 @@ export class Toolbar extends Component {
                     </p>
                   </div>
                 </NavAction>
-                <ProfileAction avatarName='anonymous user'/>
+                <ProfileAction avatarName={this.props.profile.name} avatartImage={this.props.profile.avatarUrl}/>
               </Interactions>
             </React.Fragment>
           }
@@ -58,4 +63,9 @@ export class Toolbar extends Component {
   }
 }
 
-export default Toolbar;
+/* istanbul ignore next */
+export default connect(function (store){
+  return {
+    profile: getProfile(store)
+  };
+}, { loadProfile } )(Toolbar);

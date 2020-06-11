@@ -1,5 +1,6 @@
 import repo from '../Repository';
 import {addError, addLog} from './notificationActions';
+import axios from 'axios';
 
 export const actionTypes = {
     REJECT_PARAMETERS_EDITED_MESSAGE: 'REJECT_PARAMETERS_EDITED_MESSAGE',
@@ -73,14 +74,16 @@ function extractToken(urlHash) {
     return m ? m[1] : undefined;
 }
 
-export const detectToken = () => async (dispatch) => {
+export const detectToken = () => (dispatch) => {
     try {
 
         const accessToken = extractToken(window.location.hash.substring(1));
         if (accessToken) {
             dispatch(addLog(`Detected access token = '${accessToken}'`));
+            axios.defaults.headers.common['Authorization'] = accessToken;
         } else {
             dispatch(addLog('Access token is not found'));
+            delete axios.defaults.headers.common['Authorization'];
         }
     } catch (error) {
         dispatch(addError('Failed to get information about "show changed parameters" . (' + error + ')'));

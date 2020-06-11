@@ -8,9 +8,12 @@ import ProjectSwitcher from './components/projectSwitcher';
 import { fetchShowParametersChanged, detectToken } from './actions/uiFlagsActions';
 
 export class App extends Component {
+  constructor(props) {
+    super(props);
+    props.detectToken();
+  }
   componentDidMount() {
     this.props.fetchShowParametersChanged();
-    this.props.detectToken(); // TODO: Michal, this is for you :)
   }
   render () {
     return (

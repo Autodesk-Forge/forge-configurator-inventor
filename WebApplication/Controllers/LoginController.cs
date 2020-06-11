@@ -1,10 +1,13 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using Autodesk.Forge.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
+using Microsoft.Net.Http.Headers;
 using WebApplication.Definitions;
 using WebApplication.Utilities;
 
@@ -49,12 +52,18 @@ namespace WebApplication.Controllers
         }
 
         [HttpGet("profile")]
-        public async Task<ProfileDTO> Profile(string token)
+        public async Task<ProfileDTO> Profile()
         {
             _logger.LogInformation("Get profile");
-            var profile = await _forge.GetProfileAsync(token);
+            ProfileDTO profileDTO = new ProfileDTO { Name = "anonymous user", AvatarUrl = null };
+            var authorizationHeader = this.HttpContext.Request.Headers[HeaderNames.Authorization].ToString();
+            if (string.IsNullOrEmpty(authorizationHeader) == false)
+            {
+                var profile = await _forge.GetProfileAsync(authorizationHeader);
+                profileDTO = new ProfileDTO { Name = profile.userName, AvatarUrl = profile.profileImages.sizeX40 };
+            }
 
-            return new ProfileDTO { Name = profile.userName, AvatarUrl = profile.profileImages.sizeX40 };
+            return profileDTO;
         }
     }
 }
