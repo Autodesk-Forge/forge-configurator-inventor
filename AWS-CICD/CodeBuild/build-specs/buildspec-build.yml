@@ -21,15 +21,26 @@ phases:
       - echo "**** Starting the server ****"
       - cd ..
       - Start-Process -NoNewWindow dotnet -ArgumentList "run", "clear=true", "initialize=true"
-      - echo Waiting 5 minutes
+      - echo "Waiting 5 minutes"
       - sleep 300
       - echo "**** running the UI tests ****"
       - cd ClientApp
       - npx codeceptjs run
   post_build:
     commands:
-      - cd $slnDir/WebApplication/ClientApp/output
-      - dir
+      - cd $slnDir
+      - xcopy /Y /E WebApplication/bin/Release/netcoreapp3.1/publish/* app/
+      - xcopy /Y /E WebApplication/AppBundles/* app/AppBundles/
+      - xcopy /Y /E WebApplication/ClientApp/output/* report/errorScreenShots/
+      - xcopy /Y /E WebApplication/ClientApp/coverage/* report/coverage/
 artifacts:
   files:
-    - '**/*'
+    - 'app/**/*'
+    - 'AWS-CICD/amazon-cloudwatch-agent.json'
+    - 'AWS-CICD/commands.sh'
+    - 'AWS-CICD/Dockerfile.image'
+  secondary-artifacts:
+    artifact1:
+      files:
+        - 'report/**/*'
+      name: BuildReport
