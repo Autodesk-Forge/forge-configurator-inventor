@@ -13,7 +13,7 @@ module.exports = {
      xpComboProjects : '//div[@role="button"] //*[local-name()="svg"]',
      xpProjectConveyor : '//li[contains(@role,"menuitem") and .//span[contains(., "Conveyor")]]',
      xpProjectWrench : '//li[contains(@role,"menuitem") and .//span[contains(., "Wrench")]]',
-     xpProjectList : '//ul[contains(.//span, "Projects")]',
+     xpProjectList : '//ul//span[text()="Projects"]',
      xpButtonLog : '//button[contains(@title, "Log")]',
      xpStripeElement : '//div[contains(@role,"alert") and .//*[local-name()="svg"]]',
      PrametersList : '.parameters',
