@@ -19,6 +19,7 @@ See [high level diagram](architecture.png)
 
 ## Setup
 1. Create a forge app at https://forge.autodesk.com/, and select the Design Automation V3 API
+1. Put https://localhost:5001 as callback URL.
 1. Note the Client ID and Secret generated.
 1. Clone repository
 1. Specify [forge credentials](#specify-forge-credentials).
