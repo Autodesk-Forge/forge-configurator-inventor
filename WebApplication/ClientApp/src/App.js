@@ -5,11 +5,12 @@ import './app.css';
 import Toolbar from './components/toolbar';
 import TabsContainer from './components/tabsContainer';
 import ProjectSwitcher from './components/projectSwitcher';
-import { fetchShowParametersChanged } from './actions/uiFlagsActions';
+import { fetchShowParametersChanged, detectToken } from './actions/uiFlagsActions';
 
 export class App extends Component {
   componentDidMount() {
     this.props.fetchShowParametersChanged();
+    this.props.detectToken(); // TODO: Michal, this is for you :)
   }
   render () {
     return (
@@ -26,6 +27,6 @@ export class App extends Component {
 }
 
 export default connect(null, {
-  fetchShowParametersChanged
+  fetchShowParametersChanged, detectToken
 })(App);
 

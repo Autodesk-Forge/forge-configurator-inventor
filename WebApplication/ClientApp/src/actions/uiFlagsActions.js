@@ -1,5 +1,5 @@
 import repo from '../Repository';
-import {addError} from './notificationActions';
+import {addError, addLog} from './notificationActions';
 
 export const actionTypes = {
     REJECT_PARAMETERS_EDITED_MESSAGE: 'REJECT_PARAMETERS_EDITED_MESSAGE',
@@ -64,4 +64,25 @@ export const setRFALink = (url) => {
         type: actionTypes.SET_RFA_LINK,
         url
     };
+};
+
+/** Extract access token from URL hash */
+function extractToken(urlHash) {
+    const regex = /access_token=([^&]*)/g;
+    const m = regex.exec(urlHash);
+    return m ? m[1] : undefined;
+}
+
+export const detectToken = () => async (dispatch) => {
+    try {
+
+        const accessToken = extractToken(window.location.hash.substring(1));
+        if (accessToken) {
+            dispatch(addLog(`Detected access token = '${accessToken}'`));
+        } else {
+            dispatch(addLog('Access token is not found'));
+        }
+    } catch (error) {
+        dispatch(addError('Failed to get information about "show changed parameters" . (' + error + ')'));
+    }
 };
