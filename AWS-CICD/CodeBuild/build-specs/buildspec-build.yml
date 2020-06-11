@@ -40,6 +40,7 @@ artifacts:
     - 'AWS-CICD/commands.sh'
     - 'AWS-CICD/Dockerfile.image'
     - 'AWS-CICD/CodeBuild/build-specs/buildspec-image.yml'
+    - 'AWS-CICD/Dockerrun.aws.json'
   secondary-artifacts:
     BuildReport:
       files:
