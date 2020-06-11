@@ -44,5 +44,6 @@ artifacts:
   secondary-artifacts:
     BuildReport:
       files:
-        - 'report/**/*'
+        - '**/*'
+      base-directory: 'report'
       name: BuildReport
