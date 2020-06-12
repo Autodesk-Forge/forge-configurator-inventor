@@ -28,7 +28,7 @@ Scenario('should check if All tabs are available', async (I) => {
 Scenario('should check if all Tabs are loaded after click', async (I) => {
 
     // click on Model tab
-    I.clickToModelTab();
+    // I.clickToModelTab();
 
     // check that Model tab has correct content
     I.waitForVisible( locators.ParametersContainer, 240);
