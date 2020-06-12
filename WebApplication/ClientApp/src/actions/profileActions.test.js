@@ -1,4 +1,4 @@
-import { detectToken } from "./profileActions";
+import actionTypes, { detectToken, loadProfile } from "./profileActions";
 import notificationTypes from '../actions/notificationActions';
 
 // prepare mock for Repository module
@@ -36,6 +36,8 @@ describe('detectToken', () => {
 
             expect(repoInstance.setAccessToken).toHaveBeenCalledWith('foo');
             expect(pushStateSpy).toHaveBeenCalled();
+
+            pushStateSpy.mockRestore();
         });
 
         it.each([
@@ -58,17 +60,67 @@ describe('detectToken', () => {
     describe('failure', () => {
         it('should log error on failure and forget access token', () => {
 
+            // prepare to raise error during token extraction
             window.location.hash = '#access_token=foo';
             repoInstance.setAccessToken.mockImplementation(() => { throw new Error('123456'); });
 
+            // execute
             detectToken()(store.dispatch);
 
+            // check if error is logged and token is forgotten
             expect(repoInstance.setAccessToken).toHaveBeenCalled();
 
             const logAction = store.getActions().find(a => a.type === notificationTypes.ADD_ERROR);
             expect(logAction).toBeDefined();
 
             expect(repoInstance.forgetAccessToken).toHaveBeenCalled();
+        });
+    });
+});
+
+describe('loadProfile', () => {
+
+    let store;
+    beforeEach(() => {
+        store = mockStore({});
+        repoInstance.loadProfile.mockClear();
+    });
+
+    describe('success', () => {
+
+        it('should fetch profile from repository', () => {
+
+            const profile = { name: "John Smith", avatarUrl: "http://johnsmith.com/avatar.jpg"};
+
+            repoInstance.loadProfile.mockImplementation(() => profile);
+
+            return store
+            .dispatch(loadProfile())
+            .then(() => {
+                expect(repoInstance.loadProfile).toHaveBeenCalledTimes(1);
+
+                // check the loaded profile is in store now
+                const profileLoadedAction = store.getActions().find(a => a.type === actionTypes.PROFILE_LOADED);
+                expect(profileLoadedAction.profile).toEqual(profile);
+            });
+        });
+    });
+
+    describe('failure', () => {
+        it('should log error on failure and forget access token', () => {
+
+            repoInstance.loadProfile.mockImplementation(() => { throw new Error(); });
+
+            return store
+            .dispatch(loadProfile())
+            .then(() => {
+
+                expect(repoInstance.loadProfile).toHaveBeenCalledTimes(1);
+
+                // check the error is logged
+                const logAction = store.getActions().find(a => a.type === notificationTypes.ADD_ERROR);
+                expect(logAction).toBeDefined();
+            });
         });
     });
 });

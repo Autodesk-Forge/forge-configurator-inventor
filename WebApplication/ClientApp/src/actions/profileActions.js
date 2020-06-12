@@ -44,9 +44,9 @@ export const updateProfile = profile => {
 export const loadProfile = () => async (dispatch) => {
     dispatch(addLog('Load profile invoked'));
     try {
-        const data = await repo.loadProfile();
+        const profile = await repo.loadProfile();
         dispatch(addLog('Load profile received'));
-        dispatch(updateProfile(data));
+        dispatch(updateProfile(profile));
     } catch (error) {
         dispatch(addError('Failed to get profile. (' + error + ')'));
     }

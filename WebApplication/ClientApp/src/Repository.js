@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+const AuthorizationHeader = 'Authorization';
 
 /** Kind-of data layer, which hides all interaction with backend. */
 class Repository {
@@ -37,11 +38,11 @@ class Repository {
     }
 
     setAccessToken(accessToken) {
-        axios.defaults.headers.common['Authorization'] = accessToken;
+        axios.defaults.headers.common[AuthorizationHeader] = accessToken;
     }
 
     forgetAccessToken() {
-        delete axios.defaults.headers.common['Authorization'];
+        delete axios.defaults.headers.common[AuthorizationHeader];
     }
 }
 
