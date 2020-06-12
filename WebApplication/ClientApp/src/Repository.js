@@ -29,6 +29,11 @@ class Repository {
         });
         return response.data;
     }
+
+    async loadProfile() {
+        const response = await axios.get("/login/profile");
+        return response.data;
+    }
 }
 
 

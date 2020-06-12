@@ -57,18 +57,4 @@ describe('fetchProjects', () => {
                     expect(actions[2].projectList).toEqual(testProjects);
                 });
     });
-
-    it.skip('should handle server error', () => {
-
-        // NOT YET IMLPEMENTED!
-
-
-        loadProjectsMock.mockImplementation( () => {throw new Error();});
-
-        const store = mockStore({ /* initial state */ });
-
-        const actions = store.getActions();
-        expect(actions).toHaveLength(1);
-
-    });
 });

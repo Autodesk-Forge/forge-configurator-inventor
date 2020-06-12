@@ -37,8 +37,6 @@ export class ForgeView extends Component {
         if (errorCode)
             return;
 
-        this.setState({enable:true});
-
         // orient camera in the same way as it's on the thumbnail
         // corresponding to ViewOrientationTypeEnum.kIsoTopRightViewOrientation
         const viewer = this.viewer;

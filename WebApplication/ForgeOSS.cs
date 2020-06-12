@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Autodesk.Forge;
 using Autodesk.Forge.Client;
@@ -154,7 +155,6 @@ namespace WebApplication
             return WithObjectsApiAsync(api => api.DeleteObjectAsync(bucketKey, objectName));
         }
 
-
         /// <summary>
         /// Download OSS file.
         /// </summary>
@@ -168,6 +168,20 @@ namespace WebApplication
                         var client = _clientFactory.CreateClient();
                         await client.DownloadAsync(url, localFullName);
                     });
+        }
+
+        /// <summary>
+        /// Get profile for the user with the access token.
+        /// </summary>
+        /// <param name="token">Oxygen access token.</param>
+        /// <returns>Dynamic object with User Profile</returns>
+        /// <remarks>
+        /// User Profile fields: https://forge.autodesk.com/en/docs/oauth/v2/reference/http/users-@me-GET/#body-structure-200
+        /// </remarks>
+        public Task<dynamic> GetProfileAsync(string token)
+        {
+            var api = new UserProfileApi(new Configuration { AccessToken = token });
+            return api.GetUserProfileAsync();
         }
 
         /// <summary>
