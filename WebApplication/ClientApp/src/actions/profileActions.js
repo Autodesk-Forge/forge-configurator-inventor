@@ -1,9 +1,8 @@
 import repo from '../Repository';
-import {addError, addLog} from './notificationActions';
+import { addError, addLog } from './notificationActions';
 
 const actionTypes = {
-    PROFILE_LOADED: 'PROFILE_LOADED',
-    LOAD_PROFILE: 'LOAD_PROFILE'
+    PROFILE_LOADED: 'PROFILE_LOADED'
 };
 
 export default actionTypes;
@@ -30,7 +29,8 @@ export const detectToken = () => (dispatch) => {
             repo.forgetAccessToken();
         }
     } catch (error) {
-        dispatch(addError('Failed to get information about "show changed parameters" . (' + error + ')'));
+        dispatch(addError('Failed to detect token. (' + error + ')'));
+        repo.forgetAccessToken();
     }
 };
 

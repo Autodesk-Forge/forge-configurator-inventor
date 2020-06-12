@@ -26,7 +26,7 @@ describe('detectToken', () => {
         it.each([
             "#access_token=foo",
             "#first=second&access_token=foo",
-        ])('should remember access token (%s)',
+        ])("should remember access token if it's in the url (%s)",
         (hashString) => {
 
             window.location.hash = hashString;
@@ -44,7 +44,7 @@ describe('detectToken', () => {
             "#foo=1",               // different parameter
             "#access_tokennnn=1",   // slightly different name
             "#access_token=",       // expected parameter, but without value
-        ])('should forget token if not found (%s)',
+        ])('should forget token if not found in url (%s)',
         (hashString) => {
 
             window.location.hash = hashString;
@@ -56,7 +56,7 @@ describe('detectToken', () => {
     });
 
     describe('failure', () => {
-        it('should log error on failure', () => {
+        it('should log error on failure and forget access token', () => {
 
             window.location.hash = '#access_token=foo';
             repoInstance.setAccessToken.mockImplementation(() => { throw new Error('123456'); });
@@ -67,6 +67,8 @@ describe('detectToken', () => {
 
             const logAction = store.getActions().find(a => a.type === notificationTypes.ADD_ERROR);
             expect(logAction).toBeDefined();
+
+            expect(repoInstance.forgetAccessToken).toHaveBeenCalled();
         });
     });
 });
