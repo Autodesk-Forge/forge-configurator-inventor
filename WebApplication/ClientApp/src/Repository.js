@@ -33,7 +33,7 @@ class Repository {
     async loadProfile() {
         const response = await axios.get("/login/profile");
         return response.data;
-    } 
+    }
 }
 
 
