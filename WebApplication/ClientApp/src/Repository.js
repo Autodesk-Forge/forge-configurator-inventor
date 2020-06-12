@@ -45,7 +45,5 @@ class Repository {
     }
 }
 
-
-
 /** Singleton with repo */
 export default new Repository();

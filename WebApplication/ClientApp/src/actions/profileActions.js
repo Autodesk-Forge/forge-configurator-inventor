@@ -41,8 +41,7 @@ export const updateProfile = profile => {
     };
 };
 
-// eslint-disable-next-line no-unused-vars
-export const loadProfile = () => async (dispatch, getState) => {
+export const loadProfile = () => async (dispatch) => {
     dispatch(addLog('Load profile invoked'));
     try {
         const data = await repo.loadProfile();
