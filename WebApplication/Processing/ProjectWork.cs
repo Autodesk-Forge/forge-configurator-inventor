@@ -194,6 +194,7 @@ namespace WebApplication.Processing
 
             await Task.WhenAll(
                 _forgeOSS.CopyAsync(_resourceProvider.BucketKey, ossFrom.Parameters, ossTo.Parameters),
+                _forgeOSS.CopyAsync(_resourceProvider.BucketKey, ossFrom.CurrentModel, ossTo.CurrentModel),
                 _forgeOSS.CopyAsync(_resourceProvider.BucketKey, ossFrom.ModelView, ossTo.ModelView));
 
             _logger.LogInformation($"Cache the project locally ({hashTo})");
