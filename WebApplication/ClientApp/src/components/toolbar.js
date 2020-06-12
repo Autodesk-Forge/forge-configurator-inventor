@@ -54,7 +54,7 @@ export class Toolbar extends Component {
                     </p>
                   </div>
                 </NavAction>
-                <ProfileAction avatarName={this.props.profile.name} avatartImage={this.props.profile.avatarUrl}/>
+                <ProfileAction avatarName={this.props.profile.name} avatarImage={this.props.profile.avatarUrl}/>
               </Interactions>
             </React.Fragment>
           }

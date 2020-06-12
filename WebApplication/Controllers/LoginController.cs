@@ -56,10 +56,10 @@ namespace WebApplication.Controllers
         {
             _logger.LogInformation("Get profile");
             ProfileDTO profileDTO = new ProfileDTO { Name = "anonymous user", AvatarUrl = null };
-            var authorizationHeader = this.HttpContext.Request.Headers[HeaderNames.Authorization].ToString();
-            if (string.IsNullOrEmpty(authorizationHeader) == false)
+            var token = this.HttpContext.Request.Headers[HeaderNames.Authorization].ToString();
+            if (!string.IsNullOrEmpty(token))
             {
-                var profile = await _forge.GetProfileAsync(authorizationHeader);
+                var profile = await _forge.GetProfileAsync(token);
                 profileDTO = new ProfileDTO { Name = profile.userName, AvatarUrl = profile.profileImages.sizeX40 };
             }
 
