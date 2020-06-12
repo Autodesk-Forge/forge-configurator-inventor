@@ -10,11 +10,7 @@ namespace WebApplication.Processing
         public override string Id => nameof(CreateSAT);
         public override string Description => "Generate SAT from Inventor document";
 
-        protected override string OutputUrl(ProcessingArgs projectData)
-        {
-            return projectData.SatUrl;
-        }
-
+        protected override string OutputUrl(ProcessingArgs projectData) => projectData.SatUrl;
         protected override string OutputName => "export.sat";
 
         /// <summary>

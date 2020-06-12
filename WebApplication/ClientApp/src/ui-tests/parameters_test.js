@@ -11,7 +11,7 @@ Feature('Parameters panel');
 Scenario('should check if Parameter panel has Reset and Update button', async (I) => {
 
     // click on Model tab
-    I.click( locators.modelTab );
+    I.clickToModelTab();
 
     // check that Model tab has correct content
     I.see("Reset", locators.xpButtonReset );
@@ -22,7 +22,7 @@ Scenario('should check if Parameter panel has Reset and Update button', async (I
 Scenario('should check if Stripe panel is displayed and hidden', async (I) => {
 
     // click on Model tab
-    I.click( locators.modelTab );
+    I.clickToModelTab();
 
     // check that Model tab has a parameter - Length
     I.waitForElement('//*[@id="model"]/div/div[1]/div[2]/div[1]/div/input', 20);
@@ -39,7 +39,7 @@ Scenario('should check if Stripe panel is displayed and hidden', async (I) => {
     I.fillField('//div[2]/div[1]/div/input', "12000 mm");
 
     // check if the Stripe element was hidden
-    I.waitForInvisible(locators.xpStripeElement, 3);
+    I.waitForInvisible(locators.xpStripeElement, 5);
 });
 
 

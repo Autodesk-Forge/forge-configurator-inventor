@@ -1,30 +1,17 @@
 /* eslint-disable no-undef */
 const locators = require('./elements_definition.js');
 
+const projectButton =  '//div[contains(@role, "button") and .//*[local-name()="img"]]';
+const currentProjectName =  locate('p').inside(projectButton);
+
 Before((I) => {
     I.amOnPage('/');
-});
-
-Feature('Forge Link');
-
-Scenario('should check if Autodesk Forge link works', async (I) => {
-
-    // check Forge link
-    I.waitForElement( locators.xpLinkAdskForge, 10);
-    I.click( locators.xpLinkAdskForge);
-
-    // wait for Autodesk Forge page
-    I.waitForElement(".adskf__navbar-logo", 10);
-
-    // check the page name
-    I.seeTitleEquals("Autodesk Forge");
 });
 
 Feature('Project Switcher');
 
 Scenario('should check Project switcher is loaded', async (I) => {
     // wait until project combo is displayed
-    I.wait(3);
     I.waitForElement( locators.xpComboProjects, 10);
     I.click( locators.xpComboProjects);
 
@@ -44,8 +31,6 @@ Scenario('should check Project switcher is loaded', async (I) => {
 Scenario('should check Project switcher is correctly changed', async (I) => {
 
     // wait until project combo is displayed
-
-    I.wait(3);
     I.waitForElement( locators.xpComboProjects, 10);
     I.click( locators.xpComboProjects);
 
@@ -56,20 +41,13 @@ Scenario('should check Project switcher is correctly changed', async (I) => {
     I.click( locators.xpProjectConveyor);
 
     // check the current project name
-    I.see("Conveyor", locators.xpComboProjects);
+    I.see("Conveyor", currentProjectName);
 
     // click to show popup menu with list of projects
-
-    I.click( locators.xpComboProjects);
-
-    // wait until project list is displayed
-    I.waitForElement( locators.xpProjectList, 10);
-
-    // emulate click to trigger project loading
-    I.click( locators.xpProjectWrench);
+    I.selectProject('Wrench');
 
     // check the current project name
-    I.see("Wrench", locators.xpComboProjects);
+    I.see("Wrench", currentProjectName);
 });
 
 Feature('Log button');
@@ -99,4 +77,3 @@ Scenario('should check presence of User button', async (I) => {
     // validate user name
     I.see("AU", '//button/span/span');
 });
-

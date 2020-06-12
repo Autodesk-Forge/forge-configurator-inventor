@@ -3,11 +3,8 @@
 namespace WebApplication.Job
 {
     /// <summary>
-    /// Interface with callbacks to send results back.
+    /// Interface to send results back.
     /// </summary>
-    /// <remarks>
-    /// Unfortunately SignalR disallow overloaded methods, so need to name them differently.
-    /// </remarks>
     public interface IResultSender
     {
         Task SendSuccessAsync();

@@ -1,10 +1,11 @@
 /* eslint-disable no-undef */
 // in this file you can append custom step methods to 'I' object
 
-module.exports = function() {
-  const projectsCombo = '//div[@role="button"] //*[local-name()="svg"]';
-  const projectList = locate('span').withText('Projects');
+const locators = require('./src/ui-tests/elements_definition.js');
 
+module.exports = function() {
+
+  const forgeViewerSpinner = '//div[@id="ForgeViewer"]//div[@class="spinner"]';
 
   // returns Project name locator
   function getProjectLocator(name)
@@ -21,14 +22,24 @@ module.exports = function() {
     selectProject(name){
 
         // wait until project combo is displayed
-        this.waitForElement( projectsCombo, 10);
-        this.click( projectsCombo );
+        this.waitForElement( locators.xpComboProjects, 10);
+        this.click( locators.xpComboProjects );
 
         // wait until project list is displayed
-        this.waitForElement(projectList, 10);
+        this.waitForElement(locators.xpProjectList, 10);
 
         // emulate click to trigger project loading
         this.click( getProjectLocator(name));
+    },
+    clickToModelTab() { // we create this method because we need to wait for viewer - https://jira.autodesk.com/browse/INVGEN-41877
+      // click on Model tab
+      this.click(locators.modelTab);
+
+      // wait for spinner element to be visible
+      this.waitForVisible(forgeViewerSpinner, 15);
+
+      // wait for spinner to be hidden
+      this.waitForInvisible(forgeViewerSpinner, 30);
     }
 
   });

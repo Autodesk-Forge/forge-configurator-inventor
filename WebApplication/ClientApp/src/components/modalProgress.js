@@ -29,7 +29,6 @@ export class ModalProgress extends Component {
           };
 
         return (
-            <Typography>
             <Modal
               open={this.props.open}
               title={this.props.title}
@@ -38,10 +37,12 @@ export class ModalProgress extends Component {
               stylesheet={modalStyles}>
               <div className="modalContent">
                   <div style={iconAsBackgroundImage}/>
-                  <Typography className="modalAction" fontWeight="bold">
-                      {this.props.label ? this.props.label : "Missing label."}
+                  <div className="modalAction" fontWeight="bold">
+                      <Typography>
+                        {this.props.label ? this.props.label : "Missing label."}
+                      </Typography>
                       {!done && <ProgressBar className="modalProgress"/>}
-                  </Typography>
+                  </div>
               </div>
               {(done && this.props.url) &&
                 <div className="modalLink">
@@ -64,7 +65,6 @@ export class ModalProgress extends Component {
               </div>
               }
           </Modal>
-          </Typography>
         );
     }
 }

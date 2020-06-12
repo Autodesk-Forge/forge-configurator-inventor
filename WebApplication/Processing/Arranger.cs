@@ -120,20 +120,28 @@ namespace WebApplication.Processing
                             _forge.DeleteAsync(_bucketKey, OutputSAT));
         }
 
-        internal async Task<ProcessingArgs> ForRfaAsync(string inputDocUrl, string topLevelAssembly)
+        internal async Task<ProcessingArgs> ForSatAsync(string inputDocUrl, string topLevelAssembly)
         {
-            var urls = await Task.WhenAll(  CreateSignedUrlAsync(OutputSAT, ObjectAccess.ReadWrite),
-                                            CreateSignedUrlAsync(OutputRFA, ObjectAccess.Write));
+            // SAT file is intermediate and will be used later for further conversion (to RFA),
+            // so request both read and write access to avoid extra calls to OSS
+            var satUrl = await CreateSignedUrlAsync(OutputSAT, ObjectAccess.ReadWrite);
 
             return new ProcessingArgs
             {
                 InputDocUrl = inputDocUrl,
-                OutputModelUrl = null,
-                SvfUrl = null,
-                ParametersJsonUrl = null,
                 TLA = topLevelAssembly,
-                SatUrl = urls[0],
-                RfaUrl = urls[1]
+                SatUrl = satUrl
+            };
+        }
+
+        internal async Task<ProcessingArgs> ForRfaAsync(string inputDocUrl)
+        {
+            var rfaUrl = await CreateSignedUrlAsync(OutputRFA, ObjectAccess.Write);
+
+            return new ProcessingArgs
+            {
+                InputDocUrl = inputDocUrl,
+                RfaUrl = rfaUrl
             };
         }
 

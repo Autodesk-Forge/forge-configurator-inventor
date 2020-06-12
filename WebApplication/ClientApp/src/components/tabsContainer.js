@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Tabs, { Tab } from "@hig/tabs";
-// import ProjectList from './projectList'; // to be restored soon
+import ProjectList from './projectList';
 import ForgeView from './forgeView';
 import ParametersContainer from './parametersContainer';
 import PageNYI from './pageNYI';
@@ -21,7 +21,7 @@ class TabsContainer extends Component {
             >
               <Tab label="Projects">
                 <div id="project-list" className="tabContent fullheight">
-                  <PageNYI/>
+                  <ProjectList/>
                 </div>
               </Tab>
               <Tab label="Model" >
