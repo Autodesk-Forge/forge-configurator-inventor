@@ -1,5 +1,5 @@
 import repo from '../Repository';
-import {addError, addLog} from './notificationActions';
+import {addError} from './notificationActions';
 
 export const actionTypes = {
     REJECT_PARAMETERS_EDITED_MESSAGE: 'REJECT_PARAMETERS_EDITED_MESSAGE',

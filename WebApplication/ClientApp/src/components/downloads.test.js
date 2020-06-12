@@ -9,7 +9,7 @@ const props = {
     activeProject: {
         modelDownloadUrl: 'a/b/c/'
     }
-}
+};
 
 describe('Downloads components', () => {
   it('Resizer reduces size', () => {

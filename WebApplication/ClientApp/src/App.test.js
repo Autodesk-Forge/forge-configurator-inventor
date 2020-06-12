@@ -9,7 +9,15 @@ describe('components', () => {
   describe('App', () => {
     it('Test that app will fetch info about showing changed parameters ', () => {
         const fetchShowParametersChanged = jest.fn();
-        shallow(<App  fetchShowParametersChanged={fetchShowParametersChanged}/>);
+        const detectToken = jest.fn();
+
+        const props = {
+          fetchShowParametersChanged,
+          detectToken
+        };
+
+        shallow(<App {...props}/>);
+        expect(detectToken).toHaveBeenCalled();
         expect(fetchShowParametersChanged).toHaveBeenCalled();
     });
   });

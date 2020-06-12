@@ -70,4 +70,4 @@ export const rfaDownloadUrl = function(state) {
 
 export const getProfile = function (state) {
     return state.profile;
-}
+};
