@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+
 /** Kind-of data layer, which hides all interaction with backend. */
 class Repository {
 
@@ -33,7 +34,15 @@ class Repository {
     async loadProfile() {
         const response = await axios.get("/login/profile");
         return response.data;
-    } 
+    }
+
+    setAccessToken(accessToken) {
+        axios.defaults.headers.common['Authorization'] = accessToken;
+    }
+
+    forgetAccessToken() {
+        delete axios.defaults.headers.common['Authorization'];
+    }
 }
 
 
