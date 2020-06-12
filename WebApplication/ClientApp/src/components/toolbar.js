@@ -29,7 +29,7 @@ export class Toolbar extends Component {
     return (
         <TopNav
           logo={
-            <Logo link="/login" label="Autodesk HIG">
+            <Logo link="https://forge.autodesk.com" label="Autodesk HIG">
               <PlaceCenterContainer>
                 <img src={"logo.png"} alt=""/>
                 <LogoText>

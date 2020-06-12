@@ -5,7 +5,8 @@ import './app.css';
 import Toolbar from './components/toolbar';
 import TabsContainer from './components/tabsContainer';
 import ProjectSwitcher from './components/projectSwitcher';
-import { fetchShowParametersChanged, detectToken } from './actions/uiFlagsActions';
+import { fetchShowParametersChanged } from './actions/uiFlagsActions';
+import { detectToken } from './actions/profileActions'
 
 export class App extends Component {
   constructor(props) {
