@@ -7,11 +7,43 @@ phases:
       - expand-archive -path .\buildExtras.zip -destinationpath ./
   build:
     commands:
+      - $slnDir=$PWD.ToString()
+      - echo "**** Building ****"
       - msbuild -restore /property:Configuration=Release
       - msbuild /property:Configuration=Release /Target:Publish
+      - echo "**** running backend tests ****"
+      - dotnet test
+      - echo "**** running linter ****"
+      - cd WebApplication/ClientApp
+      - npm run lint
+      - echo "**** running frontend tests ****"
+      - npm test -- --coverage
+      - echo "**** Starting the server ****"
+      - cd ..
+      - Start-Process -NoNewWindow dotnet -ArgumentList "run", "clear=true", "initialize=true"
+      - echo "Waiting 5 minutes"
+      - sleep 300
+      - echo "**** running the UI tests ****"
+      - cd ClientApp
+      - npx codeceptjs run
   post_build:
     commands:
-      - Remove-Item WebApplication/ClientApp/node_modules -Recurse 
+      - cd $slnDir
+      - xcopy /Y /E WebApplication\bin\Release\netcoreapp3.1\publish\* app\
+      - xcopy /Y /E WebApplication\AppBundles\* app\AppBundles\
+      - xcopy /Y /E WebApplication\ClientApp\output\* report\errorScreenShots\
+      - xcopy /Y /E WebApplication\ClientApp\coverage\* report\coverage\
 artifacts:
   files:
-    - '**/*'
+    - 'app/**/*'
+    - 'AWS-CICD/amazon-cloudwatch-agent.json'
+    - 'AWS-CICD/commands.sh'
+    - 'AWS-CICD/Dockerfile.image'
+    - 'AWS-CICD/CodeBuild/build-specs/buildspec-image.yml'
+    - 'AWS-CICD/Dockerrun.aws.json'
+  secondary-artifacts:
+    BuildReport:
+      files:
+        - '**/*'
+      base-directory: 'report'
+      name: BuildReport
