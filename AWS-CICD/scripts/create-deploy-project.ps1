@@ -11,7 +11,7 @@ $config = Get-Content -Path config.json | ConvertFrom-Json
 $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
 $projectsPath = [System.IO.Path]::Combine($scriptPath, "..\CodeBuild\projects")
 
-$input = [System.IO.File]::ReadAllText([System.IO.Path]::Combine($projectsPath, "deploy.json"))
+$input = [System.IO.File]::ReadAllText([System.IO.Path]::Combine($projectsPath, "sdra-deploy.json"))
 $input = $input.Replace("<code_build_deploy_service_role_arn>", $config.code_build_service_role_arn)
 
 $tempFile = New-TemporaryFile
