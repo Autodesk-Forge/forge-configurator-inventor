@@ -53,7 +53,7 @@ export class Toolbar extends Component {
                   <p>
                     You can put what ever you want in here. You can also change
                     the icon and the title of the button.
-                    </p>
+                  </p>
                 </div>
               </NavAction>
               <ProfileAction avatarName={this.props.profile.name} avatarImage={this.props.profile.avatarUrl}>
