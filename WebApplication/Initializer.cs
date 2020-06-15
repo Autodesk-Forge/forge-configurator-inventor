@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using Polly;
 using WebApplication.Definitions;
 using WebApplication.Processing;
+using WebApplication.Services;
 using WebApplication.Utilities;
 
 namespace WebApplication

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Autodesk.Forge.Core;
 using Autodesk.Forge.Model;
 
-namespace WebApplication
+namespace WebApplication.Services
 {
     public enum ObjectAccess
     {

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using WebApplication.Definitions;
+using WebApplication.Services;
 using WebApplication.Utilities;
 
 namespace WebApplication.Controllers

@@ -3,9 +3,10 @@ using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
 using WebApplication.Definitions;
+using WebApplication.Services;
 using WebApplication.Utilities;
 
-namespace WebApplication
+namespace WebApplication.State
 {
     /// <summary>
     /// Logic related to local cache storage for project.

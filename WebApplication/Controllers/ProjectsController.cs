@@ -5,7 +5,10 @@ using Autodesk.Forge.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using WebApplication.Definitions;
+using WebApplication.Services;
+using WebApplication.State;
 using WebApplication.Utilities;
+using Project = WebApplication.State.Project;
 
 namespace WebApplication.Controllers
 {

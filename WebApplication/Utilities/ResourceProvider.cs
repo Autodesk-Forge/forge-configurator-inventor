@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Autodesk.Forge.Core;
 using Autodesk.Forge.DesignAutomation;
 using Microsoft.Extensions.Options;
+using WebApplication.State;
 
 namespace WebApplication.Utilities
 {

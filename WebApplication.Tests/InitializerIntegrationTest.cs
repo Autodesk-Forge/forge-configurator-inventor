@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using WebApplication.Definitions;
 using WebApplication.Processing;
+using WebApplication.Services;
 using WebApplication.Utilities;
 using Xunit;
 
