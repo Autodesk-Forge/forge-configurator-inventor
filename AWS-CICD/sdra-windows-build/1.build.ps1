@@ -1,0 +1,1 @@
+docker image build . -t 624240287035.dkr.ecr.us-west-2.amazonaws.com/sdra-windows-build:4.8
