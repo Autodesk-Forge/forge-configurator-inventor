@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { loadProfile } from '../actions/profileActions';
 import { getProfile } from '../reducers/mainReducer';
 import UserDetails from './userDetails.js';
+import Typography from "@hig/typography";
 
 import TopNav, {
   Logo,
@@ -34,7 +35,7 @@ export class Toolbar extends Component {
             <PlaceCenterContainer>
               <img src={"logo.png"} alt="" />
               <LogoText>
-                AUTODESK<sup>®</sup> <strong>FORGE</strong>
+                  <Typography style={{ fontSize: '16px'}}>AUTODESK<sup>®</sup> <strong>FORGE</strong></Typography>
               </LogoText>
             </PlaceCenterContainer>
           </Logo>
