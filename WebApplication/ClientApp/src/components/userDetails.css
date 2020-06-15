@@ -1,0 +1,41 @@
+span.user {
+  font-size: 11px;
+  margin-left: 12px;
+}
+
+.avatar-custom-style {
+  margin-left: auto !important;
+  margin-right: 12px !important;
+}
+
+span.username {
+  width: 70px;
+  height: 20px;
+  color: rgb(60, 60, 60);
+  font-size: 14px;
+  font-family: ArtifaktElement;
+  font-weight: 700;
+  line-height: 20px;
+  margin: 12px;
+}
+
+div.auth-button {
+  width: 244px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0);
+  border: 1px solid rgb(128, 128, 128);
+  border-radius: 2px;
+  margin: 12px;
+  cursor: pointer;
+  text-align: center;
+}
+
+span.auth-button-text {
+    line-height: 36px;
+}
+
+@font-face {
+  font-family: 'ArtifaktElement';
+  src: url('https://fonts.autodesk.com/ArtifaktElement/WOFF2/Artifakt%20Element%20Medium.woff2')
+    format('woff2');
+}

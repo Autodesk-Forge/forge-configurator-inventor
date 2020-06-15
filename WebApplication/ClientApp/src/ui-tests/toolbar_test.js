@@ -72,8 +72,8 @@ Scenario('should check presence of User button', async (I) => {
     //I.amOnPage(testPage);
 
     // check if exists the button
-    I.waitForElement('span[aria-label="Avatar for anonymous user"]', 2);
+    I.waitForElement('span[aria-label="Avatar for Anonymous"]', 2);
 
     // validate user name
-    I.see("AU", '//button/span/span');
+    I.see("A", '//button/span/span');
 });
