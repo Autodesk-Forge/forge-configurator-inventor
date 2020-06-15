@@ -32,7 +32,8 @@
                             }
                         ],
                         "inputArtifacts": [],
-                        "region": "us-west-2"
+                        "region": "us-west-2",
+                        "namespace": "SourceVariables"
                     }
                 ]
             },
@@ -61,7 +62,8 @@
                                 "name": "SourceArtifact"
                             }
                         ],
-                        "region": "us-west-2"
+                        "region": "us-west-2",
+                        "namespace": "BuildVariables"
                     }
                 ]
             },
@@ -81,35 +83,14 @@
                             "EnvironmentVariables": "[{\"name\":\"CommitId\",\"value\":\"#{SourceVariables.CommitId}\",\"type\":\"PLAINTEXT\"}]",
                             "ProjectName": "sdra-image"
                         },
-                        "outputArtifacts": [],
+                        "outputArtifacts": [
+                            {
+                                "name": "ImageArtifact"
+                            }
+                        ],
                         "inputArtifacts": [
                             {
                                 "name": "BuildArtifact"
-                            }
-                        ],
-                        "region": "us-west-2"
-                    }
-                ]
-            },
-            {
-                "name": "Test",
-                "actions": [
-                    {
-                        "name": "Test",
-                        "actionTypeId": {
-                            "category": "Build",
-                            "owner": "AWS",
-                            "provider": "CodeBuild",
-                            "version": "1"
-                        },
-                        "runOrder": 1,
-                        "configuration": {
-                            "ProjectName": "sdra-test"
-                        },
-                        "outputArtifacts": [],
-                        "inputArtifacts": [
-                            {
-                                "name": "SourceArtifact"
                             }
                         ],
                         "region": "us-west-2"
@@ -147,6 +128,6 @@
                 ]
             }
         ],
-        "version": 27
+        "version": 37
     }
 }

@@ -1,16 +1,20 @@
 {
-    "name": "sdra-windows-build",
+    "name": "sdra-pr-check",
     "source": {
-        "type": "CODEPIPELINE",
-        "buildspec": "AWS-CICD/CodeBuild/build-specs/buildspec-build.yml",
+        "type": "GITHUB",
+        "location": "https://github.com/Developer-Autodesk/forge-configurator-inventor.git",
+        "gitCloneDepth": 1,
+        "gitSubmodulesConfig": {
+            "fetchSubmodules": false
+        },
+        "buildspec": "AWS-CICD\\CodeBuild\\build-specs\\buildspec-build.yml",
+        "reportBuildStatus": false,
         "insecureSsl": false
     },
+    "secondarySources": [],
     "secondarySourceVersions": [],
     "artifacts": {
-        "type": "CODEPIPELINE",
-        "name": "sdra-windows-build",
-        "packaging": "NONE",
-        "encryptionDisabled": false
+        "type": "NO_ARTIFACTS"
     },
     "secondaryArtifacts": [
         {
@@ -18,8 +22,8 @@
             "location": "sdra-build",
             "path": "build-report",
             "namespaceType": "BUILD_ID",
-            "name": "sdra-windows-build",
-            "packaging": "ZIP",
+            "name": "sdra-pr-check",
+            "packaging": "NONE",
             "overrideArtifactName": false,
             "encryptionDisabled": false,
             "artifactIdentifier": "BuildReport"
@@ -47,11 +51,24 @@
         "privilegedMode": false,
         "imagePullCredentialsType": "SERVICE_ROLE"
     },
-    "serviceRole": "arn:aws:iam::624240287035:role/service-role/codebuild-sdra-build-service-role",
+    "serviceRole": "arn:aws:iam::624240287035:role/service-role/codebuild-sdra-pr-check-service-role",
     "timeoutInMinutes": 60,
     "queuedTimeoutInMinutes": 480,
     "encryptionKey": "arn:aws:kms:us-west-2:624240287035:alias/aws/s3",
     "tags": [],
+    "webhook": {
+        "url": "https://api.github.com/repos/Developer-Autodesk/forge-configurator-inventor/hooks/220901714",
+        "payloadUrl": "https://codebuild.us-west-2.amazonaws.com/webhooks?t=eyJlbmNyeXB0ZWREYXRhIjoiUFlXUjYvV3lnTXRTQkU2NGRZUndhN1RPYlYyVWRMQVVZeTI3WmRjbDZraXVua1F6dU53ZW1rZ3JoMGhpUVJNUG1HSWFuMHRXY3NYR25GanpMSFkzRzZNPSIsIml2UGFyYW1ldGVyU3BlYyI6IkZWSzQwT242UmZkeUtoZDIiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&v=1",
+        "filterGroups": [
+            [
+                {
+                    "type": "EVENT",
+                    "pattern": "PULL_REQUEST_CREATED, PULL_REQUEST_UPDATED, PULL_REQUEST_REOPENED",
+                    "excludeMatchedPattern": false
+                }
+            ]
+        ]
+    },
     "logsConfig": {
         "cloudWatchLogs": {
             "status": "ENABLED"

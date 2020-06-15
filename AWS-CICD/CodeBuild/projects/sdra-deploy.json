@@ -5,6 +5,7 @@
         "buildspec": "AWS-CICD/CodeBuild/build-specs/buildspec-deploy.yml",
         "insecureSsl": false
     },
+    "secondarySourceVersions": [],
     "artifacts": {
         "type": "CODEPIPELINE",
         "name": "sdra-deploy",
@@ -16,15 +17,17 @@
     },
     "environment": {
         "type": "LINUX_CONTAINER",
-        "image": "aws/codebuild/amazonlinux2-x86_64-standard:3.0",
+        "image": "node",
         "computeType": "BUILD_GENERAL1_SMALL",
         "environmentVariables": [],
         "privilegedMode": false,
-        "imagePullCredentialsType": "CODEBUILD"
+        "imagePullCredentialsType": "SERVICE_ROLE"
     },
-    "serviceRole": "<code_build_deploy_service_role_arn>",
+    "serviceRole": "arn:aws:iam::624240287035:role/service-role/codebuild-sdra-deploy-service-role",
     "timeoutInMinutes": 60,
     "queuedTimeoutInMinutes": 480,
+    "encryptionKey": "arn:aws:kms:us-west-2:624240287035:alias/aws/s3",
+    "tags": [],
     "logsConfig": {
         "cloudWatchLogs": {
             "status": "ENABLED"
@@ -33,5 +36,6 @@
             "status": "DISABLED",
             "encryptionDisabled": false
         }
-    }
+    },
+    "fileSystemLocations": []
 }
