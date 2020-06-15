@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Autodesk.Forge;
 using Autodesk.Forge.Core;
 using Autodesk.Forge.Model;
 
@@ -60,5 +61,15 @@ namespace WebApplication
         /// Download OSS file.
         /// </summary>
         Task DownloadFileAsync(string bucketKey, string objectName, string localFullName);
+
+        /// <summary>
+        /// Get profile for the user with the access token.
+        /// </summary>
+        /// <param name="token">Oxygen access token.</param>
+        /// <returns>Dynamic object with User Profile</returns>
+        /// <remarks>
+        /// User Profile fields: https://forge.autodesk.com/en/docs/oauth/v2/reference/http/users-@me-GET/#body-structure-200
+        /// </remarks>
+        Task<dynamic> GetProfileAsync(string token);
     }
 }
