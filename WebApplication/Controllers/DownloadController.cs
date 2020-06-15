@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using WebApplication.Services;
 using WebApplication.State;
 using WebApplication.Utilities;
 
@@ -12,15 +11,15 @@ namespace WebApplication.Controllers
     [Route("download")]
     public class DownloadController : ControllerBase
     {
-        private readonly IForgeOSS _forgeOSS;
         private readonly ResourceProvider _resourceProvider;
         private readonly ILogger<DownloadController> _logger;
+        private readonly UserResolver _userResolver;
 
-        public DownloadController(IForgeOSS forgeOSS, ResourceProvider resourceProvider, ILogger<DownloadController> logger)
+        public DownloadController(ResourceProvider resourceProvider, ILogger<DownloadController> logger, UserResolver userResolver)
         {
-            _forgeOSS = forgeOSS;
             _resourceProvider = resourceProvider;
             _logger = logger;
+            _userResolver = userResolver;
         }
 
         [HttpGet("{projectName}/{hash}/model")]
@@ -35,7 +34,7 @@ namespace WebApplication.Controllers
             return RedirectToOssObject(projectName, hash, ossNames => ossNames.Rfa);
         }
 
-        private async Task<RedirectResult> RedirectToOssObject(string projectName, string hash, Func<OSSObjectNameProvider, string> nameExtractor )
+        private async Task<RedirectResult> RedirectToOssObject(string projectName, string hash, Func<OSSObjectNameProvider, string> nameExtractor)
         {
             Project project = _resourceProvider.GetProject(projectName);
 
@@ -44,7 +43,8 @@ namespace WebApplication.Controllers
 
             _logger.LogInformation($"Downloading '{ossObjectName}'");
 
-            var url = await _forgeOSS.CreateSignedUrlAsync(_resourceProvider.BucketKey, ossObjectName);
+            var bucket = await _userResolver.GetBucket();
+            var url = await bucket.CreateSignedUrlAsync(ossObjectName);
 
             // TODO: FIX: file will be downloaded as `cache-Wrench-3CEEF3FDD5135E1F5EF39BF000B62D673B5438FE-xxxxxx.zip`
             return Redirect(url);
