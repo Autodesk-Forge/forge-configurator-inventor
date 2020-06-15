@@ -1,5 +1,6 @@
 using System.IO;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Autodesk.Forge.Core;
 using Autodesk.Forge.DesignAutomation;
 using Microsoft.AspNetCore.Builder;
@@ -12,12 +13,75 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
 using WebApplication.Definitions;
 using WebApplication.Processing;
 using WebApplication.Utilities;
 
 namespace WebApplication
 {
+    public class TokenHandlerMiddleware
+    {
+        private readonly RequestDelegate _next;
+
+        public TokenHandlerMiddleware(RequestDelegate next)
+        {
+            _next = next;
+        }
+
+        public async Task InvokeAsync(HttpContext context, ILogger<TokenHandlerMiddleware> logger, UserResolver resolver)
+        {
+            if (context.Request.Headers.TryGetValue(HeaderNames.Authorization, out var token))
+            {
+                logger.LogInformation($"Found token: {token}");
+                resolver.Token = token;
+            }
+            else
+            {
+                logger.LogInformation("Cannot find token");
+            }
+
+            // Call the next delegate/middleware in the pipeline
+            await _next(context);
+        }
+    }
+
+    public class UserResolver
+    {
+        private readonly ResourceProvider _resourceProvider;
+        private readonly IForgeOSS _forgeOSS;
+
+        public string Token { private get; set; }
+        public bool IsAuthenticated => ! string.IsNullOrEmpty(Token);
+
+        public UserResolver(ResourceProvider resourceProvider, IForgeOSS forgeOSS)
+        {
+            _resourceProvider = resourceProvider;
+            _forgeOSS = forgeOSS;
+        }
+
+        public async Task<string> GetBucketKey()
+        {
+            if (IsAuthenticated)
+            {
+                var profile = await _forgeOSS.GetProfileAsync(Token);
+                var userId = profile.userId;
+
+                var userHash = Crypto.GenerateHashString(userId);
+
+                var bucketKey = $"authd-{userId.Substring(0, 3)}-{userHash}".ToLowerInvariant();
+                await _forgeOSS.CreateBucketAsync(bucketKey); // TODO: can throw an exception?
+
+                return bucketKey;
+            }
+            else
+            {
+                return _resourceProvider.BucketKey;
+            }
+        }
+    }
+
+
     public class Startup
     {
         private const string ForgeSectionKey = "Forge";
@@ -72,6 +136,7 @@ namespace WebApplication
                                         return new DesignAutomationClient(forgeService);
                                     });
             services.AddSingleton<Publisher>();
+            services.AddScoped<UserResolver>(); // TODO: use interface
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -100,6 +165,8 @@ namespace WebApplication
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            app.UseMiddleware<TokenHandlerMiddleware>();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

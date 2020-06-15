@@ -17,20 +17,24 @@ namespace WebApplication.Controllers
         private readonly IForgeOSS _forge;
         private readonly ResourceProvider _resourceProvider;
         private readonly DtoGenerator _dtoGenerator;
+        private readonly UserResolver _userResolver;
 
-        public ProjectsController(ILogger<ProjectsController> logger, IForgeOSS forge, ResourceProvider resourceProvider, DtoGenerator dtoGenerator)
+        public ProjectsController(ILogger<ProjectsController> logger, IForgeOSS forge, ResourceProvider resourceProvider, DtoGenerator dtoGenerator, UserResolver userResolver)
         {
             _logger = logger;
             _forge = forge;
             _resourceProvider = resourceProvider;
             _dtoGenerator = dtoGenerator;
+            _userResolver = userResolver;
         }
 
         [HttpGet("")]
         public async Task<IEnumerable<ProjectDTO>> ListAsync()
         {
+            var bucketKey = await _userResolver.GetBucketKey();
+
             // TODO move to projects repository?
-            List<ObjectDetails> objects = await _forge.GetBucketObjectsAsync(_resourceProvider.BucketKey, $"{ONC.ProjectsFolder}-");
+            List<ObjectDetails> objects = await _forge.GetBucketObjectsAsync(bucketKey, $"{ONC.ProjectsFolder}-");
             var projectDTOs = new List<ProjectDTO>();
             foreach(ObjectDetails objDetails in objects)
             {

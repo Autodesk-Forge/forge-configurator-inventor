@@ -1,12 +1,10 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using Autodesk.Forge.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 using WebApplication.Definitions;
 using WebApplication.Utilities;
@@ -17,6 +15,8 @@ namespace WebApplication.Controllers
     [Route("login")]
     public class LoginController : ControllerBase
     {
+        private static readonly ProfileDTO AnonymousProfile = new ProfileDTO { Name = "Anonymous", AvatarUrl = "logo-xs-white-BG.svg" };
+
         private readonly ILogger<LoginController> _logger;
         private readonly IForgeOSS _forge;
 
@@ -55,15 +55,16 @@ namespace WebApplication.Controllers
         public async Task<ProfileDTO> Profile()
         {
             _logger.LogInformation("Get profile");
-            ProfileDTO profileDTO = new ProfileDTO { Name = "Anonymous", AvatarUrl = "logo-xs-white-BG.svg" };
-            var token = this.HttpContext.Request.Headers[HeaderNames.Authorization].ToString();
+            var token = HttpContext.Request.Headers[HeaderNames.Authorization].ToString();
             if (!string.IsNullOrEmpty(token))
             {
                 var profile = await _forge.GetProfileAsync(token);
-                profileDTO = new ProfileDTO { Name = profile.firstName + " " + profile.lastName, AvatarUrl = profile.profileImages.sizeX40 };
+                return new ProfileDTO { Name = profile.firstName + " " + profile.lastName, AvatarUrl = profile.profileImages.sizeX40 };
             }
-
-            return profileDTO;
+            else
+            {
+                return AnonymousProfile;
+            }
         }
     }
 }
