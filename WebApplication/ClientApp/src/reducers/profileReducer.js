@@ -1,8 +1,8 @@
 import actions from '../actions/profileActions';
 
 export const initialState = {
-    name: "anonymous user",
-    avatarUrl: null
+    name: "Anonymous",
+    avatarUrl: "logo-xs-white-BG.svg"
 };
 
 export default function(state = initialState, action) {

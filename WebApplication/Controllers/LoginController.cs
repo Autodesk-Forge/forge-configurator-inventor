@@ -55,12 +55,12 @@ namespace WebApplication.Controllers
         public async Task<ProfileDTO> Profile()
         {
             _logger.LogInformation("Get profile");
-            ProfileDTO profileDTO = new ProfileDTO { Name = "anonymous user", AvatarUrl = null };
+            ProfileDTO profileDTO = new ProfileDTO { Name = "Anonymous", AvatarUrl = "logo-xs-white-BG.svg" };
             var token = this.HttpContext.Request.Headers[HeaderNames.Authorization].ToString();
             if (!string.IsNullOrEmpty(token))
             {
                 var profile = await _forge.GetProfileAsync(token);
-                profileDTO = new ProfileDTO { Name = profile.userName, AvatarUrl = profile.profileImages.sizeX40 };
+                profileDTO = new ProfileDTO { Name = profile.firstName + " " + profile.lastName, AvatarUrl = profile.profileImages.sizeX40 };
             }
 
             return profileDTO;
