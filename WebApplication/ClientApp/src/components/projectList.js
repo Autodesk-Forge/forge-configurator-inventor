@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import BaseTable, { AutoResizer, Column } from 'react-base-table';
 import 'react-base-table/styles.css';
+import { Upload24 } from '@hig/icons';
+import './projectList.css';
 
 const Icon = ({ iconname }) => (
   <div>
@@ -43,20 +45,29 @@ export class ProjectList extends Component {
       ));
     }
 
+    const visible = true; // TBD to be driven by login status
+    const uploadContainerClass = visible ? "uploadContainer" : "uploadContainer hidden";
+
     return (
-      <AutoResizer>
-        {({ width, height }) => {
-            // reduce size by 16 (twice the default border of tabContent)
-            const newWidth = width-16;
-            const newHeight = height-16;
-            return <BaseTable
-                width={newWidth}
-                height={newHeight}
-                columns={projectListColumns}
-                data={data}
-            />;
-        }}
-      </AutoResizer>
+      <div className="fullheight">
+        <div className={uploadContainerClass}>
+          <Upload24 className="uploadButton" onClick={ (e) => { console.log(e); }} />
+        </div>
+        <div className="fullheight">
+          <AutoResizer>
+            {({ width, height }) => {
+
+                return <BaseTable
+                    width={width}
+                    height={height}
+                    columns={projectListColumns}
+                    data={data}
+                />;
+            }}
+          </AutoResizer>
+        </div>
+
+      </div>
     );
   }
 }
