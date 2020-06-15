@@ -6,7 +6,8 @@ export const initialState = {
    parametersEditedMessageRejected: false,
    updateProgressShowing: false,
    rfaProgressShowing: null,
-   rfaDownloadUrl: null
+   rfaDownloadUrl: null,
+   uploadPackageDlgVisible: false
 };
 
 export const updateProgressShowing = function(state) {
@@ -20,6 +21,10 @@ export const rfaProgressShowing = function(state) {
 export const rfaDownloadUrl = function(state) {
    return state.rfaDownloadUrl;
 };
+
+export const uploadPackageDlgVisible = function(state) {
+   return state.showUploadPackage;
+}
 
 export default function(state = initialState, action) {
    switch(action.type) {
@@ -37,6 +42,8 @@ export default function(state = initialState, action) {
          return { ...state, rfaProgressShowing: action.visible, rfaDownloadUrl: null};
       case uiFlagsActionTypes.SET_RFA_LINK:
          return { ...state, rfaDownloadUrl: action.url};
+      case uiFlagsActionTypes.SHOW_UPLOAD_PACKAGE:
+         return { ...state, showUploadPackage: action.visible};
       default:
          return state;
   }

@@ -8,7 +8,8 @@ export const actionTypes = {
     SHOW_UPDATE_PROGRESS: 'SHOW_UPDATE_PROGRESS',
     SHOW_RFA_PROGRESS: 'SHOW_RFA_PROGRESS',
     HIDE_RFA_PROGRESS: 'HIDE_RFA_PROGRESS',
-    SET_RFA_LINK: 'SET_RFA_LINK'
+    SET_RFA_LINK: 'SET_RFA_LINK',
+    SHOW_UPLOAD_PACKAGE: 'SHOW_UPLOAD_PACKAGE'
 };
 
 export default actionTypes;
@@ -64,4 +65,15 @@ export const setRFALink = (url) => {
         type: actionTypes.SET_RFA_LINK,
         url
     };
+};
+
+const showUploadPackage = (visible) => {
+    return {
+        type: actionTypes.SHOW_UPLOAD_PACKAGE,
+        visible
+    };
+};
+
+export const dispatchShowUploadPackage = (visible) => async(dispatch) => {
+    dispatch(showUploadPackage(visible));
 };

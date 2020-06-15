@@ -13,4 +13,8 @@
     padding-top: 10px;
     margin-left: 76px;
     vertical-align: middle;
+    /* following are to override IconButton strange behavior */
+    outline: none;
+    border-color: transparent;
+    box-shadow: none;
 }

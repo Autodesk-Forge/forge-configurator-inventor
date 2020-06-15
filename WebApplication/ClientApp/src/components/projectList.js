@@ -2,8 +2,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import BaseTable, { AutoResizer, Column } from 'react-base-table';
 import 'react-base-table/styles.css';
+import IconButton from '@hig/icon-button';
 import { Upload24 } from '@hig/icons';
 import './projectList.css';
+import { dispatchShowUploadPackage } from '../actions/uiFlagsActions';
+import UploadPackage from './uploadPackage';
 
 const Icon = ({ iconname }) => (
   <div>
@@ -51,7 +54,11 @@ export class ProjectList extends Component {
     return (
       <div className="fullheight">
         <div className={uploadContainerClass}>
-          <Upload24 className="uploadButton" onClick={ (e) => { console.log(e); }} />
+          <IconButton
+            icon={<Upload24 />}
+            title="Upload package"
+            className="uploadButton"
+            onClick={ () => { this.props.dispatchShowUploadPackage(true); }} />
         </div>
         <div className="fullheight">
           <AutoResizer>
@@ -67,6 +74,7 @@ export class ProjectList extends Component {
           </AutoResizer>
         </div>
 
+        <UploadPackage />
       </div>
     );
   }
@@ -77,4 +85,4 @@ export default connect(function (store) {
   return {
     projectList: store.projectList
   };
-})(ProjectList);
+}, { dispatchShowUploadPackage })(ProjectList);
