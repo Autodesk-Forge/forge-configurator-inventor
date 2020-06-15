@@ -5,16 +5,19 @@ using WebApplication.State;
 
 namespace WebApplication.Middleware
 {
-    public class TokenHandlerMiddleware
+    /// <summary>
+    /// Middleware to extract access token from HTTP headers.
+    /// </summary>
+    public class TokenHandler
     {
         private readonly RequestDelegate _next;
 
-        public TokenHandlerMiddleware(RequestDelegate next)
+        public TokenHandler(RequestDelegate next)
         {
             _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context, UserResolver resolver)
+        public Task InvokeAsync(HttpContext context, UserResolver resolver)
         {
             if (context.Request.Headers.TryGetValue(HeaderNames.Authorization, out var token))
             {
@@ -22,7 +25,7 @@ namespace WebApplication.Middleware
             }
 
             // Call the next delegate/middleware in the pipeline
-            await _next(context);
+            return _next(context);
         }
     }
 }

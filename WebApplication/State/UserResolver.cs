@@ -4,6 +4,9 @@ using WebApplication.Utilities;
 
 namespace WebApplication.State
 {
+    /// <summary>
+    /// Business logic to differentiate state for logged in and anonymous users.
+    /// </summary>
     public class UserResolver
     {
         private readonly ResourceProvider _resourceProvider;
@@ -18,7 +21,7 @@ namespace WebApplication.State
             _forgeOSS = forgeOSS;
         }
 
-        public async Task<string> GetBucketKey()
+        public async Task<OssBucket> GetBucket()
         {
             if (IsAuthenticated)
             {
@@ -28,13 +31,15 @@ namespace WebApplication.State
                 var userHash = Crypto.GenerateHashString(userId);
 
                 var bucketKey = $"authd-{userId.Substring(0, 3)}-{userHash}".ToLowerInvariant();
-                await _forgeOSS.CreateBucketAsync(bucketKey); // TODO: can throw an exception?
 
-                return bucketKey;
+                var bucket = new OssBucket(_forgeOSS, bucketKey);
+                await bucket.CreateAsync();
+
+                return bucket;
             }
             else
             {
-                return _resourceProvider.BucketKey;
+                return new OssBucket(_forgeOSS, _resourceProvider.BucketKey);
             }
         }
     }

@@ -119,7 +119,7 @@ namespace WebApplication
             });
 
             app.UseSpaStaticFiles();
-            app.UseMiddleware<TokenHandlerMiddleware>();
+            app.UseMiddleware<TokenHandler>();
 
             app.UseRouting();
 
