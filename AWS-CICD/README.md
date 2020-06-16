@@ -25,4 +25,4 @@ Files used only for AWS deployment
 * Usage:
   * npm install
   * node index.js
-  * outputs are stored in the AWS-CICD/CodeBuild/projects folder for codeBuild and AWS-CICD/codepipeline.json file for the pipeline
+  * outputs are stored in the AWS-CICD/CodeBuild/projects folder for codeBuild and the AWS-CICD/codepipeline.json file for the pipeline
