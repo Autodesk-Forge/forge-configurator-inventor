@@ -1,3 +1,4 @@
+using System.IO;
 using System.Threading.Tasks;
 using Autodesk.Forge.Core;
 using Microsoft.Extensions.Options;
@@ -29,7 +30,7 @@ namespace WebApplication.State
         {
             if (IsAuthenticated)
             {
-                var profile = await _forgeOSS.GetProfileAsync(Token);
+                var profile = await _forgeOSS.GetProfileAsync(Token); // TODO: cache it
                 var userId = profile.userId;
 
                 // an OSS bucket must have a unique name, so it should be generated in a way,
@@ -47,6 +48,33 @@ namespace WebApplication.State
             {
                 return new OssBucket(_forgeOSS, _resourceProvider.BucketKey);
             }
+        }
+
+        public async Task<Project> GetProject(string projectName)
+        {
+            string userDir;
+            if (IsAuthenticated)
+            {
+                var profile = await _forgeOSS.GetProfileAsync(Token); // TODO: cache it
+                userDir = profile.userId;
+            }
+            else
+            {
+                userDir = "_anonymous";
+            }
+
+            var userFullDirName = Path.Combine(_resourceProvider.LocalRootName, userDir);
+            Directory.CreateDirectory(userFullDirName); // TODO: should not do it each time
+            return new Project(projectName, userFullDirName);
+        }
+
+        /// <summary>
+        /// Get project storage by project name.
+        /// </summary>
+        public async Task<ProjectStorage> GetProjectStorage(string projectName)
+        {
+            var project = await GetProject(projectName);
+            return new ProjectStorage(project);
         }
     }
 }

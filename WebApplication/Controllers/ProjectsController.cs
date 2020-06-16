@@ -41,7 +41,7 @@ namespace WebApplication.Controllers
             {
                 var projectName = ONC.ToProjectName(objDetails.ObjectKey);
 
-                ProjectStorage projectStorage = _resourceProvider.GetProjectStorage(projectName);
+                ProjectStorage projectStorage = await _userResolver.GetProjectStorage(projectName); // TODO: expensive to do it in the loop
                 Project project = projectStorage.Project;
 
                 var dto = _dtoGenerator.MakeProjectDTO<ProjectDTO>(project, projectStorage.Metadata.Hash);

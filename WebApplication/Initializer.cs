@@ -24,19 +24,24 @@ namespace WebApplication
         private readonly DefaultProjectsConfiguration _defaultProjectsConfiguration;
         private readonly FdaClient _fdaClient;
         private readonly ProjectWork _projectWork;
+        private readonly UserResolver _userResolver;
         private readonly OssBucket _bucket;
 
         /// <summary>
         /// Constructor.
         /// </summary>
         public Initializer(IForgeOSS forge, ResourceProvider resourceProvider, ILogger<Initializer> logger,
-                            FdaClient fdaClient, IOptions<DefaultProjectsConfiguration> optionsAccessor, ProjectWork projectWork)
+                            FdaClient fdaClient, IOptions<DefaultProjectsConfiguration> optionsAccessor,
+                            ProjectWork projectWork, UserResolver userResolver)
         {
             _resourceProvider = resourceProvider;
             _logger = logger;
             _fdaClient = fdaClient;
             _projectWork = projectWork;
+            _userResolver = userResolver;
             _defaultProjectsConfiguration = optionsAccessor.Value;
+
+            // bucket for anonymous user
             _bucket = new OssBucket(forge, resourceProvider.BucketKey);
         }
 
@@ -77,7 +82,7 @@ namespace WebApplication
             foreach (DefaultProjectConfiguration defaultProjectConfig in _defaultProjectsConfiguration.Projects)
             {
                 var projectUrl = defaultProjectConfig.Url;
-                var project = _resourceProvider.GetProject(defaultProjectConfig.Name);
+                var project = await _userResolver.GetProject(defaultProjectConfig.Name);
 
                 _logger.LogInformation($"Launching 'TransferData' for {projectUrl}");
                 string signedUrl = await waitForBucketPolicy.ExecuteAsync(async () => await _bucket.CreateSignedUrlAsync(project.OSSSourceModel, ObjectAccess.ReadWrite));
