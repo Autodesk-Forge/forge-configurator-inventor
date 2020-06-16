@@ -17,3 +17,12 @@
 .modalProgress {
     margin-top: 8px;
 }
+
+#modalUpload .modalContent {
+    height: 86px;
+}
+
+#modalUpload .buttonsContainer {
+    display: flex;
+    flex-flow: row-reverse;
+}

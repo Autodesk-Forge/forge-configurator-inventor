@@ -8,7 +8,10 @@ export const initialState = {
    rfaProgressShowing: null,
    rfaDownloadUrl: null,
    showUploadPackage: false,
-   package: { file: '', root: ''}
+   showUploadProgress: null, //null, // null=hidden, value=project, done/error
+   package: { file: '', root: ''},
+   activeTabIndex: 0,
+   projectAlreadyExists: false
 };
 
 export const updateProgressShowing = function(state) {
@@ -31,6 +34,18 @@ export const uploadPackageData = function(state) {
    return state.package;
 };
 
+export const uploadProgressShowing = function(state) {
+   return state.showUploadProgress;
+};
+
+export const activeTabIndex = function(state) {
+   return state.activeTabIndex;
+};
+
+export const projectAlreadyExists = function(state) {
+   return state.projectAlreadyExists;
+};
+
 export default function(state = initialState, action) {
    switch(action.type) {
       case uiFlagsActionTypes.CLOSE_PARAMETERS_EDITED_MESSAGE:
@@ -49,11 +64,17 @@ export default function(state = initialState, action) {
          return { ...state, rfaDownloadUrl: action.url};
       case uiFlagsActionTypes.SHOW_UPLOAD_PACKAGE:
          return { ...state, showUploadPackage: action.visible};
+      case uiFlagsActionTypes.SHOW_UPLOAD_PROGRESS:
+         return { ...state, showUploadProgress: action.status};
       case uiFlagsActionTypes.PACKAGE_FILE_EDITED:
          return { ...state, package: { file: action.file, root: state.package.root } };
       case uiFlagsActionTypes.PACKAGE_ROOT_EDITED:
          return { ...state, package: { file: state.package.file, root: action.file } };
-      default:
+      case uiFlagsActionTypes.UPDATE_ACTIVE_TAB_INDEX:
+         return { ...state, activeTabIndex: action.index};
+      case uiFlagsActionTypes.PROJECT_EXISTS:
+         return { ...state, projectAlreadyExists: action.exists};
+            default:
          return state;
   }
 }

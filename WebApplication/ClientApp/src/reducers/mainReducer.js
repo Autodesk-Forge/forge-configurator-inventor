@@ -72,10 +72,28 @@ export const uploadPackageDlgVisible = function(state) {
     return uiFlags.uploadPackageDlgVisible(state.uiFlagsReducer);
 };
 
+export const uploadProgressShowing = function(state) {
+    return uiFlags.uploadProgressShowing(state.uiFlagsReducer);
+};
+
 export const uploadPackageData = function(state) {
     return uiFlags.uploadPackageData(state.uiFlagsReducer);
 }
 
 export const getProfile = function (state) {
     return state.profile;
+};
+
+export const activeTabIndex = function(state) {
+    return uiFlags.activeTabIndex(state.uiFlagsReducer);
+};
+
+export const existsProject = function(projectId, state) {
+
+    const project = getProject(projectId, state);
+    return project != null;
+};
+
+export const projectAlreadyExists = function(state) {
+    return uiFlags.projectAlreadyExists(state.uiFlagsReducer);
 };

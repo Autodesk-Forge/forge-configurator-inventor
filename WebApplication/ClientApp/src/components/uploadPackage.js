@@ -8,8 +8,8 @@ import IconButton from '@hig/icon-button';
 import Spacer from '@hig/spacer';
 import { Folder24 } from '@hig/icons';
 import merge from "lodash.merge";
-import { uploadPackageDlgVisible, uploadPackageData } from '../reducers/mainReducer';
-import { showUploadPackage, editPackageFile, editPackageRoot } from '../actions/uiFlagsActions';
+import { uploadPackageDlgVisible, uploadPackageData, projectAlreadyExists, existsProject } from '../reducers/mainReducer';
+import { showUploadPackage, showUploadProgress, editPackageFile, editPackageRoot, setProjectAlreadyExists } from '../actions/uiFlagsActions';
 import './uploadPackage.css';
 
 export class UploadPackage extends Component {
@@ -28,6 +28,20 @@ export class UploadPackage extends Component {
         this.props.editPackageRoot(data.target.value);
     }
 
+    showProgress() {
+        this.props.showUploadPackage(false);
+
+        if (this.props.existsProject === true) {
+            this.props.setProjectAlreadyExists(true);
+            return;
+        }
+
+        this.props.showUploadProgress(this.props.package.file);
+        setTimeout(() => {
+            this.props.showUploadProgress("#done"); // temporary show and hide progress after 2 seconds
+        }, 2000);
+    }
+
     render() {
         const modalStyles = /* istanbul ignore next */ styles =>
         merge(styles, {
@@ -38,8 +52,18 @@ export class UploadPackage extends Component {
                 }
             }
         });
+        const modalStylesConflict = /* istanbul ignore next */ styles =>
+        merge(styles, {
+          modal: {
+                window: { // by design
+                    width: "370px",
+                    height: "180px"
+                }
+            }
+        });
 
         return (
+            <React.Fragment>
             <Modal
             open={this.props.uploadPackageDlgVisible}
             title="Upload package"
@@ -89,7 +113,7 @@ export class UploadPackage extends Component {
                             size="standard"
                             title="Upload"
                             type="primary"
-                            onClick={() => { console.log('UPLOAD PACKAGE CLICKED'); }}
+                            onClick={() => {this.showProgress();}}
                         />
                         <div style={{width: '14px'}}/>
                         <Button
@@ -101,6 +125,13 @@ export class UploadPackage extends Component {
                     </div>
                 </div>
             </Modal>
+            {this.props.projectAlreadyExists && <Modal
+            open={true}
+            title="Warning"
+            onCloseClick={() => { this.props.setProjectAlreadyExists(false); }}
+            stylesheet={modalStylesConflict} >Project already exists, please choose different file to upload or rename it.</Modal>
+            }
+            </React.Fragment>
         );
     }
 }
@@ -109,6 +140,8 @@ export class UploadPackage extends Component {
 export default connect(function (store) {
     return {
       uploadPackageDlgVisible: uploadPackageDlgVisible(store),
-      package: uploadPackageData(store)
+      projectAlreadyExists: projectAlreadyExists(store),
+      package: uploadPackageData(store),
+      existsProject: existsProject(uploadPackageData(store).file, store)
     };
-}, { showUploadPackage, uploadPackageData, editPackageFile, editPackageRoot })(UploadPackage);
+}, { showUploadPackage, showUploadProgress, uploadPackageData, editPackageFile, editPackageRoot, setProjectAlreadyExists })(UploadPackage);

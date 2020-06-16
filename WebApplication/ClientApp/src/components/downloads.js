@@ -5,7 +5,7 @@ import 'react-base-table/styles.css';
 import { getActiveProject, rfaProgressShowing, rfaDownloadUrl } from '../reducers/mainReducer';
 import { getRFADownloadLink } from '../actions/downloadActions';
 import { showRFAModalProgress } from '../actions/uiFlagsActions';
-import ModalProgress from './modalProgress';
+import ModalProgressRfa from './modalProgressRfa';
 
 const Icon = ({ iconname }) => (
     <div>
@@ -98,7 +98,7 @@ export class Downloads extends Component {
                     />;
                 }}
             </AutoResizer>
-                {this.props.rfaProgressShowing && <ModalProgress
+                {this.props.rfaProgressShowing && <ModalProgressRfa
                     open={true}
                     title="Preparing RFA"
                     label={this.props.activeProject.id}

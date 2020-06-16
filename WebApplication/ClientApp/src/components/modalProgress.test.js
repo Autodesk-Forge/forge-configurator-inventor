@@ -1,7 +1,8 @@
 import React from 'react';
 import Enzyme, { shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
-import { ModalProgress } from './modalProgress';
+import { ModalProgressUpdate } from './modalProgressUpdate';
+import { ModalProgressRfa } from './modalProgressRfa';
 
 Enzyme.configure({ adapter: new Adapter() });
 
@@ -15,7 +16,7 @@ describe('modal progress ', () => {
 
     it('should show message from props.label', () => {
 
-        const wrapper = shallow(<ModalProgress {...props} />);
+        const wrapper = shallow(<ModalProgressUpdate {...props} />);
 
         const wrapperComponent = wrapper.find('.modalAction');
         const children = wrapperComponent.prop('children');
@@ -28,7 +29,7 @@ describe('modal progress ', () => {
 
         const propsNoTitle = { title: null };
 
-        const wrapper = shallow(<ModalProgress {...propsNoTitle} />);
+        const wrapper = shallow(<ModalProgressUpdate {...propsNoTitle} />);
 
         const wrapperComponent = wrapper.find('.modalAction');
         const children = wrapperComponent.prop('children');
@@ -41,7 +42,7 @@ describe('modal progress ', () => {
 
         const props = { url: "someUrl" };
 
-        const wrapper = shallow(<ModalProgress {...props} />);
+        const wrapper = shallow(<ModalProgressRfa {...props} />);
 
         const button = wrapper.find('Button');
         expect(button.prop('title')).toBe('Done');
@@ -51,7 +52,7 @@ describe('modal progress ', () => {
 
         const props = { url: null };
 
-        const wrapper = shallow(<ModalProgress {...props} />);
+        const wrapper = shallow(<ModalProgressRfa {...props} />);
 
         const button = wrapper.find('Button');
         expect(button.length).toBe(0);

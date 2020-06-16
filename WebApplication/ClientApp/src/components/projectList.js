@@ -5,8 +5,12 @@ import 'react-base-table/styles.css';
 import IconButton from '@hig/icon-button';
 import { Upload24 } from '@hig/icons';
 import './projectList.css';
-import { showUploadPackage } from '../actions/uiFlagsActions';
+import { showUploadPackage, showUploadProgress, updateActiveTabIndex } from '../actions/uiFlagsActions';
+import { updateActiveProject } from '../actions/projectListActions';
 import UploadPackage from './uploadPackage';
+
+import ModalProgressUpload from './modalProgressUpload';
+import { uploadProgressShowing, uploadPackageData } from '../reducers/mainReducer';
 
 const Icon = ({ iconname }) => (
   <div>
@@ -35,6 +39,23 @@ export const projectListColumns = [
 ];
 
 export class ProjectList extends Component {
+
+  isDone() {
+    return this.props.uploadProgressShowing === "#done";
+  }
+
+  onProgressCloseClick() {
+    this.props.showUploadProgress(null);
+  }
+
+  onProgressOpenClick() {
+    this.props.showUploadProgress(null);
+    // temporary switch to Wrench
+    this.props.updateActiveProject(/*this.props.uploadPackageData.file*/'Wrench');
+    // switch to MODEL tab
+    this.props.updateActiveTabIndex(1);
+  }
+
   render() {
     let data = [];
     if(this.props.projectList.projects) {
@@ -50,6 +71,7 @@ export class ProjectList extends Component {
 
     const visible = true; // TBD to be driven by login status
     const uploadContainerClass = visible ? "uploadContainer" : "uploadContainer hidden";
+    const showUploadProgress = this.props.uploadProgressShowing != null;
 
     return (
       <div className="fullheight">
@@ -75,6 +97,16 @@ export class ProjectList extends Component {
         </div>
 
         <UploadPackage />
+        {showUploadProgress && <ModalProgressUpload
+                    open={true}
+                    title={this.isDone() ? "Upload Finished" : "Uploading package"}
+                    label={this.props.uploadPackageData.file}
+                    icon='Archive.svg'
+                    onClose={() => {this.onProgressCloseClick(); }}
+                    onOpen={() => {this.onProgressOpenClick(); }}
+                    url={null}
+                    isDone={() => this.isDone() === true }
+                    />}
       </div>
     );
   }
@@ -83,6 +115,8 @@ export class ProjectList extends Component {
 /* istanbul ignore next */
 export default connect(function (store) {
   return {
-    projectList: store.projectList
+    projectList: store.projectList,
+    uploadProgressShowing: uploadProgressShowing(store),
+    uploadPackageData: uploadPackageData(store)
   };
-}, { showUploadPackage })(ProjectList);
+}, { showUploadPackage, showUploadProgress, updateActiveProject, updateActiveTabIndex })(ProjectList);
