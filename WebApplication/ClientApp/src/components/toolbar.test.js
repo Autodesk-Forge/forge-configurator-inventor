@@ -1,45 +1,52 @@
 import React from 'react';
-import Enzyme, { mount } from 'enzyme';
+import Enzyme, { shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import { Toolbar } from './toolbar';
-import { ProjectSwitcher } from './projectSwitcher';
+
 
 Enzyme.configure({ adapter: new Adapter() });
 
-describe('components', () => {
+describe('Components', () => {
   describe('toolbar', () => {
-    it('verify that toolbar contains project switcher', () => {
+    it('verify that toolbar will load profile when its mounted', () => {
 
         const loadProfileMock = jest.fn();
-        const toolbarPros = {
+        const toolbarProps = {
+          loadProfile: loadProfileMock,
           profile: {
             name: 'profileName',
             avatarUrl: 'avatarUrl'
-          },
-          loadProfile: loadProfileMock
+          }
         };
 
-        const fetchProjectsMock = jest.fn();
-        const projectSwitcherProps = {
-          projectList: {
-            activeProjectId: "1",
-            projects: [
-              { id: "1", label: "label1" }, { id: "2", label: "label2" }
+        shallow(
+          <Toolbar {...toolbarProps}/>
+        );
 
-            ]
-          },
-          fetchProjects: fetchProjectsMock
+        expect(loadProfileMock).toHaveBeenCalled();
+    });
+
+    it('verify that profilename and avatarUrl is sent to properties of ProfileAction', () => {
+      const loadProfileMock = jest.fn();
+        const toolbarProps = {
+          loadProfile: loadProfileMock,
+          profile: {
+            name: 'profileName',
+            avatarUrl: 'avatarUrl'
+          }
         };
 
-        const wrapper = mount(
-          <Toolbar {...toolbarPros}>
-            <ProjectSwitcher {...projectSwitcherProps}/>
-          </Toolbar>);
+      const toolbar = (<Toolbar {...toolbarProps} />);
+      const wrapper = shallow(
+        toolbar,
+        {disableLifecycleMethods: true}
+      );
 
-        const wrapperComponent = wrapper.find(ProjectSwitcher);
-        expect(wrapperComponent.length).toEqual(1);
-        expect(fetchProjectsMock).toHaveBeenCalledTimes(1);
-        expect(fetchProjectsMock).toHaveBeenCalled();
-      });
+      const rightActionsFragment = wrapper.prop('rightActions');
+      const rightActionsWrapper = shallow(rightActionsFragment.props.children[1]);
+      const profileActionWrapper = rightActionsWrapper.find('ProfileAction');
+      expect(profileActionWrapper.prop('avatarName')).toEqual(toolbarProps.profile.name);
+      expect(profileActionWrapper.prop('avatarImage')).toEqual(toolbarProps.profile.avatarUrl);
+    });
   });
 });

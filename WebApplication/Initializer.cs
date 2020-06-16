@@ -8,18 +8,23 @@ using Microsoft.Extensions.Options;
 using Polly;
 using WebApplication.Definitions;
 using WebApplication.Processing;
+using WebApplication.Services;
+using WebApplication.State;
 using WebApplication.Utilities;
 
 namespace WebApplication
 {
+    /// <summary>
+    /// Initialize data for anonymous user.
+    /// </summary>
     public class Initializer
     {
-        private readonly IForgeOSS _forge;
         private readonly ResourceProvider _resourceProvider;
         private readonly ILogger<Initializer> _logger;
         private readonly DefaultProjectsConfiguration _defaultProjectsConfiguration;
         private readonly FdaClient _fdaClient;
         private readonly ProjectWork _projectWork;
+        private readonly OssBucket _bucket;
 
         /// <summary>
         /// Constructor.
@@ -27,12 +32,12 @@ namespace WebApplication
         public Initializer(IForgeOSS forge, ResourceProvider resourceProvider, ILogger<Initializer> logger,
                             FdaClient fdaClient, IOptions<DefaultProjectsConfiguration> optionsAccessor, ProjectWork projectWork)
         {
-            _forge = forge;
             _resourceProvider = resourceProvider;
             _logger = logger;
             _fdaClient = fdaClient;
             _projectWork = projectWork;
             _defaultProjectsConfiguration = optionsAccessor.Value;
+            _bucket = new OssBucket(forge, resourceProvider.BucketKey);
         }
 
         public async Task InitializeAsync()
@@ -55,10 +60,10 @@ namespace WebApplication
 
                     // create the bucket
                     createBucketPolicy.ExecuteAsync(() =>
-                        _forge.CreateBucketAsync(_resourceProvider.BucketKey))
+                        _bucket.CreateAsync())
                 );
 
-            _logger.LogInformation($"Bucket {_resourceProvider.BucketKey} created");
+            _logger.LogInformation($"Bucket {_bucket.BucketKey} created");
 
             // OSS bucket might be not ready yet, so repeat attempts
             var waitForBucketPolicy = Policy
@@ -77,7 +82,7 @@ namespace WebApplication
 
                 _logger.LogInformation($"Launching 'TransferData' for {projectUrl}");
                 string signedUrl = await waitForBucketPolicy.ExecuteAsync(() => 
-                                    _forge.CreateSignedUrlAsync(_resourceProvider.BucketKey, project.OSSSourceModel, ObjectAccess.ReadWrite));
+                    _bucket.CreateSignedUrlAsync(project.OSSSourceModel, ObjectAccess.ReadWrite));
 
                 // TransferData from s3 to oss
                 await _projectWork.FileTransferAsync(projectUrl, signedUrl);
@@ -93,13 +98,13 @@ namespace WebApplication
         {
             try
             {
-                await _forge.DeleteBucketAsync(_resourceProvider.BucketKey);
+                await _bucket.DeleteAsync();
                 // We need to wait because server needs some time to settle it down. If we would go and create bucket immediately again we would receive conflict.
                 await Task.Delay(4000);
             }
             catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
             {
-                _logger.LogInformation($"Nothing to delete because bucket {_resourceProvider.BucketKey} does not exists yet");
+                _logger.LogInformation($"Nothing to delete because bucket {_bucket.BucketKey} does not exists yet");
             }
 
             // delete bundles and activities

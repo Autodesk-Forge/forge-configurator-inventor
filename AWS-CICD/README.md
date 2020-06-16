@@ -3,9 +3,9 @@ Files used only for AWS deployment
 * These are not required to run application. It can be used as an example to setup CI/CD on AWS.
 ## CLI Commands
 * Get the definition of the CodePipeline pipeline
-  * `aws codepipeline get-pipeline --name sdra-docker > codepipeline.json`
+  * see GetAllDefinitions bellow
 * Get the definition of CodeBuild projects 
-  * `aws codebuild batch-get-projects --names sdra-windows-build sdra-build sdra-test sdra-deploy > codebuild-projects.json`
+  * see GetAllDefinitions bellow
 * Create a new CodeBuild project
   * `aws codebuild create-project --cli-input-json file://codebuild-test-project.json`
 * Update a CodeBuild project property (examples)
@@ -20,5 +20,9 @@ Files used only for AWS deployment
 * To use them: 
   * Copy `/scripts/config.empty.json` to `/scripts/config.json` and fill in values
   * Then run in a console with commands such as `./update-pipeline.ps1 <aws_profile_name>`
-## References
-* chrome.json and Bionic Dockerfile are used from the https://github.com/microsoft/playwright/tree/master/docs/docker
+## GetAllDefinitions nodejs module
+* This project will help you retrieve CodeBuild and CodePipeline project definitions out of AWS to be stored in git
+* Usage:
+  * npm install
+  * node index.js
+  * outputs are stored in the AWS-CICD/CodeBuild/projects folder for codeBuild and the AWS-CICD/codepipeline.json file for the pipeline
