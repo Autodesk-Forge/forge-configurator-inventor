@@ -21,7 +21,7 @@ Files used only for AWS deployment
   * Copy `/scripts/config.empty.json` to `/scripts/config.json` and fill in values
   * Then run in a console with commands such as `./update-pipeline.ps1 <aws_profile_name>`
 ## GetAllDefinitions nodejs module
-* This project will help you to retrieve CodeBuild and CodePipeline project definitions out of the AWS to be stored in git
+* This project will help you retrieve CodeBuild and CodePipeline project definitions out of AWS to be stored in git
 * Usage:
   * npm install
   * node index.js
