@@ -39,7 +39,7 @@ artifacts:
     - 'AWS-CICD/amazon-cloudwatch-agent.json'
     - 'AWS-CICD/commands.sh'
     - 'AWS-CICD/Dockerfile.image'
-    - 'AWS-CICD/CodeBuild/build-specs/buildspec-image.yml'
+    - 'AWS-CICD/build-specs/buildspec-image.yml'
     - 'AWS-CICD/Dockerrun.aws.json'
   secondary-artifacts:
     BuildReport:
