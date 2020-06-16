@@ -11,7 +11,7 @@ describe('Components', () => {
     it('verify that toolbar will load profile when its mounted', () => {
 
         const loadProfileMock = jest.fn();
-        const toolbarPros = {
+        const toolbarProps = {
           loadProfile: loadProfileMock,
           profile: {
             name: 'profileName',
@@ -20,7 +20,7 @@ describe('Components', () => {
         };
 
         shallow(
-          <Toolbar {...toolbarPros}/>
+          <Toolbar {...toolbarProps}/>
         );
 
         expect(loadProfileMock).toHaveBeenCalled();
@@ -28,7 +28,7 @@ describe('Components', () => {
 
     it('verify that profilename and avatarUrl is sent to properties of ProfileAction', () => {
       const loadProfileMock = jest.fn();
-        const toolbarPros = {
+        const toolbarProps = {
           loadProfile: loadProfileMock,
           profile: {
             name: 'profileName',
@@ -36,7 +36,7 @@ describe('Components', () => {
           }
         };
 
-      const toolbar = (<Toolbar {...toolbarPros} />);
+      const toolbar = (<Toolbar {...toolbarProps} />);
       const wrapper = shallow(
         toolbar,
         {disableLifecycleMethods: true}
@@ -45,8 +45,8 @@ describe('Components', () => {
       const rightActionsFragment = wrapper.prop('rightActions');
       const rightActionsWrapper = shallow(rightActionsFragment.props.children[1]);
       const profileActionWrapper = rightActionsWrapper.find('ProfileAction');
-      expect(profileActionWrapper.prop('avatarName')).toEqual(toolbarPros.profile.name);
-      expect(profileActionWrapper.prop('avatarImage')).toEqual(toolbarPros.profile.avatarUrl);
+      expect(profileActionWrapper.prop('avatarName')).toEqual(toolbarProps.profile.name);
+      expect(profileActionWrapper.prop('avatarImage')).toEqual(toolbarProps.profile.avatarUrl);
     });
   });
 });
