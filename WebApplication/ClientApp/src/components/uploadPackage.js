@@ -58,11 +58,20 @@ export class UploadPackage extends Component {
                                 onChange={this.onPackageFileChange}
                                 value={this.props.package.file}
                             />
-                            <IconButton
-                                icon={<Folder24 />}
-                                title="Browse package"
-                                className="browseButton"
-                                onClick={ () => { console.log('BROWSE THE ZIP'); }}
+                            <label htmlFor="packageFileInput">
+                                <div>
+                                <IconButton
+                                    icon={<Folder24 />}
+                                    title="Browse package"
+                                    onClick={ () => { document.getElementById("packageFileInput").click(); }}
+                                />
+                                </div>
+                            </label>
+                            <input id="packageFileInput"
+                                type="file"
+                                onChange={ (e) => {
+                                    this.onPackageFileChange(e);
+                                }}
                             />
                         </div>
                         <Label

@@ -10,3 +10,7 @@
 #uploadPackageModal .buttonsContainer button {
     width: 102px;
 }
+
+#packageFileInput {
+    display: none;
+}
