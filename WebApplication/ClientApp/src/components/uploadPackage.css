@@ -1,0 +1,12 @@
+#uploadPackageModal .fileBrowseContainer {
+    display: flex;
+}
+
+#uploadPackageModal .buttonsContainer {
+    display: flex;
+    flex-flow: row-reverse;
+}
+
+#uploadPackageModal .buttonsContainer button {
+    width: 102px;
+}

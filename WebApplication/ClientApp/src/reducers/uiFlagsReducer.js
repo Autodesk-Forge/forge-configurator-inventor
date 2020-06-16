@@ -28,8 +28,8 @@ export const uploadPackageDlgVisible = function(state) {
 };
 
 export const uploadPackageData = function(state) {
-   return state.package
-}
+   return state.package;
+};
 
 export default function(state = initialState, action) {
    switch(action.type) {
