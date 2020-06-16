@@ -59,18 +59,18 @@ namespace WebApplication.Processing
         /// Initialize app bundle and activity.
         /// </summary>
         /// <param name="packagePathname">Pathname to the package.</param>
-        public Task InitializeAsync(string packagePathname)
+        public async Task InitializeAsync(string packagePathname)
         {
-            return Publisher.InitializeAsync(packagePathname, this);
+            await Publisher.InitializeAsync(packagePathname, this);
         }
 
         /// <summary>
         /// Remove app bundle and activity.
         /// </summary>
         /// <returns></returns>
-        public Task CleanUpAsync()
+        public async Task CleanUpAsync()
         {
-            return Publisher.CleanUpAsync(this);
+            await Publisher.CleanUpAsync(this);
         }
 
         /// <summary>

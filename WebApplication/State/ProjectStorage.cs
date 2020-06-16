@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using WebApplication.Definitions;
 using WebApplication.Utilities;
 
-namespace WebApplication
+namespace WebApplication.State
 {
     /// <summary>
     /// Logic related to local cache storage for project.
@@ -17,8 +17,6 @@ namespace WebApplication
         /// </summary>
         public Project Project { get; }
 
-        private readonly ResourceProvider _resourceProvider;
-
         /// <summary>
         /// Project metadata.
         /// </summary>
@@ -28,10 +26,9 @@ namespace WebApplication
         /// <summary>
         /// Constructor.
         /// </summary>
-        public ProjectStorage(Project project, ResourceProvider resourceProvider)
+        public ProjectStorage(Project project)
         {
             Project = project;
-            _resourceProvider = resourceProvider;
 
             _lazyMetadata = new Lazy<ProjectMetadata>(() =>
                                                             {
@@ -46,15 +43,15 @@ namespace WebApplication
         /// <summary>
         /// Ensure the project is cached locally.
         /// </summary>
-        public async Task EnsureLocalAsync(IForgeOSS forgeOSS)
+        public async Task EnsureLocalAsync(OssBucket ossBucket)
         {
             // ensure the directory exists
             Directory.CreateDirectory(Project.LocalAttributes.BaseDir);
 
             // download metadata and thumbnail
             await Task.WhenAll(
-                                forgeOSS.DownloadFileAsync(_resourceProvider.BucketKey, Project.OssAttributes.Metadata, Project.LocalAttributes.Metadata),
-                                forgeOSS.DownloadFileAsync(_resourceProvider.BucketKey, Project.OssAttributes.Thumbnail, Project.LocalAttributes.Thumbnail)
+                                ossBucket.DownloadFileAsync(Project.OssAttributes.Metadata, Project.LocalAttributes.Metadata),
+                                ossBucket.DownloadFileAsync(Project.OssAttributes.Thumbnail, Project.LocalAttributes.Thumbnail)
                             );
 
 
@@ -62,28 +59,28 @@ namespace WebApplication
             // NOTE: this step is impossible without having project metadata,
             // because file/dir names depends on hash of initial project state
 
-            await PlaceViewablesAsync(forgeOSS, GetLocalNames(), GetOssNames());
+            await PlaceViewablesAsync(ossBucket, GetLocalNames(), GetOssNames());
         }
 
         /// <summary>
         /// Ensure the project viewables are cached locally.
         /// </summary>
-        /// <param name="forgeOSS">OSS client</param>
+        /// <param name="ossBucket">OSS bucket.</param>
         /// <param name="hash">Parameters hash.</param>
-        public Task EnsureViewablesAsync(IForgeOSS forgeOSS, string hash)
+        public async Task EnsureViewablesAsync(OssBucket ossBucket, string hash)
         {
-            return PlaceViewablesAsync(forgeOSS, GetLocalNames(hash), GetOssNames(hash));
+            await PlaceViewablesAsync(ossBucket, GetLocalNames(hash), GetOssNames(hash));
         }
 
-        private async Task PlaceViewablesAsync(IForgeOSS forgeOSS, LocalNameProvider localNames, OSSObjectNameProvider ossNames)
+        private async Task PlaceViewablesAsync(OssBucket ossBucket, LocalNameProvider localNames, OSSObjectNameProvider ossNames)
         {
             // create the "hashed" dir
             Directory.CreateDirectory(localNames.BaseDir);
 
             using var tempFile = new TempFile();
             await Task.WhenAll(
-                                forgeOSS.DownloadFileAsync(_resourceProvider.BucketKey, ossNames.ModelView, tempFile.Name),
-                                forgeOSS.DownloadFileAsync(_resourceProvider.BucketKey, ossNames.Parameters, localNames.Parameters)
+                                ossBucket.DownloadFileAsync(ossNames.ModelView, tempFile.Name),
+                                ossBucket.DownloadFileAsync(ossNames.Parameters, localNames.Parameters)
                             );
 
             // extract SVF from the archive

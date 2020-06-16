@@ -44,44 +44,44 @@ namespace WebApplication.Controllers
                 _hub = hub;
             }
 
-            public Task SendSuccessAsync()
+            public async Task SendSuccessAsync()
             {
-                return Destination.SendAsync(OnComplete);
+                await Destination.SendAsync(OnComplete);
             }
 
-            public Task SendSuccessAsync(object arg0)
+            public async Task SendSuccessAsync(object arg0)
             {
-                return Destination.SendAsync(OnComplete, arg0);
+                await Destination.SendAsync(OnComplete, arg0);
             }
 
-            public Task SendSuccessAsync(object arg0, object arg1)
+            public async Task SendSuccessAsync(object arg0, object arg1)
             {
-                return Destination.SendAsync(OnComplete, arg0, arg1);
+                await Destination.SendAsync(OnComplete, arg0, arg1);
             }
 
-            public Task SendSuccessAsync(object arg0, object arg1, object arg2)
+            public async Task SendSuccessAsync(object arg0, object arg1, object arg2)
             {
-                return Destination.SendAsync(OnComplete, arg0, arg1, arg2);
+                await Destination.SendAsync(OnComplete, arg0, arg1, arg2);
             }
 
-            public Task SendErrorAsync()
+            public async Task SendErrorAsync()
             {
-                return Destination.SendAsync(OnError);
+                await Destination.SendAsync(OnError);
             }
 
-            public Task SendErrorAsync(object arg0)
+            public async Task SendErrorAsync(object arg0)
             {
-                return Destination.SendAsync(OnError, arg0);
+                await Destination.SendAsync(OnError, arg0);
             }
 
-            public Task SendErrorAsync(object arg0, object arg1)
+            public async Task SendErrorAsync(object arg0, object arg1)
             {
-                return Destination.SendAsync(OnError, arg0, arg1);
+                await Destination.SendAsync(OnError, arg0, arg1);
             }
 
-            public Task SendErrorAsync(object arg0, object arg1, object arg2)
+            public async Task SendErrorAsync(object arg0, object arg1, object arg2)
             {
-                return Destination.SendAsync(OnError, arg0, arg1, arg2);
+                await Destination.SendAsync(OnError, arg0, arg1, arg2);
             }
         }
 
@@ -101,22 +101,22 @@ namespace WebApplication.Controllers
             _sender = new Sender(this);
         }
 
-        public Task CreateUpdateJob(string projectId, InventorParameters parameters)
+        public async Task CreateUpdateJob(string projectId, InventorParameters parameters)
         {
             _logger.LogInformation($"invoked CreateJob, connectionId : {Context.ConnectionId}");
 
             // create job and run it
             var job = new UpdateModelJobItem(_logger, projectId, parameters, _projectWork);
-            return RunJobAsync(job);
+            await RunJobAsync(job);
         }
 
-        public Task CreateRFAJob(string projectId, string hash)
+        public async Task CreateRFAJob(string projectId, string hash)
         {
             _logger.LogInformation($"invoked CreateRFAJob, connectionId : {Context.ConnectionId}");
 
             // create job and run it
             var job = new RFAJobItem(_logger, projectId, hash, _projectWork, _linkGenerator);
-            return RunJobAsync(job);
+            await RunJobAsync(job);
         }
 
         public async Task RunJobAsync(JobItemBase job)
