@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Autodesk.Forge.Core;
 using Autodesk.Forge.DesignAutomation;
 using Microsoft.Extensions.Options;
-using WebApplication.State;
 
 namespace WebApplication.Utilities
 {
@@ -24,8 +23,7 @@ namespace WebApplication.Utilities
         /// <summary>
         /// Root dir for local cache.
         /// </summary>
-        public string LocalRootName => _localRootDir.Value;
-        private readonly Lazy<string> _localRootDir;
+        public string LocalRootName = Path.Combine(Directory.GetCurrentDirectory(), LocalCacheDir);
 
         public ResourceProvider(IOptions<ForgeConfiguration> forgeConfigOptionsAccessor, DesignAutomationClient client, string bucketKey = null)
         {
@@ -33,16 +31,6 @@ namespace WebApplication.Utilities
             BucketKey = bucketKey ?? $"projects-{configuration.ClientId.Substring(0, 3)}-{configuration.HashString()}{Environment.GetEnvironmentVariable("BucketKeySuffix")}".ToLowerInvariant();
 
             _nickname = new Lazy<Task<string>>(async () => await client.GetNicknameAsync("me"));
-
-            _localRootDir = new Lazy<string>(() =>
-            {
-                var localDir = Path.Combine(Directory.GetCurrentDirectory(), LocalCacheDir); // TODO: should the root dir be taken from config? or another class?
-
-                // ensure the directory is exists
-                Directory.CreateDirectory(localDir);
-
-                return localDir;
-            });
         }
 
         /// <summary>
@@ -56,23 +44,6 @@ namespace WebApplication.Utilities
 
             string relativeName = localFileName.Substring(LocalRootName.Length);
             return VirtualCacheDir + relativeName.Replace('\\', '/');
-        }
-
-        /// <summary>
-        /// Get project by its name.
-        /// </summary>
-        public Project GetProject(string projectName)
-        {
-            return new Project(projectName, LocalRootName);
-        }
-
-        /// <summary>
-        /// Get project storage by project name.
-        /// </summary>
-        public ProjectStorage GetProjectStorage(string projectName)
-        {
-            var project = GetProject(projectName);
-            return new ProjectStorage(project);
         }
     }
 }
