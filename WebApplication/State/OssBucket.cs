@@ -28,27 +28,27 @@ namespace WebApplication.State
         /// <summary>
         /// Create bucket.
         /// </summary>
-        public Task CreateAsync()
+        public async Task CreateAsync()
         {
-            return _forgeOSS.CreateBucketAsync(BucketKey);
+            await _forgeOSS.CreateBucketAsync(BucketKey);
         }
 
         /// <summary>
         /// Delete the bucket.
         /// </summary>
         /// <returns></returns>
-        public Task DeleteAsync()
+        public async Task DeleteAsync()
         {
-            return _forgeOSS.DeleteBucketAsync(BucketKey);
+            await _forgeOSS.DeleteBucketAsync(BucketKey);
         }
 
         /// <summary>
         /// Get bucket objects.
         /// </summary>
         /// <param name="beginsWith">Search filter ("begin with")</param>
-        public Task<List<ObjectDetails>> GetObjectsAsync(string beginsWith = null)
+        public async Task<List<ObjectDetails>> GetObjectsAsync(string beginsWith = null)
         {
-            return _forgeOSS.GetBucketObjectsAsync(BucketKey, beginsWith);
+            return await _forgeOSS.GetBucketObjectsAsync(BucketKey, beginsWith);
         }
 
         /// <summary>
@@ -59,25 +59,25 @@ namespace WebApplication.State
         /// <param name="access">Requested access to the object.</param>
         /// <param name="minutesExpiration">Minutes while the URL is valid. Default is 30 minutes.</param>
         /// <returns>Signed URL</returns>
-        public Task<string> CreateSignedUrlAsync(string objectName, ObjectAccess access = ObjectAccess.Read, int minutesExpiration = 30)
+        public async Task<string> CreateSignedUrlAsync(string objectName, ObjectAccess access = ObjectAccess.Read, int minutesExpiration = 30)
         {
-            return _forgeOSS.CreateSignedUrlAsync(BucketKey, objectName, access, minutesExpiration);
+            return await _forgeOSS.CreateSignedUrlAsync(BucketKey, objectName, access, minutesExpiration);
         }
 
         /// <summary>
         /// Copy OSS object.
         /// </summary>
-        public Task CopyAsync(string fromName, string toName)
+        public async Task CopyAsync(string fromName, string toName)
         {
-            return _forgeOSS.CopyAsync(BucketKey, fromName, toName);
+            await _forgeOSS.CopyAsync(BucketKey, fromName, toName);
         }
 
         /// <summary>
         /// Download OSS file.
         /// </summary>
-        public Task DownloadFileAsync(string objectName, string localFullName)
+        public async Task DownloadFileAsync(string objectName, string localFullName)
         {
-            return _forgeOSS.DownloadFileAsync(BucketKey, objectName, localFullName);
+            await _forgeOSS.DownloadFileAsync(BucketKey, objectName, localFullName);
         }
 
         /// <summary>
@@ -85,28 +85,27 @@ namespace WebApplication.State
         /// </summary>
         /// <param name="oldName">Old object name.</param>
         /// <param name="newName">New object name.</param>
-        public Task RenameObjectAsync(string oldName, string newName)
+        public async Task RenameObjectAsync(string oldName, string newName)
         {
-            return _forgeOSS.RenameObjectAsync(BucketKey, oldName, newName);
+            await _forgeOSS.RenameObjectAsync(BucketKey, oldName, newName);
         }
 
         /// <summary>
         /// Delete OSS object.
         /// </summary>
-        public Task DeleteAsync(string objectName)
+        public async Task DeleteAsync(string objectName)
         {
-            return _forgeOSS.DeleteAsync(BucketKey, objectName);
+            await _forgeOSS.DeleteAsync(BucketKey, objectName);
         }
 
-        public Task UploadObjectAsync(string objectName, Stream stream)
+        public async Task UploadObjectAsync(string objectName, Stream stream)
         {
-            return _forgeOSS.UploadObjectAsync(BucketKey, objectName, stream);
+            await _forgeOSS.UploadObjectAsync(BucketKey, objectName, stream);
         }
 
-        public Task<Autodesk.Forge.Client.ApiResponse<dynamic>> GetObjectAsync(string objectName)
+        public async Task<Autodesk.Forge.Client.ApiResponse<dynamic>> GetObjectAsync(string objectName)
         {
-            return _forgeOSS.GetObjectAsync(BucketKey, objectName);
+            return await _forgeOSS.GetObjectAsync(BucketKey, objectName);
         }
-
     }
 }

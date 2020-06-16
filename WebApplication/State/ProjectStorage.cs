@@ -67,9 +67,9 @@ namespace WebApplication.State
         /// </summary>
         /// <param name="ossBucket">OSS bucket.</param>
         /// <param name="hash">Parameters hash.</param>
-        public Task EnsureViewablesAsync(OssBucket ossBucket, string hash)
+        public async Task EnsureViewablesAsync(OssBucket ossBucket, string hash)
         {
-            return PlaceViewablesAsync(ossBucket, GetLocalNames(hash), GetOssNames(hash));
+            await PlaceViewablesAsync(ossBucket, GetLocalNames(hash), GetOssNames(hash));
         }
 
         private async Task PlaceViewablesAsync(OssBucket ossBucket, LocalNameProvider localNames, OSSObjectNameProvider ossNames)

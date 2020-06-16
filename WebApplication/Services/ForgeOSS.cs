@@ -84,18 +84,18 @@ namespace WebApplication.Services
         /// Create bucket with given name
         /// </summary>
         /// <param name="bucketKey">The bucket name.</param>
-        public Task CreateBucketAsync(string bucketKey)
+        public async Task CreateBucketAsync(string bucketKey)
         {
-            return WithBucketApiAsync(api =>
+            await WithBucketApiAsync(async api =>
             {
                 var payload = new PostBucketsPayload(bucketKey, /*allow*/null, PostBucketsPayload.PolicyKeyEnum.Persistent);
-                return api.CreateBucketAsync(payload, /* use default (US region) */ null);
+                await api.CreateBucketAsync(payload, /* use default (US region) */ null);
             });
         }
 
-        public Task DeleteBucketAsync(string bucketKey)
+        public async Task DeleteBucketAsync(string bucketKey)
         {
-            return WithBucketApiAsync(api => api.DeleteBucketAsync(bucketKey));
+            await WithBucketApiAsync(async api => await api.DeleteBucketAsync(bucketKey));
         }
 
         /// <summary>
@@ -112,9 +112,9 @@ namespace WebApplication.Services
             return await WithObjectsApiAsync(async api => await GetSignedUrl(api, bucketKey, objectName, access, minutesExpiration));
         }
 
-        public Task UploadObjectAsync(string bucketKey, string objectName, Stream stream)
+        public async Task UploadObjectAsync(string bucketKey, string objectName, Stream stream)
         {
-            return WithObjectsApiAsync(api => api.UploadObjectAsync(bucketKey, objectName, 0, stream));
+            await WithObjectsApiAsync(async api => await api.UploadObjectAsync(bucketKey, objectName, 0, stream));
         }
 
         /// <summary>
@@ -123,9 +123,9 @@ namespace WebApplication.Services
         /// <param name="bucketKey">Bucket key.</param>
         /// <param name="oldName">Old object name.</param>
         /// <param name="newName">New object name.</param>
-        public Task RenameObjectAsync(string bucketKey, string oldName, string newName)
+        public async Task RenameObjectAsync(string bucketKey, string oldName, string newName)
         {
-            return WithObjectsApiAsync(async api =>
+            await WithObjectsApiAsync(async api =>
             {
                 // OSS does not support renaming, so emulate it with more ineffective operations
                 await api.CopyToAsync(bucketKey, oldName, newName);
@@ -133,33 +133,33 @@ namespace WebApplication.Services
             });
         }
 
-        public Task<Autodesk.Forge.Client.ApiResponse<dynamic>> GetObjectAsync(string bucketKey, string objectName)
+        public async Task<Autodesk.Forge.Client.ApiResponse<dynamic>> GetObjectAsync(string bucketKey, string objectName)
         {
-            return WithObjectsApiAsync(api => api.GetObjectAsyncWithHttpInfo(bucketKey, objectName));
+            return await WithObjectsApiAsync(async api => await api.GetObjectAsyncWithHttpInfo(bucketKey, objectName));
         }
 
         /// <summary>
         /// Copy OSS object.
         /// </summary>
-        public Task CopyAsync(string bucketKey, string fromName, string toName)
+        public async Task CopyAsync(string bucketKey, string fromName, string toName)
         {
-            return WithObjectsApiAsync(api => api.CopyToAsync(bucketKey, fromName, toName));
+            await WithObjectsApiAsync(async api => await api.CopyToAsync(bucketKey, fromName, toName));
         }
 
         /// <summary>
         /// Delete OSS object.
         /// </summary>
-        public Task DeleteAsync(string bucketKey, string objectName)
+        public async Task DeleteAsync(string bucketKey, string objectName)
         {
-            return WithObjectsApiAsync(api => api.DeleteObjectAsync(bucketKey, objectName));
+            await WithObjectsApiAsync(async api => await api.DeleteObjectAsync(bucketKey, objectName));
         }
 
         /// <summary>
         /// Download OSS file.
         /// </summary>
-        public Task DownloadFileAsync(string bucketKey, string objectName, string localFullName)
+        public async Task DownloadFileAsync(string bucketKey, string objectName, string localFullName)
         {
-            return WithObjectsApiAsync(async api =>
+            await WithObjectsApiAsync(async api =>
                     {
                         string url = await GetSignedUrl(api, bucketKey, objectName);
 
@@ -177,19 +177,19 @@ namespace WebApplication.Services
         /// <remarks>
         /// User Profile fields: https://forge.autodesk.com/en/docs/oauth/v2/reference/http/users-@me-GET/#body-structure-200
         /// </remarks>
-        public Task<dynamic> GetProfileAsync(string token)
+        public async Task<dynamic> GetProfileAsync(string token)
         {
             var api = new UserProfileApi(new Configuration { AccessToken = token });
-            return api.GetUserProfileAsync();
+            return await api.GetUserProfileAsync();
         }
 
         /// <summary>
         /// Run action against Buckets OSS API.
         /// </summary>
         /// <remarks>The action runs with retry policy to handle API token expiration.</remarks>
-        private Task WithBucketApiAsync(Func<BucketsApi, Task> action)
+        private async Task WithBucketApiAsync(Func<BucketsApi, Task> action)
         {
-            return _refreshTokenPolicy.ExecuteAsync(async () =>
+            await _refreshTokenPolicy.ExecuteAsync(async () =>
                     {
                         var api = new BucketsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } };
                         await action(api);
@@ -200,22 +200,22 @@ namespace WebApplication.Services
         /// Run action against Objects OSS API.
         /// </summary>
         /// <remarks>The action runs with retry policy to handle API token expiration.</remarks>
-        private Task WithObjectsApiAsync(Func<ObjectsApi, Task> action)
+        private async Task WithObjectsApiAsync(Func<ObjectsApi, Task> action)
         {
-            return _refreshTokenPolicy.ExecuteAsync(async () =>
-            {
-                var api = new ObjectsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } };
-                await action(api);
-            });
+            await _refreshTokenPolicy.ExecuteAsync(async () =>
+                    {
+                        var api = new ObjectsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } };
+                        await action(api);
+                    });
         }
 
         /// <summary>
         /// Run action against Objects OSS API.
         /// </summary>
         /// <remarks>The action runs with retry policy to handle API token expiration.</remarks>
-        private Task<T> WithObjectsApiAsync<T>(Func<ObjectsApi, Task<T>> action)
+        private async Task<T> WithObjectsApiAsync<T>(Func<ObjectsApi, Task<T>> action)
         {
-            return _refreshTokenPolicy.ExecuteAsync(async () =>
+            return await _refreshTokenPolicy.ExecuteAsync(async () =>
             {
                 var api = new ObjectsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } };
                 return await action(api);

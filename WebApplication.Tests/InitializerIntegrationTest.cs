@@ -95,16 +95,16 @@ namespace WebApplication.Tests
             httpClient = new HttpClient();
         }
 
-        public Task InitializeAsync()
+        public async Task InitializeAsync()
         {
-            return initializer.ClearAsync();
+            await initializer.ClearAsync();
         }
 
-        public Task DisposeAsync()
+        public async Task DisposeAsync()
         {
             testFileDirectory.Delete(true);
             httpClient.Dispose();
-            return initializer.ClearAsync();
+            await initializer.ClearAsync();
         }
 
         private async Task<string> DownloadTestComparisonFile(string url, string name)
