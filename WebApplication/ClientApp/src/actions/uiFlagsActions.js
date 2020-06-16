@@ -9,7 +9,9 @@ export const actionTypes = {
     SHOW_RFA_PROGRESS: 'SHOW_RFA_PROGRESS',
     HIDE_RFA_PROGRESS: 'HIDE_RFA_PROGRESS',
     SET_RFA_LINK: 'SET_RFA_LINK',
-    SHOW_UPLOAD_PACKAGE: 'SHOW_UPLOAD_PACKAGE'
+    SHOW_UPLOAD_PACKAGE: 'SHOW_UPLOAD_PACKAGE',
+    PACKAGE_FILE_EDITED: 'PACKAGE_FILE_EDITED',
+    PACKAGE_ROOT_EDITED: 'PACKAGE_ROOT_EDITED'
 };
 
 export default actionTypes;
@@ -76,4 +78,18 @@ const showUploadPackage = (visible) => {
 
 export const dispatchShowUploadPackage = (visible) => async(dispatch) => {
     dispatch(showUploadPackage(visible));
+};
+
+export const editPackageFile = (file) => {
+    return {
+        type: actionTypes.PACKAGE_FILE_EDITED,
+        file
+    };
+};
+
+export const editPackageRoot = (file) => {
+    return {
+        type: actionTypes.PACKAGE_ROOT_EDITED,
+        file
+    };
 };

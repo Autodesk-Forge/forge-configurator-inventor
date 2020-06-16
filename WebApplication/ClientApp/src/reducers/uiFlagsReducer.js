@@ -7,7 +7,8 @@ export const initialState = {
    updateProgressShowing: false,
    rfaProgressShowing: null,
    rfaDownloadUrl: null,
-   uploadPackageDlgVisible: false
+   showUploadPackage: false,
+   package: { file: '', root: ''}
 };
 
 export const updateProgressShowing = function(state) {
@@ -24,6 +25,10 @@ export const rfaDownloadUrl = function(state) {
 
 export const uploadPackageDlgVisible = function(state) {
    return state.showUploadPackage;
+};
+
+export const uploadPackageData = function(state) {
+   return state.package
 }
 
 export default function(state = initialState, action) {
@@ -44,6 +49,10 @@ export default function(state = initialState, action) {
          return { ...state, rfaDownloadUrl: action.url};
       case uiFlagsActionTypes.SHOW_UPLOAD_PACKAGE:
          return { ...state, showUploadPackage: action.visible};
+      case uiFlagsActionTypes.PACKAGE_FILE_EDITED:
+         return { ...state, package: { file: action.file, root: state.package.root } };
+      case uiFlagsActionTypes.PACKAGE_ROOT_EDITED:
+         return { ...state, package: { file: state.package.file, root: action.file } };
       default:
          return state;
   }

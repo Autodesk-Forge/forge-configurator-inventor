@@ -72,6 +72,10 @@ export const uploadPackageDlgVisible = function(state) {
     return uiFlags.uploadPackageDlgVisible(state.uiFlagsReducer);
 };
 
+export const uploadPackageData = function(state) {
+    return uiFlags.uploadPackageData(state.uiFlagsReducer);
+}
+
 export const getProfile = function (state) {
     return state.profile;
 };
