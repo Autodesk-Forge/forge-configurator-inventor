@@ -46,45 +46,43 @@ export class UploadPackage extends Component {
             onCloseClick={() => { this.props.dispatchShowUploadPackage(false); }}
             stylesheet={modalStyles} >
                 <div id="uploadPackageModal">
-                    <form id="a_form">
-                        <Label
-                            variant="top"
-                            disabled={false} >
-                            Package
-                        </Label>
-                        <div className="fileBrowseContainer">
-                            <Input id="package_file"
-                                variant="box"
-                                onChange={this.onPackageFileChange}
-                                value={this.props.package.file}
-                            />
-                            <label htmlFor="packageFileInput">
-                                <div>
-                                <IconButton
-                                    icon={<Folder24 />}
-                                    title="Browse package"
-                                    onClick={ () => { document.getElementById("packageFileInput").click(); }}
-                                />
-                                </div>
-                            </label>
-                            <input id="packageFileInput"
-                                type="file"
-                                onChange={ (e) => {
-                                    this.onPackageFileChange(e);
-                                }}
-                            />
-                        </div>
-                        <Label
-                            variant="top"
-                            disabled={false} >
-                            Top Level Assembly
-                        </Label>
-                        <Input id="package_root"
+                    <Label
+                        variant="top"
+                        disabled={false} >
+                        Package
+                    </Label>
+                    <div className="fileBrowseContainer">
+                        <Input id="package_file"
                             variant="box"
-                            onChange={this.onPackageRootChange}
-                            value={this.props.package.root}
+                            onChange={this.onPackageFileChange}
+                            value={this.props.package.file}
                         />
-                    </form>
+                        <label htmlFor="packageFileInput">
+                            <div>
+                            <IconButton
+                                icon={<Folder24 />}
+                                title="Browse package"
+                                onClick={ () => { document.getElementById("packageFileInput").click(); }}
+                            />
+                            </div>
+                        </label>
+                        <input id="packageFileInput"
+                            type="file"
+                            onChange={ (e) => {
+                                this.onPackageFileChange(e);
+                            }}
+                        />
+                    </div>
+                    <Label
+                        variant="top"
+                        disabled={false} >
+                        Top Level Assembly
+                    </Label>
+                    <Input id="package_root"
+                        variant="box"
+                        onChange={this.onPackageRootChange}
+                        value={this.props.package.root}
+                    />
                     <Spacer  spacing="m"/>
                     <div className="buttonsContainer">
                         <Button
