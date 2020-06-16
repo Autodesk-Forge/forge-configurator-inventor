@@ -192,7 +192,7 @@ namespace WebApplication.Services
             return _refreshTokenPolicy.ExecuteAsync(async () =>
                     {
                         var api = new BucketsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } };
-                        return action(api);
+                        await action(api);
                     });
         }
 
