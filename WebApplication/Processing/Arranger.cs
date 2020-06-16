@@ -3,6 +3,8 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using WebApplication.Definitions;
+using WebApplication.Services;
+using WebApplication.State;
 using WebApplication.Utilities;
 
 namespace WebApplication.Processing
@@ -12,10 +14,8 @@ namespace WebApplication.Processing
     /// </summary>
     public class Arranger
     {
-        private readonly IForgeOSS _forge;
-        private readonly string _bucketKey;
         private readonly IHttpClientFactory _clientFactory;
-        private readonly ResourceProvider _resourceProvider;
+        private readonly UserResolver _userResolver;
 
         // generate unique names for files. The files will be moved to correct places after hash generation.
         public readonly string Parameters = $"{Guid.NewGuid():N}.json";
@@ -29,12 +29,10 @@ namespace WebApplication.Processing
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Arranger(IForgeOSS forge, IHttpClientFactory clientFactory, ResourceProvider resourceProvider)
+        public Arranger(IHttpClientFactory clientFactory, UserResolver userResolver)
         {
-            _forge = forge;
-            _bucketKey = resourceProvider.BucketKey;
             _clientFactory = clientFactory;
-            _resourceProvider = resourceProvider;
+            _userResolver = userResolver;
         }
 
         /// <summary>
@@ -44,10 +42,12 @@ namespace WebApplication.Processing
         /// <param name="tlaFilename">Top level assembly in the ZIP. (if any)</param>
         public async Task<AdoptionData> ForAdoptionAsync(string docUrl, string tlaFilename)
         {
-            var urls = await Task.WhenAll(CreateSignedUrlAsync(Thumbnail, ObjectAccess.Write), 
-                                            CreateSignedUrlAsync(SVF, ObjectAccess.Write), 
-                                            CreateSignedUrlAsync(Parameters, ObjectAccess.Write),
-                                            CreateSignedUrlAsync(OutputModel, ObjectAccess.Write));
+            var bucket = await _userResolver.GetBucket();
+
+            var urls = await Task.WhenAll(bucket.CreateSignedUrlAsync(Thumbnail, ObjectAccess.Write), 
+                                            bucket.CreateSignedUrlAsync(SVF, ObjectAccess.Write), 
+                                            bucket.CreateSignedUrlAsync(Parameters, ObjectAccess.Write),
+                                            bucket.CreateSignedUrlAsync(OutputModel, ObjectAccess.Write));
 
             return new AdoptionData
             {
@@ -68,14 +68,16 @@ namespace WebApplication.Processing
         /// <param name="parameters">Inventor parameters.</param>
         public async Task<UpdateData> ForUpdateAsync(string docUrl, string tlaFilename, InventorParameters parameters)
         {
+            var bucket = await _userResolver.GetBucket();
+
             var urls = await Task.WhenAll(
-                                            CreateSignedUrlAsync(OutputModel, ObjectAccess.Write),
-                                            CreateSignedUrlAsync(SVF, ObjectAccess.Write),
-                                            CreateSignedUrlAsync(Parameters, ObjectAccess.Write),
-                                            CreateSignedUrlAsync(InputParams, ObjectAccess.ReadWrite));
+                                            bucket.CreateSignedUrlAsync(OutputModel, ObjectAccess.Write),
+                                            bucket.CreateSignedUrlAsync(SVF, ObjectAccess.Write),
+                                            bucket.CreateSignedUrlAsync(Parameters, ObjectAccess.Write),
+                                            bucket.CreateSignedUrlAsync(InputParams, ObjectAccess.ReadWrite));
 
             await using var jsonStream = Json.ToStream(parameters);
-            await _forge.UploadObjectAsync(_resourceProvider.BucketKey, InputParams, jsonStream);
+            await bucket.UploadObjectAsync(InputParams, jsonStream);
 
             return new UpdateData
             {
@@ -100,12 +102,14 @@ namespace WebApplication.Processing
 
             var ossNames = project.OssNameProvider(hashString);
 
+            var bucket = await _userResolver.GetBucket();
+
             // move data to expected places
-            await Task.WhenAll(_forge.RenameObjectAsync(_bucketKey, Thumbnail, project.OssAttributes.Thumbnail),
-                                _forge.RenameObjectAsync(_bucketKey, SVF, ossNames.ModelView),
-                                _forge.RenameObjectAsync(_bucketKey, Parameters, ossNames.Parameters),
-                                _forge.RenameObjectAsync(_bucketKey, OutputModel, ossNames.CurrentModel),
-                                _forge.UploadObjectAsync(_bucketKey, project.OssAttributes.Metadata, Json.ToStream(attributes, writeIndented: true)));
+            await Task.WhenAll(bucket.RenameObjectAsync(Thumbnail, project.OssAttributes.Thumbnail),
+                                bucket.RenameObjectAsync(SVF, ossNames.ModelView),
+                                bucket.RenameObjectAsync(Parameters, ossNames.Parameters),
+                                bucket.RenameObjectAsync(OutputModel, ossNames.CurrentModel),
+                                bucket.UploadObjectAsync(project.OssAttributes.Metadata, Json.ToStream(attributes, writeIndented: true)));
 
             return hashString;
         }
@@ -113,18 +117,22 @@ namespace WebApplication.Processing
         /// <summary>
         /// Move temporary OSS files to the correct places.
         /// </summary>
-        internal Task MoveRfaAsync(Project project, string hash)
+        internal async Task MoveRfaAsync(Project project, string hash)
         {
+            var bucket = await _userResolver.GetBucket();
+
             var ossNames = project.OssNameProvider(hash);
-            return Task.WhenAll(_forge.RenameObjectAsync(_bucketKey, OutputRFA, ossNames.Rfa),
-                            _forge.DeleteAsync(_bucketKey, OutputSAT));
+            await Task.WhenAll(bucket.RenameObjectAsync(OutputRFA, ossNames.Rfa),
+                                bucket.DeleteAsync(OutputSAT));
         }
 
         internal async Task<ProcessingArgs> ForSatAsync(string inputDocUrl, string topLevelAssembly)
         {
+            var bucket = await _userResolver.GetBucket();
+
             // SAT file is intermediate and will be used later for further conversion (to RFA),
             // so request both read and write access to avoid extra calls to OSS
-            var satUrl = await CreateSignedUrlAsync(OutputSAT, ObjectAccess.ReadWrite);
+            var satUrl = await bucket.CreateSignedUrlAsync(OutputSAT, ObjectAccess.ReadWrite);
 
             return new ProcessingArgs
             {
@@ -136,7 +144,8 @@ namespace WebApplication.Processing
 
         internal async Task<ProcessingArgs> ForRfaAsync(string inputDocUrl)
         {
-            var rfaUrl = await CreateSignedUrlAsync(OutputRFA, ObjectAccess.Write);
+            var bucket = await _userResolver.GetBucket();
+            var rfaUrl = await bucket.CreateSignedUrlAsync(OutputRFA, ObjectAccess.Write);
 
             return new ProcessingArgs
             {
@@ -156,11 +165,13 @@ namespace WebApplication.Processing
 
             var ossNames = project.OssNameProvider(hashString);
 
+            var bucket = await _userResolver.GetBucket();
+
             // move data to expected places
-            await Task.WhenAll(_forge.RenameObjectAsync(_bucketKey, SVF, ossNames.ModelView),
-                                _forge.RenameObjectAsync(_bucketKey, Parameters, ossNames.Parameters),
-                                _forge.RenameObjectAsync(_bucketKey, OutputModel, ossNames.CurrentModel),
-                                _forge.DeleteAsync(_bucketKey, InputParams));
+            await Task.WhenAll(bucket.RenameObjectAsync(SVF, ossNames.ModelView),
+                                bucket.RenameObjectAsync(Parameters, ossNames.Parameters),
+                                bucket.RenameObjectAsync(OutputModel, ossNames.CurrentModel),
+                                bucket.DeleteAsync(InputParams));
 
             return hashString;
         }
@@ -173,7 +184,8 @@ namespace WebApplication.Processing
             var client = _clientFactory.CreateClient();
 
             // rearrange generated data according to the parameters hash
-            var url = await CreateSignedUrlAsync(Parameters);
+            var bucket = await _userResolver.GetBucket();
+            var url = await bucket.CreateSignedUrlAsync(Parameters);
             using var response = await client.GetAsync(url); // TODO: find
             response.EnsureSuccessStatusCode();
 
@@ -181,11 +193,6 @@ namespace WebApplication.Processing
             var stream = await response.Content.ReadAsStreamAsync();
             var parameters = await JsonSerializer.DeserializeAsync<InventorParameters>(stream);
             return Crypto.GenerateObjectHashString(parameters);
-        }
-
-        private Task<string> CreateSignedUrlAsync(string objectName, ObjectAccess access = ObjectAccess.Read)
-        {
-            return _forge.CreateSignedUrlAsync(_bucketKey, objectName, access);
         }
     }
 }
