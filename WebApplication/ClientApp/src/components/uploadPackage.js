@@ -9,7 +9,7 @@ import Spacer from '@hig/spacer';
 import { Folder24 } from '@hig/icons';
 import merge from "lodash.merge";
 import { uploadPackageDlgVisible, uploadPackageData } from '../reducers/mainReducer';
-import { dispatchShowUploadPackage, editPackageFile, editPackageRoot } from '../actions/uiFlagsActions';
+import { showUploadPackage, editPackageFile, editPackageRoot } from '../actions/uiFlagsActions';
 import './uploadPackage.css';
 
 export class UploadPackage extends Component {
@@ -43,7 +43,7 @@ export class UploadPackage extends Component {
             <Modal
             open={this.props.uploadPackageDlgVisible}
             title="Upload package"
-            onCloseClick={() => { this.props.dispatchShowUploadPackage(false); }}
+            onCloseClick={() => { this.props.showUploadPackage(false); }}
             stylesheet={modalStyles} >
                 <div id="uploadPackageModal">
                     <Label
@@ -96,7 +96,7 @@ export class UploadPackage extends Component {
                             size="standard"
                             title="Cancel"
                             type="secondary"
-                            onClick={() => { this.props.dispatchShowUploadPackage(false); } }
+                            onClick={() => { this.props.showUploadPackage(false); } }
                         />
                     </div>
                 </div>
@@ -111,4 +111,4 @@ export default connect(function (store) {
       uploadPackageDlgVisible: uploadPackageDlgVisible(store),
       package: uploadPackageData(store)
     };
-}, { dispatchShowUploadPackage, uploadPackageData, editPackageFile, editPackageRoot })(UploadPackage);
+}, { showUploadPackage, uploadPackageData, editPackageFile, editPackageRoot })(UploadPackage);

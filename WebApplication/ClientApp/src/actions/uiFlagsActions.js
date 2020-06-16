@@ -69,15 +69,11 @@ export const setRFALink = (url) => {
     };
 };
 
-const showUploadPackage = (visible) => {
+export const showUploadPackage = (visible) => {
     return {
         type: actionTypes.SHOW_UPLOAD_PACKAGE,
         visible
     };
-};
-
-export const dispatchShowUploadPackage = (visible) => async(dispatch) => {
-    dispatch(showUploadPackage(visible));
 };
 
 export const editPackageFile = (file) => {

@@ -5,7 +5,7 @@ import 'react-base-table/styles.css';
 import IconButton from '@hig/icon-button';
 import { Upload24 } from '@hig/icons';
 import './projectList.css';
-import { dispatchShowUploadPackage } from '../actions/uiFlagsActions';
+import { showUploadPackage } from '../actions/uiFlagsActions';
 import UploadPackage from './uploadPackage';
 
 const Icon = ({ iconname }) => (
@@ -58,7 +58,7 @@ export class ProjectList extends Component {
             icon={<Upload24 />}
             title="Upload package"
             className="uploadButton"
-            onClick={ () => { this.props.dispatchShowUploadPackage(true); }} />
+            onClick={ () => { this.props.showUploadPackage(true); }} />
         </div>
         <div className="fullheight">
           <AutoResizer>
@@ -85,4 +85,4 @@ export default connect(function (store) {
   return {
     projectList: store.projectList
   };
-}, { dispatchShowUploadPackage })(ProjectList);
+}, { showUploadPackage })(ProjectList);

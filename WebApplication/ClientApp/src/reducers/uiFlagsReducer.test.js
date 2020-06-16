@@ -1,4 +1,4 @@
-import {closeParametersEditedMessage, rejectParametersEditedMessage, showUpdateProgress, editPackageFile, editPackageRoot} from '../actions/uiFlagsActions';
+import {closeParametersEditedMessage, rejectParametersEditedMessage, showUploadPackage, editPackageFile, editPackageRoot} from '../actions/uiFlagsActions';
 import uiFlagsReducer, * as uiFlags from './uiFlagsReducer';
 import { editParameter, resetParameters } from '../actions/parametersActions';
 import { stateParametersEditedMessageClosed, stateParametersEditedMessageNotRejected, stateParametersEditedMessageRejected } from './uiFlagsTestStates';
@@ -21,7 +21,7 @@ describe('uiFlags reducer', () => {
    });
 
    it('Sets the show package dlg', () => {
-      expect(uiFlagsReducer(uiFlags.initialState, showUpdateProgress(true)).showUploadPackage).toEqual(true);
+      expect(uiFlagsReducer(uiFlags.initialState, showUploadPackage(true)).showUploadPackage).toEqual(true);
    });
 
    it('Sets the package file without overriding the root', () => {
