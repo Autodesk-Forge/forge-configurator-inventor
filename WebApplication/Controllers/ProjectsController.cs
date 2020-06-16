@@ -5,7 +5,9 @@ using Autodesk.Forge.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using WebApplication.Definitions;
+using WebApplication.State;
 using WebApplication.Utilities;
+using Project = WebApplication.State.Project;
 
 namespace WebApplication.Controllers
 {
@@ -14,23 +16,26 @@ namespace WebApplication.Controllers
     public class ProjectsController : ControllerBase
     {
         private readonly ILogger<ProjectsController> _logger;
-        private readonly IForgeOSS _forge;
         private readonly ResourceProvider _resourceProvider;
         private readonly DtoGenerator _dtoGenerator;
+        private readonly UserResolver _userResolver;
 
-        public ProjectsController(ILogger<ProjectsController> logger, IForgeOSS forge, ResourceProvider resourceProvider, DtoGenerator dtoGenerator)
+        public ProjectsController(ILogger<ProjectsController> logger, ResourceProvider resourceProvider, DtoGenerator dtoGenerator, UserResolver userResolver)
         {
             _logger = logger;
-            _forge = forge;
             _resourceProvider = resourceProvider;
             _dtoGenerator = dtoGenerator;
+            _userResolver = userResolver;
         }
 
         [HttpGet("")]
         public async Task<IEnumerable<ProjectDTO>> ListAsync()
         {
+            var bucket = await _userResolver.GetBucket();
+
             // TODO move to projects repository?
-            List<ObjectDetails> objects = await _forge.GetBucketObjectsAsync(_resourceProvider.BucketKey, $"{ONC.ProjectsFolder}-");
+            List<ObjectDetails> objects = await bucket.GetObjectsAsync($"{ONC.ProjectsFolder}-");
+
             var projectDTOs = new List<ProjectDTO>();
             foreach(ObjectDetails objDetails in objects)
             {

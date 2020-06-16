@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Autodesk.Forge.Client;
 using Microsoft.AspNetCore.Mvc;
+using WebApplication.State;
 using WebApplication.Utilities;
 
 namespace WebApplication.Controllers
@@ -11,13 +12,11 @@ namespace WebApplication.Controllers
     [Route("[controller]")]
     public class ShowParametersChangedController : ControllerBase
     {
-        private readonly IForgeOSS _forgeOSS;
-        private readonly ResourceProvider _resourceProvider;
+        private readonly UserResolver _userResolver;
 
-        public ShowParametersChangedController(IForgeOSS forgeOSS, ResourceProvider resourceProvider)
+        public ShowParametersChangedController(UserResolver userResolver)
         {
-            _forgeOSS = forgeOSS;
-            _resourceProvider = resourceProvider;
+            _userResolver = userResolver;
         }
 
         [HttpGet]
@@ -29,7 +28,8 @@ namespace WebApplication.Controllers
 
             try
             {
-                ossObjectResponse = await _forgeOSS.GetObjectAsync(_resourceProvider.BucketKey, ONC.ShowParametersChanged);
+                var bucket = await _userResolver.GetBucket();
+                ossObjectResponse = await bucket.GetObjectAsync(ONC.ShowParametersChanged);
             } 
             catch (ApiException ex) when (ex.ErrorCode == 404)
             {
@@ -50,7 +50,8 @@ namespace WebApplication.Controllers
         [HttpPost]
         public async Task<bool> Set([FromBody]bool show)
         {
-            await _forgeOSS.UploadObjectAsync(_resourceProvider.BucketKey, ONC.ShowParametersChanged, Json.ToStream(show));
+            var bucket = await _userResolver.GetBucket();
+            await bucket.UploadObjectAsync(ONC.ShowParametersChanged, Json.ToStream(show));
             return show;
         }
     }
