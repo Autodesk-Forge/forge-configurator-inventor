@@ -59,8 +59,7 @@ namespace WebApplication
                     _fdaClient.InitializeAsync(),
 
                     // create the bucket
-                    createBucketPolicy.ExecuteAsync(() =>
-                        _bucket.CreateAsync())
+                    createBucketPolicy.ExecuteAsync(async () => await _bucket.CreateAsync())
                 );
 
             _logger.LogInformation($"Bucket {_bucket.BucketKey} created");
@@ -81,8 +80,7 @@ namespace WebApplication
                 var project = _resourceProvider.GetProject(defaultProjectConfig.Name);
 
                 _logger.LogInformation($"Launching 'TransferData' for {projectUrl}");
-                string signedUrl = await waitForBucketPolicy.ExecuteAsync(() => 
-                    _bucket.CreateSignedUrlAsync(project.OSSSourceModel, ObjectAccess.ReadWrite));
+                string signedUrl = await waitForBucketPolicy.ExecuteAsync(async () => await _bucket.CreateSignedUrlAsync(project.OSSSourceModel, ObjectAccess.ReadWrite));
 
                 // TransferData from s3 to oss
                 await _projectWork.FileTransferAsync(projectUrl, signedUrl);
