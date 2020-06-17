@@ -20,6 +20,11 @@ namespace WebApplication.Middleware
         /// </summary>
         public string LocalRootName = Path.Combine(Directory.GetCurrentDirectory(), LocalCacheDir);
 
+        public LocalCache()
+        {
+            Directory.CreateDirectory(LocalRootName);
+        }
+
         /// <summary>
         /// Get URL pointing for the data file.
         /// </summary>
@@ -38,8 +43,6 @@ namespace WebApplication.Middleware
         /// </summary>
         public void Serve(IApplicationBuilder app)
         {
-            Directory.CreateDirectory(LocalRootName);
- 
             app.UseStaticFiles(new StaticFileOptions
             {
                 // make sure that directory exists
