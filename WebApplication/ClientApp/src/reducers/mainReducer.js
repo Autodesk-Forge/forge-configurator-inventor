@@ -11,7 +11,7 @@ export const mainReducer = combineReducers({
     notifications: notificationReducer,
     parameters: parametersReducer,
     updateParameters: updateParametersReducer,
-    uiFlagsReducer: uiFlagsReducer,
+    uiFlags: uiFlagsReducer,
     profile: profileReducer
 });
 
@@ -32,7 +32,7 @@ export const getUpdateParameters = function(projectId, state) {
 };
 
 export const parametersEditedMessageVisible = function(state) {
-    if (state.uiFlagsReducer.parametersEditedMessageClosed === true || state.uiFlagsReducer.parametersEditedMessageRejected === true )
+    if (state.uiFlags.parametersEditedMessageClosed === true || state.uiFlags.parametersEditedMessageRejected === true )
         return false;
 
     const activeProject = getActiveProject(state);
@@ -57,27 +57,27 @@ export const parametersEditedMessageVisible = function(state) {
 };
 
 export const updateProgressShowing = function(state) {
-    return uiFlags.updateProgressShowing(state.uiFlagsReducer);
+    return uiFlags.updateProgressShowing(state.uiFlags);
 };
 
 export const rfaProgressShowing = function(state) {
-    return uiFlags.rfaProgressShowing(state.uiFlagsReducer);
+    return uiFlags.rfaProgressShowing(state.uiFlags);
 };
 
 export const rfaDownloadUrl = function(state) {
-    return uiFlags.rfaDownloadUrl(state.uiFlagsReducer);
+    return uiFlags.rfaDownloadUrl(state.uiFlags);
 };
 
 export const uploadPackageDlgVisible = function(state) {
-    return uiFlags.uploadPackageDlgVisible(state.uiFlagsReducer);
+    return uiFlags.uploadPackageDlgVisible(state.uiFlags);
 };
 
 export const uploadProgressShowing = function(state) {
-    return uiFlags.uploadProgressShowing(state.uiFlagsReducer);
+    return uiFlags.uploadProgressShowing(state.uiFlags);
 };
 
 export const uploadPackageData = function(state) {
-    return uiFlags.uploadPackageData(state.uiFlagsReducer);
+    return uiFlags.uploadPackageData(state.uiFlags);
 }
 
 export const getProfile = function (state) {
@@ -85,7 +85,7 @@ export const getProfile = function (state) {
 };
 
 export const activeTabIndex = function(state) {
-    return uiFlags.activeTabIndex(state.uiFlagsReducer);
+    return uiFlags.activeTabIndex(state.uiFlags);
 };
 
 export const existsProject = function(projectId, state) {
@@ -95,5 +95,5 @@ export const existsProject = function(projectId, state) {
 };
 
 export const projectAlreadyExists = function(state) {
-    return uiFlags.projectAlreadyExists(state.uiFlagsReducer);
+    return uiFlags.projectAlreadyExists(state.uiFlags);
 };

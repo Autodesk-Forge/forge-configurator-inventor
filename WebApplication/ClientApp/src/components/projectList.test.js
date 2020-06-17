@@ -13,7 +13,7 @@ Enzyme.configure({ adapter: new Adapter() });
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 const mockState = {
-  uiFlagsReducer: {
+  uiFlags: {
     showUploadPackage: false,
     package: { file: '', root: '' }
   }
