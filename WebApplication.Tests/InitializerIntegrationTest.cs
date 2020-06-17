@@ -11,6 +11,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using WebApplication.Definitions;
+using WebApplication.Middleware;
 using WebApplication.Processing;
 using WebApplication.Services;
 using WebApplication.State;
@@ -61,8 +62,8 @@ namespace WebApplication.Tests
             projectsBucketKey = Guid.NewGuid().ToString();
             
             var resourceProvider = new ResourceProvider(forgeConfigOptions, designAutomationClient, projectsBucketKey);
-
-            var postProcessing = new PostProcessing(httpClientFactory, resourceProvider, new NullLogger<PostProcessing>());
+            var localCache = new LocalCache();
+            var postProcessing = new PostProcessing(httpClientFactory, new NullLogger<PostProcessing>(), localCache);
             var publisher = new Publisher(designAutomationClient, new NullLogger<Publisher>(), resourceProvider, postProcessing);
 
             var appBundleZipPathsConfiguration = new AppBundleZipPaths
@@ -83,13 +84,14 @@ namespace WebApplication.Tests
                 Projects = new [] { new DefaultProjectConfiguration { Url = testZippedIamUrl, TopLevelAssembly = testIamPathInZip, Name = "Basic" } }
             };
             IOptions<DefaultProjectsConfiguration> defaultProjectsOptions = Options.Create(defaultProjectsConfiguration);
-            var userResolver = new UserResolver(resourceProvider, forgeOSS, forgeConfigOptions);
+            var userResolver = new UserResolver(resourceProvider, forgeOSS, forgeConfigOptions, localCache);
             var arranger = new Arranger(httpClientFactory, userResolver);
 
             // TODO: linkGenerator should be mocked
-            var projectWork = new ProjectWork(new NullLogger<ProjectWork>(), resourceProvider, arranger, fdaClient, new DtoGenerator(resourceProvider, linkGenerator: null), userResolver);
-            initializer = new Initializer(forgeOSS, resourceProvider, new NullLogger<Initializer>(), fdaClient, 
-                                            defaultProjectsOptions, projectWork, userResolver);
+            var dtoGenerator = new DtoGenerator(linkGenerator: null, localCache);
+            var projectWork = new ProjectWork(new NullLogger<ProjectWork>(), resourceProvider, arranger, fdaClient, dtoGenerator, userResolver);
+            initializer = new Initializer(new NullLogger<Initializer>(), fdaClient, 
+                                            defaultProjectsOptions, projectWork, userResolver, localCache);
 
             testFileDirectory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()));
             httpClient = new HttpClient();

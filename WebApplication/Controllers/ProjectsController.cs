@@ -5,6 +5,7 @@ using Autodesk.Forge.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using WebApplication.Definitions;
+using WebApplication.Middleware;
 using WebApplication.State;
 using WebApplication.Utilities;
 using Project = WebApplication.State.Project;
@@ -16,16 +17,16 @@ namespace WebApplication.Controllers
     public class ProjectsController : ControllerBase
     {
         private readonly ILogger<ProjectsController> _logger;
-        private readonly ResourceProvider _resourceProvider;
         private readonly DtoGenerator _dtoGenerator;
         private readonly UserResolver _userResolver;
+        private readonly LocalCache _localCache;
 
-        public ProjectsController(ILogger<ProjectsController> logger, ResourceProvider resourceProvider, DtoGenerator dtoGenerator, UserResolver userResolver)
+        public ProjectsController(ILogger<ProjectsController> logger, DtoGenerator dtoGenerator, UserResolver userResolver, LocalCache localCache)
         {
             _logger = logger;
-            _resourceProvider = resourceProvider;
             _dtoGenerator = dtoGenerator;
             _userResolver = userResolver;
+            _localCache = localCache;
         }
 
         [HttpGet("")]
@@ -47,7 +48,7 @@ namespace WebApplication.Controllers
                 var dto = _dtoGenerator.MakeProjectDTO<ProjectDTO>(project, projectStorage.Metadata.Hash);
                 dto.Id = project.Name;
                 dto.Label = project.Name;
-                dto.Image = _resourceProvider.ToDataUrl(project.LocalAttributes.Thumbnail);
+                dto.Image = _localCache.ToDataUrl(project.LocalAttributes.Thumbnail);
 
                 projectDTOs.Add(dto);
             }

@@ -2,6 +2,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Autodesk.Forge.Core;
 using Microsoft.Extensions.Options;
+using WebApplication.Middleware;
 using WebApplication.Services;
 using WebApplication.Utilities;
 
@@ -12,42 +13,44 @@ namespace WebApplication.State
     /// </summary>
     public class UserResolver
     {
-        private readonly ResourceProvider _resourceProvider;
         private readonly IForgeOSS _forgeOSS;
+        private readonly LocalCache _localCache;
         private readonly ForgeConfiguration _forgeConfig;
+
+        /// <summary>
+        /// OSS bucket for anonymous user.
+        /// </summary>
+        public OssBucket AnonymousBucket { get; }
 
         public string Token { private get; set; }
         public bool IsAuthenticated => ! string.IsNullOrEmpty(Token);
 
-        public UserResolver(ResourceProvider resourceProvider, IForgeOSS forgeOSS, IOptions<ForgeConfiguration> forgeConfiguration)
+        public UserResolver(ResourceProvider resourceProvider, IForgeOSS forgeOSS, IOptions<ForgeConfiguration> forgeConfiguration, LocalCache localCache)
         {
-            _resourceProvider = resourceProvider;
             _forgeOSS = forgeOSS;
+            _localCache = localCache;
             _forgeConfig = forgeConfiguration.Value;
+
+            AnonymousBucket = new OssBucket(_forgeOSS, resourceProvider.BucketKey);
         }
 
         public async Task<OssBucket> GetBucket()
         {
-            if (IsAuthenticated)
-            {
-                var profile = await _forgeOSS.GetProfileAsync(Token); // TODO: cache it
-                var userId = profile.userId;
+            if (! IsAuthenticated) return AnonymousBucket;
 
-                // an OSS bucket must have a unique name, so it should be generated in a way,
-                // so it a Forge user gets registered into several deployments it will not cause
-                // name collisions. So use client ID (as a salt) to generate bucket name.
-                var userHash = Crypto.GenerateHashString(_forgeConfig.ClientId + userId);
-                var bucketKey = $"authd-{_forgeConfig.ClientId}-{userId.Substring(0, 3)}-{userHash}".ToLowerInvariant();
+            var profile = await _forgeOSS.GetProfileAsync(Token); // TODO: cache it
+            var userId = profile.userId;
 
-                var bucket = new OssBucket(_forgeOSS, bucketKey);
-                await bucket.CreateAsync();
+            // an OSS bucket must have a unique name, so it should be generated in a way,
+            // so it a Forge user gets registered into several deployments it will not cause
+            // name collisions. So use client ID (as a salt) to generate bucket name.
+            var userHash = Crypto.GenerateHashString(_forgeConfig.ClientId + userId);
+            var bucketKey = $"authd-{_forgeConfig.ClientId}-{userId.Substring(0, 3)}-{userHash}".ToLowerInvariant();
 
-                return bucket;
-            }
-            else
-            {
-                return new OssBucket(_forgeOSS, _resourceProvider.BucketKey);
-            }
+            var bucket = new OssBucket(_forgeOSS, bucketKey);
+            await bucket.CreateAsync();
+
+            return bucket;
         }
 
         public async Task<Project> GetProject(string projectName)
@@ -56,14 +59,14 @@ namespace WebApplication.State
             if (IsAuthenticated)
             {
                 var profile = await _forgeOSS.GetProfileAsync(Token); // TODO: cache it
-                userDir = profile.userId;
+                userDir = profile.userId; // TODO: transform it somehow
             }
             else
             {
                 userDir = "_anonymous";
             }
 
-            var userFullDirName = Path.Combine(_resourceProvider.LocalRootName, userDir);
+            var userFullDirName = Path.Combine(_localCache.LocalRootName, userDir);
             Directory.CreateDirectory(userFullDirName); // TODO: should not do it each time
             return new Project(projectName, userFullDirName);
         }
