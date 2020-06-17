@@ -69,13 +69,13 @@ export class ProjectList extends Component {
       ));
     }
 
-    const visible = true; // TBD to be driven by login status
+    const visible = this.props.isLoggedIn;
     const uploadContainerClass = visible ? "uploadContainer" : "uploadContainer hidden";
     const showUploadProgress = this.props.uploadProgressShowing != null;
 
     return (
       <div className="fullheight">
-        <div className={uploadContainerClass}>
+        <div id="projectList_uploadButton" className={uploadContainerClass}>
           <IconButton
             icon={<Upload24 />}
             title="Upload package"
@@ -116,6 +116,7 @@ export class ProjectList extends Component {
 export default connect(function (store) {
   return {
     projectList: store.projectList,
+    isLoggedIn: store.profile.isLoggedIn,
     uploadProgressShowing: uploadProgressShowing(store),
     uploadPackageData: uploadPackageData(store)
   };

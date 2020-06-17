@@ -72,7 +72,7 @@ describe('ProjectList components', () => {
   });
 
   it('Base table renders expected count of links and icons', () => {
-    let store = mockStore(mockState);
+    const store = mockStore(mockState);
 
     const wrapper = mount(
       <Provider store={store}>
@@ -84,5 +84,19 @@ describe('ProjectList components', () => {
     const bt = as.renderProp('children')( {width: 100, height: 200} );
     const icons = bt.find('Icon');
     expect(icons.length).toEqual(projectList.projects.length);
+  });
+
+  it('Project list has upload button for logged in user', () => {
+    const propsWithProfile = { ...props, isLoggedIn: true };
+    const wrapper = shallow(<ProjectList { ...propsWithProfile } />);
+    const upload = wrapper.find('#projectList_uploadButton');
+    expect(upload.prop("className")).not.toContain('hidden');
+  });
+
+  it('Project list has NO upload button for anonymous in user', () => {
+    const propsWithProfile = { ...props, isLoggedIn: false };
+    const wrapper = shallow(<ProjectList { ...propsWithProfile } />);
+    const upload = wrapper.find('#projectList_uploadButton');
+    expect(upload.prop("className")).toContain('hidden');
   });
 });
