@@ -110,6 +110,7 @@ export class UploadPackage extends Component {
                     <Spacer  spacing="m"/>
                     <div className="buttonsContainer">
                         <Button
+                            id="upload_button"
                             size="standard"
                             title="Upload"
                             type="primary"
@@ -117,6 +118,7 @@ export class UploadPackage extends Component {
                         />
                         <div style={{width: '14px'}}/>
                         <Button
+                            id="cancel_button"
                             size="standard"
                             title="Cancel"
                             type="secondary"
