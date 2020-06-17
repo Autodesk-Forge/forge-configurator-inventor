@@ -33,9 +33,3 @@ div.auth-button {
 span.auth-button-text {
     line-height: 36px;
 }
-
-@font-face {
-  font-family: 'ArtifaktElement';
-  src: url('https://fonts.autodesk.com/ArtifaktElement/WOFF2/Artifakt%20Element%20Medium.woff2')
-    format('woff2');
-}
