@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 // in this file you can append custom step methods to 'I' object
+require('dotenv').config();
 
 const locators = require('./src/ui-tests/elements_definition.js');
 
@@ -14,7 +15,7 @@ module.exports = function() {
   const forgeViewerSpinner = '//div[@id="ForgeViewer"]//div[@class="spinner"]';
   const userButton = '//button[contains(@type, "button") and .//span[contains(., "A")]]';
   const authorizationButton = '.auth-button';
-  const loginName = 'adsk.demo.tool@gmail.com';
+  const loginName = process.env.SDRA_USERNAME;
   const password = 'demo1tool';
 
   // returns Project name locator

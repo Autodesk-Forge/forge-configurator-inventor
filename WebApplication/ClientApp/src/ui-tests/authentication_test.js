@@ -16,6 +16,7 @@
 
         // check Avatar name
         I.waitUntil(() => document.readyState == "complete", 10);
+        I.wait(10);
         const attr = await I.grabAttributeFrom(avatarElement, 'aria-label');
         assert.equal(attr.toString().includes(avatarName), true, 'Incorrect Sign-in process! Avatar "adsk.inv" is not Singed-in!');
 
