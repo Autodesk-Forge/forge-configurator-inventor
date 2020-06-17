@@ -13,7 +13,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WebApplication.Definitions;
+using WebApplication.Middleware;
 using WebApplication.Processing;
+using WebApplication.Services;
+using WebApplication.State;
 using WebApplication.Utilities;
 
 namespace WebApplication
@@ -72,6 +75,7 @@ namespace WebApplication
                                         return new DesignAutomationClient(forgeService);
                                     });
             services.AddSingleton<Publisher>();
+            services.AddScoped<UserResolver>(); // TODO: use interface
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -115,6 +119,7 @@ namespace WebApplication
             });
 
             app.UseSpaStaticFiles();
+            app.UseMiddleware<TokenHandler>();
 
             app.UseRouting();
 

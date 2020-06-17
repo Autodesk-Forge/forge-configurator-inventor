@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+const AuthorizationHeader = 'Authorization';
+
 /** Kind-of data layer, which hides all interaction with backend. */
 class Repository {
 
@@ -34,9 +36,15 @@ class Repository {
         const response = await axios.get("/login/profile");
         return response.data;
     }
+
+    setAccessToken(accessToken) {
+        axios.defaults.headers.common[AuthorizationHeader] = accessToken;
+    }
+
+    forgetAccessToken() {
+        delete axios.defaults.headers.common[AuthorizationHeader];
+    }
 }
-
-
 
 /** Singleton with repo */
 export default new Repository();

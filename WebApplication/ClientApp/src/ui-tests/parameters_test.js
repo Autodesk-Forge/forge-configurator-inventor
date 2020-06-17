@@ -34,7 +34,7 @@ Scenario('should check if Stripe panel is displayed and hidden', async (I) => {
     // check if the Stripe element is displayed
     I.seeElement(locators.xpStripeElement);
 
-    // change the Lenght parameter
+    // change the Length parameter
     I.clearField('//div[2]/div[1]/div/input');
     I.fillField('//div[2]/div[1]/div/input', "12000 mm");
 

@@ -5,6 +5,7 @@ using Autodesk.Forge.Client;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using WebApplication.Definitions;
+using WebApplication.State;
 using WebApplication.Utilities;
 
 namespace WebApplication.Processing
@@ -18,18 +19,18 @@ namespace WebApplication.Processing
         private readonly ResourceProvider _resourceProvider;
         private readonly Arranger _arranger;
         private readonly FdaClient _fdaClient;
-        private readonly IForgeOSS _forgeOSS;
         private readonly DtoGenerator _dtoGenerator;
+        private readonly UserResolver _userResolver;
 
         public ProjectWork(ILogger<ProjectWork> logger, ResourceProvider resourceProvider, Arranger arranger, FdaClient fdaClient,
-                            IForgeOSS forgeOSS, DtoGenerator dtoGenerator)
+                            DtoGenerator dtoGenerator, UserResolver userResolver)
         {
             _logger = logger;
             _resourceProvider = resourceProvider;
             _arranger = arranger;
             _fdaClient = fdaClient;
-            _forgeOSS = forgeOSS;
             _dtoGenerator = dtoGenerator;
+            _userResolver = userResolver;
         }
 
         /// <summary>
@@ -55,9 +56,11 @@ namespace WebApplication.Processing
 
                 _logger.LogInformation("Cache the project locally");
 
+                var bucket = await _userResolver.GetBucket();
+
                 // and now cache the generate stuff locally
-                var projectLocalStorage = new ProjectStorage(project, _resourceProvider);
-                await projectLocalStorage.EnsureLocalAsync(_forgeOSS);
+                var projectLocalStorage = new ProjectStorage(project);
+                await projectLocalStorage.EnsureLocalAsync(bucket);
             }
         }
 
@@ -112,11 +115,12 @@ namespace WebApplication.Processing
 
             var ossNameProvider = project.OssNameProvider(hash);
 
+            var bucket = await _userResolver.GetBucket();
             // check if RFA file is already generated
             try
             {
                 // TODO: this might be ineffective as some "get details" API call
-                await _forgeOSS.CreateSignedUrlAsync(_resourceProvider.BucketKey, ossNameProvider.Rfa);
+                await bucket.CreateSignedUrlAsync(ossNameProvider.Rfa);
                 return;
             }
             catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
@@ -125,7 +129,7 @@ namespace WebApplication.Processing
             }
 
             // OK, nothing in cache - generate it now
-            var inputDocUrl = await _forgeOSS.CreateSignedUrlAsync(_resourceProvider.BucketKey, ossNameProvider.CurrentModel);
+            var inputDocUrl = await bucket.CreateSignedUrlAsync(ossNameProvider.CurrentModel);
             ProcessingArgs satData = await _arranger.ForSatAsync(inputDocUrl, storage.Metadata.TLA);
             ProcessingArgs rfaData = await _arranger.ForRfaAsync(satData.SatUrl);
 
@@ -150,8 +154,9 @@ namespace WebApplication.Processing
         private async Task<string> UpdateAsync(Project project, string tlaFilename, InventorParameters parameters)
         {
             _logger.LogInformation("Update the project");
+            var bucket = await _userResolver.GetBucket();
 
-            var inputDocUrl = await _forgeOSS.CreateSignedUrlAsync(_resourceProvider.BucketKey, project.OSSSourceModel);
+            var inputDocUrl = await bucket.CreateSignedUrlAsync(project.OSSSourceModel);
             UpdateData updateData = await _arranger.ForUpdateAsync(inputDocUrl, tlaFilename, parameters);
 
             bool success = await _fdaClient.UpdateAsync(updateData);
@@ -165,8 +170,8 @@ namespace WebApplication.Processing
             _logger.LogInformation($"Cache the project locally ({hash})");
 
             // and now cache the generate stuff locally
-            var projectStorage = new ProjectStorage(project, _resourceProvider);
-            await projectStorage.EnsureViewablesAsync(_forgeOSS, hash);
+            var projectStorage = new ProjectStorage(project);
+            await projectStorage.EnsureViewablesAsync(bucket, hash);
 
             return hash;
         }
@@ -187,15 +192,16 @@ namespace WebApplication.Processing
             // by netcore (https://github.com/dotnet/runtime/issues/24271)
             FileSystem.CopyDir(localFrom.BaseDir, localTo.BaseDir);
 
+            var bucket = await _userResolver.GetBucket();
 
             // copy OSS files
             OSSObjectNameProvider ossFrom = project.OssNameProvider(hashFrom);
             OSSObjectNameProvider ossTo = project.OssNameProvider(hashTo);
 
             await Task.WhenAll(
-                _forgeOSS.CopyAsync(_resourceProvider.BucketKey, ossFrom.Parameters, ossTo.Parameters),
-                _forgeOSS.CopyAsync(_resourceProvider.BucketKey, ossFrom.CurrentModel, ossTo.CurrentModel),
-                _forgeOSS.CopyAsync(_resourceProvider.BucketKey, ossFrom.ModelView, ossTo.ModelView));
+                bucket.CopyAsync(ossFrom.Parameters, ossTo.Parameters),
+                bucket.CopyAsync(ossFrom.CurrentModel, ossTo.CurrentModel),
+                bucket.CopyAsync(ossFrom.ModelView, ossTo.ModelView));
 
             _logger.LogInformation($"Cache the project locally ({hashTo})");
         }

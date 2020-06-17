@@ -1,7 +1,7 @@
 using System;
 using WebApplication.Utilities;
 
-namespace WebApplication
+namespace WebApplication.State
 {
     public class Project
     {
