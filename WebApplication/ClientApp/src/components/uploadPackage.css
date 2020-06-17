@@ -2,15 +2,38 @@
     display: flex;
 }
 
-#uploadPackageModal .buttonsContainer {
-    display: flex;
-    flex-flow: row-reverse;
+#uploadPackageModal .fileBrowseContainer button {
+    /* following are to override IconButton strange behavior */
+    outline: none;
+    border-color: transparent;
+    box-shadow: none;
 }
 
-#uploadPackageModal .buttonsContainer button {
-    width: 102px;
+#uploadPackageModal .stretch {
+    width: -webkit-fill-available;
+}
+
+#uploadPackageModal .browseButton {
+    display: flex;
+    flex-flow: row;
+    align-items: flex-end;    
+}
+
+#uploadPackageModal .browseButton label {
+    margin: 0;
+    height: 36px; /* to match inner content (the button) exactly */
 }
 
 #packageFileInput {
     display: none;
+}
+
+#uploadPackageModal .buttonsContainer {
+    display: flex;
+    flex-flow: row-reverse;
+    padding-bottom: 0;
+}
+
+#uploadPackageModal .buttonsContainer button {
+    width: 102px;
 }

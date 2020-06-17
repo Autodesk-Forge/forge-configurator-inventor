@@ -57,33 +57,37 @@ export class UploadPackage extends Component {
             onCloseClick={() => { this.props.showUploadPackage(false); }}
             stylesheet={modalStyles} >
                 <div id="uploadPackageModal">
-                    <Label
-                        variant="top"
-                        disabled={false} >
-                        Package
-                    </Label>
                     <div className="fileBrowseContainer">
-                        <Input id="package_file"
-                            variant="box"
-                            onChange={this.onPackageFileChange}
-                            value={this.props.package.file}
-                        />
-                        <label htmlFor="packageFileInput">
-                            <div>
-                            <IconButton
-                                icon={<Folder24 />}
-                                title="Browse package"
-                                onClick={ () => { document.getElementById("packageFileInput").click(); }}
+                        <div className="stretch">
+                            <Label
+                                variant="top"
+                                disabled={false} >
+                                Package
+                            </Label>
+                            <Input id="package_file"
+                                variant="box"
+                                onChange={this.onPackageFileChange}
+                                value={this.props.package.file}
                             />
-                            </div>
-                        </label>
-                        <input id="packageFileInput"
-                            type="file"
-                            onChange={ (e) => {
-                                this.onPackageFileChange(e);
-                            }}
-                        />
+                        </div>
+                        <div className="browseButton">
+                            <label htmlFor="packageFileInput">
+                                <IconButton
+                                    icon={<Folder24 />}
+                                    title="Browse package"
+                                    onClick={ () => { document.getElementById("packageFileInput").click(); }}
+                                />
+                            </label>
+                            <input id="packageFileInput"
+                                type="file"
+                                accept=".zip"
+                                onChange={ (e) => {
+                                    this.onPackageFileChange(e);
+                                }}
+                            />
+                        </div>
                     </div>
+                    <Spacer  spacing="xs"/>
                     <Label
                         variant="top"
                         disabled={false} >
@@ -94,7 +98,7 @@ export class UploadPackage extends Component {
                         onChange={this.onPackageRootChange}
                         value={this.props.package.root}
                     />
-                    <Spacer  spacing="m"/>
+                    <Spacer  spacing="l"/>
                     <div className="buttonsContainer">
                         <Button
                             id="upload_button"
