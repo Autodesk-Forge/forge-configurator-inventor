@@ -5,7 +5,8 @@ import 'react-base-table/styles.css';
 import IconButton from '@hig/icon-button';
 import { Upload24 } from '@hig/icons';
 import './projectList.css';
-import { showUploadPackage, showUploadProgress, updateActiveTabIndex } from '../actions/uiFlagsActions';
+import { showUploadPackage, updateActiveTabIndex } from '../actions/uiFlagsActions';
+import { showUploadProgress } from '../actions/uploadPackageActions';
 import { updateActiveProject } from '../actions/projectListActions';
 import UploadPackage from './uploadPackage';
 
