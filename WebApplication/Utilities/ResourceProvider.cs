@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Autodesk.Forge.Core;
 using Autodesk.Forge.DesignAutomation;
 using Microsoft.Extensions.Options;
+using WebApplication.State;
 
 namespace WebApplication.Utilities
 {
@@ -12,6 +13,9 @@ namespace WebApplication.Utilities
         private const string LocalCacheDir = "LocalCache";
         public const string VirtualCacheDir = "/data";
 
+        /// <summary>
+        /// Bucket key for anonymous user.
+        /// </summary>
         public string BucketKey { get; }
 
         public Task<string> Nickname => _nickname.Value;
@@ -68,7 +72,7 @@ namespace WebApplication.Utilities
         public ProjectStorage GetProjectStorage(string projectName)
         {
             var project = GetProject(projectName);
-            return new ProjectStorage(project, this);
+            return new ProjectStorage(project);
         }
     }
 }

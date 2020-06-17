@@ -1,10 +1,8 @@
 import repo from '../Repository';
-import {addError, addLog} from './notificationActions';
-import axios from 'axios';
+import { addError, addLog } from './notificationActions';
 
 const actionTypes = {
-    PROFILE_LOADED: 'PROFILE_LOADED',
-    LOAD_PROFILE: 'LOAD_PROFILE'
+    PROFILE_LOADED: 'PROFILE_LOADED'
 };
 
 export default actionTypes;
@@ -22,13 +20,17 @@ export const detectToken = () => (dispatch) => {
         const accessToken = extractToken(window.location.hash.substring(1));
         if (accessToken) {
             dispatch(addLog(`Detected access token = '${accessToken}'`));
-            axios.defaults.headers.common['Authorization'] = accessToken;
+            repo.setAccessToken(accessToken);
+
+            // remove token from URL
+            window.history.pushState("", document.title, window.location.pathname);
         } else {
             dispatch(addLog('Access token is not found'));
-            delete axios.defaults.headers.common['Authorization'];
+            repo.forgetAccessToken();
         }
     } catch (error) {
-        dispatch(addError('Failed to get information about "show changed parameters" . (' + error + ')'));
+        dispatch(addError('Failed to detect token. (' + error + ')'));
+        repo.forgetAccessToken();
     }
 };
 
@@ -39,13 +41,12 @@ export const updateProfile = profile => {
     };
 };
 
-// eslint-disable-next-line no-unused-vars
-export const loadProfile = () => async (dispatch, getState) => {
+export const loadProfile = () => async (dispatch) => {
     dispatch(addLog('Load profile invoked'));
     try {
-        const data = await repo.loadProfile();
+        const profile = await repo.loadProfile();
         dispatch(addLog('Load profile received'));
-        dispatch(updateProfile(data));
+        dispatch(updateProfile(profile));
     } catch (error) {
         dispatch(addError('Failed to get profile. (' + error + ')'));
     }
