@@ -59,7 +59,9 @@ namespace WebApplication.State
             if (IsAuthenticated)
             {
                 var profile = await _forgeOSS.GetProfileAsync(Token); // TODO: cache it
-                userDir = profile.userId; // TODO: transform it somehow
+
+                // generate dirname to hide Oxygen user ID
+                userDir = Crypto.GenerateHashString("SDRA" + profile.userId);
             }
             else
             {

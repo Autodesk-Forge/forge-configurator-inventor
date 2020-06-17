@@ -6,6 +6,10 @@ using Microsoft.Extensions.FileProviders;
 
 namespace WebApplication.Middleware
 {
+    /// <summary>
+    /// For performance reason - some important generated files are cached locally,
+    /// this class encapsulate related logic and allows access to it as to static files.
+    /// </summary>
     public class LocalCache
     {
         private const string LocalCacheDir = "LocalCache";
@@ -30,7 +34,7 @@ namespace WebApplication.Middleware
         }
 
         /// <summary>
-        /// expose local cache dir as 'data' virtual dir to serve locally cached OSS files
+        /// Expose local cache dir as 'data' virtual dir to serve locally cached OSS files
         /// </summary>
         public void Serve(IApplicationBuilder app)
         {

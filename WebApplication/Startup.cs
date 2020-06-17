@@ -106,6 +106,7 @@ namespace WebApplication
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
+            // expose local cache as static files
             localCache.Serve(app);
 
             app.UseSpaStaticFiles();
