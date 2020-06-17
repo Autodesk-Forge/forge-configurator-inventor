@@ -8,8 +8,9 @@ import IconButton from '@hig/icon-button';
 import Spacer from '@hig/spacer';
 import { Folder24 } from '@hig/icons';
 import merge from "lodash.merge";
-import { uploadPackageDlgVisible, uploadPackageData, projectAlreadyExists, existsProject } from '../reducers/mainReducer';
-import { showUploadPackage, showUploadProgress, editPackageFile, editPackageRoot, setProjectAlreadyExists } from '../actions/uiFlagsActions';
+import { uploadPackageDlgVisible, uploadPackageData, projectAlreadyExists } from '../reducers/mainReducer';
+import { showUploadPackage, editPackageFile, editPackageRoot } from '../actions/uiFlagsActions';
+import { uploadPackage } from '../actions/uploadPackageActions.js';
 import './uploadPackage.css';
 
 export class UploadPackage extends Component {
@@ -26,20 +27,6 @@ export class UploadPackage extends Component {
 
     onPackageRootChange(data) {
         this.props.editPackageRoot(data.target.value);
-    }
-
-    showProgress() {
-        this.props.showUploadPackage(false);
-
-        if (this.props.existsProject === true) {
-            this.props.setProjectAlreadyExists(true);
-            return;
-        }
-
-        this.props.showUploadProgress(this.props.package.file);
-        setTimeout(() => {
-            this.props.showUploadProgress("#done"); // temporary show and hide progress after 2 seconds
-        }, 2000);
     }
 
     render() {
@@ -114,7 +101,7 @@ export class UploadPackage extends Component {
                             size="standard"
                             title="Upload"
                             type="primary"
-                            onClick={() => {this.showProgress();}}
+                            onClick={() => { this.props.uploadPackage(); }}
                         />
                         <div style={{width: '14px'}}/>
                         <Button
@@ -143,7 +130,6 @@ export default connect(function (store) {
     return {
       uploadPackageDlgVisible: uploadPackageDlgVisible(store),
       projectAlreadyExists: projectAlreadyExists(store),
-      package: uploadPackageData(store),
-      existsProject: existsProject(uploadPackageData(store).file, store)
+      package: uploadPackageData(store)
     };
-}, { showUploadPackage, showUploadProgress, uploadPackageData, editPackageFile, editPackageRoot, setProjectAlreadyExists })(UploadPackage);
+}, { showUploadPackage, uploadPackageData, editPackageFile, editPackageRoot, uploadPackage })(UploadPackage);

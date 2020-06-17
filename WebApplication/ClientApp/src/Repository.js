@@ -32,9 +32,15 @@ class Repository {
         return response.data;
     }
 
+    /** Load users profile */
     async loadProfile() {
         const response = await axios.get("/login/profile");
         return response.data;
+    }
+
+    /**Uploads package to the server */
+    async uploadPackage(form) {
+        console.log(form);
     }
 
     setAccessToken(accessToken) {

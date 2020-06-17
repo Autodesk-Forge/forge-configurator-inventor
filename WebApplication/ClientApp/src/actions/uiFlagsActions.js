@@ -10,7 +10,6 @@ export const actionTypes = {
     HIDE_RFA_PROGRESS: 'HIDE_RFA_PROGRESS',
     SET_RFA_LINK: 'SET_RFA_LINK',
     SHOW_UPLOAD_PACKAGE: 'SHOW_UPLOAD_PACKAGE',
-    SHOW_UPLOAD_PROGRESS: 'SHOW_UPLOAD_PROGRESS',
     PACKAGE_FILE_EDITED: 'PACKAGE_FILE_EDITED',
     PACKAGE_ROOT_EDITED: 'PACKAGE_ROOT_EDITED',
     UPDATE_ACTIVE_TAB_INDEX: 'UPDATE_ACTIVE_TAB_INDEX',
@@ -76,13 +75,6 @@ export const showUploadPackage = (visible) => {
     return {
         type: actionTypes.SHOW_UPLOAD_PACKAGE,
         visible
-    };
-};
-
-export const showUploadProgress = (status) => {
-    return {
-        type: actionTypes.SHOW_UPLOAD_PROGRESS,
-        status
     };
 };
 

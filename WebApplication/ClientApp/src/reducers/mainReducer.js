@@ -78,7 +78,7 @@ export const uploadProgressShowing = function(state) {
 
 export const uploadPackageData = function(state) {
     return uiFlags.uploadPackageData(state.uiFlags);
-}
+};
 
 export const getProfile = function (state) {
     return state.profile;
@@ -86,12 +86,6 @@ export const getProfile = function (state) {
 
 export const activeTabIndex = function(state) {
     return uiFlags.activeTabIndex(state.uiFlags);
-};
-
-export const existsProject = function(projectId, state) {
-
-    const project = getProject(projectId, state);
-    return project != null;
 };
 
 export const projectAlreadyExists = function(state) {
