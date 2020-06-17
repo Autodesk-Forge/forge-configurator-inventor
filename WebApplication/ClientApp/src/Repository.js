@@ -44,6 +44,10 @@ class Repository {
     forgetAccessToken() {
         delete axios.defaults.headers.common[AuthorizationHeader];
     }
+
+    hasAccessToken() {
+        return !! axios.defaults.headers.common[AuthorizationHeader];
+    }
 }
 
 /** Singleton with repo */
