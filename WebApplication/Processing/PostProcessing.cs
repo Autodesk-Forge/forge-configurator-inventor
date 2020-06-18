@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.Extensions.Logging;
-using WebApplication.Utilities;
+using WebApplication.Middleware;
 
 namespace WebApplication.Processing
 {
@@ -23,14 +23,14 @@ namespace WebApplication.Processing
         /// </summary>
         private readonly Lazy<string> _lazyReportDir;
 
-        public PostProcessing(IHttpClientFactory clientFactory, ResourceProvider resourceProvider, ILogger<PostProcessing> logger)
+        public PostProcessing(IHttpClientFactory clientFactory, ILogger<PostProcessing> logger, LocalCache localCache)
         {
             _clientFactory = clientFactory;
             _logger = logger;
 
             _lazyReportDir = new Lazy<string>(() =>
             {
-                var reportDir = Path.Combine(resourceProvider.LocalRootName, "Reports");
+                var reportDir = Path.Combine(localCache.LocalRootName, "Reports");
 
                 // ensure the directory is exists
                 Directory.CreateDirectory(reportDir);

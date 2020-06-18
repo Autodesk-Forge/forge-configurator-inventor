@@ -1,14 +1,11 @@
-using System.IO;
 using System.Net.Http;
 using Autodesk.Forge.Core;
 using Autodesk.Forge.DesignAutomation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -76,10 +73,11 @@ namespace WebApplication
                                     });
             services.AddSingleton<Publisher>();
             services.AddScoped<UserResolver>(); // TODO: use interface
+            services.AddSingleton<LocalCache>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Initializer initializer, ILogger<Startup> logger, ResourceProvider resourceProvider)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Initializer initializer, ILogger<Startup> logger, LocalCache localCache)
         {
             if(Configuration.GetValue<bool>("clear"))
             {
@@ -108,15 +106,8 @@ namespace WebApplication
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
-            // expose local cache dir as 'data' virtual dir to serve locally cached OSS files
-            Directory.CreateDirectory(resourceProvider.LocalRootName);
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                // make sure that directory exists
-                FileProvider = new PhysicalFileProvider(resourceProvider.LocalRootName),
-                RequestPath = new PathString(ResourceProvider.VirtualCacheDir),
-                ServeUnknownFileTypes = true
-            });
+            // expose local cache as static files
+            localCache.Serve(app);
 
             app.UseSpaStaticFiles();
             app.UseMiddleware<TokenHandler>();
