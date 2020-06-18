@@ -7,21 +7,27 @@ import Typography from "@hig/typography";
 import './modalProgress.css';
 import merge from "lodash.merge";
 import Button from '@hig/button';
+import IconButton from "@hig/icon-button";
 
 export class ModalProgressUpload extends Component {
 
     render() {
+        const done = this.props.isDone();
+        const doneColor = "rgb(135, 179, 64)";
+
         const modalStyles = /* istanbul ignore next */ styles =>
         merge(styles, {
           modal: {
                 window: { // by design
                     width: "371px",
-                    height: "263px"
+                    height: "263px",
+                    borderLeftWidth: "3px",
+                    borderLeftStyle: "solid",
+                    borderLeftColor: done ? doneColor : "rgb(255, 255, 255)"
                 }
             }
         });
 
-        const done = this.props.isDone();
         const iconAsBackgroundImage = {
             width: '48px',
             height: '48px',
@@ -35,20 +41,24 @@ export class ModalProgressUpload extends Component {
               onCloseClick={this.props.onClose}
               percentComplete={null}
               stylesheet={modalStyles}
-              /*headerChildren={
-                <header>
-                <div className="modalHeader">
-                    {done && <Complete24/>}
-                    <Typography className="package" fontWeight="bold">{this.props.title}</Typography>
-                  <button
-                    style={{ border: 'none', cursor: 'pointer' }}
-                    onClick={this.props.onClose}
-                  >
-                    <CloseMUI />
-                  </button>
-                </div>
+              headerChildren={
+                <header id="customHeader">
+                    <div className="customHeaderContent">
+                        <div className="title">
+                            {done && <Complete24 className="doneIcon"/>}
+                            <Typography style={{
+                                paddingLeft: "8px",
+                                fontSize: "inherit",
+                                fontWeight: "inherit",
+                                lineHeight: "inherit"}}>{this.props.title}</Typography>
+                        </div>
+                        <IconButton style={{ width: "24px", height: "24px", marginLeft: "auto", marginRight: "auto"}}
+                            icon={<CloseMUI />}
+                            onClick={this.props.onClose}
+                        />
+                    </div>
                 </header>
-              }*/
+              }
               >
               <div id="modalUpload">
                 <div className="modalContent">

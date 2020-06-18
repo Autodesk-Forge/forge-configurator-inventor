@@ -32,12 +32,34 @@
     padding-bottom: 8px;
 }
 
-.modalHeader {
+#customHeader {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.666;
     display: flex;
-    padding-left: 24px;
-    padding-right: 24px;
-    padding-top: 16px;
-    padding-bottom: 16px;
+    flex-direction: column;
+    justify-content: center;
+    border-bottom: 1px solid rgba(60,60,60,0.25);
+    min-height: 60px;
+    z-index: 1002;
+}
+
+#customHeader .customHeaderContent {
+    margin: 0 24px;
+    display: flex;
+    justify-content: space-between;
+}
+
+#customHeader .customHeaderContent .title {
+    display: flex;
+}
+
+#customHeader .customHeaderContent .title .doneIcon {
+    margin: auto;
+}
+
+#customHeader .customHeaderContent .title .doneIcon svg path{
+    fill: #87b340;
 }
 
 .modalHeader button {
