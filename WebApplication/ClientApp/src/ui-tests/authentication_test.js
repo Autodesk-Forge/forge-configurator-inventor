@@ -9,7 +9,7 @@
 
     Feature('Authentication');
 
-    Scenario('check Sign-out workflow', async (I) => {
+    Scenario('check Sign-in and Sign-out workflow', async (I) => {
 
         I.signIn();
 
