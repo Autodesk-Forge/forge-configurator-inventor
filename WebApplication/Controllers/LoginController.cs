@@ -5,9 +5,8 @@ using Autodesk.Forge.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Net.Http.Headers;
 using WebApplication.Definitions;
-using WebApplication.Services;
+using WebApplication.State;
 using WebApplication.Utilities;
 
 namespace WebApplication.Controllers
@@ -19,17 +18,17 @@ namespace WebApplication.Controllers
         private static readonly ProfileDTO AnonymousProfile = new ProfileDTO { Name = "Anonymous", AvatarUrl = "logo-xs-white-BG.svg" };
 
         private readonly ILogger<LoginController> _logger;
-        private readonly IForgeOSS _forge;
+        private readonly UserResolver _userResolver;
 
         /// <summary>
         /// Forge configuration.
         /// </summary>
         public ForgeConfiguration Configuration { get; }
 
-        public LoginController(ILogger<LoginController> logger, IOptions<ForgeConfiguration> optionsAccessor, IForgeOSS forge)
+        public LoginController(ILogger<LoginController> logger, IOptions<ForgeConfiguration> optionsAccessor, UserResolver userResolver)
         {
             _logger = logger;
-            _forge = forge;
+            _userResolver = userResolver;
             Configuration = optionsAccessor.Value.Validate();
         }
 
@@ -44,8 +43,8 @@ namespace WebApplication.Controllers
             var encodedHost = HttpUtility.UrlEncode(callbackUrl);
 
             // prepare scope
-            var scopes = new[] { "data:read", "user-profile:read" };  // TODO: ensure that 'data:read' is necessary
-            var fullScope = string.Join("%20", scopes);
+            var scopes = new[] { "user-profile:read" };
+            var fullScope = string.Join("%20", scopes); // it's not necessary now, but kept in case we need it in future
 
             // build auth url (https://forge.autodesk.com/en/docs/oauth/v2/reference/http/authorize-GET)
             var authUrl = $"https://developer.api.autodesk.com/authentication/v1/authorize?response_type=token&client_id={Configuration.ClientId}&redirect_uri={encodedHost}&scope={fullScope}";
@@ -56,10 +55,9 @@ namespace WebApplication.Controllers
         public async Task<ProfileDTO> Profile()
         {
             _logger.LogInformation("Get profile");
-            var token = HttpContext.Request.Headers[HeaderNames.Authorization].ToString();
-            if (!string.IsNullOrEmpty(token))
+            if (_userResolver.IsAuthenticated)
             {
-                var profile = await _forge.GetProfileAsync(token);
+                dynamic profile = await _userResolver.GetProfileAsync();
                 return new ProfileDTO { Name = profile.firstName + " " + profile.lastName, AvatarUrl = profile.profileImages.sizeX40 };
             }
             else

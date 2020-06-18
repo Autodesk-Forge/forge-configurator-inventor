@@ -11,13 +11,11 @@ namespace WebApplication.Controllers
     [Route("download")]
     public class DownloadController : ControllerBase
     {
-        private readonly ResourceProvider _resourceProvider;
         private readonly ILogger<DownloadController> _logger;
         private readonly UserResolver _userResolver;
 
-        public DownloadController(ResourceProvider resourceProvider, ILogger<DownloadController> logger, UserResolver userResolver)
+        public DownloadController(ILogger<DownloadController> logger, UserResolver userResolver)
         {
-            _resourceProvider = resourceProvider;
             _logger = logger;
             _userResolver = userResolver;
         }
@@ -36,7 +34,7 @@ namespace WebApplication.Controllers
 
         private async Task<RedirectResult> RedirectToOssObject(string projectName, string hash, Func<OSSObjectNameProvider, string> nameExtractor)
         {
-            Project project = await _userResolver.GetProject(projectName);
+            Project project = await _userResolver.GetProjectAsync(projectName);
 
             var ossNameProvider = project.OssNameProvider(hash);
             string ossObjectName = nameExtractor(ossNameProvider);

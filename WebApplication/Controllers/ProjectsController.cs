@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using WebApplication.Definitions;
 using WebApplication.Middleware;
+using WebApplication.Processing;
 using WebApplication.State;
 using WebApplication.Utilities;
 using Project = WebApplication.State.Project;
@@ -20,19 +21,22 @@ namespace WebApplication.Controllers
         private readonly DtoGenerator _dtoGenerator;
         private readonly UserResolver _userResolver;
         private readonly LocalCache _localCache;
+        private readonly ProjectWork _projectWork;
 
-        public ProjectsController(ILogger<ProjectsController> logger, DtoGenerator dtoGenerator, UserResolver userResolver, LocalCache localCache)
+        public ProjectsController(ILogger<ProjectsController> logger, DtoGenerator dtoGenerator, UserResolver userResolver,
+            LocalCache localCache, ProjectWork projectWork)
         {
             _logger = logger;
             _dtoGenerator = dtoGenerator;
             _userResolver = userResolver;
             _localCache = localCache;
+            _projectWork = projectWork;
         }
 
         [HttpGet("")]
         public async Task<IEnumerable<ProjectDTO>> ListAsync()
         {
-            var bucket = await _userResolver.GetBucket();
+            var bucket = await _userResolver.GetBucket(tryToCreate: false); // TODO: remove before PR
 
             // TODO move to projects repository?
             List<ObjectDetails> objects = await bucket.GetObjectsAsync($"{ONC.ProjectsFolder}-");
@@ -42,7 +46,7 @@ namespace WebApplication.Controllers
             {
                 var projectName = ONC.ToProjectName(objDetails.ObjectKey);
 
-                ProjectStorage projectStorage = await _userResolver.GetProjectStorage(projectName); // TODO: expensive to do it in the loop
+                ProjectStorage projectStorage = await _userResolver.GetProjectStorageAsync(projectName); // TODO: expensive to do it in the loop
                 Project project = projectStorage.Project;
 
                 var dto = _dtoGenerator.MakeProjectDTO<ProjectDTO>(project, projectStorage.Metadata.Hash);

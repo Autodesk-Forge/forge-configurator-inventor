@@ -20,7 +20,7 @@ namespace WebApplication.Controllers
         [HttpGet("{projectName}")]
         public async Task<InventorParameters> GetParameters(string projectName)
         {
-            var projectStorage = await _userResolver.GetProjectStorage(projectName);
+            var projectStorage = await _userResolver.GetProjectStorageAsync(projectName);
             var paramsFile = projectStorage.GetLocalNames().Parameters;
             return Json.DeserializeFile<InventorParameters>(paramsFile);
         }

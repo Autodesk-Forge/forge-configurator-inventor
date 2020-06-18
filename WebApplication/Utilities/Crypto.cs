@@ -7,8 +7,6 @@ namespace WebApplication.Utilities
 {
     public class Crypto
     {
-        private static readonly SHA1 _sha1 = SHA1.Create(); // chosen because it's shorter
-
         /// <summary>
         /// Generate hex string from the bytes.
         /// </summary>
@@ -24,7 +22,8 @@ namespace WebApplication.Utilities
         public static byte[] GenerateFileHash(string filePath)
         {
             using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-            return _sha1.ComputeHash(stream);
+            using var sha1 = CreateHasher();
+            return sha1.ComputeHash(stream);
         }
 
         /// <summary>
@@ -43,7 +42,8 @@ namespace WebApplication.Utilities
         /// <returns>Hash string.</returns>
         public static string GenerateStreamHashString(Stream stream)
         {
-            return BytesToString(_sha1.ComputeHash(stream));
+            using var sha1 = CreateHasher();
+            return BytesToString(sha1.ComputeHash(stream));
         }
 
         /// <summary>
@@ -53,7 +53,8 @@ namespace WebApplication.Utilities
         public static string GenerateHashString(string input)
         {
             var buffer = Encoding.UTF8.GetBytes(input);
-            return BytesToString(_sha1.ComputeHash(buffer));
+            using var sha1 = CreateHasher();
+            return BytesToString(sha1.ComputeHash(buffer));
         }
 
         /// <summary>
@@ -65,6 +66,13 @@ namespace WebApplication.Utilities
         {
             using var stream = Json.ToStream(data);
             return GenerateStreamHashString(stream);
+        }
+
+        private static HashAlgorithm CreateHasher()
+        {
+            // IMPORTANT: hasher instance must not be cached!
+            // SHA1 was chosen as a hasher because it's shorter
+            return SHA1.Create();
         }
     }
 }
