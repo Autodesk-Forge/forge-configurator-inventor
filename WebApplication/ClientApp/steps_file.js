@@ -73,7 +73,7 @@ module.exports = function() {
 
       this.clickToAuthorizationButton('Anonymous');
 
-      // check it is Sigh-In page
+      // check it is Sign-In page
       this.seeTitleEquals('Sign in');
       this.waitForElement(inputUserName, 10);
 
