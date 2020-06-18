@@ -59,7 +59,7 @@ module.exports = function() {
       this.waitForVisible(userButton,10);
       this.click(userButton);
 
-      // wait for Authotization popUp dialog
+      // wait for Authorization popUp dialog
       this.waitForVisible(authorizationButton, 10);
 
       // check the user name
