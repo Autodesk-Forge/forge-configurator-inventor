@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+/* eslint-disable no-constant-condition */
 /* eslint-disable no-undef */
 // in this file you can append custom step methods to 'I' object
 
@@ -19,6 +21,7 @@ module.exports = function() {
   const authorizationButton = '.auth-button';
   const loginName = process.env.SDRA_USERNAME;
   const password = process.env.SDRA_PASSWORD;
+  const allowButton = '#allow_btn';
 
   // returns Project name locator
   function getProjectLocator(name)
@@ -33,16 +36,15 @@ module.exports = function() {
 
     // select a project according the project Name
     selectProject(name){
+      // wait until project combo is displayed
+      this.waitForElement( locators.xpComboProjects, 10);
+      this.click( locators.xpComboProjects );
 
-        // wait until project combo is displayed
-        this.waitForElement( locators.xpComboProjects, 10);
-        this.click( locators.xpComboProjects );
+      // wait until project list is displayed
+      this.waitForElement(locators.xpProjectList, 10);
 
-        // wait until project list is displayed
-        this.waitForElement(locators.xpProjectList, 10);
-
-        // emulate click to trigger project loading
-        this.click( getProjectLocator(name));
+      // emulate click to trigger project loading
+      this.click( getProjectLocator(name));
     },
     clickToModelTab() { // we create this method because we need to wait for viewer - https://jira.autodesk.com/browse/INVGEN-41877
       // click on Model tab
@@ -54,7 +56,7 @@ module.exports = function() {
       // wait for spinner to be hidden
       this.waitForInvisible(forgeViewerSpinner, 30);
     },
-    clickToAuthorizationButton(currentUser){ 
+    clickToAuthorizationButton(currentUser){
       // wait for User button
       this.waitForVisible(userButton,10);
       this.click(userButton);
@@ -68,8 +70,10 @@ module.exports = function() {
       // click on Authorization Button
       this.click(authorizationButton);
     },
-    signIn(){
-     // we use Autodesk Account //https://accounts.autodesk.com/
+    async signIn(){
+     // we use Autodesk Account credentials //https://accounts.autodesk.com/
+      const url = await this.grabCurrentUrl();
+      console.log(url);
 
       this.clickToAuthorizationButton('Anonymous');
 
@@ -81,16 +85,28 @@ module.exports = function() {
       this.fillField(inputUserName, loginName);
       this.click(buttonNext);
 
-      //specify Sign-in password
+      // specify Sign-in password
       this.waitForVisible(inputPassword, 10);
       this.fillField(inputPassword, password);
       this.click(buttonSubmit);
 
+      //const url = this.grabCurrentUrl();
+      if( url != 'https://localhost:5001/')
+      {
+        console.log('************** click on Allow Button ***************');
+        // click on Allow Button
+        this.waitForVisible(allowButton, 15);
+        this.click(allowButton);
+      }
+
+      // check logged user
       this.waitForElement(loggedDemoToolUser, 10);
+
     },
     signOut(){
       this.clickToAuthorizationButton('Demo Tool');
 
+      // check if Anonymous user is signed
       this.waitForElement(loggedAnonymousUser, 10);
     }
 

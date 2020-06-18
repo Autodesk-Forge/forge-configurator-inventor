@@ -1,23 +1,24 @@
-	/* eslint-disable no-undef */
-    const avatarAnonymous = '//button[@type="button"]//span[contains(@role, "img") and contains(@aria-label, "Avatar for Anonymous")]';
-    const avatarDemoTool = '//button[@type="button"]//span[contains(@role, "img") and contains(@aria-label, "Avatar for Demo Tool")]';
+/* eslint-disable no-console */
+/* eslint-disable no-undef */
+const avatarAnonymous = '//button[@type="button"]//span[contains(@role, "img") and contains(@aria-label, "Avatar for Anonymous")]';
+const avatarDemoTool = '//button[@type="button"]//span[contains(@role, "img") and contains(@aria-label, "Avatar for Demo Tool")]';
 
 
-    Before((I) => {
-        I.amOnPage('/');
-    });
+Before((I) => {
+    I.amOnPage('/');
+});
 
-    Feature('Authentication');
+Feature('Authentication');
 
-    Scenario('check Sign-in and Sign-out workflow', async (I) => {
+Scenario('check Sign-in and Sign-out workflow', async (I) => {
 
-        I.signIn();
+    await I.signIn();
 
-        //wait for logged 'Demo Tool' user
-        I.waitForElement(avatarDemoTool, 10);
+    //wait for logged 'Demo Tool' user
+    I.waitForElement(avatarDemoTool, 10);
 
-        I.signOut();
+    I.signOut();
 
-        // wait for Anonymous user
-        I.waitForElement(avatarAnonymous, 10);
-    });
+    // wait for Anonymous user
+    I.waitForElement(avatarAnonymous, 10);
+});
