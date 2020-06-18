@@ -36,7 +36,7 @@ namespace WebApplication.Controllers
 
         private async Task<RedirectResult> RedirectToOssObject(string projectName, string hash, Func<OSSObjectNameProvider, string> nameExtractor)
         {
-            Project project = _resourceProvider.GetProject(projectName);
+            Project project = await _userResolver.GetProject(projectName);
 
             var ossNameProvider = project.OssNameProvider(hash);
             string ossObjectName = nameExtractor(ossNameProvider);

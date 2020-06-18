@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using WebApplication.Definitions;
+using WebApplication.State;
 using WebApplication.Utilities;
 
 namespace WebApplication.Controllers
@@ -8,17 +10,17 @@ namespace WebApplication.Controllers
     [Route("parameters")]
     public class ParametersController : ControllerBase
     {
-        private readonly ResourceProvider _resourceProvider;
+        private readonly UserResolver _userResolver;
 
-        public ParametersController(ResourceProvider resourceProvider)
+        public ParametersController(UserResolver userResolver)
         {
-            _resourceProvider = resourceProvider;
+            _userResolver = userResolver;
         }
 
         [HttpGet("{projectName}")]
-        public InventorParameters GetParameters(string projectName)
+        public async Task<InventorParameters> GetParameters(string projectName)
         {
-            var projectStorage = _resourceProvider.GetProjectStorage(projectName);
+            var projectStorage = await _userResolver.GetProjectStorage(projectName);
             var paramsFile = projectStorage.GetLocalNames().Parameters;
             return Json.DeserializeFile<InventorParameters>(paramsFile);
         }
