@@ -1,5 +1,6 @@
 import parametersActionTypes from '../actions/parametersActions';
 import uiFlagsActionTypes from '../actions/uiFlagsActions';
+import uploadPackagesActionTypes from '../actions/uploadPackageActions';
 
 export const initialState = {
    parametersEditedMessageClosed: false,
@@ -8,7 +9,8 @@ export const initialState = {
    rfaProgressShowing: null,
    rfaDownloadUrl: null,
    showUploadPackage: false,
-   showUploadProgress: null, //null, // null=hidden, value=project, done/error
+   uploadProgressShowing: false,
+   uploadProgressStatus: null,
    package: { file: '', root: ''},
    activeTabIndex: 0,
    projectAlreadyExists: false
@@ -35,7 +37,11 @@ export const uploadPackageData = function(state) {
 };
 
 export const uploadProgressShowing = function(state) {
-   return state.showUploadProgress;
+   return state.uploadProgressShowing;
+};
+
+export const uploadProgressIsDone = function(state) {
+   return state.uploadProgressStatus === "done";
 };
 
 export const activeTabIndex = function(state) {
@@ -64,8 +70,12 @@ export default function(state = initialState, action) {
          return { ...state, rfaDownloadUrl: action.url};
       case uiFlagsActionTypes.SHOW_UPLOAD_PACKAGE:
          return { ...state, showUploadPackage: action.visible};
-      case uiFlagsActionTypes.SHOW_UPLOAD_PROGRESS:
-         return { ...state, showUploadProgress: action.status};
+      case uploadPackagesActionTypes.SET_UPLOAD_PROGRESS_VISIBLE:
+         return { ...state, uploadProgressShowing: true};
+      case uploadPackagesActionTypes.SET_UPLOAD_PROGRESS_HIDDEN:
+         return { ...state, uploadProgressShowing: false, uploadProgressStatus: null};
+      case uploadPackagesActionTypes.SET_UPLOAD_PROGRESS_DONE:
+         return { ...state, uploadProgressStatus: "done"};
       case uiFlagsActionTypes.PACKAGE_FILE_EDITED:
          return { ...state, package: { file: action.file, root: state.package.root } };
       case uiFlagsActionTypes.PACKAGE_ROOT_EDITED:

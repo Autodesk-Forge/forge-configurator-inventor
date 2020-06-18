@@ -6,12 +6,12 @@ import IconButton from '@hig/icon-button';
 import { Upload24 } from '@hig/icons';
 import './projectList.css';
 import { showUploadPackage, updateActiveTabIndex } from '../actions/uiFlagsActions';
-import { showUploadProgress } from '../actions/uploadPackageActions';
+import { setUploadProgressHidden } from '../actions/uploadPackageActions';
 import { updateActiveProject } from '../actions/projectListActions';
 import UploadPackage from './uploadPackage';
 
 import ModalProgressUpload from './modalProgressUpload';
-import { uploadProgressShowing, uploadPackageData } from '../reducers/mainReducer';
+import { uploadProgressShowing, uploadProgressIsDone, uploadPackageData } from '../reducers/mainReducer';
 
 const Icon = ({ iconname }) => (
   <div>
@@ -42,15 +42,15 @@ export const projectListColumns = [
 export class ProjectList extends Component {
 
   isDone() {
-    return this.props.uploadProgressShowing === "#done";
+    return this.props.uploadProgressIsDone;
   }
 
   onProgressCloseClick() {
-    this.props.showUploadProgress(null);
+    this.props.setUploadProgressHidden();
   }
 
   onProgressOpenClick() {
-    this.props.showUploadProgress(null);
+    this.props.setUploadProgressHidden();
     // temporary switch to Wrench
     this.props.updateActiveProject(/*this.props.uploadPackageData.file*/'Wrench');
     // switch to MODEL tab
@@ -72,7 +72,7 @@ export class ProjectList extends Component {
 
     const visible = this.props.isLoggedIn;
     const uploadContainerClass = visible ? "uploadContainer" : "uploadContainer hidden";
-    const showUploadProgress = this.props.uploadProgressShowing != null;
+    const showUploadProgress = this.props.uploadProgressShowing;
 
     return (
       <div className="fullheight">
@@ -119,6 +119,7 @@ export default connect(function (store) {
     projectList: store.projectList,
     isLoggedIn: store.profile.isLoggedIn,
     uploadProgressShowing: uploadProgressShowing(store),
+    uploadProgressIsDone: uploadProgressIsDone(store),
     uploadPackageData: uploadPackageData(store)
   };
-}, { showUploadPackage, showUploadProgress, updateActiveProject, updateActiveTabIndex })(ProjectList);
+}, { showUploadPackage, updateActiveProject, updateActiveTabIndex, setUploadProgressHidden })(ProjectList);

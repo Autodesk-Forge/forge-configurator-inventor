@@ -26,3 +26,22 @@
     display: flex;
     flex-flow: row-reverse;
 }
+
+#modalUpload .package {
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.modalHeader {
+    display: flex;
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+}
+
+.modalHeader button {
+    background-color: transparent;
+    height: calc(20px + (8px * 2));
+    width: calc(20px + (8px * 2));
+}

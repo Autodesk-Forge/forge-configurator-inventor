@@ -76,6 +76,10 @@ export const uploadProgressShowing = function(state) {
     return uiFlags.uploadProgressShowing(state.uiFlags);
 };
 
+export const uploadProgressIsDone = function(state) {
+    return uiFlags.uploadProgressIsDone(state.uiFlags);
+};
+
 export const uploadPackageData = function(state) {
     return uiFlags.uploadPackageData(state.uiFlags);
 };

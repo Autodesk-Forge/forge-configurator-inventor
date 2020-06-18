@@ -105,7 +105,10 @@ export class UploadPackage extends Component {
                             size="standard"
                             title="Upload"
                             type="primary"
-                            onClick={() => { this.props.uploadPackage(); }}
+                            onClick={() => {
+                                this.props.showUploadPackage(false);
+                                this.props.uploadPackage();
+                            }}
                         />
                         <div style={{width: '14px'}}/>
                         <Button

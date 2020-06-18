@@ -2,20 +2,33 @@ import repo from '../Repository';
 import {uploadPackageData} from '../reducers/mainReducer';
 
 const actionTypes = {
-    SHOW_UPLOAD_PROGRESS: 'SHOW_UPLOAD_PROGRESS'
+    SET_UPLOAD_PROGRESS_VISIBLE: 'SET_UPLOAD_PROGRESS_VISIBLE',
+    SET_UPLOAD_PROGRESS_HIDDEN: 'SET_UPLOAD_PROGRESS_HIDDEN',
+    SET_UPLOAD_PROGRESS_DONE: 'SET_UPLOAD_PROGRESS_DONE'
 };
 
 export default actionTypes;
 
 export const uploadPackage = () => async (dispatch, getState) => {
-    dispatch(showUploadProgress());
+    dispatch(setUploadProgressVisible());
     repo.uploadPackage(uploadPackageData(getState()));
-    dispatch(showUploadProgress("#done"));
+    dispatch(setUploadProgressDone());
 };
 
-export const showUploadProgress = (status) => {
+export const setUploadProgressVisible = () => {
     return {
-        type: actionTypes.SHOW_UPLOAD_PROGRESS,
-        status
+        type: actionTypes.SET_UPLOAD_PROGRESS_VISIBLE
+    };
+};
+
+export const setUploadProgressHidden = () => {
+    return {
+        type: actionTypes.SET_UPLOAD_PROGRESS_HIDDEN
+    };
+};
+
+export const setUploadProgressDone = () => {
+    return {
+        type: actionTypes.SET_UPLOAD_PROGRESS_DONE
     };
 };

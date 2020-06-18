@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import Modal from '@hig/modal';
+import { CloseMUI, Complete24 } from "@hig/icons";
 import ProgressBar from '@hig/progress-bar';
 import Typography from "@hig/typography";
 import './modalProgress.css';
@@ -33,10 +34,26 @@ export class ModalProgressUpload extends Component {
               title={this.props.title}
               onCloseClick={this.props.onClose}
               percentComplete={null}
-              stylesheet={modalStyles}>
+              stylesheet={modalStyles}
+              /*headerChildren={
+                <header>
+                <div className="modalHeader">
+                    {done && <Complete24/>}
+                    <Typography className="package" fontWeight="bold">{this.props.title}</Typography>
+                  <button
+                    style={{ border: 'none', cursor: 'pointer' }}
+                    onClick={this.props.onClose}
+                  >
+                    <CloseMUI />
+                  </button>
+                </div>
+                </header>
+              }*/
+              >
               <div id="modalUpload">
                 <div className="modalContent">
-                    <div style={iconAsBackgroundImage}/>
+                    {!done && <div style={iconAsBackgroundImage}/>}
+                    {done && <Typography className="package" fontWeight="bold">Package:</Typography>}
                     <div className="modalAction" fontWeight="bold">
                         <Typography>
                             {this.props.label ? this.props.label : "Missing label."}
