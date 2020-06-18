@@ -1,6 +1,5 @@
 import repo from '../Repository';
 import { addError, addLog } from './notificationActions';
-import axios from 'axios';
 
 const actionTypes = {
     PROFILE_LOADED: 'PROFILE_LOADED'
@@ -48,7 +47,7 @@ export const loadProfile = () => async (dispatch) => {
     try {
         const profile = await repo.loadProfile();
         dispatch(addLog('Load profile received'));
-        const isLoggedIn = axios.defaults.headers.common['Authorization'];
+        const isLoggedIn = repo.hasAccessToken();
         dispatch(updateProfile(profile, isLoggedIn));
     } catch (error) {
         dispatch(addError('Failed to get profile. (' + error + ')'));

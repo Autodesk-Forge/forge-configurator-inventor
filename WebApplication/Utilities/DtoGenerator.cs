@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Routing;
 using WebApplication.Definitions;
+using WebApplication.Middleware;
 using WebApplication.State;
 
 namespace WebApplication.Utilities
@@ -9,13 +10,13 @@ namespace WebApplication.Utilities
     /// </summary>
     public class DtoGenerator
     {
-        private readonly ResourceProvider _resourceProvider;
         private readonly LinkGenerator _linkGenerator;
+        private readonly LocalCache _localCache;
 
-        public DtoGenerator(ResourceProvider resourceProvider, LinkGenerator linkGenerator)
+        public DtoGenerator(LinkGenerator linkGenerator, LocalCache localCache)
         {
-            _resourceProvider = resourceProvider;
             _linkGenerator = linkGenerator;
+            _localCache = localCache;
         }
 
         /// <summary>
@@ -30,7 +31,7 @@ namespace WebApplication.Utilities
 
             return new TProjectDTOBase
                     {
-                        Svf = _resourceProvider.ToDataUrl(project.LocalNameProvider(hash).SvfDir),
+                        Svf = _localCache.ToDataUrl(project.LocalNameProvider(hash).SvfDir),
                         ModelDownloadUrl = modelDownloadUrl,
                         Hash = hash
             };

@@ -7,10 +7,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Polly;
 using WebApplication.Definitions;
+using WebApplication.Middleware;
 using WebApplication.Processing;
 using WebApplication.Services;
 using WebApplication.State;
-using WebApplication.Utilities;
 
 namespace WebApplication
 {
@@ -19,25 +19,29 @@ namespace WebApplication
     /// </summary>
     public class Initializer
     {
-        private readonly ResourceProvider _resourceProvider;
         private readonly ILogger<Initializer> _logger;
         private readonly DefaultProjectsConfiguration _defaultProjectsConfiguration;
         private readonly FdaClient _fdaClient;
         private readonly ProjectWork _projectWork;
+        private readonly UserResolver _userResolver;
+        private readonly LocalCache _localCache;
         private readonly OssBucket _bucket;
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Initializer(IForgeOSS forge, ResourceProvider resourceProvider, ILogger<Initializer> logger,
-                            FdaClient fdaClient, IOptions<DefaultProjectsConfiguration> optionsAccessor, ProjectWork projectWork)
+        public Initializer(ILogger<Initializer> logger, FdaClient fdaClient, IOptions<DefaultProjectsConfiguration> optionsAccessor,
+                            ProjectWork projectWork, UserResolver userResolver, LocalCache localCache)
         {
-            _resourceProvider = resourceProvider;
             _logger = logger;
             _fdaClient = fdaClient;
             _projectWork = projectWork;
+            _userResolver = userResolver;
+            _localCache = localCache;
             _defaultProjectsConfiguration = optionsAccessor.Value;
-            _bucket = new OssBucket(forge, resourceProvider.BucketKey);
+
+            // bucket for anonymous user
+            _bucket = _userResolver.AnonymousBucket;
         }
 
         public async Task InitializeAsync()
@@ -77,7 +81,7 @@ namespace WebApplication
             foreach (DefaultProjectConfiguration defaultProjectConfig in _defaultProjectsConfiguration.Projects)
             {
                 var projectUrl = defaultProjectConfig.Url;
-                var project = _resourceProvider.GetProject(defaultProjectConfig.Name);
+                var project = await _userResolver.GetProject(defaultProjectConfig.Name);
 
                 _logger.LogInformation($"Launching 'TransferData' for {projectUrl}");
                 string signedUrl = await waitForBucketPolicy.ExecuteAsync(async () => await _bucket.CreateSignedUrlAsync(project.OSSSourceModel, ObjectAccess.ReadWrite));
@@ -109,7 +113,7 @@ namespace WebApplication
             await _fdaClient.CleanUpAsync();
 
             // cleanup locally cached files
-            Directory.Delete(_resourceProvider.LocalRootName, true);
+            Directory.Delete(_localCache.LocalRootName, true);
         }
     }
 }

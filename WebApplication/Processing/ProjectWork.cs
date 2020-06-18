@@ -40,7 +40,7 @@ namespace WebApplication.Processing
         {
             _logger.LogInformation("Adopt the project");
 
-            var project = _resourceProvider.GetProject(projectInfo.Name);
+            var project = await _userResolver.GetProject(projectInfo.Name);
             var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, projectInfo.TopLevelAssembly);
 
             bool success = await _fdaClient.AdoptAsync(adoptionData);
@@ -73,7 +73,7 @@ namespace WebApplication.Processing
             //_logger.LogInformation(JsonSerializer.Serialize(parameters));
             _logger.LogInformation($"Incoming parameters hash is {hash}");
 
-            var storage = _resourceProvider.GetProjectStorage(projectId);
+            var storage = await _userResolver.GetProjectStorage(projectId);
             var project = storage.Project;
 
             var localNames = project.LocalNameProvider(hash);
@@ -110,7 +110,7 @@ namespace WebApplication.Processing
         {
             _logger.LogInformation($"Generating RFA for hash {hash}");
 
-            ProjectStorage storage = _resourceProvider.GetProjectStorage(projectName);
+            ProjectStorage storage = await _userResolver.GetProjectStorage(projectName);
             Project project = storage.Project;
 
             var ossNameProvider = project.OssNameProvider(hash);
