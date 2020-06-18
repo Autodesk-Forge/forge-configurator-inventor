@@ -101,7 +101,7 @@ export class ProjectList extends Component {
         {showUploadProgress && <ModalProgressUpload
                     open={true}
                     title={this.isDone() ? "Upload Finished" : "Uploading package"}
-                    label={this.props.uploadPackageData.file}
+                    label={this.props.uploadPackageData.file.name}
                     icon='Archive.svg'
                     onClose={() => {this.onProgressCloseClick(); }}
                     onOpen={() => {this.onProgressOpenClick(); }}

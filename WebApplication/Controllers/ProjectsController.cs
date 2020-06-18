@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Autodesk.Forge.Model;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using WebApplication.Definitions;
 using WebApplication.Middleware;
 using WebApplication.Processing;
+using WebApplication.Services;
 using WebApplication.State;
 using WebApplication.Utilities;
 using Project = WebApplication.State.Project;
@@ -58,6 +60,32 @@ namespace WebApplication.Controllers
             }
 
             return projectDTOs.OrderBy(project => project.Label);
+        }
+
+        [HttpPost]
+        public async Task CreateProject([FromForm]NewProjectModel projectModel)
+        {
+            var bucket = await _userResolver.GetBucket(true);
+            var project = await _userResolver.GetProjectAsync(projectModel.package.FileName.ToLowerInvariant()); //TODO: we need to sanitize filename and check if project already exists
+
+            var projectInfo = new ProjectInfo
+            {
+                Name = projectModel.package.FileName.ToLowerInvariant(),
+                TopLevelAssembly = projectModel.root
+            };
+            
+            using var file = new TempFile();
+            using var fileWriteStream = System.IO.File.OpenWrite(file.Name);
+            await projectModel.package.CopyToAsync(fileWriteStream);
+            fileWriteStream.Close();
+            
+            using var fileReadStream = System.IO.File.OpenRead(file.Name);
+
+            await bucket.UploadObjectAsync(project.OSSSourceModel, fileReadStream);
+            
+            string signedUrl = await bucket.CreateSignedUrlAsync(project.OSSSourceModel, ObjectAccess.Read);
+
+            await _projectWork.AdoptAsync(projectInfo, signedUrl);
         }
     }
 }

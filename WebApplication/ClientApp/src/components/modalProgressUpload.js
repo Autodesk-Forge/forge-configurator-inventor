@@ -55,6 +55,7 @@ export class ModalProgressUpload extends Component {
                         <IconButton style={{ width: "24px", height: "24px", marginLeft: "auto", marginRight: "auto"}}
                             icon={<CloseMUI />}
                             onClick={this.props.onClose}
+                            title=""
                         />
                     </div>
                 </header>

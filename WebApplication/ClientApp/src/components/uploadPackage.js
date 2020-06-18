@@ -22,7 +22,7 @@ export class UploadPackage extends Component {
     }
 
     onPackageFileChange(data) {
-        this.props.editPackageFile(data.target.value);
+        this.props.editPackageFile(data.target.files[0]);
     }
 
     onPackageRootChange(data) {
@@ -66,8 +66,8 @@ export class UploadPackage extends Component {
                             </Label>
                             <Input id="package_file"
                                 variant="box"
-                                onChange={this.onPackageFileChange}
-                                value={this.props.package.file}
+                                value={this.props.package.file?.name || ''}
+                                disabled={true}
                             />
                         </div>
                         <div className="browseButton">

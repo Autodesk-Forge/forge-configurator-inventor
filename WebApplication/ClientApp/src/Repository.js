@@ -40,7 +40,15 @@ class Repository {
 
     /**Uploads package to the server */
     async uploadPackage(form) {
-        console.log(form);
+        const formData = new FormData();
+
+        formData.append('package', form.file);
+        formData.append('root', form.root);
+        await axios.post('/projects', formData, {
+            headers: {
+            'Content-Type': 'multipart/form-data'
+            }
+        });
     }
 
     setAccessToken(accessToken) {

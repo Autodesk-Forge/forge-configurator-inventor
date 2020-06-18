@@ -11,7 +11,7 @@ export default actionTypes;
 
 export const uploadPackage = () => async (dispatch, getState) => {
     dispatch(setUploadProgressVisible());
-    repo.uploadPackage(uploadPackageData(getState()));
+    await repo.uploadPackage(uploadPackageData(getState()));
     dispatch(setUploadProgressDone());
 };
 
