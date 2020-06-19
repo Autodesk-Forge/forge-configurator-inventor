@@ -12,7 +12,7 @@ const rootasm = 'root.asm';
 const props = {
     uploadPackageDlgVisible: true,
     projectAlreadyExists: false,
-    package: { file: filename, root: rootasm }
+    package: { file: { name: filename }, root: rootasm }
 };
 
 const showUploadPackageMockFn = jest.fn();
@@ -53,21 +53,23 @@ describe('Upload package dialog', () => {
     expect(uploadPackageMockFn).toHaveBeenCalledTimes(0);
   });
 
-  it('Calls appropriate reducer on file edit', () => {
+  it('File edit input is disabled', () => {
     const wrapper = shallow(<UploadPackage { ...props } editPackageFile={editPackageFileMockFn} editPackageRoot={editPackageRootMockFn} />);
     const input = wrapper.find("#package_file");
-    const newFileName = 'newFile';
-    input.simulate('change', { target: { value: newFileName }} );
-    expect(editPackageFileMockFn).toHaveBeenCalledWith(newFileName);
+    expect(input.prop('disabled')).toBeTruthy();
+    // we disabled it, we do not want it to call anything on change (reducers already called from the browse handler)
+    const newFile = { name: 'newFile'};
+    input.simulate('change', { target: { files: [ newFile ] }} );
+    expect(editPackageFileMockFn).toHaveBeenCalledTimes(0);
     expect(editPackageRootMockFn).toHaveBeenCalledTimes(0);
   });
 
   it('Calls appropriate reducer on file edit thru hidden file-type label', () => {
     const wrapper = shallow(<UploadPackage { ...props } editPackageFile={editPackageFileMockFn} editPackageRoot={editPackageRootMockFn} />);
     const input = wrapper.find("#packageFileInput");
-    const newFileName = 'newFile';
-    input.simulate('change', { target: { value: newFileName }} );
-    expect(editPackageFileMockFn).toHaveBeenCalledWith(newFileName);
+    const newFile = { name: 'newFile'};
+    input.simulate('change', { target: { files: [ newFile ] }} );
+    expect(editPackageFileMockFn).toHaveBeenCalledWith(newFile);
     expect(editPackageRootMockFn).toHaveBeenCalledTimes(0);
   });
 
