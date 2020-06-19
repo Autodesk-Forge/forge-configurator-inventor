@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Autodesk.Forge.Model;
@@ -8,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using WebApplication.Definitions;
 using WebApplication.Middleware;
 using WebApplication.Processing;
-using WebApplication.Services;
 using WebApplication.State;
 using WebApplication.Utilities;
 using Project = WebApplication.State.Project;
@@ -49,43 +47,61 @@ namespace WebApplication.Controllers
                 var projectName = ONC.ToProjectName(objDetails.ObjectKey);
 
                 ProjectStorage projectStorage = await _userResolver.GetProjectStorageAsync(projectName); // TODO: expensive to do it in the loop
-                Project project = projectStorage.Project;
 
-                var dto = _dtoGenerator.MakeProjectDTO<ProjectDTO>(project, projectStorage.Metadata.Hash);
-                dto.Id = project.Name;
-                dto.Label = project.Name;
-                dto.Image = _localCache.ToDataUrl(project.LocalAttributes.Thumbnail);
-
-                projectDTOs.Add(dto);
+                projectDTOs.Add(ToDTO(projectStorage));
             }
 
             return projectDTOs.OrderBy(project => project.Label);
         }
 
         [HttpPost]
-        public async Task CreateProject([FromForm]NewProjectModel projectModel)
+        public async Task<ProjectDTO> CreateProject([FromForm]NewProjectModel projectModel)
         {
-            var bucket = await _userResolver.GetBucket(true);
-            var project = await _userResolver.GetProjectAsync(projectModel.package.FileName.ToLowerInvariant()); //TODO: we need to sanitize filename and check if project already exists
+            var projectName = projectModel.package.FileName.ToLowerInvariant(); //TODO: we need to sanitize filename
+
+            // TODO: check if project already exists
 
             var projectInfo = new ProjectInfo
             {
-                Name = projectModel.package.FileName.ToLowerInvariant(),
+                Name = projectName,
                 TopLevelAssembly = projectModel.root
             };
             
+            // download file locally (a place to improve... would be good to stream it directly to OSS)
             using var file = new TempFile();
-            using var fileWriteStream = System.IO.File.OpenWrite(file.Name);
-            await projectModel.package.CopyToAsync(fileWriteStream);
-            fileWriteStream.Close();
-            
-            using var fileReadStream = System.IO.File.OpenRead(file.Name);
+            await using (var fileWriteStream = System.IO.File.OpenWrite(file.Name))
+            {
+                await projectModel.package.CopyToAsync(fileWriteStream);
+            }
 
-            await bucket.UploadObjectAsync(project.OSSSourceModel, fileReadStream);
-            
-            string signedUrl = await bucket.CreateSignedUrlAsync(project.OSSSourceModel, ObjectAccess.Read);
+            // update the file to OSS
+            var bucket = await _userResolver.GetBucket(true);
+            ProjectStorage projectStorage = await _userResolver.GetProjectStorageAsync(projectName);
+            var project = projectStorage.Project;
+            await using (var fileReadStream = System.IO.File.OpenRead(file.Name))
+            {
+                await bucket.UploadObjectAsync(project.OSSSourceModel, fileReadStream);
+            }
 
+            // adopt the project
+            string signedUrl = await bucket.CreateSignedUrlAsync(project.OSSSourceModel);
             await _projectWork.AdoptAsync(projectInfo, signedUrl);
+
+            return ToDTO(projectStorage);
+        }
+
+        /// <summary>
+        /// Generate project DTO.
+        /// </summary>
+        private ProjectDTO ToDTO(ProjectStorage projectStorage)
+        {
+            Project project = projectStorage.Project;
+
+            var dto = _dtoGenerator.MakeProjectDTO<ProjectDTO>(project, projectStorage.Metadata.Hash);
+            dto.Id = project.Name;
+            dto.Label = project.Name;
+            dto.Image = _localCache.ToDataUrl(project.LocalAttributes.Thumbnail);
+            return dto;
         }
     }
 }
