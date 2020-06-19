@@ -72,8 +72,6 @@ module.exports = function() {
     },
     async signIn(){
      // we use Autodesk Account credentials //https://accounts.autodesk.com/
-      const url = await this.grabCurrentUrl();
-      console.log(url);
 
       this.clickToAuthorizationButton('Anonymous');
 
@@ -90,18 +88,12 @@ module.exports = function() {
       this.fillField(inputPassword, password);
       this.click(buttonSubmit);
 
-      //const url = this.grabCurrentUrl();
-      if( url != 'https://localhost:5001/')
-      {
-        console.log('************** click on Allow Button ***************');
-        // click on Allow Button
-        this.waitForVisible(allowButton, 15);
-        this.click(allowButton);
-      }
+      // click on Allow Button
+      this.waitForVisible(allowButton, 15);
+      this.click(allowButton);
 
       // check logged user
       this.waitForElement(loggedDemoToolUser, 10);
-
     },
     signOut(){
       this.clickToAuthorizationButton('Demo Tool');
