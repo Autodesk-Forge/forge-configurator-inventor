@@ -1,4 +1,5 @@
 import * as signalR from '@aspnet/signalr';
+import repo from './Repository';
 
 class JobManager {
     constructor() {
@@ -29,7 +30,7 @@ class JobManager {
                 onComplete(updatedState);
         });
 
-        await connection.invoke('CreateUpdateJob', projectId, parameters);
+        await connection.invoke('CreateUpdateJob', projectId, parameters, repo.getAccessToken());
     }
 
     async doRFAJob(projectId, hash, onStart, onComplete) {
@@ -46,7 +47,7 @@ class JobManager {
                 onComplete(rfaUrl);
         });
 
-        await connection.invoke('CreateRFAJob', projectId, hash);
+        await connection.invoke('CreateRFAJob', projectId, hash, repo.getAccessToken());
     }
 }
 

@@ -56,6 +56,10 @@ class Repository {
         axios.defaults.headers.common[AuthorizationHeader] = accessToken;
     }
 
+    getAccessToken() {
+        return axios.defaults.headers.common[AuthorizationHeader];
+    }
+
     forgetAccessToken() {
         delete axios.defaults.headers.common[AuthorizationHeader];
     }
