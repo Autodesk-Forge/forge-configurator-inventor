@@ -43,7 +43,7 @@ export default function(state = initialState, action) {
 
         case projectListActionTypes.ADD_PROJECT: {
             // TODO: QUESTION - no check for existing project with the same ID. OK?
-            const updatedList = state.projects.concat(action.newProject);
+            const updatedList = state.projects ? state.projects.concat(action.newProject) : [action.newProject];
             return { ...state, projects: sortProjects(updatedList) };
         }
         default:
