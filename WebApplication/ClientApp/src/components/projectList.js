@@ -50,9 +50,12 @@ export class ProjectList extends Component {
   }
 
   onProgressOpenClick() {
+
     this.props.setUploadProgressHidden();
-    // temporary switch to Wrench
-    this.props.updateActiveProject(/*this.props.uploadPackageData.file*/'Wrench');
+
+    // switch to uploaded project
+    // TODO: use ID of uploaded project, because it can be different from file name
+    this.props.updateActiveProject(this.props.uploadPackageData.file.name);
     // switch to MODEL tab
     this.props.updateActiveTabIndex(1);
   }

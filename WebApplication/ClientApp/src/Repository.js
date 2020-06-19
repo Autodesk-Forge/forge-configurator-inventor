@@ -44,11 +44,12 @@ class Repository {
 
         formData.append('package', form.file);
         formData.append('root', form.root);
-        await axios.post('/projects', formData, {
+        const result = await axios.post('/projects', formData, {
             headers: {
             'Content-Type': 'multipart/form-data'
             }
         });
+        return result.data;
     }
 
     setAccessToken(accessToken) {

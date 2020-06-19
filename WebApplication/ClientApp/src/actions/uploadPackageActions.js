@@ -1,5 +1,6 @@
 import repo from '../Repository';
-import {uploadPackageData} from '../reducers/mainReducer';
+import { uploadPackageData } from '../reducers/mainReducer';
+import { addProject } from './projectListActions';
 
 const actionTypes = {
     SET_UPLOAD_PROGRESS_VISIBLE: 'SET_UPLOAD_PROGRESS_VISIBLE',
@@ -10,8 +11,11 @@ const actionTypes = {
 export default actionTypes;
 
 export const uploadPackage = () => async (dispatch, getState) => {
+
     dispatch(setUploadProgressVisible());
-    await repo.uploadPackage(uploadPackageData(getState()));
+
+    const newProject = await repo.uploadPackage(uploadPackageData(getState()));
+    dispatch(addProject(newProject));
     dispatch(setUploadProgressDone());
 };
 

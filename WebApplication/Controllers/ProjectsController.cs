@@ -57,7 +57,7 @@ namespace WebApplication.Controllers
         [HttpPost]
         public async Task<ProjectDTO> CreateProject([FromForm]NewProjectModel projectModel)
         {
-            var projectName = projectModel.package.FileName.ToLowerInvariant(); //TODO: we need to sanitize filename
+            var projectName = projectModel.package.FileName; //TODO: we need to sanitize filename
 
             // TODO: check if project already exists
 
@@ -77,14 +77,15 @@ namespace WebApplication.Controllers
             // update the file to OSS
             var bucket = await _userResolver.GetBucket(true);
             ProjectStorage projectStorage = await _userResolver.GetProjectStorageAsync(projectName);
-            var project = projectStorage.Project;
+
+            string ossSourceModel = projectStorage.Project.OSSSourceModel;
             await using (var fileReadStream = System.IO.File.OpenRead(file.Name))
             {
-                await bucket.UploadObjectAsync(project.OSSSourceModel, fileReadStream);
+                await bucket.UploadObjectAsync(ossSourceModel, fileReadStream);
             }
 
             // adopt the project
-            string signedUrl = await bucket.CreateSignedUrlAsync(project.OSSSourceModel);
+            string signedUrl = await bucket.CreateSignedUrlAsync(ossSourceModel);
             await _projectWork.AdoptAsync(projectInfo, signedUrl);
 
             return ToDTO(projectStorage);
