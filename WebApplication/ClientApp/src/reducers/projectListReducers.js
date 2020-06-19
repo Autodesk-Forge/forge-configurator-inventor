@@ -15,6 +15,11 @@ export const getProject = function(id, state) {
     return state.projects.find(proj => proj.id === id);
 };
 
+/** Generate shallow array clone, sorted by project label. */
+function sortProjects(projects) {
+    return [].concat(projects).sort((a,b) => a.label.localeCompare(b.label));
+}
+
 export default function(state = initialState, action) {
     switch(action.type) {
         case projectListActionTypes.PROJECT_LIST_UPDATED: {
@@ -22,7 +27,7 @@ export default function(state = initialState, action) {
             const activeProject = action.projectList.find(({ id }) => id === state.activeProjectId);
             const prj = activeProject ? activeProject : (action.projectList.length ? action.projectList[0] : null);
             const prjId = prj ? prj.id : null;
-            return { activeProjectId: prjId, projects: action.projectList};
+            return { activeProjectId: prjId, projects: sortProjects(action.projectList) };
         }
         case projectListActionTypes.ACTIVE_PROJECT_UPDATED: {
             return { ...state, activeProjectId: action.activeProjectId};
@@ -39,7 +44,7 @@ export default function(state = initialState, action) {
         case projectListActionTypes.ADD_PROJECT: {
             // TODO: QUESTION - no check for existing project with the same ID. OK?
             const updatedList = state.projects.concat(action.newProject);
-            return { ...state, projects: updatedList };
+            return { ...state, projects: sortProjects(updatedList) };
         }
         default:
             return state;

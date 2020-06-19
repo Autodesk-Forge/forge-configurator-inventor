@@ -51,7 +51,7 @@ namespace WebApplication.Controllers
                 projectDTOs.Add(ToDTO(projectStorage));
             }
 
-            return projectDTOs.OrderBy(project => project.Label);
+            return projectDTOs;
         }
 
         [HttpPost]
