@@ -78,4 +78,18 @@ describe('modal progress ', () => {
         const buttons = wrapper.find('Button');
         expect(buttons.length).toBe(2);
     });
+
+    it('check OPEN button click', () => {
+        const openMockFn = jest.fn();
+        const props = { isDone: () => { return true;},
+                        onOpen: openMockFn };
+
+        const wrapper = shallow(<ModalProgressUpload {...props} />);
+
+        const openButton = wrapper.find({ title: "Open"});
+        expect(openButton.length).toEqual(1);
+
+        openButton.simulate('click');
+        expect(openMockFn).toHaveBeenCalledTimes(1);
+    });
 });
