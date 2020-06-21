@@ -54,8 +54,10 @@ export class ProjectList extends Component {
     this.props.setUploadProgressHidden();
 
     // switch to uploaded project
-    // TODO: use ID of uploaded project, because it can be different from file name
-    this.props.updateActiveProject(this.props.uploadPackageData.file.name);
+    const filename = this.props.uploadPackageData.file.name;
+    // use file name without extension as ID of uploaded project
+    const onlyName = filename.substring(0, filename.lastIndexOf('.')) || filename;
+    this.props.updateActiveProject(onlyName);
     // switch to MODEL tab
     this.props.updateActiveTabIndex(1);
   }

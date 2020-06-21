@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Autodesk.Forge.Model;
@@ -57,7 +58,7 @@ namespace WebApplication.Controllers
         [HttpPost]
         public async Task<ProjectDTO> CreateProject([FromForm]NewProjectModel projectModel)
         {
-            var projectName = projectModel.package.FileName; //TODO: we need to sanitize filename
+            var projectName = Path.GetFileNameWithoutExtension(projectModel.package.FileName);
 
             // TODO: check if project already exists
 
