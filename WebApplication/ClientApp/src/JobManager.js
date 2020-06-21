@@ -43,8 +43,12 @@ class JobManager {
             // stop connection
             connection.stop();
 
-            if (onComplete)
+            if (onComplete) {
+                if (repo.getAccessToken()) {
+                    rfaUrl += "/" + repo.getAccessToken();
+                }
                 onComplete(rfaUrl);
+            }
         });
 
         await connection.invoke('CreateRFAJob', projectId, hash, repo.getAccessToken());

@@ -7,6 +7,8 @@ import { getRFADownloadLink } from '../actions/downloadActions';
 import { showRFAModalProgress } from '../actions/uiFlagsActions';
 import ModalProgressRfa from './modalProgressRfa';
 
+import repo from '../Repository';
+
 const Icon = ({ iconname }) => (
     <div>
       <img src={iconname} alt=''/>
@@ -49,7 +51,12 @@ export class Downloads extends Component {
 
     render() {
         let iamDownloadHyperlink = null;
-        const iamDownloadLink = <a href={this.props.activeProject.modelDownloadUrl} onClick={(e) => { e.stopPropagation(); }} ref = {(h) => {
+        const access_token = repo.getAccessToken();
+        let downloadUrl = this.props.activeProject.modelDownloadUrl;
+        if (access_token != null) {
+            downloadUrl += "/" + access_token;
+        }
+        const iamDownloadLink = <a href={downloadUrl} onClick={(e) => { e.stopPropagation(); }} ref = {(h) => {
             iamDownloadHyperlink = h;
         }}>IAM</a>;
 

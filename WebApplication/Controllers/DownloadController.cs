@@ -20,15 +20,21 @@ namespace WebApplication.Controllers
             _userResolver = userResolver;
         }
 
-        [HttpGet("{projectName}/{hash}/model")]
-        public Task<RedirectResult> Model(string projectName, string hash)
+        [HttpGet("{projectName}/{hash}/model/{token?}")]
+        public Task<RedirectResult> Model(string projectName, string hash, string token=null)
         {
+            if (token != null)
+                _userResolver.Token = token;
+
             return RedirectToOssObject(projectName, hash, ossNames => ossNames.CurrentModel);
         }
 
-        [HttpGet("{projectName}/{hash}/rfa")]
-        public Task<RedirectResult> RFA(string projectName, string hash)
+        [HttpGet("{projectName}/{hash}/rfa/{token?}")]
+        public Task<RedirectResult> RFA(string projectName, string hash, string token = null)
         {
+            if (token != null)
+                _userResolver.Token = token;
+
             return RedirectToOssObject(projectName, hash, ossNames => ossNames.Rfa);
         }
 
