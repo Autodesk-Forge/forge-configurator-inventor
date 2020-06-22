@@ -24,10 +24,11 @@ export default function(state = initialState, action) {
     switch(action.type) {
         case projectListActionTypes.PROJECT_LIST_UPDATED: {
             // select the previous active project if present, or first project otherwise
-            const activeProject = action.projectList.find(({ id }) => id === state.activeProjectId);
-            const prj = activeProject ? activeProject : (action.projectList.length ? action.projectList[0] : null);
+            const sortedProjects = sortProjects(action.projectList);
+            const activeProject = sortedProjects.find(({ id }) => id === state.activeProjectId);
+            const prj = activeProject ? activeProject : (sortedProjects.length ? sortedProjects[0] : null);
             const prjId = prj ? prj.id : null;
-            return { activeProjectId: prjId, projects: sortProjects(action.projectList) };
+            return { activeProjectId: prjId, projects: sortedProjects };
         }
         case projectListActionTypes.ACTIVE_PROJECT_UPDATED: {
             return { ...state, activeProjectId: action.activeProjectId};
