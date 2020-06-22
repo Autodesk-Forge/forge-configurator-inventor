@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -47,9 +48,18 @@ namespace WebApplication.Controllers
             {
                 var projectName = ONC.ToProjectName(objDetails.ObjectKey);
 
-                ProjectStorage projectStorage = await _userResolver.GetProjectStorageAsync(projectName); // TODO: expensive to do it in the loop
+                // TODO: in future bad projects should not affect project listing. It's a workaround
+                try
+                {
+                    ProjectStorage projectStorage = await _userResolver.GetProjectStorageAsync(projectName); // TODO: expensive to do it in the loop
 
-                projectDTOs.Add(ToDTO(projectStorage));
+                    projectDTOs.Add(ToDTO(projectStorage));
+                }
+                catch (Exception e)
+                {
+                    // log, swallow and continue (see the comment above)
+                    _logger.LogWarning(e, $"Ignoring '{projectName}' project, which (seems) failed to adopt.");
+                }
             }
 
             return projectDTOs;
