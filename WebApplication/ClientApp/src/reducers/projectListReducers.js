@@ -16,7 +16,7 @@ export const getProject = function(id, state) {
 };
 
 /** Generate shallow array clone, sorted by project label. */
-function sortProjects(projects) {
+export function sortProjects(projects) {
     return [].concat(projects).sort((a,b) => a.label.localeCompare(b.label));
 }
 

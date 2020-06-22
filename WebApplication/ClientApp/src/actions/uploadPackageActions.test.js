@@ -1,4 +1,5 @@
 import actionTypes, { uploadPackage } from './uploadPackageActions';
+import projectListActions from './projectListActions';
 
 // the test based on https://redux.js.org/recipes/writing-tests#async-action-creators
 
@@ -39,9 +40,10 @@ describe('uploadPackage', () => {
                     const actions = store.getActions();
 
                     // check expected actions and their types
-                    expect(actions).toHaveLength(2); // TBD, currently just uiFlags to show and hide the progress
+                    expect(actions).toHaveLength(3); // TBD, currently just uiFlags to show and hide the progress
                     expect(actions[0].type).toEqual(actionTypes.SET_UPLOAD_PROGRESS_VISIBLE);
-                    expect(actions[1].type).toEqual(actionTypes.SET_UPLOAD_PROGRESS_DONE);
+                    expect(actions[1].type).toEqual(projectListActions.ADD_PROJECT);
+                    expect(actions[2].type).toEqual(actionTypes.SET_UPLOAD_PROGRESS_DONE);
 
                     // TBD check if the expected project is added to the project list
                     // expect(actions[2].projectList).toEqual(testProjects);
