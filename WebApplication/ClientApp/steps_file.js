@@ -1,11 +1,27 @@
+/* eslint-disable no-console */
+/* eslint-disable no-constant-condition */
 /* eslint-disable no-undef */
 // in this file you can append custom step methods to 'I' object
 
+require('dotenv').config();
 const locators = require('./src/ui-tests/elements_definition.js');
+
+//Authentivation
+const inputUserName = '#userName';
+const inputPassword = '#password';
+const buttonNext = '#verify_user_btn';
+const buttonSubmit = '#btnSubmit';
 
 module.exports = function() {
 
   const forgeViewerSpinner = '//div[@id="ForgeViewer"]//div[@class="spinner"]';
+  const userButton = '//button[@type="button" and (//span) and (//img)]';
+  const loggedDemoToolUser = '//button[contains(@type, "button")]//img[contains(@alt, "Avatar image of Demo Tool")]';
+  const loggedAnonymousUser = '//button[contains(@type, "button")]//img[contains(@alt, "Avatar image of Anonymous")]';
+  const authorizationButton = '.auth-button';
+  const loginName = process.env.SDRA_USERNAME;
+  const password = process.env.SDRA_PASSWORD;
+  const allowButton = '#allow_btn';
 
   // returns Project name locator
   function getProjectLocator(name)
@@ -20,16 +36,15 @@ module.exports = function() {
 
     // select a project according the project Name
     selectProject(name){
+      // wait until project combo is displayed
+      this.waitForElement( locators.xpComboProjects, 10);
+      this.click( locators.xpComboProjects );
 
-        // wait until project combo is displayed
-        this.waitForElement( locators.xpComboProjects, 10);
-        this.click( locators.xpComboProjects );
+      // wait until project list is displayed
+      this.waitForElement(locators.xpProjectList, 10);
 
-        // wait until project list is displayed
-        this.waitForElement(locators.xpProjectList, 10);
-
-        // emulate click to trigger project loading
-        this.click( getProjectLocator(name));
+      // emulate click to trigger project loading
+      this.click( getProjectLocator(name));
     },
     clickToModelTab() { // we create this method because we need to wait for viewer - https://jira.autodesk.com/browse/INVGEN-41877
       // click on Model tab
@@ -40,6 +55,51 @@ module.exports = function() {
 
       // wait for spinner to be hidden
       this.waitForInvisible(forgeViewerSpinner, 30);
+    },
+    clickToAuthorizationButton(currentUser){
+      // wait for User button
+      this.waitForVisible(userButton,10);
+      this.click(userButton);
+
+      // wait for Authorization popUp dialog
+      this.waitForVisible(authorizationButton, 10);
+
+      // check the user name
+      this.see(currentUser, '.username');
+
+      // click on Authorization Button
+      this.click(authorizationButton);
+    },
+    async signIn(){
+     // we use Autodesk Account credentials //https://accounts.autodesk.com/
+
+      this.clickToAuthorizationButton('Anonymous');
+
+      // check it is Sign-In page
+      this.seeTitleEquals('Sign in');
+      this.waitForElement(inputUserName, 10);
+
+      // specify Sign-in Email
+      this.fillField(inputUserName, loginName);
+      this.click(buttonNext);
+
+      // specify Sign-in password
+      this.waitForVisible(inputPassword, 10);
+      this.fillField(inputPassword, password);
+      this.click(buttonSubmit);
+
+      // click on Allow Button
+      this.waitForVisible(allowButton, 15);
+      this.click(allowButton);
+
+      // check logged user
+      this.waitForElement(loggedDemoToolUser, 10);
+    },
+    signOut(){
+      this.clickToAuthorizationButton('Demo Tool');
+
+      // check if Anonymous user is signed
+      this.waitForElement(loggedAnonymousUser, 10);
     }
 
   });
