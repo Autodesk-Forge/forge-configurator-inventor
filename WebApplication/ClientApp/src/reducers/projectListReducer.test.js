@@ -1,5 +1,5 @@
 import projectListReducer, * as list from './projectListReducers';
-import {updateProjectList, updateActiveProject, updateProject} from '../actions/projectListActions';
+import { updateProjectList, updateActiveProject, updateProject, addProject } from '../actions/projectListActions';
 
 describe('projectList reducer', () => {
     test('should return the initial state', () => {
@@ -114,5 +114,36 @@ describe('projectList reducer', () => {
         };
 
         expect(projectListReducer(projectList, updateProject("1", { "downloadModelUrl": "newUrl" })).projects[0].downloadModelUrl).toEqual("newUrl");
+    });
+
+    describe('addProject', () => {
+
+        it('should work correctly with empty project list', () => {
+            const newProject = {
+                id: '3',
+                label: 'Local Project 3',
+                image: 'bike.png',
+                svf: 'aaa111'
+            };
+            const result = projectListReducer(list.initialState, addProject(newProject));
+            expect(result).toEqual({ activeProjectId: newProject.id, projects: [ newProject ] });
+        });
+
+        it('should preserve active project ID and insert project into correct place', () => {
+            const existingProjects = [
+                { id: '1', label: '1' },
+                { id: '3', label: '3' }
+            ];
+            const initialState = {
+                activeProjectId: '3', projects: existingProjects
+            };
+
+            // the project should be inserted in the middle of the existing projects
+            const newProject = { id: '2', label: '2' };
+            const result = projectListReducer(initialState, addProject(newProject));
+
+            expect(result.activeProjectId).toEqual(initialState.activeProjectId); // active project is not changed
+            expect(result.projects.map(p => p.id)).toEqual(['1', '2', '3']);
+        });
     });
 });
