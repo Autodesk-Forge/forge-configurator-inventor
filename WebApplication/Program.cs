@@ -34,7 +34,7 @@ namespace WebApplication
                     webBuilder.UseStartup<Startup>().UseKestrel(options =>
                     {
                         long sizeinMB = 500;
-                        long size = sizeinMB * 1000000;
+                        long size = sizeinMB * 1024 * 1024;
                         options.Limits.MaxRequestBodySize =  size;
                     });
                     var port = Environment.GetEnvironmentVariable("PORT");
