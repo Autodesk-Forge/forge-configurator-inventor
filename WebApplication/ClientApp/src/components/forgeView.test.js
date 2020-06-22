@@ -33,12 +33,13 @@ const AutodeskMock = {
   }
 };
 
-beforeEach(() => {
-  loadDocumentNodeMock.mockClear();
-});
-
 describe('components', () => {
   describe('ForgeView', () => {
+
+    beforeEach(() => {
+      loadDocumentNodeMock.mockClear();
+    });
+
     it('load gets called when svf provided', () => {
       const baseProps = { activeProject: { svf: 'aaa111' } };
       const wrapper = shallow(<ForgeView { ...baseProps } />);

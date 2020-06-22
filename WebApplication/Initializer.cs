@@ -81,7 +81,7 @@ namespace WebApplication
             foreach (DefaultProjectConfiguration defaultProjectConfig in _defaultProjectsConfiguration.Projects)
             {
                 var projectUrl = defaultProjectConfig.Url;
-                var project = await _userResolver.GetProject(defaultProjectConfig.Name);
+                var project = await _userResolver.GetProjectAsync(defaultProjectConfig.Name);
 
                 _logger.LogInformation($"Launching 'TransferData' for {projectUrl}");
                 string signedUrl = await waitForBucketPolicy.ExecuteAsync(async () => await _bucket.CreateSignedUrlAsync(project.OSSSourceModel, ObjectAccess.ReadWrite));

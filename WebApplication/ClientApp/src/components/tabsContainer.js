@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import Tabs, { Tab } from "@hig/tabs";
 import ProjectList from './projectList';
 import ForgeView from './forgeView';
@@ -6,18 +7,28 @@ import ParametersContainer from './parametersContainer';
 import PageNYI from './pageNYI';
 import Downloads from './downloads';
 import './tabs.css';
+import { activeTabIndex } from '../reducers/mainReducer';
+import { updateActiveTabIndex } from '../actions/uiFlagsActions';
 
 class TabsContainer extends Component {
 
+    onTabChange(index) {
+      this.props.updateActiveTabIndex(index);
+    }
+
     render() {
+
+        const idx = this.props.activeTabIndex;
+
         return (
             <div className="tabsContainer">
             <Tabs
               className="fullheight"
               align="center"
               showTabDivider={false}
-              onTabChange={() => {}}
+              onTabChange={(index) => { this.onTabChange(index); }}
               onTabClose={() => {}}
+              activeTabIndex={idx}
             >
               <Tab label="Projects">
                 <div id="project-list" className="tabContent fullheight">
@@ -53,4 +64,8 @@ class TabsContainer extends Component {
     }
 }
 
-export default TabsContainer;
+export default connect(function (store){
+  return {
+    activeTabIndex: activeTabIndex(store)
+  };
+}, { updateActiveTabIndex } )(TabsContainer);

@@ -11,32 +11,36 @@ namespace WebApplication.Controllers
     [Route("download")]
     public class DownloadController : ControllerBase
     {
-        private readonly ResourceProvider _resourceProvider;
         private readonly ILogger<DownloadController> _logger;
         private readonly UserResolver _userResolver;
 
-        public DownloadController(ResourceProvider resourceProvider, ILogger<DownloadController> logger, UserResolver userResolver)
+        public DownloadController(ILogger<DownloadController> logger, UserResolver userResolver)
         {
-            _resourceProvider = resourceProvider;
             _logger = logger;
             _userResolver = userResolver;
         }
 
-        [HttpGet("{projectName}/{hash}/model")]
-        public Task<RedirectResult> Model(string projectName, string hash)
+        [HttpGet("{projectName}/{hash}/model/{token?}")]
+        public Task<RedirectResult> Model(string projectName, string hash, string token=null)
         {
+            if (token != null)
+                _userResolver.Token = token;
+
             return RedirectToOssObject(projectName, hash, ossNames => ossNames.CurrentModel);
         }
 
-        [HttpGet("{projectName}/{hash}/rfa")]
-        public Task<RedirectResult> RFA(string projectName, string hash)
+        [HttpGet("{projectName}/{hash}/rfa/{token?}")]
+        public Task<RedirectResult> RFA(string projectName, string hash, string token = null)
         {
+            if (token != null)
+                _userResolver.Token = token;
+
             return RedirectToOssObject(projectName, hash, ossNames => ossNames.Rfa);
         }
 
         private async Task<RedirectResult> RedirectToOssObject(string projectName, string hash, Func<OSSObjectNameProvider, string> nameExtractor)
         {
-            Project project = await _userResolver.GetProject(projectName);
+            Project project = await _userResolver.GetProjectAsync(projectName);
 
             var ossNameProvider = project.OssNameProvider(hash);
             string ossObjectName = nameExtractor(ossNameProvider);

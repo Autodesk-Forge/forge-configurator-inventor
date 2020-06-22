@@ -1,6 +1,9 @@
+using System;
 using System.IO;
 using System.Threading.Tasks;
+using Autodesk.Forge.Client;
 using Autodesk.Forge.Core;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using WebApplication.Middleware;
 using WebApplication.Services;
@@ -25,7 +28,8 @@ namespace WebApplication.State
         public string Token { private get; set; }
         public bool IsAuthenticated => ! string.IsNullOrEmpty(Token);
 
-        public UserResolver(ResourceProvider resourceProvider, IForgeOSS forgeOSS, IOptions<ForgeConfiguration> forgeConfiguration, LocalCache localCache)
+        public UserResolver(ResourceProvider resourceProvider, IForgeOSS forgeOSS,
+                            IOptions<ForgeConfiguration> forgeConfiguration, LocalCache localCache)
         {
             _forgeOSS = forgeOSS;
             _localCache = localCache;
@@ -34,7 +38,7 @@ namespace WebApplication.State
             AnonymousBucket = new OssBucket(_forgeOSS, resourceProvider.BucketKey);
         }
 
-        public async Task<OssBucket> GetBucket()
+        public async Task<OssBucket> GetBucket(bool tryToCreate = false)
         {
             if (! IsAuthenticated) return AnonymousBucket;
 
@@ -48,17 +52,28 @@ namespace WebApplication.State
             var bucketKey = $"authd-{_forgeConfig.ClientId}-{userId.Substring(0, 3)}-{userHash}".ToLowerInvariant();
 
             var bucket = new OssBucket(_forgeOSS, bucketKey);
-            await bucket.CreateAsync();
+            if (tryToCreate)
+            {
+                // TODO: VERY INEFFECTIVE!!!!!
+                try
+                {
+                    await bucket.CreateAsync();
+                }
+                catch (ApiException e) when(e.ErrorCode == StatusCodes.Status409Conflict)
+                {
+                    // means - the bucket already exists
+                }
+            }
 
             return bucket;
         }
 
-        public async Task<Project> GetProject(string projectName)
+        public async Task<Project> GetProjectAsync(string projectName)
         {
             string userDir;
             if (IsAuthenticated)
             {
-                var profile = await _forgeOSS.GetProfileAsync(Token); // TODO: cache it
+                var profile = await GetProfileAsync(); // TODO: cache it
 
                 // generate dirname to hide Oxygen user ID
                 userDir = Crypto.GenerateHashString("SDRA" + profile.userId);
@@ -76,10 +91,15 @@ namespace WebApplication.State
         /// <summary>
         /// Get project storage by project name.
         /// </summary>
-        public async Task<ProjectStorage> GetProjectStorage(string projectName)
+        public async Task<ProjectStorage> GetProjectStorageAsync(string projectName)
         {
-            var project = await GetProject(projectName);
+            var project = await GetProjectAsync(projectName);
             return new ProjectStorage(project);
+        }
+
+        public async Task<dynamic> GetProfileAsync()
+        {
+            return await _forgeOSS.GetProfileAsync(Token);
         }
     }
 }

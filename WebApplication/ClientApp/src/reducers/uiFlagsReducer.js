@@ -1,12 +1,19 @@
 import parametersActionTypes from '../actions/parametersActions';
 import uiFlagsActionTypes from '../actions/uiFlagsActions';
+import uploadPackagesActionTypes from '../actions/uploadPackageActions';
 
 export const initialState = {
    parametersEditedMessageClosed: false,
    parametersEditedMessageRejected: false,
    updateProgressShowing: false,
    rfaProgressShowing: null,
-   rfaDownloadUrl: null
+   rfaDownloadUrl: null,
+   showUploadPackage: false,
+   uploadProgressShowing: false,
+   uploadProgressStatus: null,
+   package: { file: '', root: ''},
+   activeTabIndex: 0,
+   projectAlreadyExists: false
 };
 
 export const updateProgressShowing = function(state) {
@@ -19,6 +26,30 @@ export const rfaProgressShowing = function(state) {
 
 export const rfaDownloadUrl = function(state) {
    return state.rfaDownloadUrl;
+};
+
+export const uploadPackageDlgVisible = function(state) {
+   return state.showUploadPackage;
+};
+
+export const uploadPackageData = function(state) {
+   return state.package;
+};
+
+export const uploadProgressShowing = function(state) {
+   return state.uploadProgressShowing;
+};
+
+export const uploadProgressIsDone = function(state) {
+   return state.uploadProgressStatus === "done";
+};
+
+export const activeTabIndex = function(state) {
+   return state.activeTabIndex;
+};
+
+export const projectAlreadyExists = function(state) {
+   return state.projectAlreadyExists;
 };
 
 export default function(state = initialState, action) {
@@ -37,7 +68,23 @@ export default function(state = initialState, action) {
          return { ...state, rfaProgressShowing: action.visible, rfaDownloadUrl: null};
       case uiFlagsActionTypes.SET_RFA_LINK:
          return { ...state, rfaDownloadUrl: action.url};
-      default:
+      case uiFlagsActionTypes.SHOW_UPLOAD_PACKAGE:
+         return { ...state, showUploadPackage: action.visible};
+      case uploadPackagesActionTypes.SET_UPLOAD_PROGRESS_VISIBLE:
+         return { ...state, uploadProgressShowing: true};
+      case uploadPackagesActionTypes.SET_UPLOAD_PROGRESS_HIDDEN:
+         return { ...state, uploadProgressShowing: false, uploadProgressStatus: null};
+      case uploadPackagesActionTypes.SET_UPLOAD_PROGRESS_DONE:
+         return { ...state, uploadProgressStatus: "done"};
+      case uiFlagsActionTypes.PACKAGE_FILE_EDITED:
+         return { ...state, package: { file: action.file, root: state.package.root } };
+      case uiFlagsActionTypes.PACKAGE_ROOT_EDITED:
+         return { ...state, package: { file: state.package.file, root: action.file } };
+      case uiFlagsActionTypes.UPDATE_ACTIVE_TAB_INDEX:
+         return { ...state, activeTabIndex: action.index};
+      case uiFlagsActionTypes.PROJECT_EXISTS:
+         return { ...state, projectAlreadyExists: action.exists};
+            default:
          return state;
   }
 }

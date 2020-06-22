@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using WebApplication.Definitions;
 using WebApplication.Job;
 using WebApplication.Processing;
+using WebApplication.State;
 
 namespace WebApplication.Controllers
 {
@@ -90,29 +91,35 @@ namespace WebApplication.Controllers
         private readonly ILogger<JobsHub> _logger;
         private readonly ProjectWork _projectWork;
         private readonly LinkGenerator _linkGenerator;
+        private readonly UserResolver _userResolver;
         private readonly Sender _sender;
 
-        public JobsHub(ILogger<JobsHub> logger, ProjectWork projectWork, LinkGenerator linkGenerator)
+        public JobsHub(ILogger<JobsHub> logger, ProjectWork projectWork, LinkGenerator linkGenerator, UserResolver userResolver)
         {
             _logger = logger;
             _projectWork = projectWork;
             _linkGenerator = linkGenerator;
+            _userResolver = userResolver;
 
             _sender = new Sender(this);
         }
 
-        public async Task CreateUpdateJob(string projectId, InventorParameters parameters)
+        public async Task CreateUpdateJob(string projectId, InventorParameters parameters, string token)
         {
             _logger.LogInformation($"invoked CreateJob, connectionId : {Context.ConnectionId}");
+
+            _userResolver.Token = token;
 
             // create job and run it
             var job = new UpdateModelJobItem(_logger, projectId, parameters, _projectWork);
             await RunJobAsync(job);
         }
 
-        public async Task CreateRFAJob(string projectId, string hash)
+        public async Task CreateRFAJob(string projectId, string hash, string token)
         {
             _logger.LogInformation($"invoked CreateRFAJob, connectionId : {Context.ConnectionId}");
+
+            _userResolver.Token = token;
 
             // create job and run it
             var job = new RFAJobItem(_logger, projectId, hash, _projectWork, _linkGenerator);

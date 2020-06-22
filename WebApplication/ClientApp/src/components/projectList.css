@@ -1,0 +1,20 @@
+#project-list .uploadContainer {
+    background-color: white;
+    height: 90px;
+}
+
+#project-list .uploadContainer.hidden {
+    display: none;
+}
+
+#project-list .uploadButton {
+    display: inline-block;
+    height: 100%;
+    padding-top: 10px;
+    margin-left: 76px;
+    vertical-align: middle;
+    /* following are to override IconButton strange behavior */
+    outline: none;
+    border-color: transparent;
+    box-shadow: none;
+}

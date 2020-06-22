@@ -61,7 +61,7 @@ describe('projectList reducer', () => {
 
         const expectedResult = {
             activeProjectId: '2',
-            projects: newList
+            projects: list.sortProjects(newList)
         };
 
         expect(projectListReducer(secondProjectActive, updateProjectList(newList))).toEqual(expectedResult);

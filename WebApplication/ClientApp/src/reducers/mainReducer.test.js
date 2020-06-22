@@ -44,7 +44,7 @@ const projectList = {
 describe('main reducer', () => {
    it('Notification strip will not be shown if parameters are not changed', () => {
       const state = {
-         uiFlagsReducer: uiFlags.initialState,
+         uiFlags: uiFlags.initialState,
          projectList: projectList,
          parameters: originalParameters,
          updateParameters: originalParameters
@@ -53,7 +53,7 @@ describe('main reducer', () => {
    },
    it('Will show parameters changed notification string when paramters are changed', () => {
       const state = {
-         uiFlagsReducer: uiFlags.initialState,
+         uiFlags: uiFlags.initialState,
          projectList: projectList,
          parameters: originalParameters,
          updateParameters: editedParameters
@@ -62,7 +62,7 @@ describe('main reducer', () => {
    }),
    it('Will not show changed parameters because user closed them', () => {
       const state = {
-         uiFlagsReducer: uiFlagsTestStates.stateParametersEditedMessageClosed,
+         uiFlags: uiFlagsTestStates.stateParametersEditedMessageClosed,
          projectList: projectList,
          parameters: originalParameters,
          updateParameters: editedParameters
@@ -71,7 +71,7 @@ describe('main reducer', () => {
    }),
    it('Will not show changed parameters because user closed them permanently', () => {
       const state = {
-         uiFlagsReducer: uiFlagsTestStates.stateParametersEditedMessageRejected,
+         uiFlags: uiFlagsTestStates.stateParametersEditedMessageRejected,
          projectList: projectList,
          parameters: originalParameters,
          updateParameters: editedParameters

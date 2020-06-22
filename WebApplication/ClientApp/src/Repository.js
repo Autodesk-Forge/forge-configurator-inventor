@@ -32,13 +32,32 @@ class Repository {
         return response.data;
     }
 
+    /** Load users profile */
     async loadProfile() {
         const response = await axios.get("/login/profile");
         return response.data;
     }
 
+    /**Uploads package to the server */
+    async uploadPackage(form) {
+        const formData = new FormData();
+
+        formData.append('package', form.file);
+        formData.append('root', form.root);
+        const result = await axios.post('/projects', formData, {
+            headers: {
+            'Content-Type': 'multipart/form-data'
+            }
+        });
+        return result.data;
+    }
+
     setAccessToken(accessToken) {
         axios.defaults.headers.common[AuthorizationHeader] = accessToken;
+    }
+
+    getAccessToken() {
+        return axios.defaults.headers.common[AuthorizationHeader];
     }
 
     forgetAccessToken() {
