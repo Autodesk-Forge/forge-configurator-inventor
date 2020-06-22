@@ -20,14 +20,26 @@ export function sortProjects(projects) {
     return [].concat(projects).sort((a,b) => a.label.localeCompare(b.label));
 }
 
+/**
+ * Decide on active project by using previously selected project ID and project list:
+ * select the previous active project if present, or first project otherwise.
+ *
+ * @param projects Current list of projects. NOTE: it's expected the projects are sorted.
+ * @param currId ID of current active project. Can be undefinded, or missed in the project list.
+ */
+function ensureActiveProjectId(projects, currId) {
+    const activeProject = projects.find(({ id }) => id === currId);
+    const prj = activeProject ? activeProject : (projects.length ? projects[0] : null);
+    const prjId = prj ? prj.id : null;
+    return prjId;
+}
+
 export default function(state = initialState, action) {
     switch(action.type) {
         case projectListActionTypes.PROJECT_LIST_UPDATED: {
-            // select the previous active project if present, or first project otherwise
+
             const sortedProjects = sortProjects(action.projectList);
-            const activeProject = sortedProjects.find(({ id }) => id === state.activeProjectId);
-            const prj = activeProject ? activeProject : (sortedProjects.length ? sortedProjects[0] : null);
-            const prjId = prj ? prj.id : null;
+            const prjId = ensureActiveProjectId(sortedProjects, state.activeProjectId);
             return { activeProjectId: prjId, projects: sortedProjects };
         }
         case projectListActionTypes.ACTIVE_PROJECT_UPDATED: {
@@ -44,8 +56,12 @@ export default function(state = initialState, action) {
 
         case projectListActionTypes.ADD_PROJECT: {
             // TODO: QUESTION - no check for existing project with the same ID. OK?
+
             const updatedList = state.projects ? state.projects.concat(action.newProject) : [action.newProject];
-            return { ...state, projects: sortProjects(updatedList) };
+
+            const sortedProjects = sortProjects(updatedList);
+            const prjId = ensureActiveProjectId(sortedProjects, state.activeProjectId);
+            return { activeProjectId: prjId, projects: sortedProjects };
         }
         default:
             return state;
