@@ -66,11 +66,21 @@ namespace WebApplication.Controllers
         }
 
         [HttpPost]
-        public async Task<ProjectDTO> CreateProject([FromForm]NewProjectModel projectModel)
+        public async Task<ActionResult<ProjectDTO>> CreateProject([FromForm]NewProjectModel projectModel)
         {
             var projectName = Path.GetFileNameWithoutExtension(projectModel.package.FileName);
+            var bucket = await _userResolver.GetBucket(true);
 
-            // TODO: check if project already exists
+            // Check if project already exists
+            List<ObjectDetails> objects = await bucket.GetObjectsAsync($"{ONC.ProjectsFolder}-");
+            foreach(ObjectDetails objDetails in objects)
+            {
+                var existingProjectName = ONC.ToProjectName(objDetails.ObjectKey);
+                if (projectName == existingProjectName)
+                {
+                    return Conflict();
+                }
+            }
 
             var projectInfo = new ProjectInfo
             {
@@ -85,8 +95,7 @@ namespace WebApplication.Controllers
                 await projectModel.package.CopyToAsync(fileWriteStream);
             }
 
-            // update the file to OSS
-            var bucket = await _userResolver.GetBucket(true);
+            // upload the file to OSS
             ProjectStorage projectStorage = await _userResolver.GetProjectStorageAsync(projectName);
 
             string ossSourceModel = projectStorage.Project.OSSSourceModel;
@@ -99,7 +108,7 @@ namespace WebApplication.Controllers
             string signedUrl = await bucket.CreateSignedUrlAsync(ossSourceModel);
             await _projectWork.AdoptAsync(projectInfo, signedUrl);
 
-            return ToDTO(projectStorage);
+            return Ok(ToDTO(projectStorage));
         }
 
         /// <summary>

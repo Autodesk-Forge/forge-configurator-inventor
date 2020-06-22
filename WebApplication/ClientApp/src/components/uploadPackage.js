@@ -9,7 +9,7 @@ import Spacer from '@hig/spacer';
 import { Folder24 } from '@hig/icons';
 import merge from "lodash.merge";
 import { uploadPackageDlgVisible, uploadPackageData, projectAlreadyExists } from '../reducers/mainReducer';
-import { showUploadPackage, editPackageFile, editPackageRoot } from '../actions/uiFlagsActions';
+import { showUploadPackage, editPackageFile, editPackageRoot, setProjectAlreadyExists } from '../actions/uiFlagsActions';
 import { uploadPackage } from '../actions/uploadPackageActions.js';
 import './uploadPackage.css';
 
@@ -139,4 +139,4 @@ export default connect(function (store) {
       projectAlreadyExists: projectAlreadyExists(store),
       package: uploadPackageData(store)
     };
-}, { showUploadPackage, uploadPackageData, editPackageFile, editPackageRoot, uploadPackage })(UploadPackage);
+}, { showUploadPackage, uploadPackageData, editPackageFile, editPackageRoot, uploadPackage, setProjectAlreadyExists })(UploadPackage);
