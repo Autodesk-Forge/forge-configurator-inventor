@@ -1,6 +1,7 @@
 import repo from '../Repository';
 import { uploadPackageData } from '../reducers/mainReducer';
 import { addProject } from './projectListActions';
+import { setProjectAlreadyExists } from './uiFlagsActions';
 
 const actionTypes = {
     SET_UPLOAD_PROGRESS_VISIBLE: 'SET_UPLOAD_PROGRESS_VISIBLE',
@@ -20,7 +21,11 @@ export const uploadPackage = () => async (dispatch, getState) => {
         dispatch(setUploadProgressDone());
     } catch (e) {
         dispatch(setUploadProgressHidden());
-        alert("Failed to adopt the project");
+        if (e.response.status === 409) {
+            dispatch(setProjectAlreadyExists(true));
+        } else {
+            alert("Failed to adopt the project");
+        }
     }
 };
 
