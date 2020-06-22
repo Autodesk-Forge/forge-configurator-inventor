@@ -14,9 +14,14 @@ export const uploadPackage = () => async (dispatch, getState) => {
 
     dispatch(setUploadProgressVisible());
 
-    const newProject = await repo.uploadPackage(uploadPackageData(getState()));
-    dispatch(addProject(newProject));
-    dispatch(setUploadProgressDone());
+    try {
+        const newProject = await repo.uploadPackage(uploadPackageData(getState()));
+        dispatch(addProject(newProject));
+        dispatch(setUploadProgressDone());
+    } catch (e) {
+        dispatch(setUploadProgressHidden());
+        alert("Failed to adopt the project");
+    }
 };
 
 export const setUploadProgressVisible = () => {
