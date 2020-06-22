@@ -25,6 +25,7 @@ phases:
       - sleep 300
       - echo "**** running the UI tests ****"
       - cd ClientApp
+      - mkdir output
       - rem npx codeceptjs run --verbose
   post_build:
     commands:
