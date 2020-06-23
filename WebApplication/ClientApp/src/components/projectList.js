@@ -49,6 +49,13 @@ export class ProjectList extends Component {
     this.props.setUploadProgressHidden();
   }
 
+  onProjectClick(projectId) {
+    // set active project
+    this.props.updateActiveProject(projectId);
+    // switch to MODEL tab
+    this.props.updateActiveTabIndex(1);
+  }
+
   onProgressOpenClick() {
 
     this.props.setUploadProgressHidden();
@@ -70,7 +77,6 @@ export class ProjectList extends Component {
           id: project.id,
           icon: 'Archive.svg',
           label: project.label,
-          clickHandler: () => {}
         }
       ));
     }
@@ -97,6 +103,9 @@ export class ProjectList extends Component {
                     height={height}
                     columns={projectListColumns}
                     data={data}
+                    rowEventHandlers={{
+                      onClick: ({ rowData }) => { this.onProjectClick(rowData.id); }
+                  }}
                 />;
             }}
           </AutoResizer>
