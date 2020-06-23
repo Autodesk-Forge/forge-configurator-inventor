@@ -109,43 +109,27 @@ namespace WebApplication.Controllers
                 // use chunks for all files greater than chunk size
                 if (sizeToUpload > chunkSize)
                 {
-                    long chunksCnt = (long)((sizeToUpload + chunkSize - 1) / chunkSize);
-
-                    _logger.LogInformation($"Uploading in {chunksCnt} x {chunkMBSize}MB chunks");
+                    _logger.LogInformation($"Uploading in {chunkMBSize}MB chunks");
 
                     string sessionId = Guid.NewGuid().ToString();
                     long begin = 0;
-                    long end = chunkSize - 1;
-                    long count = chunkSize;
-                    byte[] buffer = new byte[count];
+                    byte[] buffer = new byte[chunkSize];
+                    int bytesRead = 0;
 
-                    for (int idx = 0; idx < chunksCnt; idx++)
+                    while (begin < sizeToUpload-1)
                     {
-                        // jump to requested position
-                        fileReadStream.Seek(begin, SeekOrigin.Begin);
-                        fileReadStream.Read(buffer, 0, (int)count);
-                        using (MemoryStream chunkStream = new MemoryStream(buffer))
+                        bytesRead = await fileReadStream.ReadAsync(buffer, 0, (int)chunkSize);
+                        int memoryStreamSize = sizeToUpload - begin < chunkSize ? (int)(sizeToUpload - begin) : (int)(chunkSize);
+                        using (MemoryStream chunkStream = new MemoryStream(buffer, 0, memoryStreamSize))
                         {
-                            string contentRange = string.Format($"bytes {begin}-{end}/{sizeToUpload}");
+                            string contentRange = string.Format($"bytes {begin}-{begin + bytesRead -1}/{sizeToUpload}");
                             await bucket.UploadChunkAsync(ossSourceModel, contentRange, sessionId, chunkStream);
                         }
-                        begin = end + 1;
-                        chunkSize = ((begin + chunkSize > sizeToUpload) ? sizeToUpload - begin : chunkSize);
-                        // for the last chunk there should be smaller count of bytes to read
-                        if (chunkSize > 0 && chunkSize != count)
-                        {
-                            // reset to the new size for the LAST chunk
-                            count = chunkSize;
-                            buffer = new byte[count];
-                        }
-
-                        end = begin + chunkSize - 1;
+                        begin += bytesRead;
                     }
                 }
                 else
                 {
-                    // jump to beginning
-                    fileReadStream.Seek(0, SeekOrigin.Begin);
                     await bucket.UploadObjectAsync(ossSourceModel, fileReadStream);
                 }
             }
