@@ -42,6 +42,7 @@ namespace WebApplication
                     if (!string.IsNullOrEmpty(port))
                     {
                         webBuilder.UseUrls("http://*:" + port);
+                        Log.Logger.Information($"PORT environment variable defined to:{port}");
                     }
                 });
         }
