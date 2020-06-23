@@ -99,4 +99,28 @@ describe('ProjectList components', () => {
     const upload = wrapper.find('#projectList_uploadButton');
     expect(upload.prop("className")).toContain('hidden');
   });
+
+  it('Click on project row will start change of active project and tab', () => {
+    const store = mockStore(mockState);
+    const updateActiveProjectMockFn = jest.fn();
+    const updateActiveTabIndexMockFn = jest.fn();
+    const propsWithMock = { ...props,
+      updateActiveProject: updateActiveProjectMockFn,
+      updateActiveTabIndex: updateActiveTabIndexMockFn };
+
+    const wrapper = mount(
+      <Provider store={store}>
+        <ProjectList { ...propsWithMock } />
+      </Provider>
+    );
+
+    const as = wrapper.find('AutoResizer');
+    const bt = as.renderProp('children')( {width: 100, height: 200} );
+    const row = bt.find({ rowKey: "3" });
+    expect(row.length).toEqual(1);
+    row.simulate('click');
+    expect(updateActiveProjectMockFn).toHaveBeenCalledWith('3');
+    expect(updateActiveTabIndexMockFn).toHaveBeenCalledWith(1);
+  });
+
 });
