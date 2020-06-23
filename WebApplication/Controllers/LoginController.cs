@@ -39,7 +39,13 @@ namespace WebApplication.Controllers
 
             // prepare redirect URL for Oxygen
             // NOTE: This MUST match the pattern of the callback URL field of the app's registration
-            var callbackUrl = $"{HttpContext.Request.Scheme}{Uri.SchemeDelimiter}{HttpContext.Request.Host}";
+            // TODO: workaround which may be removed once application will start to use https
+            var scheme = HttpContext.Request.Scheme;
+            if (HttpContext.Request.Host.Host == "inventor-config-demo.autodesk.io")
+            {
+                scheme = "https";
+            }
+            var callbackUrl = $"{scheme}{Uri.SchemeDelimiter}{HttpContext.Request.Host}";
             var encodedHost = HttpUtility.UrlEncode(callbackUrl);
 
             // prepare scope
