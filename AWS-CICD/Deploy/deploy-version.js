@@ -54,6 +54,7 @@ async function deployVersion(pipelineName, executionId, codeBuildNumber, applica
       ApplicationName: applicationName,
       Description: commitMessage.substring(0, 199),
       VersionLabel: versionLabel,
+      Process: true,
       SourceBundle: {
          S3Bucket: deployLocation.bucket,
          S3Key: deployLocation.key
