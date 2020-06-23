@@ -30,7 +30,7 @@ phases:
   post_build:
     commands:
       - cd $slnDir
-      - xcopy /Y /E AWS-CICD\.ebextensions\* app\.ebextensions\
+      - xcopy /Y /E AWS-CICD\.ebextensions\* .ebextensions\
       - xcopy /Y /E WebApplication\bin\Release\netcoreapp3.1\publish\* app\
       - xcopy /Y /E WebApplication\AppBundles\* app\AppBundles\
       - xcopy /Y /E WebApplication\ClientApp\output\* report\errorScreenShots\
@@ -38,6 +38,7 @@ phases:
 artifacts:
   files:
     - 'app/**/*'
+    - '.ebextensions/proxy.config'
     - 'AWS-CICD/amazon-cloudwatch-agent.json'
     - 'AWS-CICD/commands.sh'
     - 'AWS-CICD/Dockerfile.image'
