@@ -21,7 +21,8 @@ phases:
       - echo Pushing the Docker image...
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
       - sed -i 's/latest/'$IMAGE_TAG'/g' ./AWS-CICD/Dockerrun.aws.json
-      - cd AWS-CICD && zip -r ../app.zip .ebextensions Dockerrun.aws.json
 artifacts:
   files:
-    - app.zip
+    - Dockerrun.aws.json
+    - .ebextensions/**/*
+  base-directory: AWS-CICD
