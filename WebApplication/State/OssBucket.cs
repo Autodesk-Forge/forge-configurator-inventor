@@ -103,6 +103,12 @@ namespace WebApplication.State
             await _forgeOSS.UploadObjectAsync(BucketKey, objectName, stream);
         }
 
+        public async Task UploadChunkAsync(string objectName, string contentRange, string sessionId, Stream stream)
+        {
+            // public async Task UploadChunkAsync(string bucketKey, )
+            await _forgeOSS.UploadChunkAsync(BucketKey, objectName, contentRange, sessionId, stream);
+        }
+
         public async Task<Autodesk.Forge.Client.ApiResponse<dynamic>> GetObjectAsync(string objectName)
         {
             return await _forgeOSS.GetObjectAsync(BucketKey, objectName);
