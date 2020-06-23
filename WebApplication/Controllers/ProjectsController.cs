@@ -38,7 +38,7 @@ namespace WebApplication.Controllers
         [HttpGet("")]
         public async Task<IEnumerable<ProjectDTO>> ListAsync()
         {
-            var bucket = await _userResolver.GetBucket(tryToCreate: false); // TODO: remove before PR
+            var bucket = await _userResolver.GetBucket(tryToCreate: true);
 
             // TODO move to projects repository?
             List<ObjectDetails> objects = await bucket.GetObjectsAsync($"{ONC.ProjectsFolder}-");
