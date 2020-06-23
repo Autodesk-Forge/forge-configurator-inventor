@@ -39,7 +39,7 @@ namespace WebApplication.Controllers
 
             // prepare redirect URL for Oxygen
             // NOTE: This MUST match the pattern of the callback URL field of the app's registration
-            var callbackUrl = $"https://{Uri.SchemeDelimiter}{HttpContext.Request.Host}";
+            var callbackUrl = $"https{Uri.SchemeDelimiter}{HttpContext.Request.Host}";
             var encodedHost = HttpUtility.UrlEncode(callbackUrl);
 
             // prepare scope
