@@ -22,8 +22,12 @@
 
   <ItemGroup>
     <!-- Don't publish the SPA source files, but do show them in the project files list -->
+    <Compile Remove="LocalCache\**" />
     <Content Remove="$(SpaRoot)**" />
+    <Content Remove="LocalCache\**" />
+    <EmbeddedResource Remove="LocalCache\**" />
     <None Remove="$(SpaRoot)**" />
+    <None Remove="LocalCache\**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
   </ItemGroup>
 
