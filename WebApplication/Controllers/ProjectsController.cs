@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Autodesk.Forge.Model;
 using Microsoft.AspNetCore.Mvc;

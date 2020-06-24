@@ -43,11 +43,12 @@ namespace WebApplication.Processing
             var project = await _userResolver.GetProjectAsync(projectInfo.Name);
             var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, projectInfo.TopLevelAssembly);
 
-            bool success = await _fdaClient.AdoptAsync(adoptionData);
-            if (! success)
+            ResultDTO result = await _fdaClient.AdoptAsync(adoptionData);
+            if (! result.Success)
             {
                 _logger.LogError($"Failed to process '{project.Name}' project.");
                 // TODO: should we fail hard?
+                throw new ApplicationException($"Failed to process '{project.Name}' project.");
             }
             else
             {
@@ -133,16 +134,16 @@ namespace WebApplication.Processing
             ProcessingArgs satData = await _arranger.ForSatAsync(inputDocUrl, storage.Metadata.TLA);
             ProcessingArgs rfaData = await _arranger.ForRfaAsync(satData.SatUrl);
 
-            bool success = await _fdaClient.GenerateRfa(satData, rfaData);
-            if (!success) throw new ApplicationException($"Failed to generate rfa for project {project.Name} and hash {hash}");
+            ResultDTO result = await _fdaClient.GenerateRfa(satData, rfaData);
+            if (! result.Success) throw new ApplicationException($"Failed to generate rfa for project {project.Name} and hash {hash}");
 
             await _arranger.MoveRfaAsync(project, hash);
         }
 
         public async Task FileTransferAsync(string source, string target)
         {
-            bool success = await _fdaClient.TransferAsync(source, target);
-            if (!success) throw new ApplicationException($"Failed to transfer project file {source}");
+            ResultDTO result = await _fdaClient.TransferAsync(source, target);
+            if (!result.Success) throw new ApplicationException($"Failed to transfer project file {source}");
 
             _logger.LogInformation("File transferred.");
         }
@@ -158,8 +159,8 @@ namespace WebApplication.Processing
             var inputDocUrl = await bucket.CreateSignedUrlAsync(project.OSSSourceModel);
             UpdateData updateData = await _arranger.ForUpdateAsync(inputDocUrl, tlaFilename, parameters);
 
-            bool success = await _fdaClient.UpdateAsync(updateData);
-            if (! success) throw new ApplicationException($"Failed to update {project.Name}");
+            ResultDTO result = await _fdaClient.UpdateAsync(updateData);
+            if (! result.Success) throw new ApplicationException($"Failed to update {project.Name}");
 
             _logger.LogInformation("Moving files around");
 
