@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Autodesk.Forge.Model;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using WebApplication.Definitions;
@@ -135,7 +136,20 @@ namespace WebApplication.Controllers
 
             // adopt the project
             string signedUrl = await bucket.CreateSignedUrlAsync(ossSourceModel);
-            await _projectWork.AdoptAsync(projectInfo, signedUrl);
+            try
+            {
+                await _projectWork.AdoptAsync(projectInfo, signedUrl);
+            }
+            catch (FdaProcessingException fpe)
+            {
+                var result = new ResultDTO
+                {
+                    Success = false,
+                    Message = fpe.Message,
+                    ReportUrl = fpe.ReportUrl
+                };
+                return UnprocessableEntity(result);
+            }
 
             return Ok(ToDTO(projectStorage));
         }

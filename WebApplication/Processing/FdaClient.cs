@@ -60,24 +60,24 @@ namespace WebApplication.Processing
             await _updateProjectWork.CleanUpAsync();
         }
 
-        public Task<ResultDTO> AdoptAsync(AdoptionData projectData)
+        public Task<ProcessingResult> AdoptAsync(AdoptionData projectData)
         {
             return _adoptWork.ProcessAsync(projectData);
         }
 
-        public Task<ResultDTO> UpdateAsync(UpdateData projectData)
+        public Task<ProcessingResult> UpdateAsync(UpdateData projectData)
         {
             return _updateProjectWork.ProcessAsync(projectData);
         }
 
-        internal Task<ResultDTO> TransferAsync(string source, string target)
+        internal Task<ProcessingResult> TransferAsync(string source, string target)
         {
             return _transferData.ProcessAsync(source, target);
         }
 
-        internal async Task<ResultDTO> GenerateRfa(ProcessingArgs satData, ProcessingArgs rfaData)
+        internal async Task<ProcessingResult> GenerateRfa(ProcessingArgs satData, ProcessingArgs rfaData)
         {
-            ResultDTO result = await _satWork.ProcessAsync(satData);
+            ProcessingResult result = await _satWork.ProcessAsync(satData);
             if (! result.Success) throw new ApplicationException("Failed to generate SAT file"); // TODO: should include the result DTO
 
             return await _rfaWork.ProcessAsync(rfaData);

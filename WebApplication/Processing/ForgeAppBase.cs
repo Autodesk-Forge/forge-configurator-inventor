@@ -77,10 +77,10 @@ namespace WebApplication.Processing
         /// Run work item and wait for the completion.
         /// </summary>
         /// <param name="args">Work item arguments.</param>
-        protected async Task<ResultDTO> RunAsync(Dictionary<string, IArgument> args)
+        protected async Task<ProcessingResult> RunAsync(Dictionary<string, IArgument> args)
         {
             WorkItemStatus status = await Publisher.RunWorkItemAsync(args, this);
-            return new ResultDTO
+            return new ProcessingResult
             {
                 Success = (status.Status == Status.Success),
                 ReportUrl = status.ReportUrl
@@ -90,7 +90,7 @@ namespace WebApplication.Processing
         /// <summary>
         /// Process IPT or Zipped IAM file.
         /// </summary>
-        public Task<ResultDTO> ProcessAsync(ProcessingArgs data)
+        public Task<ProcessingResult> ProcessAsync(ProcessingArgs data)
         {
             var args = ToWorkItemArgs(data);
 

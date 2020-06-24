@@ -43,26 +43,23 @@ namespace WebApplication.Processing
             var project = await _userResolver.GetProjectAsync(projectInfo.Name);
             var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, projectInfo.TopLevelAssembly);
 
-            ResultDTO result = await _fdaClient.AdoptAsync(adoptionData);
+            ProcessingResult result = await _fdaClient.AdoptAsync(adoptionData);
             if (! result.Success)
             {
                 _logger.LogError($"Failed to process '{project.Name}' project.");
-                // TODO: should we fail hard?
-                throw new ApplicationException($"Failed to process '{project.Name}' project.");
+                throw new FdaProcessingException($"Failed to process '{project.Name}' project.", result.ReportUrl);
             }
-            else
-            {
-                // rearrange generated data according to the parameters hash
-                await _arranger.MoveProjectAsync(project, projectInfo.TopLevelAssembly);
 
-                _logger.LogInformation("Cache the project locally");
+            // rearrange generated data according to the parameters hash
+            await _arranger.MoveProjectAsync(project, projectInfo.TopLevelAssembly);
 
-                var bucket = await _userResolver.GetBucket();
+            _logger.LogInformation("Cache the project locally");
 
-                // and now cache the generate stuff locally
-                var projectLocalStorage = new ProjectStorage(project);
-                await projectLocalStorage.EnsureLocalAsync(bucket);
-            }
+            var bucket = await _userResolver.GetBucket();
+
+            // and now cache the generate stuff locally
+            var projectLocalStorage = new ProjectStorage(project);
+            await projectLocalStorage.EnsureLocalAsync(bucket);
         }
 
         /// <summary>
@@ -134,7 +131,7 @@ namespace WebApplication.Processing
             ProcessingArgs satData = await _arranger.ForSatAsync(inputDocUrl, storage.Metadata.TLA);
             ProcessingArgs rfaData = await _arranger.ForRfaAsync(satData.SatUrl);
 
-            ResultDTO result = await _fdaClient.GenerateRfa(satData, rfaData);
+            ProcessingResult result = await _fdaClient.GenerateRfa(satData, rfaData);
             if (! result.Success) throw new ApplicationException($"Failed to generate rfa for project {project.Name} and hash {hash}");
 
             await _arranger.MoveRfaAsync(project, hash);
@@ -142,7 +139,7 @@ namespace WebApplication.Processing
 
         public async Task FileTransferAsync(string source, string target)
         {
-            ResultDTO result = await _fdaClient.TransferAsync(source, target);
+            ProcessingResult result = await _fdaClient.TransferAsync(source, target);
             if (!result.Success) throw new ApplicationException($"Failed to transfer project file {source}");
 
             _logger.LogInformation("File transferred.");
@@ -159,7 +156,7 @@ namespace WebApplication.Processing
             var inputDocUrl = await bucket.CreateSignedUrlAsync(project.OSSSourceModel);
             UpdateData updateData = await _arranger.ForUpdateAsync(inputDocUrl, tlaFilename, parameters);
 
-            ResultDTO result = await _fdaClient.UpdateAsync(updateData);
+            ProcessingResult result = await _fdaClient.UpdateAsync(updateData);
             if (! result.Success) throw new ApplicationException($"Failed to update {project.Name}");
 
             _logger.LogInformation("Moving files around");

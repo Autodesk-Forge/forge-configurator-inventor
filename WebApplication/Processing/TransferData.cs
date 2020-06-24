@@ -35,7 +35,7 @@ namespace WebApplication.Processing
                 }
             };
 
-        public Task<ResultDTO> ProcessAsync(string source, string target)
+        public Task<ProcessingResult> ProcessAsync(string source, string target)
         {
             var workItemArgs = new Dictionary<string, IArgument>
             {
