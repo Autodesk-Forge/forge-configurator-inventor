@@ -13,7 +13,8 @@ export const initialState = {
    uploadProgressStatus: null,
    package: { file: '', root: ''},
    activeTabIndex: 0,
-   projectAlreadyExists: false
+   projectAlreadyExists: false,
+   showDeleteProject: false
 };
 
 export const updateProgressShowing = function(state) {
@@ -52,6 +53,10 @@ export const projectAlreadyExists = function(state) {
    return state.projectAlreadyExists;
 };
 
+export const deleteProjectDlgVisible = function(state) {
+   return state.showDeleteProject;
+};
+
 export default function(state = initialState, action) {
    switch(action.type) {
       case uiFlagsActionTypes.CLOSE_PARAMETERS_EDITED_MESSAGE:
@@ -84,7 +89,9 @@ export default function(state = initialState, action) {
          return { ...state, activeTabIndex: action.index};
       case uiFlagsActionTypes.PROJECT_EXISTS:
          return { ...state, projectAlreadyExists: action.exists};
-            default:
+      case uiFlagsActionTypes.SHOW_DELETE_PROJECT:
+         return { ...state, showDeleteProject: action.visible};
+      default:
          return state;
   }
 }
