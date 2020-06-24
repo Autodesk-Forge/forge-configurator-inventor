@@ -93,7 +93,7 @@ describe('ProjectList components', () => {
     expect(upload.prop("className")).not.toContain('hidden');
   });
 
-  it('Project list has NO upload button for anonymous in user', () => {
+  it('Project list has NO upload button for anonymous user', () => {
     const propsWithProfile = { ...props, isLoggedIn: false };
     const wrapper = shallow(<ProjectList { ...propsWithProfile } />);
     const upload = wrapper.find('#projectList_uploadButton');
@@ -123,4 +123,10 @@ describe('ProjectList components', () => {
     expect(updateActiveTabIndexMockFn).toHaveBeenCalledWith(1);
   });
 
+  it('Project list has NO delete button for anonymous user', () => {
+    const propsWithProfile = { ...props, isLoggedIn: false };
+    const wrapper = shallow(<ProjectList { ...propsWithProfile } />);
+    const deleteBtn = wrapper.find('#projectList_deleteButton');
+    expect(deleteBtn.prop("className")).toContain('hidden');
+  });
 });

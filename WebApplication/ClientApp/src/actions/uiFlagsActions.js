@@ -13,7 +13,8 @@ export const actionTypes = {
     PACKAGE_FILE_EDITED: 'PACKAGE_FILE_EDITED',
     PACKAGE_ROOT_EDITED: 'PACKAGE_ROOT_EDITED',
     UPDATE_ACTIVE_TAB_INDEX: 'UPDATE_ACTIVE_TAB_INDEX',
-    PROJECT_EXISTS: 'PROJECT_EXISTS'
+    PROJECT_EXISTS: 'PROJECT_EXISTS',
+    SHOW_DELETE_PROJECT: 'SHOW_DELETE_PROJECT'
 };
 
 export default actionTypes;
@@ -103,5 +104,12 @@ export const setProjectAlreadyExists = (exists) => {
     return {
         type: actionTypes.PROJECT_EXISTS,
         exists
+    };
+};
+
+export const showDeleteProject = (visible) => {
+    return {
+        type: actionTypes.SHOW_DELETE_PROJECT,
+        visible
     };
 };

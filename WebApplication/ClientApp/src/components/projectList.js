@@ -5,10 +5,11 @@ import 'react-base-table/styles.css';
 import IconButton from '@hig/icon-button';
 import { Upload24, Trash24 } from '@hig/icons';
 import './projectList.css';
-import { showUploadPackage, updateActiveTabIndex } from '../actions/uiFlagsActions';
+import { showUploadPackage, updateActiveTabIndex, showDeleteProject } from '../actions/uiFlagsActions';
 import { setUploadProgressHidden } from '../actions/uploadPackageActions';
 import { updateActiveProject } from '../actions/projectListActions';
 import UploadPackage from './uploadPackage';
+import DeleteProject from './deleteProject';
 
 import ModalProgressUpload from './modalProgressUpload';
 import { uploadProgressShowing, uploadProgressIsDone, uploadPackageData } from '../reducers/mainReducer';
@@ -135,6 +136,8 @@ export class ProjectList extends Component {
                     url={null}
                     isDone={() => this.isDone() === true }
                     />}
+
+        <DeleteProject />
       </div>
     );
   }
@@ -149,4 +152,4 @@ export default connect(function (store) {
     uploadProgressIsDone: uploadProgressIsDone(store),
     uploadPackageData: uploadPackageData(store)
   };
-}, { showUploadPackage, updateActiveProject, updateActiveTabIndex, setUploadProgressHidden })(ProjectList);
+}, { showUploadPackage, updateActiveProject, updateActiveTabIndex, setUploadProgressHidden, showDeleteProject })(ProjectList);
