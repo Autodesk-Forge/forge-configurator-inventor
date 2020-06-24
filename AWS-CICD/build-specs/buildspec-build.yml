@@ -10,6 +10,8 @@ phases:
       - $slnDir=$PWD.ToString()
       - echo "Selecting right ClientId and Sectret from the list"
       - dir Env:\
+      - echo $Env:CODEBUILD_BUILD_NUMBER $Env:UserCount
+      - echo $Env:CODEBUILD_BUILD_NUMBER % $Env:UserCount
       - $userIndex=$Env:CODEBUILD_BUILD_NUMBER % $Env:UserCount
       - echo $userIndex
       - $Env:FORGE_CLIENT_ID=(Get-ChildItem -Path Env:\FORGE_CLIENT_ID$userIndex).Value
