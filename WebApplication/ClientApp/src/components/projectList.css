@@ -1,20 +1,33 @@
-#project-list .uploadContainer {
+#project-list .tabContainer {
     background-color: white;
-    height: 90px;
 }
 
-#project-list .uploadContainer.hidden {
+#project-list .hidden {
     display: none;
 }
 
-#project-list .uploadButton {
-    display: inline-block;
-    height: 100%;
-    padding-top: 10px;
+#project-list .actionButtonContainer.hidden {
+    padding: 0px;
+}
+
+#project-list .actionButtonContainer {
+    display: flex;
+    flex-flow: row;
+    padding: 20px 0px 10px 0px;
     margin-left: 76px;
     vertical-align: middle;
+}
+
+#project-list .actionButtonContainer button {
     /* following are to override IconButton strange behavior */
     outline: none;
     border-color: transparent;
     box-shadow: none;
+}
+
+#project-list .actionButtonContainer .verticalSpacer {
+    height: 40px;
+    width: 1px;
+    border-left: gainsboro 1px solid;
+    margin: 0px 12px 0px 12px;
 }

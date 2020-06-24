@@ -1,4 +1,4 @@
-import {closeParametersEditedMessage, rejectParametersEditedMessage, showUploadPackage, editPackageFile, editPackageRoot} from '../actions/uiFlagsActions';
+import {closeParametersEditedMessage, rejectParametersEditedMessage, showUploadPackage, editPackageFile, editPackageRoot, showDeleteProject} from '../actions/uiFlagsActions';
 import uiFlagsReducer, * as uiFlags from './uiFlagsReducer';
 import { editParameter, resetParameters } from '../actions/parametersActions';
 import { stateParametersEditedMessageClosed, stateParametersEditedMessageNotRejected, stateParametersEditedMessageRejected } from './uiFlagsTestStates';
@@ -56,5 +56,9 @@ describe('uiFlags reducer', () => {
 
       expect(newState.package.file).toEqual(mypackage);
       expect(newState.package.root).toEqual(packageroot);
+   });
+
+   it('Sets the show delete project dlg', () => {
+      expect(uiFlagsReducer(uiFlags.initialState, showDeleteProject(true)).showDeleteProject).toEqual(true);
    });
 });

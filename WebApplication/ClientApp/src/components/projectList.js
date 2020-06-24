@@ -3,12 +3,13 @@ import { connect } from 'react-redux';
 import BaseTable, { AutoResizer, Column } from 'react-base-table';
 import 'react-base-table/styles.css';
 import IconButton from '@hig/icon-button';
-import { Upload24 } from '@hig/icons';
+import { Upload24, Trash24 } from '@hig/icons';
 import './projectList.css';
-import { showUploadPackage, updateActiveTabIndex } from '../actions/uiFlagsActions';
+import { showUploadPackage, updateActiveTabIndex, showDeleteProject } from '../actions/uiFlagsActions';
 import { setUploadProgressHidden } from '../actions/uploadPackageActions';
 import { updateActiveProject } from '../actions/projectListActions';
 import UploadPackage from './uploadPackage';
+import DeleteProject from './deleteProject';
 
 import ModalProgressUpload from './modalProgressUpload';
 import { uploadProgressShowing, uploadProgressIsDone, uploadPackageData } from '../reducers/mainReducer';
@@ -81,18 +82,31 @@ export class ProjectList extends Component {
       ));
     }
 
-    const visible = this.props.isLoggedIn;
-    const uploadContainerClass = visible ? "uploadContainer" : "uploadContainer hidden";
+    const uploadButtonVisible = this.props.isLoggedIn;
+    const deleteButtonVisible = this.props.isLoggedIn && true /* TBD replace with condition for project checked */;
+    const uploadContainerClass =  uploadButtonVisible ? "" : "hidden";
+    const deleteContainerClass = deleteButtonVisible ? "" : "hidden";
+    const spacerClass = (uploadButtonVisible && deleteButtonVisible) ? "verticalSpacer" : "verticalSpacer hidden";
+    const actionButtonContainerClass = uploadButtonVisible ? "actionButtonContainer" : "actionButtonContainer hidden";
+
     const showUploadProgress = this.props.uploadProgressShowing;
 
     return (
-      <div className="fullheight">
-        <div id="projectList_uploadButton" className={uploadContainerClass}>
-          <IconButton
-            icon={<Upload24 />}
-            title="Upload package"
-            className="uploadButton"
-            onClick={ () => { this.props.showUploadPackage(true); }} />
+      <div className="tabContainer fullheight">
+        <div className={actionButtonContainerClass}>
+          <div id="projectList_uploadButton" className={uploadContainerClass}>
+            <IconButton
+              icon={<Upload24 />}
+              title="Upload package"
+              onClick={ () => { this.props.showUploadPackage(true); }} />
+          </div>
+          <div className={spacerClass}></div>
+          <div id="projectList_deleteButton" className={deleteContainerClass}>
+            <IconButton
+              icon={<Trash24 />}
+              title="Delete project(s)"
+              onClick={ () => { this.props.showDeleteProject(true); }} />
+          </div>
         </div>
         <div className="fullheight">
           <AutoResizer>
@@ -122,6 +136,8 @@ export class ProjectList extends Component {
                     url={null}
                     isDone={() => this.isDone() === true }
                     />}
+
+        <DeleteProject />
       </div>
     );
   }
@@ -136,4 +152,4 @@ export default connect(function (store) {
     uploadProgressIsDone: uploadProgressIsDone(store),
     uploadPackageData: uploadPackageData(store)
   };
-}, { showUploadPackage, updateActiveProject, updateActiveTabIndex, setUploadProgressHidden })(ProjectList);
+}, { showUploadPackage, updateActiveProject, updateActiveTabIndex, setUploadProgressHidden, showDeleteProject })(ProjectList);
