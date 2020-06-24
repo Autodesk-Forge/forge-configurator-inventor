@@ -20,9 +20,9 @@ phases:
       - npm test -- --coverage
       - echo "**** Starting the server ****"
       - cd ..
-      - Start-Process -NoNewWindow dotnet -ArgumentList "run", "clear=true", "initialize=true"
-      - echo "Waiting 5 minutes"
-      - sleep 300
+      - Start-Process -NoNewWindow dotnet -ArgumentList "run"
+      - echo "Waiting 1 minute"
+      - sleep 60
       - echo "**** running the UI tests ****"
       - cd ClientApp
       - mkdir output
