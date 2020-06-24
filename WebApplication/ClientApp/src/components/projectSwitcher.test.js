@@ -40,9 +40,11 @@ describe('components', () => {
 
     it('should call onChange with given handler',  () => {
       const updateActiveProject = jest.fn();
+      const updateActiveTabIndex = jest.fn();
       const fetchParameters = jest.fn();
       const props = {
         updateActiveProject,
+        updateActiveTabIndex,
         fetchParameters,
         addLog: () => {},
         ... baseProps
@@ -59,18 +61,41 @@ describe('components', () => {
       expect(fetchParameters).toHaveBeenLastCalledWith(5);
     });
 
-    });
-
-    it('should start loading projects on mount', () => {
+    it('should activate model tab when project changed', () => {
+      const updateActiveProject = jest.fn();
+      const updateActiveTabIndex = jest.fn();
       const fetchProjects = jest.fn();
-
+      const fetchParameters = jest.fn();
       const props = {
-        ... baseProps,
-        fetchProjects
+        updateActiveProject,
+        updateActiveTabIndex,
+        fetchProjects,
+        fetchParameters,
+        addLog: () => {},
+        ... baseProps
       };
 
-      /*const wrapper = */shallow(<ProjectSwitcher {...props} />);
+      const wrapper = shallow(<ProjectSwitcher {...props} />);
+      wrapper.simulate('change', {
+        project : {
+          id: 2
+        }
+      });
 
-      expect(fetchProjects).toBeCalled();
+      expect(updateActiveTabIndex).toHaveBeenCalledWith(1); // model tab index
     });
+  });
+
+  it('should start loading projects on mount', () => {
+    const fetchProjects = jest.fn();
+
+    const props = {
+      ... baseProps,
+      fetchProjects
+    };
+
+    /*const wrapper = */shallow(<ProjectSwitcher {...props} />);
+
+    expect(fetchProjects).toBeCalled();
+  });
 });
