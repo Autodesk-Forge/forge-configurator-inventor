@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import BaseTable, { AutoResizer, Column } from 'react-base-table';
 import 'react-base-table/styles.css';
 import IconButton from '@hig/icon-button';
-import { Upload24 } from '@hig/icons';
+import { Upload24, Trash24 } from '@hig/icons';
 import './projectList.css';
 import { showUploadPackage, updateActiveTabIndex } from '../actions/uiFlagsActions';
 import { setUploadProgressHidden } from '../actions/uploadPackageActions';
@@ -81,18 +81,31 @@ export class ProjectList extends Component {
       ));
     }
 
-    const visible = this.props.isLoggedIn;
-    const uploadContainerClass = visible ? "uploadContainer" : "uploadContainer hidden";
+    const uploadButtonVisible = this.props.isLoggedIn;
+    const deleteButtonVisible = this.props.isLoggedIn && true /* TBD replace with condition for project checked */;
+    const uploadContainerClass =  uploadButtonVisible ? "" : "hidden";
+    const deleteContainerClass = deleteButtonVisible ? "" : "hidden";
+    const spacerClass = (uploadButtonVisible && deleteButtonVisible) ? "verticalSpacer" : "verticalSpacer hidden";
+    const actionButtonContainerClass = uploadButtonVisible ? "actionButtonContainer" : "actionButtonContainer hidden";
+
     const showUploadProgress = this.props.uploadProgressShowing;
 
     return (
-      <div className="fullheight">
-        <div id="projectList_uploadButton" className={uploadContainerClass}>
-          <IconButton
-            icon={<Upload24 />}
-            title="Upload package"
-            className="uploadButton"
-            onClick={ () => { this.props.showUploadPackage(true); }} />
+      <div className="tabContainer fullheight">
+        <div className={actionButtonContainerClass}>
+          <div id="projectList_uploadButton" className={uploadContainerClass}>
+            <IconButton
+              icon={<Upload24 />}
+              title="Upload package"
+              onClick={ () => { this.props.showUploadPackage(true); }} />
+          </div>
+          <div className={spacerClass}></div>
+          <div id="projectList_deleteButton" className={deleteContainerClass}>
+            <IconButton
+              icon={<Trash24 />}
+              title="Delete project(s)"
+              onClick={ () => { this.props.showDeleteProject(true); }} />
+          </div>
         </div>
         <div className="fullheight">
           <AutoResizer>
