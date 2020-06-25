@@ -10,6 +10,15 @@ class Repository {
         const response = await axios.get("/projects");
         return response.data;
     }
+    /** Delete projects */
+    async deleteProjects(projectList) {
+        const response = await axios.post("/projects/delete", projectList, {
+            headers: {
+                'content-type': 'application/json'
+            }
+        });
+        return response.data;
+    }
     /** Get project parameters */
     async loadParameters(projectName) {
         const response = await axios.get("/parameters/" + projectName);

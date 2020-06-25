@@ -6,6 +6,7 @@ import Spacer from '@hig/spacer';
 import merge from "lodash.merge";
 import { deleteProjectDlgVisible, checkedProjects } from '../reducers/mainReducer';
 import { showDeleteProject } from '../actions/uiFlagsActions';
+import { deleteProject } from '../actions/deleteProjectActions';
 import './deleteProject.css';
 
 export class DeleteProject extends Component {
@@ -68,4 +69,4 @@ export default connect(function (store) {
       deleteProjectDlgVisible: deleteProjectDlgVisible(store),
       checkedProjects: checkedProjects(store)
     };
-}, { showDeleteProject, deleteProject: () => async () => {} })(DeleteProject);
+}, { showDeleteProject, deleteProject } )(DeleteProject);
