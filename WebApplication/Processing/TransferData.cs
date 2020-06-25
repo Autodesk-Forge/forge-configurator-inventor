@@ -1,6 +1,7 @@
 ﻿using Autodesk.Forge.DesignAutomation.Model;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using WebApplication.Definitions;
 
 namespace WebApplication.Processing
 {
@@ -9,12 +10,9 @@ namespace WebApplication.Processing
     /// </summary>
     public class TransferData : ForgeAppBase
     {
-        public TransferData(Publisher publisher) :
-            base(publisher)
-        {
-            Engine = "Autodesk.AutoCAD+22";
-        }
+        public TransferData(Publisher publisher) : base(publisher) {}
 
+        public override string Engine => "Autodesk.AutoCAD+22";
         public override string Id => nameof(TransferData);
         public override string Description => "Transfer input to output";
 
@@ -37,11 +35,13 @@ namespace WebApplication.Processing
                 }
             };
 
-        public Task<bool> ProcessAsync(string source, string target)
+        public Task<ProcessingResult> ProcessAsync(string source, string target)
         {
-            var workItemArgs = new Dictionary<string, IArgument>();
-            workItemArgs.Add("source", new XrefTreeArgument { Url = source });
-            workItemArgs.Add("target", new XrefTreeArgument { Verb = Verb.Put, Url = target });
+            var workItemArgs = new Dictionary<string, IArgument>
+            {
+                { "source", new XrefTreeArgument { Url = source } },
+                { "target", new XrefTreeArgument { Verb = Verb.Put, Url = target } }
+            };
 
             return RunAsync(workItemArgs);
         }
