@@ -123,7 +123,7 @@ namespace WebApplication.Processing
 
             var ossNames = project.OssNameProvider(hash);
             await Task.WhenAll(bucket.RenameObjectAsync(OutputRFA, ossNames.Rfa),
-                                bucket.DeleteAsync(OutputSAT));
+                                bucket.DeleteObjectAsync(OutputSAT));
         }
 
         internal async Task<ProcessingArgs> ForSatAsync(string inputDocUrl, string topLevelAssembly)
@@ -171,7 +171,7 @@ namespace WebApplication.Processing
             await Task.WhenAll(bucket.RenameObjectAsync(SVF, ossNames.ModelView),
                                 bucket.RenameObjectAsync(Parameters, ossNames.Parameters),
                                 bucket.RenameObjectAsync(OutputModel, ossNames.CurrentModel),
-                                bucket.DeleteAsync(InputParams));
+                                bucket.DeleteObjectAsync(InputParams));
 
             return hashString;
         }

@@ -134,11 +134,15 @@ namespace WebApplication.Controllers
                 }
             }
 
+            bool adopted = false;
+
             // adopt the project
-            string signedUrl = await bucket.CreateSignedUrlAsync(ossSourceModel);
             try
             {
+                string signedUrl = await bucket.CreateSignedUrlAsync(ossSourceModel);
                 await _projectWork.AdoptAsync(projectInfo, signedUrl);
+
+                adopted = true;
             }
             catch (FdaProcessingException fpe)
             {
@@ -149,6 +153,14 @@ namespace WebApplication.Controllers
                     ReportUrl = fpe.ReportUrl
                 };
                 return UnprocessableEntity(result);
+            }
+            finally
+            {
+                // on any failure during adoption we consider that project adoption failed and it's not usable
+                if (! adopted)
+                {
+                    await bucket.DeleteObjectAsync(ossSourceModel);
+                }
             }
 
             return Ok(ToDTO(projectStorage));
