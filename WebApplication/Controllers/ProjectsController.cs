@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
-using Autodesk.Forge.Model;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using WebApplication.Definitions;
@@ -40,14 +39,9 @@ namespace WebApplication.Controllers
         {
             var bucket = await _userResolver.GetBucket(tryToCreate: true);
 
-            // TODO move to projects repository?
-            List<ObjectDetails> objects = await bucket.GetObjectsAsync($"{ONC.ProjectsFolder}-");
-
             var projectDTOs = new List<ProjectDTO>();
-            foreach(ObjectDetails objDetails in objects)
+            foreach (var projectName in await GetProjectNamesAsync(bucket))
             {
-                var projectName = ONC.ToProjectName(objDetails.ObjectKey);
-
                 // TODO: in future bad projects should not affect project listing. It's a workaround
                 try
                 {
@@ -72,14 +66,9 @@ namespace WebApplication.Controllers
             var bucket = await _userResolver.GetBucket(true);
 
             // Check if project already exists
-            List<ObjectDetails> objects = await bucket.GetObjectsAsync($"{ONC.ProjectsFolder}-");
-            foreach(ObjectDetails objDetails in objects)
+            foreach (var existingProjectName in await GetProjectNamesAsync(bucket))
             {
-                var existingProjectName = ONC.ToProjectName(objDetails.ObjectKey);
-                if (projectName == existingProjectName)
-                {
-                    return Conflict();
-                }
+                if (projectName == existingProjectName) return Conflict();
             }
 
             var projectInfo = new ProjectInfo
@@ -159,6 +148,7 @@ namespace WebApplication.Controllers
                 // on any failure during adoption we consider that project adoption failed and it's not usable
                 if (! adopted)
                 {
+                    _logger.LogInformation($"Adoption failed. Removing '{ossSourceModel}' OSS object.");
                     await bucket.DeleteObjectAsync(ossSourceModel);
                 }
             }
@@ -178,6 +168,16 @@ namespace WebApplication.Controllers
             dto.Label = project.Name;
             dto.Image = _localCache.ToDataUrl(project.LocalAttributes.Thumbnail);
             return dto;
+        }
+
+        /// <summary>
+        /// Get list of project names for a bucket.
+        /// </summary>
+        private async Task<ICollection<string>> GetProjectNamesAsync(OssBucket bucket)
+        {
+            return (await bucket.GetObjectsAsync($"{ONC.ProjectsFolder}-"))
+                                .Select(objDetails =>  ONC.ToProjectName(objDetails.ObjectKey))
+                                .ToList();
         }
     }
 }
