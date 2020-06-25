@@ -231,7 +231,6 @@ _Pvt_Extensions
 # FAKE - F# Make
 .fake/
 
-appsettings.Local.json
 Output/
 
 # preserve `LocalCache` dir
