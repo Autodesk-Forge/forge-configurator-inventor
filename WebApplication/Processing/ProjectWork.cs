@@ -57,7 +57,7 @@ namespace WebApplication.Processing
 
             var bucket = await _userResolver.GetBucket();
 
-            // and now cache the generate stuff locally
+            // and now cache the generated stuff locally
             var projectLocalStorage = new ProjectStorage(project);
             await projectLocalStorage.EnsureLocalAsync(bucket);
         }
