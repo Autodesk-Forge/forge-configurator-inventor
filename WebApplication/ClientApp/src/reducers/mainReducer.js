@@ -95,3 +95,11 @@ export const activeTabIndex = function(state) {
 export const projectAlreadyExists = function(state) {
     return uiFlags.projectAlreadyExists(state.uiFlags);
 };
+
+export const deleteProjectDlgVisible = function(state) {
+    return uiFlags.deleteProjectDlgVisible(state.uiFlags);
+};
+
+export const checkedProjects = function(state) {
+    return uiFlags.checkedProjects(state.uiFlags);
+};

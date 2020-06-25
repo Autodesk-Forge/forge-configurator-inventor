@@ -41,7 +41,8 @@ namespace WebApplication.Controllers
             // NOTE: This MUST match the pattern of the callback URL field of the app's registration
             // TODO: workaround which may be removed once application will start to use https
             var scheme = HttpContext.Request.Scheme;
-            if (HttpContext.Request.Host.Host == "inventor-config-demo.autodesk.io")
+            if (HttpContext.Request.Host.Host == "inventor-config-demo.autodesk.io" ||
+                HttpContext.Request.Host.Host == "inventor-config-demo-dev.autodesk.io" )
             {
                 scheme = "https";
             }

@@ -1,0 +1,13 @@
+#deleteProjectModal .buttonsContainer {
+    display: flex;
+    flex-flow: row-reverse;
+    padding-bottom: 0;
+}
+
+#deleteProjectModal .buttonsContainer button {
+    width: 102px;
+}
+
+#delete_ok_button {
+    background-color: red;
+}

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import ProjectAccountSwitcher from '@hig/project-account-switcher';
 import { fetchProjects, updateActiveProject } from '../actions/projectListActions';
+import { updateActiveTabIndex } from '../actions/uiFlagsActions';
 import { fetchParameters } from '../actions/parametersActions';
 import {addLog} from '../actions/notificationActions';
 
@@ -19,6 +20,8 @@ export class ProjectSwitcher extends Component {
     onProjectChange(data) {
         const id = data.project.id;
         this.props.updateActiveProject(id);
+        // switch to the model tab
+        this.props.updateActiveTabIndex(1);
         this.props.fetchParameters(id);
         this.props.addLog('Selected: ' + id);
     }
@@ -41,4 +44,4 @@ export default connect(function (store){
     return {
       projectList: store.projectList
     };
-  }, { fetchProjects, fetchParameters, updateActiveProject, addLog } )(ProjectSwitcher);
+  }, { fetchProjects, fetchParameters, updateActiveProject, updateActiveTabIndex, addLog } )(ProjectSwitcher);
