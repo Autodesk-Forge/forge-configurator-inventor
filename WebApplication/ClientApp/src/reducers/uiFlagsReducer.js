@@ -14,7 +14,8 @@ export const initialState = {
    package: { file: '', root: ''},
    activeTabIndex: 0,
    projectAlreadyExists: false,
-   showDeleteProject: false
+   showDeleteProject: false,
+   checkedProjects: []
 };
 
 export const updateProgressShowing = function(state) {
@@ -57,6 +58,10 @@ export const deleteProjectDlgVisible = function(state) {
    return state.showDeleteProject;
 };
 
+export const checkedProjects = function(state) {
+   return state.checkedProjects;
+};
+
 export default function(state = initialState, action) {
    switch(action.type) {
       case uiFlagsActionTypes.CLOSE_PARAMETERS_EDITED_MESSAGE:
@@ -91,6 +96,10 @@ export default function(state = initialState, action) {
          return { ...state, projectAlreadyExists: action.exists};
       case uiFlagsActionTypes.SHOW_DELETE_PROJECT:
          return { ...state, showDeleteProject: action.visible};
+      case uiFlagsActionTypes.SET_CHECKED_PROJECTS:
+         return { ...state, checkedProjects: action.projects};
+      case uiFlagsActionTypes.CLEAR_CHECKED_PROJECTS:
+         return { ...state, checkedProjects: []};
       default:
          return state;
   }
