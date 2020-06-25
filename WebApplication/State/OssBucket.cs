@@ -93,7 +93,7 @@ namespace WebApplication.State
         /// <summary>
         /// Delete OSS object.
         /// </summary>
-        public async Task DeleteAsync(string objectName)
+        public async Task DeleteObjectAsync(string objectName)
         {
             await _forgeOSS.DeleteAsync(BucketKey, objectName);
         }
