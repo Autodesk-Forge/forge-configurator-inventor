@@ -16,7 +16,6 @@ phases:
       - echo $Env:FORGE_CLIENT_ID
       - $FORGE_CLIENT_SECRET=(Get-ChildItem -Path Env:\FORGE_CLIENT_SECRET$userIndex).Value
       - echo $FORGE_CLIENT_SECRET
-      - [System.Environment]::SetEnvironmentVariable('FORGE_CLIENT_SECRET',"$FORGE_CLIENT_SECRET", [System.EnvironmentVariableTarget]::User)
       - echo $Env:FORGE_CLIENT_SECRET
       - echo "**** Building ****"
       - msbuild -restore /property:Configuration=Release
