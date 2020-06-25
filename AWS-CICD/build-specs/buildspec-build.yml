@@ -9,13 +9,8 @@ phases:
     commands:
       - $slnDir=$PWD.ToString()
       - echo "Selecting right ClientId and Sectret from the list"
-      - $userIndex=$Env:CODEBUILD_BUILD_NUMBER % $Env:UserCount
-      - echo $userIndex
-      - $FORGE_CLIENT_ID=(Get-ChildItem -Path Env:\FORGE_CLIENT_ID$userIndex).Value
-      - echo $FORGE_CLIENT_ID
+      - setClientId.ps1
       - echo $Env:FORGE_CLIENT_ID
-      - $FORGE_CLIENT_SECRET=(Get-ChildItem -Path Env:\FORGE_CLIENT_SECRET$userIndex).Value
-      - echo $FORGE_CLIENT_SECRET
       - echo $Env:FORGE_CLIENT_SECRET
       - echo "**** Building ****"
       - msbuild -restore /property:Configuration=Release
