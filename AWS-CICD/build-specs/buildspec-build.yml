@@ -8,7 +8,7 @@ phases:
   build:
     commands:
       - $slnDir=$PWD.ToString()
-      - echo "Selecting right ClientId and Sectret from the list"
+      - echo "Selecting right ClientId and Secret from the list"
       - .\AWS-CICD\build-specs\setClientId.ps1
       - echo "**** Building ****"
       - msbuild -restore /property:Configuration=Release
