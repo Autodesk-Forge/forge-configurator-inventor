@@ -1,9 +1,9 @@
 import React from 'react';
-import Enzyme, { shallow, mount } from 'enzyme';
+import Enzyme, { shallow/*, mount*/ } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import { CheckboxTable } from './checkboxTable';
 
-import { Provider } from 'react-redux';
+//import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 
@@ -30,16 +30,16 @@ const projectList = {
 };
 
 // mock store
-const middlewares = [thunk];
-const mockStore = configureMockStore(middlewares);
-const mockState = {
-  uiFlags: {
-    showUploadPackage: false,
-    package: { file: '', root: '' },
-    checkedProjects: []
-  },
-  projectList: projectList
-};
+//const middlewares = [thunk];
+// const mockStore = configureMockStore(middlewares);
+// const mockState = {
+//   uiFlags: {
+//     showUploadPackage: false,
+//     package: { file: '', root: '' },
+//     checkedProjects: []
+//   },
+//   projectList: projectList
+// };
 
 const props = {
     projectList: projectList
