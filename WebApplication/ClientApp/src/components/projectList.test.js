@@ -45,14 +45,6 @@ const props = {
 };
 
 describe('ProjectList components', () => {
-  it('Resizer reduces size', () => {
-    const wrapper = shallow(<ProjectList { ...props } />);
-    const as = wrapper.find('AutoResizer');
-    const bt = as.renderProp('children')( {width: 100, height: 200} );
-    expect(bt.prop('width')).toEqual(100); // no longer reducing the size
-    expect(bt.prop('height')).toEqual(200); // no longer reducing the size
-  });
-
   it('Base table has expected columns', () => {
     const wrapper = shallow(<ProjectList { ...props } />);
     const as = wrapper.find('AutoResizer');

@@ -12,7 +12,7 @@ import DeleteProject from './deleteProject';
 
 import ModalProgressUpload from './modalProgressUpload';
 import { uploadProgressShowing, uploadProgressIsDone, uploadPackageData, checkedProjects } from '../reducers/mainReducer';
-import CheckboxTable from './CheckboxTable';
+import CheckboxTable from './checkboxTable';
 
 export class ProjectList extends Component {
 
