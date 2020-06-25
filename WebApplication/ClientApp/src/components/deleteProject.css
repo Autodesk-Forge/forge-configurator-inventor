@@ -11,3 +11,10 @@
 #delete_ok_button {
     background-color: red;
 }
+
+.deleteProjectListContainer {
+    height: 116px;
+    overflow-y: auto;    
+}
+
+
