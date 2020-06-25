@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import BaseTable, { AutoResizer, Column } from 'react-base-table';
+import { Column } from 'react-base-table';
 import 'react-base-table/styles.css';
 import IconButton from '@hig/icon-button';
 import { Upload24, Trash24 } from '@hig/icons';
@@ -12,7 +12,8 @@ import UploadPackage from './uploadPackage';
 import DeleteProject from './deleteProject';
 
 import ModalProgressUpload from './modalProgressUpload';
-import { uploadProgressShowing, uploadProgressIsDone, uploadPackageData } from '../reducers/mainReducer';
+import { uploadProgressShowing, uploadProgressIsDone, uploadPackageData, checkedProjects } from '../reducers/mainReducer';
+import CheckboxTable from './CheckboxTable';
 
 const Icon = ({ iconname }) => (
   <div>
@@ -83,7 +84,7 @@ export class ProjectList extends Component {
     }
 
     const uploadButtonVisible = this.props.isLoggedIn;
-    const deleteButtonVisible = this.props.isLoggedIn && true /* TBD replace with condition for project checked */;
+    const deleteButtonVisible = this.props.isLoggedIn && this.props.checkedProjects.length > 0;
     const uploadContainerClass =  uploadButtonVisible ? "" : "hidden";
     const deleteContainerClass = deleteButtonVisible ? "" : "hidden";
     const spacerClass = (uploadButtonVisible && deleteButtonVisible) ? "verticalSpacer" : "verticalSpacer hidden";
@@ -109,20 +110,12 @@ export class ProjectList extends Component {
           </div>
         </div>
         <div className="fullheight">
-          <AutoResizer>
-            {({ width, height }) => {
-
-                return <BaseTable
-                    width={width}
-                    height={height}
-                    columns={projectListColumns}
-                    data={data}
-                    rowEventHandlers={{
-                      onClick: ({ rowData }) => { this.onProjectClick(rowData.id); }
-                  }}
-                />;
-            }}
-          </AutoResizer>
+          <CheckboxTable
+            projectListColumns={projectListColumns}
+            data={data}
+            onProjectClick={ (id) => { this.onProjectClick(id); }}
+            selectable={this.props.isLoggedIn}
+          />
         </div>
 
         <UploadPackage />
@@ -137,6 +130,7 @@ export class ProjectList extends Component {
                     isDone={() => this.isDone() === true }
                     />}
 
+        {/* use checkedProjects (array of project ids) for deletion */}
         <DeleteProject />
       </div>
     );
@@ -148,6 +142,7 @@ export default connect(function (store) {
   return {
     projectList: store.projectList,
     isLoggedIn: store.profile.isLoggedIn,
+    checkedProjects: checkedProjects(store),
     uploadProgressShowing: uploadProgressShowing(store),
     uploadProgressIsDone: uploadProgressIsDone(store),
     uploadPackageData: uploadPackageData(store)

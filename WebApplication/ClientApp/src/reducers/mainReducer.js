@@ -99,3 +99,7 @@ export const projectAlreadyExists = function(state) {
 export const deleteProjectDlgVisible = function(state) {
     return uiFlags.deleteProjectDlgVisible(state.uiFlags);
 };
+
+export const checkedProjects = function(state) {
+    return uiFlags.checkedProjects(state.uiFlags);
+}
