@@ -8,6 +8,8 @@ phases:
   build:
     commands:
       - $slnDir=$PWD.ToString()
+      - echo "Selecting right ClientId and Secret from the list"
+      - .\AWS-CICD\build-specs\setClientId.ps1
       - echo "**** Building ****"
       - msbuild -restore /property:Configuration=Release
       - msbuild /property:Configuration=Release /Target:Publish
@@ -26,7 +28,7 @@ phases:
       - echo "**** running the UI tests ****"
       - cd ClientApp
       - mkdir output
-      - echo npx codeceptjs run --verbose
+      - npx codeceptjs run $env:UITestParams
   post_build:
     commands:
       - cd $slnDir
