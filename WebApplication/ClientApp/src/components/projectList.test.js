@@ -45,39 +45,6 @@ const props = {
 };
 
 describe('ProjectList components', () => {
-  it('Base table has expected columns', () => {
-    const wrapper = shallow(<ProjectList { ...props } />);
-    const as = wrapper.find('AutoResizer');
-    const bt = as.renderProp('children')( {width: 100, height: 200} );
-    expect(bt.prop('columns')).toEqual(projectListColumns);
-  });
-
-  it('Base table has expected data', () => {
-    const wrapper = shallow(<ProjectList { ...props } />);
-    const as = wrapper.find('AutoResizer');
-    const bt = as.renderProp('children')( {width: 100, height: 200} );
-    const btdata = bt.prop('data');
-    expect(btdata.length).toEqual(projectList.projects.length);
-    btdata.forEach((datarow, index) => {
-        expect(datarow.id).toEqual(projectList.projects[index].id);
-        expect(datarow.label).toEqual(projectList.projects[index].label);
-    });
-  });
-
-  it('Base table renders expected count of links and icons', () => {
-    const store = mockStore(mockState);
-
-    const wrapper = mount(
-      <Provider store={store}>
-        <ProjectList { ...props } />
-      </Provider>
-    );
-
-    const as = wrapper.find('AutoResizer');
-    const bt = as.renderProp('children')( {width: 100, height: 200} );
-    const icons = bt.find('Icon');
-    expect(icons.length).toEqual(projectList.projects.length);
-  });
 
   it('Project list has upload button for logged in user', () => {
     const propsWithProfile = { ...props, isLoggedIn: true };
@@ -91,29 +58,6 @@ describe('ProjectList components', () => {
     const wrapper = shallow(<ProjectList { ...propsWithProfile } />);
     const upload = wrapper.find('#projectList_uploadButton');
     expect(upload.prop("className")).toContain('hidden');
-  });
-
-  it('Click on project row will start change of active project and tab', () => {
-    const store = mockStore(mockState);
-    const updateActiveProjectMockFn = jest.fn();
-    const updateActiveTabIndexMockFn = jest.fn();
-    const propsWithMock = { ...props,
-      updateActiveProject: updateActiveProjectMockFn,
-      updateActiveTabIndex: updateActiveTabIndexMockFn };
-
-    const wrapper = mount(
-      <Provider store={store}>
-        <ProjectList { ...propsWithMock } />
-      </Provider>
-    );
-
-    const as = wrapper.find('AutoResizer');
-    const bt = as.renderProp('children')( {width: 100, height: 200} );
-    const row = bt.find({ rowKey: "3" });
-    expect(row.length).toEqual(1);
-    row.simulate('click');
-    expect(updateActiveProjectMockFn).toHaveBeenCalledWith('3');
-    expect(updateActiveTabIndexMockFn).toHaveBeenCalledWith(1);
   });
 
   it('Project list has NO delete button for anonymous user', () => {

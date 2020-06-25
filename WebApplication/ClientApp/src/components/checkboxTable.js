@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { ReactReduxContext } from 'react-redux';
 import { connect } from 'react-redux';
 import { Column } from 'react-base-table';
 import BaseTable, { AutoResizer, FrozenDirection } from 'react-base-table';
@@ -31,18 +32,26 @@ export class CheckboxTable extends Component {
           frozen: FrozenDirection.RIGHT,
           position: 1 - Number.MAX_VALUE,
           headerRenderer: () => (
-            <CheckboxTableHeader
-              onChange={(clearAll) => {this.onSelectAllChange(clearAll); }}
-              selectable={this.props.selectable}
-            />
+            <ReactReduxContext.Consumer>
+              {() => {
+                <CheckboxTableHeader
+                  onChange={(clearAll) => {this.onSelectAllChange(clearAll); }}
+                  selectable={this.props.selectable}
+                />;
+              }}
+            </ReactReduxContext.Consumer>
           ),
           cellRenderer: ({ rowData }) => (
-            <CheckboxTableRow
-              rowData={rowData}
-              onChange={(checked, rowData) => {this.onSelectChange(checked, rowData); }}
-              selectable={this.props.selectable}
-            />
-          ),
+            <ReactReduxContext.Consumer>
+              {() => {
+                <CheckboxTableRow
+                  rowData={rowData}
+                  onChange={(checked, rowData) => {this.onSelectChange(checked, rowData); }}
+                  selectable={this.props.selectable}
+                />;
+              }}
+              </ReactReduxContext.Consumer>
+            ),
           key: CHECK_COLUMN
         },
         {
