@@ -10,7 +10,6 @@ phases:
       - $slnDir=$PWD.ToString()
       - echo "Selecting right ClientId and Sectret from the list"
       - .\AWS-CICD\build-specs\setClientId.ps1
-      - cat .\WebApplication\appsettings.Local.json
       - echo "**** Building ****"
       - msbuild -restore /property:Configuration=Release
       - msbuild /property:Configuration=Release /Target:Publish
