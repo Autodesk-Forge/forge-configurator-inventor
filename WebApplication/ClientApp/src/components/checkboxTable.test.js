@@ -4,8 +4,8 @@ import Adapter from 'enzyme-adapter-react-16';
 import { CheckboxTable } from './checkboxTable';
 
 //import { Provider } from 'react-redux';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
+// import configureMockStore from 'redux-mock-store';
+// import thunk from 'redux-thunk';
 
 Enzyme.configure({ adapter: new Adapter() });
 
@@ -75,6 +75,7 @@ describe('CheckboxTable components', () => {
     });
   });
 
+  // eslint-disable-next-line jest/no-commented-out-tests
   // it('Base table renders expected count of links and icons', () => {
   //   const store = mockStore(mockState);
 
@@ -90,6 +91,7 @@ describe('CheckboxTable components', () => {
   //   expect(icons.length).toEqual(projectList.projects.length);
   // });
 
+  // eslint-disable-next-line jest/no-commented-out-tests
   // it('Click on project row will start change of active project and tab', () => {
   //   const store = mockStore(mockState);
   //   const updateActiveProjectMockFn = jest.fn();

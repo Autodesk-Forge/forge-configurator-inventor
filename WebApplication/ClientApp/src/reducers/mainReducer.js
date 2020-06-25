@@ -102,4 +102,4 @@ export const deleteProjectDlgVisible = function(state) {
 
 export const checkedProjects = function(state) {
     return uiFlags.checkedProjects(state.uiFlags);
-}
+};

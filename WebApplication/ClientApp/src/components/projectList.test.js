@@ -1,24 +1,9 @@
 import React from 'react';
-import Enzyme, { shallow, mount } from 'enzyme';
+import Enzyme, { shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
-import { ProjectList, projectListColumns } from './projectList';
-
-import { Provider } from 'react-redux';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
+import { ProjectList } from './projectList';
 
 Enzyme.configure({ adapter: new Adapter() });
-
-// mock store
-const middlewares = [thunk];
-const mockStore = configureMockStore(middlewares);
-const mockState = {
-  uiFlags: {
-    showUploadPackage: false,
-    package: { file: '', root: '' },
-    checkedProjects: []
-  }
-};
 
 const projectList = {
     activeProject: {
