@@ -9,7 +9,7 @@ phases:
     commands:
       - $slnDir=$PWD.ToString()
       - echo "Selecting right ClientId and Sectret from the list"
-      - $slnDir/AWS-CICD/build-specs/setClientId.ps1
+      - $slnDir\AWS-CICD\build-specs\setClientId.ps1
       - echo $Env:FORGE_CLIENT_ID
       - echo $Env:FORGE_CLIENT_SECRET
       - echo "**** Building ****"
