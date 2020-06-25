@@ -4,7 +4,7 @@ import Modal from '@hig/modal';
 import Button from '@hig/button';
 import Spacer from '@hig/spacer';
 import merge from "lodash.merge";
-import { deleteProjectDlgVisible } from '../reducers/mainReducer';
+import { deleteProjectDlgVisible, checkedProjects } from '../reducers/mainReducer';
 import { showDeleteProject } from '../actions/uiFlagsActions';
 import './deleteProject.css';
 
@@ -29,7 +29,10 @@ export class DeleteProject extends Component {
             stylesheet={modalStyles} >
                 <div id="deleteProjectModal">
                     <div className="deleteProjectListContainer">
-                        Are you sure you want to delete selected projects?
+                        Are you sure you want to delete following {this.props.checkedProjects.length === 1 ? 'project' : 'projects'}?
+                        <ul>
+                            {this.props.checkedProjects.map(projectId => (<li key={projectId}>{projectId}</li>))}
+                        </ul>
                     </div>
                     <Spacer  spacing="l"/>
                     <div className="buttonsContainer">
@@ -62,6 +65,7 @@ export class DeleteProject extends Component {
 /* istanbul ignore next */
 export default connect(function (store) {
     return {
-      deleteProjectDlgVisible: deleteProjectDlgVisible(store)
+      deleteProjectDlgVisible: deleteProjectDlgVisible(store),
+      checkedProjects: checkedProjects(store)
     };
 }, { showDeleteProject, deleteProject: () => async () => {} })(DeleteProject);
