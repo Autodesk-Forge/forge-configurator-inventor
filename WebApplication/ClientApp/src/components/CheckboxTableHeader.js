@@ -6,13 +6,15 @@ import { checkedProjects } from '../reducers/mainReducer';
 export class CheckboxTableHeader extends Component {
 
   onChange(checked) {
-    const { allRowsCount, checkedProjects } = this.props;
+    const { checkedProjects } = this.props;
+    const allRowsCount = this.props.projectList.projects ? this.props.projectList.projects.length : 0;
     const clearAll = !checked && checkedProjects.length === allRowsCount;
     this.props.onChange( clearAll );
   }
 
   render() {
-    const { allRowsCount, selectable, checkedProjects } = this.props;
+    const { selectable, checkedProjects } = this.props;
+    const allRowsCount = this.props.projectList.projects ? this.props.projectList.projects.length : 0;
     const hasSomeCheckedProject = checkedProjects.length > 0;
     const selectedAll = checkedProjects.length === allRowsCount;
     const indeterminate = hasSomeCheckedProject && !selectedAll;
@@ -32,6 +34,7 @@ export class CheckboxTableHeader extends Component {
 
 export default connect(function (store) {
   return {
+    projectList: store.projectList,
     checkedProjects: checkedProjects(store)
   };
 })(CheckboxTableHeader);

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Column } from 'react-base-table';
 import 'react-base-table/styles.css';
 import IconButton from '@hig/icon-button';
 import { Upload24, Trash24 } from '@hig/icons';
@@ -14,32 +13,6 @@ import DeleteProject from './deleteProject';
 import ModalProgressUpload from './modalProgressUpload';
 import { uploadProgressShowing, uploadProgressIsDone, uploadPackageData, checkedProjects } from '../reducers/mainReducer';
 import CheckboxTable from './CheckboxTable';
-
-const Icon = ({ iconname }) => (
-  <div>
-    <img src={iconname} alt='' width='16px' height='18px' />
-  </div>
-);
-
-const iconRenderer = ({ cellData: iconname }) => <Icon iconname={iconname} />;
-
-export const projectListColumns = [
-  {
-      key: 'icon',
-      title: '',
-      dataKey: 'icon',
-      cellRenderer: iconRenderer,
-      align: Column.Alignment.RIGHT,
-      width: 100,
-  },
-  {
-      key: 'label',
-      title: 'Package',
-      dataKey: 'label',
-      align: Column.Alignment.LEFT,
-      width: 200,
-  }
-];
 
 export class ProjectList extends Component {
 
@@ -72,19 +45,9 @@ export class ProjectList extends Component {
   }
 
   render() {
-    let data = [];
-    if(this.props.projectList.projects) {
-      data = this.props.projectList.projects.map((project) => (
-        {
-          id: project.id,
-          icon: 'Archive.svg',
-          label: project.label,
-        }
-      ));
-    }
-
     const uploadButtonVisible = this.props.isLoggedIn;
-    const deleteButtonVisible = this.props.isLoggedIn && this.props.checkedProjects.length > 0;
+    const checkedProjects = this.props.checkedProjects && this.props.checkedProjects.length > 0;
+    const deleteButtonVisible = this.props.isLoggedIn && checkedProjects;
     const uploadContainerClass =  uploadButtonVisible ? "" : "hidden";
     const deleteContainerClass = deleteButtonVisible ? "" : "hidden";
     const spacerClass = (uploadButtonVisible && deleteButtonVisible) ? "verticalSpacer" : "verticalSpacer hidden";
@@ -111,8 +74,6 @@ export class ProjectList extends Component {
         </div>
         <div className="fullheight">
           <CheckboxTable
-            projectListColumns={projectListColumns}
-            data={data}
             onProjectClick={ (id) => { this.onProjectClick(id); }}
             selectable={this.props.isLoggedIn}
           />
@@ -140,7 +101,6 @@ export class ProjectList extends Component {
 /* istanbul ignore next */
 export default connect(function (store) {
   return {
-    projectList: store.projectList,
     isLoggedIn: store.profile.isLoggedIn,
     checkedProjects: checkedProjects(store),
     uploadProgressShowing: uploadProgressShowing(store),

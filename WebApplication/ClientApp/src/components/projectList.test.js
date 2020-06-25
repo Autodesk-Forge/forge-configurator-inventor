@@ -15,7 +15,8 @@ const mockStore = configureMockStore(middlewares);
 const mockState = {
   uiFlags: {
     showUploadPackage: false,
-    package: { file: '', root: '' }
+    package: { file: '', root: '' },
+    checkedProjects: []
   }
 };
 
@@ -124,7 +125,7 @@ describe('ProjectList components', () => {
   });
 
   it('Project list has NO delete button for anonymous user', () => {
-    const propsWithProfile = { ...props, isLoggedIn: false };
+    const propsWithProfile = { ...props, isLoggedIn: false, checkedProjects: [] };
     const wrapper = shallow(<ProjectList { ...propsWithProfile } />);
     const deleteBtn = wrapper.find('#projectList_deleteButton');
     expect(deleteBtn.prop("className")).toContain('hidden');
