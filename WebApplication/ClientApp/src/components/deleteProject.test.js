@@ -5,8 +5,12 @@ import { DeleteProject } from './deleteProject';
 
 Enzyme.configure({ adapter: new Adapter() });
 
+const projIdA = 'project A';
+const projIdB = 'project B';
+
 const props = {
-    deleteProjectDlgVisible: true
+    deleteProjectDlgVisible: true,
+    checkedProjects: [ projIdA , projIdB ]
 };
 
 const showDeleteProjectMockFn = jest.fn();
@@ -19,6 +23,13 @@ describe('Delete project confirmation dialog', () => {
     deleteProjectMockFn.mockClear();
   });
 
+  it('Lists the projects', () => {
+    const wrapper = shallow(<DeleteProject { ...props } showDeleteProject={showDeleteProjectMockFn} deleteProject={deleteProjectMockFn} />);
+    const list = wrapper.find("#deleteProjectModal > div.deleteProjectListContainer > ul");
+    const items = list.find('li');
+    expect(items.at(0).text()).toEqual(projIdA);
+    expect(items.at(1).text()).toEqual(projIdB);
+  });
 
   it('Delete button calls the delete handler', () => {
     const wrapper = shallow(<DeleteProject { ...props } showDeleteProject={showDeleteProjectMockFn} deleteProject={deleteProjectMockFn} />);
