@@ -14,7 +14,9 @@ export const actionTypes = {
     PACKAGE_ROOT_EDITED: 'PACKAGE_ROOT_EDITED',
     UPDATE_ACTIVE_TAB_INDEX: 'UPDATE_ACTIVE_TAB_INDEX',
     PROJECT_EXISTS: 'PROJECT_EXISTS',
-    SHOW_DELETE_PROJECT: 'SHOW_DELETE_PROJECT'
+    SHOW_DELETE_PROJECT: 'SHOW_DELETE_PROJECT',
+    SET_CHECKED_PROJECTS: 'SET_CHECKED_PROJECTS',
+    CLEAR_CHECKED_PROJECTS: 'CLEAR_CHECKED_PROJECTS'
 };
 
 export default actionTypes;
@@ -111,5 +113,18 @@ export const showDeleteProject = (visible) => {
     return {
         type: actionTypes.SHOW_DELETE_PROJECT,
         visible
+    };
+};
+
+export const setCheckedProjects = (projects) => {
+    return {
+        type: actionTypes.SET_CHECKED_PROJECTS,
+        projects
+    };
+};
+
+export const clearCheckedProjects = () => {
+    return {
+        type: actionTypes.CLEAR_CHECKED_PROJECTS
     };
 };
