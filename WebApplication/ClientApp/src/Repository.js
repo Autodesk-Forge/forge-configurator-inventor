@@ -12,10 +12,11 @@ class Repository {
     }
     /** Delete projects */
     async deleteProjects(projectList) {
-        const response = await axios.post("/projects/delete", projectList, {
+        const response = await axios.delete("/projects", {
             headers: {
                 'content-type': 'application/json'
-            }
+            },
+            data: JSON.stringify(projectList)
         });
         return response.data;
     }

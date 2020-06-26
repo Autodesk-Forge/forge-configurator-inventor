@@ -156,6 +156,60 @@ namespace WebApplication.Controllers
             return Ok(ToDTO(projectStorage));
         }
 
+        [HttpDelete()]
+        public async Task<StatusCodeResult> DeleteProjects([FromBody] List<string> projectNameList)
+        {
+            var bucket = await _userResolver.GetBucket(true);
+
+            // delete all oss objects for all provided projects
+            var tasks = new List<Task>();
+
+            foreach (var projectName in projectNameList)
+            {
+                var objects = await bucket.GetObjectsAsync($"{ONC.AttributesFolder}-{projectName}");
+                foreach (var objectDetail in objects) {
+                    tasks.Add(bucket.DeleteObjectAsync(objectDetail.ObjectKey));
+                }
+
+                objects = await bucket.GetObjectsAsync($"{ONC.CacheFolder}-{projectName}");
+                foreach (var objectDetail in objects)
+                {
+                    tasks.Add(bucket.DeleteObjectAsync(objectDetail.ObjectKey));
+                }
+
+                objects = await bucket.GetObjectsAsync($"{ONC.DownloadsFolder}-{projectName}");
+                foreach (var objectDetail in objects)
+                {
+                    tasks.Add(bucket.DeleteObjectAsync(objectDetail.ObjectKey));
+                }
+
+                objects = await bucket.GetObjectsAsync($"{ONC.ProjectsFolder}-{projectName}");
+                foreach (var objectDetail in objects)
+                {
+                    tasks.Add(bucket.DeleteObjectAsync(objectDetail.ObjectKey));
+                }
+            }
+
+            try
+            {
+                Task.WaitAll(tasks.ToArray());
+            }
+            catch (AggregateException)
+            {
+                return StatusCode(500);
+            }
+
+            // delete local cache for all provided projects
+            var fullUserDir = await _userResolver.GetFullUserDir();
+            foreach (var projectName in projectNameList)
+            {
+                var fullDirName = Path.Combine(fullUserDir, projectName);
+                Directory.Delete(fullDirName, true);
+            }
+
+            return NoContent();
+        }
+
         /// <summary>
         /// Generate project DTO.
         /// </summary>
