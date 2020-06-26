@@ -6,6 +6,7 @@ export const initialState = {
    parametersEditedMessageClosed: false,
    parametersEditedMessageRejected: false,
    updateProgressShowing: false,
+   updateFailedShowing: false,
    rfaProgressShowing: null,
    rfaDownloadUrl: null,
    showUploadPackage: false,
@@ -20,6 +21,10 @@ export const initialState = {
 
 export const updateProgressShowing = function(state) {
    return state.updateProgressShowing;
+};
+
+export const updateFailedShowing = function(state) {
+   return state.updateFailedShowing;
 };
 
 export const rfaProgressShowing = function(state) {
@@ -74,6 +79,8 @@ export default function(state = initialState, action) {
          return { ...state, parametersEditedMessageRejected: action.show };
       case uiFlagsActionTypes.SHOW_UPDATE_PROGRESS:
          return { ...state, updateProgressShowing: action.visible};
+      case uiFlagsActionTypes.SHOW_UPDATE_FAILED:
+         return { ...state, updateFailedShowing: action.visible};
       case uiFlagsActionTypes.SHOW_RFA_PROGRESS:
          return { ...state, rfaProgressShowing: action.visible, rfaDownloadUrl: null};
       case uiFlagsActionTypes.SET_RFA_LINK:

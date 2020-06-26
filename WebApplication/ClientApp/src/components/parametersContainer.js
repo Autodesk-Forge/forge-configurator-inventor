@@ -2,11 +2,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import './parametersContainer.css';
 import Parameter from './parameter';
-import { getActiveProject, getParameters, getUpdateParameters, updateProgressShowing } from '../reducers/mainReducer';
+import { getActiveProject, getParameters, getUpdateParameters, updateProgressShowing, updateFailedShowing } from '../reducers/mainReducer';
 import { fetchParameters, resetParameters, updateModelWithParameters } from '../actions/parametersActions';
-import { showUpdateProgress } from '../actions/uiFlagsActions';
+import { showUpdateProgress, showUpdateFailed } from '../actions/uiFlagsActions';
 import Button from '@hig/button';
 import ModalProgressUpdate from './modalProgressUpdate';
+import ModalUpdateFailed from './modalUpdateFailed';
 
 export class ParametersContainer extends Component {
 
@@ -27,6 +28,10 @@ export class ParametersContainer extends Component {
     onProgressCloseClick() {
         // close is not supported now
         //this.props.showUpdateProgress(false);
+    }
+
+    onUpdateFailedCloseClick() {
+        this.props.showUpdateFailed(false);
     }
 
     render() {
@@ -67,6 +72,11 @@ export class ParametersContainer extends Component {
                         label={this.props.activeProject.id}
                         icon="/Assembly_icon.svg"
                         onClose={() => this.onProgressCloseClick()}/>
+                     <ModalUpdateFailed
+                        open={this.props.updateFailedShowing}
+                        title="Update Failed"
+                        label={this.props.activeProject.id}
+                        onClose={() => this.onUpdateFailedCloseClick()}/>
                 </div>
             </div>
         );
@@ -80,7 +90,8 @@ export default connect(function (store) {
     return {
         activeProject: activeProject,
         updateProgressShowing: updateProgressShowing(store),
+        updateFailedShowing: updateFailedShowing(store),
         projectSourceParameters: getParameters(activeProject.id, store),
         projectUpdateParameters: getUpdateParameters(activeProject.id, store)
     };
-}, { fetchParameters, resetParameters, updateModelWithParameters, showUpdateProgress })(ParametersContainer);
+}, { fetchParameters, resetParameters, updateModelWithParameters, showUpdateProgress, showUpdateFailed })(ParametersContainer);
