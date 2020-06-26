@@ -70,20 +70,7 @@ namespace WebApplication.State
 
         public async Task<Project> GetProjectAsync(string projectName)
         {
-            string userDir;
-            if (IsAuthenticated)
-            {
-                var profile = await GetProfileAsync(); // TODO: cache it
-
-                // generate dirname to hide Oxygen user ID
-                userDir = Crypto.GenerateHashString("SDRA" + profile.userId);
-            }
-            else
-            {
-                userDir = "_anonymous";
-            }
-
-            var userFullDirName = Path.Combine(_localCache.LocalRootName, userDir);
+            var userFullDirName = await GetFullUserDir();
             Directory.CreateDirectory(userFullDirName); // TODO: should not do it each time
             return new Project(projectName, userFullDirName);
         }
@@ -100,6 +87,24 @@ namespace WebApplication.State
         public async Task<dynamic> GetProfileAsync()
         {
             return await _forgeOSS.GetProfileAsync(Token);
+        }
+
+        public async Task<string> GetFullUserDir()
+        {
+            string userDir;
+            if (IsAuthenticated)
+            {
+                var profile = await GetProfileAsync(); // TODO: cache it
+
+                // generate dirname to hide Oxygen user ID
+                userDir = Crypto.GenerateHashString("SDRA" + profile.userId);
+            }
+            else
+            {
+                userDir = "_anonymous";
+            }
+
+            return Path.Combine(_localCache.LocalRootName, userDir);
         }
     }
 }
