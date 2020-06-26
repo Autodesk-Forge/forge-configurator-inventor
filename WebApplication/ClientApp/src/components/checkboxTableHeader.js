@@ -18,10 +18,10 @@ export class CheckboxTableHeader extends Component {
     const hasSomeCheckedProject = checkedProjects.length > 0;
     const selectedAll = checkedProjects.length === allRowsCount;
     const indeterminate = hasSomeCheckedProject && !selectedAll;
-    const visible = selectable && allRowsCount > 0;
+    const visible = hasSomeCheckedProject || (selectable && allRowsCount > 0);
 
       return (
-        <div>
+        <div id={hasSomeCheckedProject ? "checkbox_checked_visible" : "checkbox_hover_visible"}>
           {visible && <Checkbox
             indeterminate={indeterminate}
             checked={hasSomeCheckedProject}

@@ -15,7 +15,7 @@ export class CheckboxTableRow extends Component {
     const isChecked = this.props.checkedProjects.includes(rowData.id);
 
       return (
-        <div>
+        <div id={isChecked ? "checkbox_checked_visible" : "checkbox_hover_visible"}>
           {selectable && <Checkbox
             onChange={(checked) => {this.onChange(checked); }}
             checked={isChecked}
