@@ -6,6 +6,7 @@ export const actionTypes = {
     FETCH_SHOW_PARAMETERS_CHANGED: 'FETCH_SHOW_PARAMETERS_CHANGED',
     CLOSE_PARAMETERS_EDITED_MESSAGE: 'CLOSE_PARAMETERS_EDITED_MESSAGE',
     SHOW_UPDATE_PROGRESS: 'SHOW_UPDATE_PROGRESS',
+    SHOW_UPDATE_FAILED: 'SHOW_UPDATE_FAILED',
     SHOW_RFA_PROGRESS: 'SHOW_RFA_PROGRESS',
     HIDE_RFA_PROGRESS: 'HIDE_RFA_PROGRESS',
     SET_RFA_LINK: 'SET_RFA_LINK',
@@ -56,6 +57,13 @@ export const fetchShowParametersChanged = () => async (dispatch) => {
 export const showUpdateProgress = (visible) => {
     return {
         type: actionTypes.SHOW_UPDATE_PROGRESS,
+        visible
+    };
+};
+
+export const showUpdateFailed = (visible) => {
+    return {
+        type: actionTypes.SHOW_UPDATE_FAILED,
         visible
     };
 };

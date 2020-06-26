@@ -16,7 +16,7 @@ class JobManager {
         return connection;
     }
 
-    async doUpdateJob(projectId, parameters, onStart, onComplete) {
+    async doUpdateJob(projectId, parameters, onStart, onComplete, onError) {
         const connection = await this.startConnection();
 
         if (onStart)
@@ -28,6 +28,13 @@ class JobManager {
 
             if (onComplete)
                 onComplete(updatedState);
+        });
+
+        connection.on("onError", (error) => {
+            connection.stop();
+
+            if (onError)
+                onError(error);
         });
 
         await connection.invoke('CreateUpdateJob', projectId, parameters, repo.getAccessToken());
