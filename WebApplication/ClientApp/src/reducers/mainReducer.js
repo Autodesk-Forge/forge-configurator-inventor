@@ -60,6 +60,10 @@ export const updateProgressShowing = function(state) {
     return uiFlags.updateProgressShowing(state.uiFlags);
 };
 
+export const updateFailedShowing = function(state) {
+    return uiFlags.updateFailedShowing(state.uiFlags);
+};
+
 export const rfaProgressShowing = function(state) {
     return uiFlags.rfaProgressShowing(state.uiFlags);
 };
