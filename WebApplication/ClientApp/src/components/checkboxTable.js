@@ -8,6 +8,8 @@ import { checkedProjects } from '../reducers/mainReducer';
 import { setCheckedProjects, clearCheckedProjects } from '../actions/uiFlagsActions';
 import { cloneArray } from 'react-base-table/lib/utils';
 
+import styled from 'styled-components';
+
 const CHECK_COLUMN = 'check_column';
 const Icon = ({ iconname }) => (
   <div>
@@ -17,6 +19,44 @@ const Icon = ({ iconname }) => (
 
 const iconRenderer = ({ cellData: iconname }) => <Icon iconname={iconname} />;
 
+const cellBackgroundColor = 'white';
+const cellHoverColor = '#f3f3f3';
+
+const Cell = styled.div`
+  background-color: ${cellBackgroundColor};
+`;
+
+const Row = styled.div`
+  [id=checkbox_hover_visible] {
+    display:none;
+  }
+
+  &:hover {
+    [id=checkbox_hover_visible] {
+      display:block;
+    }
+  }
+`;
+
+const HeaderRow = styled.div`
+  display: flex;
+  background-color: ${cellBackgroundColor};
+  width: inherit;
+  height: calc(100% - 1px); // this keeps header underlined
+
+  [id=checkbox_hover_visible] {
+    display:none;
+  }
+
+  &:hover {
+    background-color: ${cellHoverColor};
+
+    [id=checkbox_hover_visible] {
+      display:block;
+    }
+  }  
+`;
+
 export class CheckboxTable extends Component {
 
     constructor(props) {
@@ -24,11 +64,12 @@ export class CheckboxTable extends Component {
 
       this.projectListColumns = [
         {
-          width: 38.5,
+          width: 78,
           flexShrink: 0,
           locked: true,
           resizable: false,
           frozen: FrozenDirection.RIGHT,
+          align: Column.Alignment.RIGHT,
           position: 1 - Number.MAX_VALUE,
           headerRenderer: () => (
             <CheckboxTableHeader
@@ -51,14 +92,14 @@ export class CheckboxTable extends Component {
             dataKey: 'icon',
             cellRenderer: iconRenderer,
             align: Column.Alignment.RIGHT,
-            width: 100,
+            width: 32
         },
         {
             key: 'label',
             title: 'Package',
             dataKey: 'label',
             align: Column.Alignment.LEFT,
-            width: 200,
+            width: 200
         }
       ];
     }
@@ -110,13 +151,34 @@ export class CheckboxTable extends Component {
                   columns={this.projectListColumns}
                   data={data}
                   rowEventHandlers={{
-                    onClick: ({ rowData, event }) => {
-                      if (event.target.type && event.target.type === "checkbox") {
-                        return;
-                      }
-
+                    onClick: ({ rowData }) => {
                       this.props.onProjectClick(rowData.id);
                     }
+                  }}
+                  cellProps = {({ columnIndex }) =>
+                    columnIndex === 0 && {
+                      tagName: Cell,
+                      onClick: e => {
+                        // stop click on the first cell (checkbox) and do not select project
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }
+                  }}
+                  rowProps = {{
+                    tagName: Row // styled div to show/hide row checkbox when hover
+                  }}
+                  headerRenderer={ ({ cells }) => {
+                    // get prepared the first checkbox cell and override
+                    // background color to be consistent with row checkbox cells
+                    const headerCheckboxCell = cells[0];
+                    const updatedCell = React.cloneElement(headerCheckboxCell, {
+                      style: { ...headerCheckboxCell.props.style, backgroundColor: cellBackgroundColor }
+                    });
+
+                    cells.shift(); // remove original item
+
+                    // HeaderRow - styled row with hovering enabled - render checkbox cell + rest of columns
+                    return (<HeaderRow id="checkbox_hover_visible">{updatedCell}{cells}</HeaderRow>);
                   }}
               />;
           }}
