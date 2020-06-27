@@ -7,6 +7,7 @@ export const actionTypes = {
     CLOSE_PARAMETERS_EDITED_MESSAGE: 'CLOSE_PARAMETERS_EDITED_MESSAGE',
     SHOW_UPDATE_PROGRESS: 'SHOW_UPDATE_PROGRESS',
     SHOW_UPDATE_FAILED: 'SHOW_UPDATE_FAILED',
+    SET_REPORT_URL: 'SET_REPORT_URL',
     SHOW_RFA_PROGRESS: 'SHOW_RFA_PROGRESS',
     HIDE_RFA_PROGRESS: 'HIDE_RFA_PROGRESS',
     SET_RFA_LINK: 'SET_RFA_LINK',
@@ -65,6 +66,13 @@ export const showUpdateFailed = (visible) => {
     return {
         type: actionTypes.SHOW_UPDATE_FAILED,
         visible
+    };
+};
+
+export const setReportUrlLink = (url) => {
+    return {
+        type: actionTypes.SET_REPORT_URL,
+        url
     };
 };
 
