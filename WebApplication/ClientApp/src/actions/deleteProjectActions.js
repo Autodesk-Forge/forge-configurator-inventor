@@ -1,11 +1,11 @@
 import repo from '../Repository';
 import { checkedProjects } from '../reducers/mainReducer';
 import { updateProjectList } from './projectListActions';
-import { clearCheckedProjects } from './uiFlagsActions';
+import { clearCheckedProjects, showUpdateProgress } from './uiFlagsActions';
 
 export const deleteProject = () => async (dispatch, getState) => {
 
-    // dispatch(setUploadProgressVisible());
+    dispatch(showUpdateProgress(true));
 
     try {
         await repo.deleteProjects(checkedProjects(getState()));
@@ -13,9 +13,9 @@ export const deleteProject = () => async (dispatch, getState) => {
         dispatch(updateProjectList(data));
         // the projects won't be there anymore (hopefully)
         dispatch(clearCheckedProjects());
-        // dispatch(setUploadProgressDone());
+        dispatch(showUpdateProgress(false));
     } catch (e) {
-        // dispatch(setUploadProgressHidden());
+        dispatch(showUpdateProgress(false));
         alert("Failed to delete project(s)");
     }
 };
