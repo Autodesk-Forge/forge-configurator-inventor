@@ -5,7 +5,7 @@ import uploadPackagesActionTypes from '../actions/uploadPackageActions';
 export const initialState = {
    parametersEditedMessageClosed: false,
    parametersEditedMessageRejected: false,
-   updateProgressShowing: false,
+   modalProgressShowing: false,
    updateFailedShowing: false,
    rfaProgressShowing: null,
    rfaDownloadUrl: null,
@@ -19,8 +19,8 @@ export const initialState = {
    checkedProjects: []
 };
 
-export const updateProgressShowing = function(state) {
-   return state.updateProgressShowing;
+export const modalProgressShowing = function(state) {
+   return state.modalProgressShowing;
 };
 
 export const updateFailedShowing = function(state) {
@@ -77,8 +77,8 @@ export default function(state = initialState, action) {
          return { ...state, parametersEditedMessageClosed: false};
       case uiFlagsActionTypes.REJECT_PARAMETERS_EDITED_MESSAGE:
          return { ...state, parametersEditedMessageRejected: action.show };
-      case uiFlagsActionTypes.SHOW_UPDATE_PROGRESS:
-         return { ...state, updateProgressShowing: action.visible};
+      case uiFlagsActionTypes.SHOW_MODAL_PROGRESS:
+         return { ...state, modalProgressShowing: action.visible};
       case uiFlagsActionTypes.SHOW_UPDATE_FAILED:
          return { ...state, updateFailedShowing: action.visible};
       case uiFlagsActionTypes.SHOW_RFA_PROGRESS:

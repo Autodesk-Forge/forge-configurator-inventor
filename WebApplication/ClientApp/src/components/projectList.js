@@ -4,14 +4,15 @@ import 'react-base-table/styles.css';
 import IconButton from '@hig/icon-button';
 import { Upload24, Trash24 } from '@hig/icons';
 import './projectList.css';
-import { showUploadPackage, updateActiveTabIndex, showDeleteProject } from '../actions/uiFlagsActions';
+import { showUploadPackage, updateActiveTabIndex, showDeleteProject, showModalProgress } from '../actions/uiFlagsActions';
 import { setUploadProgressHidden } from '../actions/uploadPackageActions';
 import { updateActiveProject } from '../actions/projectListActions';
 import UploadPackage from './uploadPackage';
 import DeleteProject from './deleteProject';
 
 import ModalProgressUpload from './modalProgressUpload';
-import { uploadProgressShowing, uploadProgressIsDone, uploadPackageData, checkedProjects } from '../reducers/mainReducer';
+import ModalProgress from './modalProgress';
+import { uploadProgressShowing, uploadProgressIsDone, uploadPackageData, checkedProjects, modalProgressShowing } from '../reducers/mainReducer';
 import CheckboxTable from './checkboxTable';
 
 export class ProjectList extends Component {
@@ -22,6 +23,10 @@ export class ProjectList extends Component {
 
   onProgressCloseClick() {
     this.props.setUploadProgressHidden();
+  }
+
+  onDeleteCloseClick() {
+    this.props.showModalProgress(false);
   }
 
   onProjectClick(projectId) {
@@ -91,8 +96,14 @@ export class ProjectList extends Component {
                     isDone={() => this.isDone() === true }
                     />}
 
-        {/* use checkedProjects (array of project ids) for deletion */}
         <DeleteProject />
+        {this.props.modalProgressShowing && <ModalProgress
+                        open={this.props.modalProgressShowing}
+                        title="Deleting Project(s)"
+                        label="Deleting a project and its cache"
+                        icon="/Assembly_icon.svg"
+                        onClose={() => this.onDeleteCloseClick()}/>
+        }
       </div>
     );
   }
@@ -105,6 +116,7 @@ export default connect(function (store) {
     checkedProjects: checkedProjects(store),
     uploadProgressShowing: uploadProgressShowing(store),
     uploadProgressIsDone: uploadProgressIsDone(store),
-    uploadPackageData: uploadPackageData(store)
+    uploadPackageData: uploadPackageData(store),
+    modalProgressShowing: modalProgressShowing(store)
   };
-}, { showUploadPackage, updateActiveProject, updateActiveTabIndex, setUploadProgressHidden, showDeleteProject })(ProjectList);
+}, { showUploadPackage, updateActiveProject, updateActiveTabIndex, setUploadProgressHidden, showDeleteProject, showModalProgress })(ProjectList);
