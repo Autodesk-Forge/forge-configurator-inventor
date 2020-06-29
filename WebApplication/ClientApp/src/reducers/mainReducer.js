@@ -56,8 +56,8 @@ export const parametersEditedMessageVisible = function(state) {
     return false;
 };
 
-export const updateProgressShowing = function(state) {
-    return uiFlags.updateProgressShowing(state.uiFlags);
+export const modalProgressShowing = function(state) {
+    return uiFlags.modalProgressShowing(state.uiFlags);
 };
 
 export const updateFailedShowing = function(state) {
