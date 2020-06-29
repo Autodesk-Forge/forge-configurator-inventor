@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+/* eslint-disable no-undef */
 
 Before((I) => {
    I.amOnPage('/');
