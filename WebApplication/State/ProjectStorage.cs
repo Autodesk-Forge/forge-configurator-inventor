@@ -52,7 +52,7 @@ namespace WebApplication.State
             // NOTE: this step is impossible without having project metadata,
             // because file/dir names depends on hash of initial project state
 
-            await PlaceViewablesAsync(ossBucket, GetLocalNames(), GetOssNames(), ensureDir: false);
+            await PlaceViewablesAsync(ossBucket, GetLocalNames(), GetOssNames());
         }
 
         /// <summary>
@@ -81,17 +81,19 @@ namespace WebApplication.State
         /// <param name="ensureDir">Create local dir if necessary.</param>
         public async Task EnsureViewablesAsync(OssBucket ossBucket, string hash, bool ensureDir = true)
         {
-            await PlaceViewablesAsync(ossBucket, GetLocalNames(hash), GetOssNames(hash), ensureDir);
-        }
+            var localNames = GetLocalNames(hash);
 
-        private async Task PlaceViewablesAsync(OssBucket ossBucket, LocalNameProvider localNames, OSSObjectNameProvider ossNames, bool ensureDir = true)
-        {
             // create the "hashed" dir
             if (ensureDir)
             {
                 Directory.CreateDirectory(localNames.BaseDir);
             }
 
+            await PlaceViewablesAsync(ossBucket, localNames, GetOssNames(hash));
+        }
+
+        private async Task PlaceViewablesAsync(OssBucket ossBucket, LocalNameProvider localNames, OSSObjectNameProvider ossNames)
+        {
             using var tempFile = new TempFile();
             await Task.WhenAll(
                                 ossBucket.DownloadFileAsync(ossNames.ModelView, tempFile.Name),

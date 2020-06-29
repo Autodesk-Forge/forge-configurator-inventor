@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Tabs, { Tab } from "@hig/tabs";
 import ProjectList from './projectList';
-import ForgeView from './forgeView';
-import ParametersContainer from './parametersContainer';
+import Model from './model';
 import PageNYI from './pageNYI';
 import Downloads from './downloads';
 import './tabs.css';
@@ -37,10 +36,7 @@ class TabsContainer extends Component {
               </Tab>
               <Tab label="Model" >
                 <div id="model" className='tabContent fullheight'>
-                  <div className='inRow fullheight'>
-                    <ParametersContainer/>
-                    <ForgeView/>
-                  </div>
+                  <Model/>
                 </div>
               </Tab>
               <Tab label="BOM">
