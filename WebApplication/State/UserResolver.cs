@@ -38,11 +38,11 @@ namespace WebApplication.State
             AnonymousBucket = new OssBucket(_forgeOSS, resourceProvider.BucketKey);
         }
 
-        public async Task<OssBucket> GetBucket(bool tryToCreate = false)
+        public async Task<OssBucket> GetBucketAsync(bool tryToCreate = false)
         {
             if (! IsAuthenticated) return AnonymousBucket;
 
-            var profile = await _forgeOSS.GetProfileAsync(Token); // TODO: cache it
+            dynamic profile = await GetProfileAsync(); // TODO: cache it
             var userId = profile.userId;
 
             // an OSS bucket must have a unique name, so it should be generated in a way,

@@ -37,7 +37,7 @@ namespace WebApplication.Controllers
         [HttpGet("")]
         public async Task<IEnumerable<ProjectDTO>> ListAsync()
         {
-            var bucket = await _userResolver.GetBucket(tryToCreate: true);
+            var bucket = await _userResolver.GetBucketAsync(tryToCreate: true);
 
             var projectDTOs = new List<ProjectDTO>();
             foreach (var projectName in await GetProjectNamesAsync(bucket))
@@ -66,7 +66,7 @@ namespace WebApplication.Controllers
         public async Task<ActionResult<ProjectDTO>> CreateProject([FromForm]NewProjectModel projectModel)
         {
             var projectName = Path.GetFileNameWithoutExtension(projectModel.package.FileName);
-            var bucket = await _userResolver.GetBucket(true);
+            var bucket = await _userResolver.GetBucketAsync(true);
 
             // Check if project already exists
             foreach (var existingProjectName in await GetProjectNamesAsync(bucket))
@@ -162,7 +162,7 @@ namespace WebApplication.Controllers
         [HttpDelete()]
         public async Task<StatusCodeResult> DeleteProjects([FromBody] List<string> projectNameList)
         {
-            var bucket = await _userResolver.GetBucket(true);
+            var bucket = await _userResolver.GetBucketAsync(true);
 
             // delete all oss objects for all provided projects
             var tasks = new List<Task>();
@@ -212,6 +212,16 @@ namespace WebApplication.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("ensure/{projectName}/{hash?}")]
+        public async Task<ActionResult> Ensure(string projectName, string hash)
+        {
+            var projectStorage  = await _userResolver.GetProjectStorageAsync(projectName);
+            var bucket = await _userResolver.GetBucketAsync(tryToCreate: false);
+            await projectStorage.EnsureViewablesAsync(bucket, hash, ensureDir: true);
+            return NoContent();
+        }
+
 
         /// <summary>
         /// Generate project DTO.

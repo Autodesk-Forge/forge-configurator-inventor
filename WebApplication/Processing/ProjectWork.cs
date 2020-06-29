@@ -55,7 +55,7 @@ namespace WebApplication.Processing
 
             _logger.LogInformation("Cache the project locally");
 
-            var bucket = await _userResolver.GetBucket();
+            var bucket = await _userResolver.GetBucketAsync();
 
             // and now cache the generated stuff locally
             var projectLocalStorage = new ProjectStorage(project);
@@ -113,7 +113,7 @@ namespace WebApplication.Processing
 
             var ossNameProvider = project.OssNameProvider(hash);
 
-            var bucket = await _userResolver.GetBucket();
+            var bucket = await _userResolver.GetBucketAsync();
             // check if RFA file is already generated
             try
             {
@@ -151,7 +151,7 @@ namespace WebApplication.Processing
         private async Task<string> UpdateAsync(Project project, string tlaFilename, InventorParameters parameters)
         {
             _logger.LogInformation("Update the project");
-            var bucket = await _userResolver.GetBucket();
+            var bucket = await _userResolver.GetBucketAsync();
 
             var inputDocUrl = await bucket.CreateSignedUrlAsync(project.OSSSourceModel);
             UpdateData updateData = await _arranger.ForUpdateAsync(inputDocUrl, tlaFilename, parameters);
@@ -189,7 +189,7 @@ namespace WebApplication.Processing
             // by netcore (https://github.com/dotnet/runtime/issues/24271)
             FileSystem.CopyDir(localFrom.BaseDir, localTo.BaseDir);
 
-            var bucket = await _userResolver.GetBucket();
+            var bucket = await _userResolver.GetBucketAsync();
 
             // copy OSS files
             OSSObjectNameProvider ossFrom = project.OssNameProvider(hashFrom);
