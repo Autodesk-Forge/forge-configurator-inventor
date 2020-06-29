@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import './parametersContainer.css';
 import Parameter from './parameter';
-import { getActiveProject, getParameters, getUpdateParameters, modalProgressShowing, updateFailedShowing } from '../reducers/mainReducer';
+import { getActiveProject, getParameters, getUpdateParameters, modalProgressShowing, updateFailedShowing, reportUrl } from '../reducers/mainReducer';
 import { fetchParameters, resetParameters, updateModelWithParameters } from '../actions/parametersActions';
 import { showModalProgress, showUpdateFailed } from '../actions/uiFlagsActions';
 import Button from '@hig/button';
@@ -76,7 +76,8 @@ export class ParametersContainer extends Component {
                         open={this.props.updateFailedShowing}
                         title="Update Failed"
                         label={this.props.activeProject.id}
-                        onClose={() => this.onUpdateFailedCloseClick()}/>
+                        onClose={() => this.onUpdateFailedCloseClick()}
+                        url={this.props.reportUrl}/>
                 </div>
             </div>
         );
@@ -91,6 +92,7 @@ export default connect(function (store) {
         activeProject: activeProject,
         modalProgressShowing: modalProgressShowing(store),
         updateFailedShowing: updateFailedShowing(store),
+        reportUrl: reportUrl(store),
         projectSourceParameters: getParameters(activeProject.id, store),
         projectUpdateParameters: getUpdateParameters(activeProject.id, store)
     };
