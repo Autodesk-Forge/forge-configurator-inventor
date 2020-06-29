@@ -47,6 +47,9 @@ namespace WebApplication.Controllers
                 {
                     ProjectStorage projectStorage = await _userResolver.GetProjectStorageAsync(projectName); // TODO: expensive to do it in the loop
 
+                    // handle situation when project is not cached locally
+                    await projectStorage.EnsureAttributesAsync(bucket, ensureDir: true);
+
                     projectDTOs.Add(ToDTO(projectStorage));
                 }
                 catch (Exception e)

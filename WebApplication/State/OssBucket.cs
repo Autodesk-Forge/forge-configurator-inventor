@@ -81,6 +81,18 @@ namespace WebApplication.State
         }
 
         /// <summary>
+        /// Ensure local copy of OSS file.
+        /// NOTE: it only checks presence of local file.
+        /// </summary>
+        public async Task EnsureFileAsync(string objectName, string localFullName)
+        {
+            if (!File.Exists(localFullName))
+            {
+                await _forgeOSS.DownloadFileAsync(BucketKey, objectName, localFullName);
+            }
+        }
+
+        /// <summary>
         /// Rename object.
         /// </summary>
         /// <param name="oldName">Old object name.</param>
