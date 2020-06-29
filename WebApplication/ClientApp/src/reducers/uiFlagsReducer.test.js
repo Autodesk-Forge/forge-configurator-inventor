@@ -28,7 +28,7 @@ describe('uiFlags reducer', () => {
       const mypackage = 'mypackage.zip';
       const packageroot = '.\\mypackage\\root.asm';
       const initialState = {
-         showUpdateProgress: true,
+         showModalProgress: true,
          package: {
             file: '',
             root: packageroot
@@ -45,7 +45,7 @@ describe('uiFlags reducer', () => {
       const mypackage = 'mypackage.zip';
       const packageroot = '.\\mypackage\\root.asm';
       const initialState = {
-         showUpdateProgress: true,
+         showModalProgress: true,
          package: {
             file: mypackage,
             root: ''

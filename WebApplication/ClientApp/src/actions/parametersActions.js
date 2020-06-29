@@ -1,7 +1,8 @@
 import repo from '../Repository';
 import { addError, addLog } from './notificationActions';
 import { Jobs } from '../JobManager';
-import { showUpdateProgress, showUpdateFailed, setReportUrlLink } from './uiFlagsActions';
+import { showModalProgress, showUpdateFailed, setReportUrlLink } from './uiFlagsActions';
+
 import { updateProject } from './projectListActions';
 
 const actionTypes = {
@@ -132,7 +133,7 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
     const jobManager = Jobs();
 
     // launch progress dialog immediately before we started connection to the server
-    dispatch(showUpdateProgress(true));
+    dispatch(showModalProgress(true));
 
     try {
         await jobManager.doUpdateJob(projectId, invFormattedParameters,
@@ -144,7 +145,7 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
             updatedState => {
                 dispatch(addLog('JobManager: Received onComplete'));
                 // hide modal dialog
-                dispatch(showUpdateProgress(false));
+                dispatch(showModalProgress(false));
 
                 // parameters and "base project state" should be handled differently,
                 // so split the incoming updated state to pieces.
@@ -160,7 +161,7 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
             (jobId, reportUrl) => {
                 dispatch(addLog('JobManager: Received onError with jobId: ' + jobId + ' and reportUrl: ' + reportUrl));
                 // hide progress modal dialog
-                dispatch(showUpdateProgress(false));
+                dispatch(showModalProgress(false));
                 // show error modal dialog
                 dispatch(setReportUrlLink(reportUrl));
                 dispatch(showUpdateFailed(true));

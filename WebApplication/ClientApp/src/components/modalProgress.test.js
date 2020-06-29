@@ -1,7 +1,7 @@
 import React from 'react';
 import Enzyme, { shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
-import { ModalProgressUpdate } from './modalProgressUpdate';
+import { ModalProgress } from './modalProgress';
 import { ModalProgressRfa } from './modalProgressRfa';
 import { ModalProgressUpload } from './modalProgressUpload';
 
@@ -17,7 +17,7 @@ describe('modal progress ', () => {
             icon: "Archive.svg"
         };
 
-        const wrapper = shallow(<ModalProgressUpdate {...props} />);
+        const wrapper = shallow(<ModalProgress {...props} />);
 
         const wrapperComponent = wrapper.find('.modalAction');
         const children = wrapperComponent.prop('children');
@@ -30,7 +30,7 @@ describe('modal progress ', () => {
 
         const propsNoTitle = { title: null };
 
-        const wrapper = shallow(<ModalProgressUpdate {...propsNoTitle} />);
+        const wrapper = shallow(<ModalProgress {...propsNoTitle} />);
 
         const wrapperComponent = wrapper.find('.modalAction');
         const children = wrapperComponent.prop('children');

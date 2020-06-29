@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import './parametersContainer.css';
 import Parameter from './parameter';
-import { getActiveProject, getParameters, getUpdateParameters, updateProgressShowing, updateFailedShowing, reportUrl } from '../reducers/mainReducer';
+import { getActiveProject, getParameters, getUpdateParameters, modalProgressShowing, updateFailedShowing, reportUrl } from '../reducers/mainReducer';
 import { fetchParameters, resetParameters, updateModelWithParameters } from '../actions/parametersActions';
-import { showUpdateProgress, showUpdateFailed } from '../actions/uiFlagsActions';
+import { showModalProgress, showUpdateFailed } from '../actions/uiFlagsActions';
 import Button from '@hig/button';
-import ModalProgressUpdate from './modalProgressUpdate';
+import ModalProgress from './modalProgress';
 import ModalUpdateFailed from './modalUpdateFailed';
 
 export class ParametersContainer extends Component {
@@ -27,7 +27,7 @@ export class ParametersContainer extends Component {
 
     onProgressCloseClick() {
         // close is not supported now
-        //this.props.showUpdateProgress(false);
+        //this.props.showModalProgress(false);
     }
 
     onUpdateFailedCloseClick() {
@@ -66,8 +66,8 @@ export class ParametersContainer extends Component {
                         width="grow"
                         onClick={() => {this.updateClicked();}}
                     />
-                    <ModalProgressUpdate
-                        open={this.props.updateProgressShowing}
+                    <ModalProgress
+                        open={this.props.modalProgressShowing}
                         title="Updating Project"
                         label={this.props.activeProject.id}
                         icon="/Assembly_icon.svg"
@@ -90,10 +90,10 @@ export default connect(function (store) {
 
     return {
         activeProject: activeProject,
-        updateProgressShowing: updateProgressShowing(store),
+        modalProgressShowing: modalProgressShowing(store),
         updateFailedShowing: updateFailedShowing(store),
         reportUrl: reportUrl(store),
         projectSourceParameters: getParameters(activeProject.id, store),
         projectUpdateParameters: getUpdateParameters(activeProject.id, store)
     };
-}, { fetchParameters, resetParameters, updateModelWithParameters, showUpdateProgress, showUpdateFailed })(ParametersContainer);
+}, { fetchParameters, resetParameters, updateModelWithParameters, showModalProgress, showUpdateFailed })(ParametersContainer);
