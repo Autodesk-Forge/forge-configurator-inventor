@@ -1,7 +1,8 @@
 import repo from '../Repository';
 import { addError, addLog } from './notificationActions';
 import { Jobs } from '../JobManager';
-import { showModalProgress, showUpdateFailed } from './uiFlagsActions';
+import { showModalProgress, showUpdateFailed, setReportUrlLink } from './uiFlagsActions';
+
 import { updateProject } from './projectListActions';
 
 const actionTypes = {
@@ -157,12 +158,12 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
                 dispatch(updateProject(projectId, baseProjectState));
             },
             // onError
-            error => {
-                // TODO "error" is set to some guid. get the real error - url to report?
-                dispatch(addLog('JobManager: Received onError with error: ' + error));
+            (jobId, reportUrl) => {
+                dispatch(addLog('JobManager: Received onError with jobId: ' + jobId + ' and reportUrl: ' + reportUrl));
                 // hide progress modal dialog
                 dispatch(showModalProgress(false));
                 // show error modal dialog
+                dispatch(setReportUrlLink(reportUrl));
                 dispatch(showUpdateFailed(true));
             }
         );
