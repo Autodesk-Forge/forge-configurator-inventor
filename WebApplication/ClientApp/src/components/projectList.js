@@ -25,6 +25,10 @@ export class ProjectList extends Component {
     this.props.setUploadProgressHidden();
   }
 
+  onDeleteCloseClick() {
+    this.props.showUpdateProgress(false);
+  }
+
   onProjectClick(projectId) {
     // set active project
     this.props.updateActiveProject(projectId);
@@ -98,7 +102,7 @@ export class ProjectList extends Component {
                         title="Deleting Project(s)"
                         label="Deleting a project and its cache"
                         icon="/Assembly_icon.svg"
-                        onClose={() => this.onProgressCloseClick()}/>
+                        onClose={() => this.onDeleteCloseClick()}/>
         }
       </div>
     );
@@ -115,4 +119,4 @@ export default connect(function (store) {
     uploadPackageData: uploadPackageData(store),
     updateProgressShowing: updateProgressShowing(store)
   };
-}, { showUploadPackage, updateActiveProject, updateActiveTabIndex, setUploadProgressHidden, showDeleteProject })(ProjectList);
+}, { showUploadPackage, updateActiveProject, updateActiveTabIndex, setUploadProgressHidden, showDeleteProject, showUpdateProgress })(ProjectList);
