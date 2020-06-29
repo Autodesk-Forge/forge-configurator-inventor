@@ -6,7 +6,7 @@ import { getActiveProject, getParameters, getUpdateParameters, updateProgressSho
 import { fetchParameters, resetParameters, updateModelWithParameters } from '../actions/parametersActions';
 import { showUpdateProgress, showUpdateFailed } from '../actions/uiFlagsActions';
 import Button from '@hig/button';
-import ModalProgressUpdate from './modalProgressUpdate';
+import ModalProgress from './modalProgress';
 import ModalUpdateFailed from './modalUpdateFailed';
 
 export class ParametersContainer extends Component {
@@ -66,7 +66,7 @@ export class ParametersContainer extends Component {
                         width="grow"
                         onClick={() => {this.updateClicked();}}
                     />
-                    <ModalProgressUpdate
+                    <ModalProgress
                         open={this.props.updateProgressShowing}
                         title="Updating Project"
                         label={this.props.activeProject.id}

@@ -6,7 +6,7 @@ import Typography from "@hig/typography";
 import './modalProgress.css';
 import merge from "lodash.merge";
 
-export class ModalProgressUpdate extends Component {
+export class ModalProgress extends Component {
 
     render() {
         const modalStyles = /* istanbul ignore next */ styles =>
@@ -46,4 +46,4 @@ export class ModalProgressUpdate extends Component {
     }
 }
 
-export default ModalProgressUpdate;
+export default ModalProgress;

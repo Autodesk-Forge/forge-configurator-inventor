@@ -2,7 +2,7 @@ import React from 'react';
 import Enzyme, { shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import { ParametersContainer } from './parametersContainer';
-import ModalProgress from './modalProgressUpdate';
+import ModalProgress from './modalProgress';
 
 Enzyme.configure({ adapter: new Adapter() });
 

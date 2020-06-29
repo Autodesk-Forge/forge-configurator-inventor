@@ -11,7 +11,7 @@ import UploadPackage from './uploadPackage';
 import DeleteProject from './deleteProject';
 
 import ModalProgressUpload from './modalProgressUpload';
-import ModalProgressUpdate from './modalProgressUpdate';
+import ModalProgress from './modalProgress';
 import { uploadProgressShowing, uploadProgressIsDone, uploadPackageData, checkedProjects, updateProgressShowing } from '../reducers/mainReducer';
 import CheckboxTable from './checkboxTable';
 
@@ -97,7 +97,7 @@ export class ProjectList extends Component {
                     />}
 
         <DeleteProject />
-        {this.props.updateProgressShowing && <ModalProgressUpdate
+        {this.props.updateProgressShowing && <ModalProgress
                         open={this.props.updateProgressShowing}
                         title="Deleting Project(s)"
                         label="Deleting a project and its cache"
