@@ -79,6 +79,24 @@ namespace WebApplication.Services
             });
         }
 
+        /// <summary>
+        /// List all buckets
+        /// </summary>
+        /// <returns>List of all buckets for the account</returns>
+        public async Task<List<string>> GetBucketsAsync()
+        {
+            var buckets = new List<string>();
+            await WithBucketApiAsync(async api =>
+            {
+                dynamic bucketList = await api.GetBucketsAsync(/* use default (US region) */ null);
+                foreach (KeyValuePair<string, dynamic> bucketInfo in new DynamicDictionaryItems(bucketList.items))
+                {
+                    buckets.Add(bucketInfo.Value.bucketKey);
+                }
+            });
+
+            return buckets;
+        }
 
         /// <summary>
         /// Create bucket with given name

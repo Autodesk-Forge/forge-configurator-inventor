@@ -96,10 +96,11 @@ namespace WebApplication
             _logger.LogInformation("Added default projects.");
         }
 
-        public async Task ClearAsync()
+        public async Task ClearAsync(bool deleteUserBuckets)
         {
             try
             {
+                _logger.LogInformation($"Deleting anonymous user bucket {_bucket.BucketKey}");
                 await _bucket.DeleteAsync();
                 // We need to wait because server needs some time to settle it down. If we would go and create bucket immediately again we would receive conflict.
                 await Task.Delay(4000);
@@ -107,6 +108,20 @@ namespace WebApplication
             catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
             {
                 _logger.LogInformation($"Nothing to delete because bucket {_bucket.BucketKey} does not exists yet");
+            }
+
+            if (deleteUserBuckets) {
+                _logger.LogInformation($"Deleting user buckets for registered users");
+                // delete all user buckets
+                var buckets = await _bucket.GetBucketsAsync();
+                string userBucketPrefix = _userResolver.GetBucketPrefix();
+                foreach (string bucket in buckets) {
+                    if (bucket.Contains(userBucketPrefix))
+                    {
+                        _logger.LogInformation($"Deleting user bucket {bucket}");
+                        await _bucket.DeleteBucketAsync(bucket);
+                    }
+                }
             }
 
             // delete bundles and activities
