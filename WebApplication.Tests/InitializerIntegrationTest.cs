@@ -89,7 +89,7 @@ namespace WebApplication.Tests
 
             // TODO: linkGenerator should be mocked
             var dtoGenerator = new DtoGenerator(linkGenerator: null, localCache);
-            var projectWork = new ProjectWork(new NullLogger<ProjectWork>(), resourceProvider, arranger, fdaClient, dtoGenerator, userResolver);
+            var projectWork = new ProjectWork(new NullLogger<ProjectWork>(), arranger, fdaClient, dtoGenerator, userResolver);
             initializer = new Initializer(new NullLogger<Initializer>(), fdaClient, 
                                             defaultProjectsOptions, projectWork, userResolver, localCache);
 

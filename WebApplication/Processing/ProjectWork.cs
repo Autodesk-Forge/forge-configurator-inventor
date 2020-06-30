@@ -16,17 +16,15 @@ namespace WebApplication.Processing
     public class ProjectWork
     {
         private readonly ILogger<ProjectWork> _logger;
-        private readonly ResourceProvider _resourceProvider;
         private readonly Arranger _arranger;
         private readonly FdaClient _fdaClient;
         private readonly DtoGenerator _dtoGenerator;
         private readonly UserResolver _userResolver;
 
-        public ProjectWork(ILogger<ProjectWork> logger, ResourceProvider resourceProvider, Arranger arranger, FdaClient fdaClient,
+        public ProjectWork(ILogger<ProjectWork> logger, Arranger arranger, FdaClient fdaClient,
                             DtoGenerator dtoGenerator, UserResolver userResolver)
         {
             _logger = logger;
-            _resourceProvider = resourceProvider;
             _arranger = arranger;
             _fdaClient = fdaClient;
             _dtoGenerator = dtoGenerator;
