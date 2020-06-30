@@ -1,8 +1,8 @@
-.modalUpdateFailedContent {
+.modalProgressRFAFailedContent {
     height: 119px;
 }
 
-.modalUpdateFailedButtonsContainer {
+.modalProgressRFAFailedButtonsContainer {
     display: flex;
     flex-flow: row-reverse;
 }
@@ -34,7 +34,7 @@
 }
 
 svg.errorIcon path {
-    fill: red;
+    fill: #ec4a41;
 }
 
 #customHeader button {

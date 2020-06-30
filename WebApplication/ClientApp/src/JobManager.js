@@ -40,7 +40,7 @@ class JobManager {
         await connection.invoke('CreateUpdateJob', projectId, parameters, repo.getAccessToken());
     }
 
-    async doRFAJob(projectId, hash, onStart, onComplete) {
+    async doRFAJob(projectId, hash, onStart, onComplete, onError) {
         const connection = await this.startConnection();
 
         if (onStart)
@@ -56,6 +56,13 @@ class JobManager {
                 }
                 onComplete(rfaUrl);
             }
+        });
+
+        connection.on("onError", (jobId, reportUrl) => {
+            connection.stop();
+
+            if (onError)
+                onError(jobId, reportUrl);
         });
 
         await connection.invoke('CreateRFAJob', projectId, hash, repo.getAccessToken());

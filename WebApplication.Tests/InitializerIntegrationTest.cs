@@ -78,7 +78,7 @@ namespace WebApplication.Tests
             };
             IOptions<AppBundleZipPaths> appBundleZipPathsOptions = Options.Create(appBundleZipPathsConfiguration);
 
-            var fdaClient = new FdaClient(publisher, appBundleZipPathsOptions);
+            var fdaClient = new FdaClient(publisher, appBundleZipPathsOptions, new NullLogger<FdaClient>());
             var defaultProjectsConfiguration = new DefaultProjectsConfiguration
             {
                 Projects = new [] { new DefaultProjectConfiguration { Url = testZippedIamUrl, TopLevelAssembly = testIamPathInZip, Name = "Basic" } }

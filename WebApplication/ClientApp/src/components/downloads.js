@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import BaseTable, { AutoResizer, Column } from 'react-base-table';
 import 'react-base-table/styles.css';
-import { getActiveProject, rfaProgressShowing, rfaDownloadUrl } from '../reducers/mainReducer';
+import { getActiveProject, rfaProgressShowing, rfaDownloadUrl, downloadRfaFailedShowing, reportUrl } from '../reducers/mainReducer';
 import { getRFADownloadLink } from '../actions/downloadActions';
-import { showRFAModalProgress } from '../actions/uiFlagsActions';
+import { showRFAModalProgress, showRfaFailed } from '../actions/uiFlagsActions';
 import ModalProgressRfa from './modalProgressRfa';
+import ModalProgressRfaFailed from './modalProgressRfaFailed';
 
 import repo from '../Repository';
 
@@ -47,6 +48,10 @@ export class Downloads extends Component {
 
     onProgressCloseClick() {
         this.props.showRFAModalProgress(false);
+    }
+
+    onRfaFailedCloseClick() {
+        this.props.showRfaFailed(false);
     }
 
     render() {
@@ -114,6 +119,12 @@ export class Downloads extends Component {
                     url={this.props.rfaDownloadUrl}
                     onUrlClick={() => this.onProgressCloseClick()}
                     />}
+                {this.props.rfaFailedShowing && <ModalProgressRfaFailed
+                    open={true}
+                    title="Preparing RFA Failed"
+                    label={this.props.activeProject.id}
+                    onClose={() => this.onRfaFailedCloseClick()}
+                    url={this.props.reportUrl}/>}
         </React.Fragment>
         );
     }
@@ -125,6 +136,8 @@ export default connect(function(store) {
     return {
         activeProject: activeProject,
         rfaProgressShowing: rfaProgressShowing(store),
-        rfaDownloadUrl: rfaDownloadUrl(store)
+        rfaFailedShowing: downloadRfaFailedShowing(store),
+        rfaDownloadUrl: rfaDownloadUrl(store),
+        reportUrl: reportUrl(store)
     };
-}, { Downloads, getRFADownloadLink, showRFAModalProgress })(Downloads);
+}, { Downloads, getRFADownloadLink, showRFAModalProgress, showRfaFailed })(Downloads);
