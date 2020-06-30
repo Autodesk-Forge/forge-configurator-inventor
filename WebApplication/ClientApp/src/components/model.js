@@ -17,9 +17,6 @@ export class Model extends Component {
 
     render() {
 
-        console.log("AAAAAAAAAAAAAAAaa");
-        console.log(JSON.stringify(this.props, null, 2));
-
         if (! this.props.availabilityState.available) return null;
 
         return (

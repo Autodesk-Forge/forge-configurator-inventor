@@ -9,9 +9,7 @@ export default actionTypes;
 export const ensureModelState = () => async (dispatch, getState) => {
 
     const state = getState();
-    console.log(`ensureModelState for ${JSON.stringify(state)}`);
     const { projectId, hash, available } = modelAvailabilityState(state);
-
 
     if (! available) {
         try {

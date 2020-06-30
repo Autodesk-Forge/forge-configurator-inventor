@@ -10,8 +10,6 @@ export const modelAvailabilityState = function(state, id, hash) {
 
     const key = toKey(id, hash);
 
-    console.log(`Looking for ${key} in ${JSON.stringify(state, null, 2)}`);
-
     return {
         projectId: id,
         hash: hash,
@@ -31,9 +29,6 @@ export default function(state = {}, action) {
             const { projectId, hash } = action;
             const key = toKey(projectId, hash);
             stateUpdate[key] = true;
-
-            console.log(`New state is ${JSON.stringify(stateUpdate, null, 2)}`);
-
 
             return stateUpdate;
         }
