@@ -121,10 +121,10 @@ Array [
 ]
 `;
 
-exports[`uiFlagsActions check showUpdateProgress action 1`] = `
+exports[`uiFlagsActions check showModalProgress action 1`] = `
 Array [
   Object {
-    "type": "SHOW_UPDATE_PROGRESS",
+    "type": "SHOW_MODAL_PROGRESS",
     "visible": true,
   },
 ]

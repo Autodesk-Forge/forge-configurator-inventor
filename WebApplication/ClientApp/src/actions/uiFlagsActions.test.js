@@ -54,8 +54,8 @@ describe('uiFlagsActions', () => {
         expect(store.getActions()).toMatchSnapshot();
     });
 
-    it('check showUpdateProgress action', () => {
-        store.dispatch(uiFlagsActions.showUpdateProgress(true));
+    it('check showModalProgress action', () => {
+        store.dispatch(uiFlagsActions.showModalProgress(true));
         expect(store.getActions()).toMatchSnapshot();
     });
 
