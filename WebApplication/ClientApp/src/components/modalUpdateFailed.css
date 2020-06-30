@@ -1,8 +1,8 @@
 .modalUpdateFailedContent {
-    height: 86px;
+    height: 119px;
 }
 
-.buttonsContainer {
+.modalUpdateFailedButtonsContainer {
     display: flex;
     flex-flow: row-reverse;
 }

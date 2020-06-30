@@ -60,7 +60,7 @@ export class ModalUpdateFailed extends Component {
                         <HyperLink link="Open log file" href={this.props.url} />
                     </div>
                 </div>
-                <div className="buttonsContainer">
+                <div className="modalUpdateFailedButtonsContainer">
                     <Button className="button" style={
                         { width: '102px', height: '36px', borderRadius: '2px', marginLeft: '12px' }}
                         type="primary"
