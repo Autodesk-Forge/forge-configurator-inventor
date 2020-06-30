@@ -11,7 +11,7 @@ namespace WebApplication.State
     /// </summary>
     public class OssBucket
     {
-        public string BucketKey { get; }
+        public string AnonymousBucketKey { get; }
         private readonly IForgeOSS _forgeOSS;
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace WebApplication.State
         /// <param name="bucketKey">The bucket key.</param>
         public OssBucket(IForgeOSS forgeOSS, string bucketKey)
         {
-            BucketKey = bucketKey;
+            AnonymousBucketKey = bucketKey;
             _forgeOSS = forgeOSS;
         }
 
@@ -30,7 +30,7 @@ namespace WebApplication.State
         /// </summary>
         public async Task CreateAsync()
         {
-            await _forgeOSS.CreateBucketAsync(BucketKey);
+            await _forgeOSS.CreateBucketAsync(AnonymousBucketKey);
         }
 
         /// <summary>
@@ -39,7 +39,17 @@ namespace WebApplication.State
         /// <returns></returns>
         public async Task DeleteAsync()
         {
-            await _forgeOSS.DeleteBucketAsync(BucketKey);
+            await _forgeOSS.DeleteBucketAsync(AnonymousBucketKey);
+        }
+
+        /// <summary>
+        /// Delete the buckets.
+        /// </summary>
+        /// <param name="buckets">List of backet names</param>
+        public async Task DeleteBucketsAsync(List<string> buckets)
+        {
+            foreach(string bucketName in buckets)
+                await _forgeOSS.DeleteBucketAsync(bucketName);
         }
 
         /// <summary>
@@ -48,7 +58,16 @@ namespace WebApplication.State
         /// <param name="beginsWith">Search filter ("begin with")</param>
         public async Task<List<ObjectDetails>> GetObjectsAsync(string beginsWith = null)
         {
-            return await _forgeOSS.GetBucketObjectsAsync(BucketKey, beginsWith);
+            return await _forgeOSS.GetBucketObjectsAsync(AnonymousBucketKey, beginsWith);
+        }
+
+        /// <summary>
+        /// List all buckets.
+        /// </summary>
+        /// <param name="beginsWith">Search filter ("begin with")</param>
+        public async Task<List<string>> GetBucketsAsync()
+        {
+            return await _forgeOSS.GetBucketsAsync();
         }
 
         /// <summary>
@@ -61,7 +80,7 @@ namespace WebApplication.State
         /// <returns>Signed URL</returns>
         public async Task<string> CreateSignedUrlAsync(string objectName, ObjectAccess access = ObjectAccess.Read, int minutesExpiration = 30)
         {
-            return await _forgeOSS.CreateSignedUrlAsync(BucketKey, objectName, access, minutesExpiration);
+            return await _forgeOSS.CreateSignedUrlAsync(AnonymousBucketKey, objectName, access, minutesExpiration);
         }
 
         /// <summary>
@@ -69,7 +88,7 @@ namespace WebApplication.State
         /// </summary>
         public async Task CopyAsync(string fromName, string toName)
         {
-            await _forgeOSS.CopyAsync(BucketKey, fromName, toName);
+            await _forgeOSS.CopyAsync(AnonymousBucketKey, fromName, toName);
         }
 
         /// <summary>
@@ -77,7 +96,7 @@ namespace WebApplication.State
         /// </summary>
         public async Task DownloadFileAsync(string objectName, string localFullName)
         {
-            await _forgeOSS.DownloadFileAsync(BucketKey, objectName, localFullName);
+            await _forgeOSS.DownloadFileAsync(AnonymousBucketKey, objectName, localFullName);
         }
 
         /// <summary>
@@ -87,7 +106,7 @@ namespace WebApplication.State
         /// <param name="newName">New object name.</param>
         public async Task RenameObjectAsync(string oldName, string newName)
         {
-            await _forgeOSS.RenameObjectAsync(BucketKey, oldName, newName);
+            await _forgeOSS.RenameObjectAsync(AnonymousBucketKey, oldName, newName);
         }
 
         /// <summary>
@@ -95,23 +114,23 @@ namespace WebApplication.State
         /// </summary>
         public async Task DeleteObjectAsync(string objectName)
         {
-            await _forgeOSS.DeleteAsync(BucketKey, objectName);
+            await _forgeOSS.DeleteAsync(AnonymousBucketKey, objectName);
         }
 
         public async Task UploadObjectAsync(string objectName, Stream stream)
         {
-            await _forgeOSS.UploadObjectAsync(BucketKey, objectName, stream);
+            await _forgeOSS.UploadObjectAsync(AnonymousBucketKey, objectName, stream);
         }
 
         public async Task UploadChunkAsync(string objectName, string contentRange, string sessionId, Stream stream)
         {
             // public async Task UploadChunkAsync(string bucketKey, )
-            await _forgeOSS.UploadChunkAsync(BucketKey, objectName, contentRange, sessionId, stream);
+            await _forgeOSS.UploadChunkAsync(AnonymousBucketKey, objectName, contentRange, sessionId, stream);
         }
 
         public async Task<Autodesk.Forge.Client.ApiResponse<dynamic>> GetObjectAsync(string objectName)
         {
-            return await _forgeOSS.GetObjectAsync(BucketKey, objectName);
+            return await _forgeOSS.GetObjectAsync(AnonymousBucketKey, objectName);
         }
     }
 }

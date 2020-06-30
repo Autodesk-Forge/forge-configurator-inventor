@@ -66,7 +66,7 @@ namespace WebApplication
                     createBucketPolicy.ExecuteAsync(async () => await _bucket.CreateAsync())
                 );
 
-            _logger.LogInformation($"Bucket {_bucket.BucketKey} created");
+            _logger.LogInformation($"Bucket {_bucket.AnonymousBucketKey} created");
 
             // OSS bucket might be not ready yet, so repeat attempts
             var waitForBucketPolicy = Policy
@@ -96,17 +96,25 @@ namespace WebApplication
             _logger.LogInformation("Added default projects.");
         }
 
-        public async Task ClearAsync()
+        public async Task ClearAsync(bool deleteUserBuckets)
         {
             try
             {
+                _logger.LogInformation($"Deleting anonymous user bucket {_bucket.AnonymousBucketKey}");
                 await _bucket.DeleteAsync();
                 // We need to wait because server needs some time to settle it down. If we would go and create bucket immediately again we would receive conflict.
                 await Task.Delay(4000);
             }
             catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
             {
-                _logger.LogInformation($"Nothing to delete because bucket {_bucket.BucketKey} does not exists yet");
+                _logger.LogInformation($"Nothing to delete because bucket {_bucket.AnonymousBucketKey} does not exists yet");
+            }
+
+            if (deleteUserBuckets) {
+                _logger.LogInformation($"Deleting user buckets for registered users");
+                // delete all user buckets
+                var buckets = await _bucket.GetBucketsAsync();
+                await _bucket.DeleteBucketsAsync(buckets);
             }
 
             // delete bundles and activities
