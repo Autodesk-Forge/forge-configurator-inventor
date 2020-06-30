@@ -21,6 +21,7 @@ namespace WebApplication.Services
         ForgeConfiguration Configuration { get; }
 
         Task<List<ObjectDetails>> GetBucketObjectsAsync(string bucketKey, string beginsWith = null);
+        Task<List<string>> GetBucketsAsync();
         Task CreateBucketAsync(string bucketKey);
         Task DeleteBucketAsync(string bucketKey);
         Task UploadObjectAsync(string bucketKey, string objectName, Stream stream);
