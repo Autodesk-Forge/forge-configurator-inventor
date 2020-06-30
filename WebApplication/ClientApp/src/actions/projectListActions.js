@@ -1,7 +1,7 @@
 import repo from '../Repository';
 import {addError, addLog} from './notificationActions';
 
-const actionTypes = {
+export const actionTypes = {
     PROJECT_LIST_UPDATED: 'PROJECT_LIST_UPDATED',
     ACTIVE_PROJECT_UPDATED: 'ACTIVE_PROJECT_UPDATED',
     UPDATE_PROJECT: 'UPDATE_PROJECT',
