@@ -50,12 +50,6 @@ describe('deleteProject', () => {
     });
 
     describe('success', () => {
-
-        beforeEach(() => {
-
-            // loadParametersMock.mockReturnValue(fakeInventorParams);
-        });
-
         it('refreshes projects and checkboxes after delete', () => {
 
             return store
