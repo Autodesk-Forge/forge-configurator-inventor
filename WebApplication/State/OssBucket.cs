@@ -64,7 +64,7 @@ namespace WebApplication.State
         /// <summary>
         /// List all buckets.
         /// </summary>
-        /// <param name="beginsWith">Search filter ("begin with")</param>
+        /// <returns>List of buckets</returns>
         public async Task<List<string>> GetBucketsAsync()
         {
             return await _forgeOSS.GetBucketsAsync();
