@@ -5,6 +5,7 @@ import parametersReducer, * as params from './parametersReducer';
 import updateParametersReducer, * as updateParams from './updateParametersReducer';
 import uiFlagsReducer, * as uiFlags from './uiFlagsReducer';
 import profileReducer from './profileReducer';
+import modelReducer, * as model from './modelReducer';
 
 export const mainReducer = combineReducers({
     projectList: projectListReducer,
@@ -12,11 +13,24 @@ export const mainReducer = combineReducers({
     parameters: parametersReducer,
     updateParameters: updateParametersReducer,
     uiFlags: uiFlagsReducer,
-    profile: profileReducer
+    profile: profileReducer,
+    model: modelReducer
 });
 
 export const getActiveProject = function(state) {
     return list.getActiveProject(state.projectList);
+};
+
+export const modelAvailabilityState = function(state) {
+
+    const activeProject = getActiveProject(state);
+    if (! activeProject) return null;
+
+    console.log(`Active project is ${JSON.stringify(activeProject)}`);
+
+    const { id, hash } = activeProject;
+
+    return model.modelAvailabilityState(state.model, id, hash);
 };
 
 export const getProject = function(id, state) {
