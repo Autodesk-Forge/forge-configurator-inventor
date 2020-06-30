@@ -12,11 +12,18 @@ const inputPassword = '#password';
 const buttonNext = '#verify_user_btn';
 const buttonSubmit = '#btnSubmit';
 
+// Upload
+const uploadPackageButton = '//button[@title="Upload package"]';
+const uploadPackageRoot = '//input[@id="package_root"]';
+const uploadFileElement = 'input[id="packageFileInput"]';
+const uploadButton = '//button[@id="upload_button"]';
+const uploadConfirmationDialog = '//p[text()="Upload Finished"]';
+const closeButton = '//button[@title="Close"]';
+
 module.exports = function() {
 
   const forgeViewerSpinner = '//div[@id="ForgeViewer"]//div[@class="spinner"]';
   const userButton = '//button[@type="button" and (//span) and (//img)]';
-  const loggedDemoToolUser = '//button[contains(@type, "button")]//img[contains(@alt, "Avatar image of Demo Tool")]';
   const loggedAnonymousUser = '//button[contains(@type, "button")]//img[contains(@alt, "Avatar image of Anonymous")]';
   const authorizationButton = '.auth-button';
   const loginName = process.env.SDRA_USERNAME;
@@ -88,19 +95,42 @@ module.exports = function() {
       this.fillField(inputPassword, password);
       this.click(buttonSubmit);
 
-      // click on Allow Button
-      this.waitForVisible(allowButton, 15);
-      this.click(allowButton);
+      // look for the URL to determine if we are asked 
+      // to agree to authorize our application
+      this.waitForNavigation();
+      const currentUrl = await this.grabCurrentUrl()
+      console.log(currentUrl);
+      if (currentUrl.includes('auth.autodesk.com')) {
+        // click on Allow Button
+        this.waitForVisible(allowButton, 15);
+        this.click(allowButton);
+      }
 
       // check logged user
-      this.waitForElement(loggedDemoToolUser, 10);
+      this.waitForElement(userButton, 10);
+      this.dontSeeElement(loggedAnonymousUser);
     },
     signOut(){
       this.clickToAuthorizationButton('Demo Tool');
 
       // check if Anonymous user is signed
       this.waitForElement(loggedAnonymousUser, 10);
-    }
+    },
+    uploadProject(projectZipFile, projectAssemblyLocation) {
+      // invoke upload UI
+      this.waitForVisible(uploadPackageButton);
+      this.click(uploadPackageButton);
 
+      // select file to upload
+      this.attachFile(uploadFileElement, projectZipFile);
+      this.fillField(uploadPackageRoot, projectAssemblyLocation)
+
+      // upload the zip to server
+      this.click(uploadButton);
+
+      // Wait for file to be uploaded
+      this.waitForVisible(uploadConfirmationDialog, 120);
+      this.click(closeButton);
+    }
   });
 }
