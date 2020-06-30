@@ -22,7 +22,7 @@ export class CheckboxTableHeader extends Component {
 
       return (
         <div id={hasSomeCheckedProject ? "checkbox_checked_visible" : "checkbox_hover_visible"}>
-          {visible && <Checkbox
+          {visible && <Checkbox id="checkbox_header"
             indeterminate={indeterminate}
             checked={hasSomeCheckedProject}
             onChange={(checked) => {this.onChange(checked); }}

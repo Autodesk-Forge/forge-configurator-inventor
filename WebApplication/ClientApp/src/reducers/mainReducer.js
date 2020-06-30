@@ -56,12 +56,16 @@ export const parametersEditedMessageVisible = function(state) {
     return false;
 };
 
-export const updateProgressShowing = function(state) {
-    return uiFlags.updateProgressShowing(state.uiFlags);
+export const modalProgressShowing = function(state) {
+    return uiFlags.modalProgressShowing(state.uiFlags);
 };
 
 export const updateFailedShowing = function(state) {
     return uiFlags.updateFailedShowing(state.uiFlags);
+};
+
+export const reportUrl = function(state) {
+    return uiFlags.reportUrl(state.uiFlags);
 };
 
 export const rfaProgressShowing = function(state) {

@@ -155,7 +155,11 @@ namespace WebApplication.Processing
             UpdateData updateData = await _arranger.ForUpdateAsync(inputDocUrl, tlaFilename, parameters);
 
             ProcessingResult result = await _fdaClient.UpdateAsync(updateData);
-            if (! result.Success) throw new ApplicationException($"Failed to update {project.Name}");
+            if (!result.Success) 
+            {
+                 _logger.LogError($"Failed to update '{project.Name}' project.");
+                throw new FdaProcessingException($"Failed to update '{project.Name}' project.", result.ReportUrl);
+            }
 
             _logger.LogInformation("Moving files around");
 

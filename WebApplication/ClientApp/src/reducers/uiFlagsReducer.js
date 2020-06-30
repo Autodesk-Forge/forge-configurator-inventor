@@ -5,8 +5,9 @@ import uploadPackagesActionTypes from '../actions/uploadPackageActions';
 export const initialState = {
    parametersEditedMessageClosed: false,
    parametersEditedMessageRejected: false,
-   updateProgressShowing: false,
+   modalProgressShowing: false,
    updateFailedShowing: false,
+   reportUrl: null,
    rfaProgressShowing: null,
    rfaDownloadUrl: null,
    showUploadPackage: false,
@@ -19,12 +20,16 @@ export const initialState = {
    checkedProjects: []
 };
 
-export const updateProgressShowing = function(state) {
-   return state.updateProgressShowing;
+export const modalProgressShowing = function(state) {
+   return state.modalProgressShowing;
 };
 
 export const updateFailedShowing = function(state) {
    return state.updateFailedShowing;
+};
+
+export const reportUrl = function(state) {
+   return state.reportUrl;
 };
 
 export const rfaProgressShowing = function(state) {
@@ -77,10 +82,12 @@ export default function(state = initialState, action) {
          return { ...state, parametersEditedMessageClosed: false};
       case uiFlagsActionTypes.REJECT_PARAMETERS_EDITED_MESSAGE:
          return { ...state, parametersEditedMessageRejected: action.show };
-      case uiFlagsActionTypes.SHOW_UPDATE_PROGRESS:
-         return { ...state, updateProgressShowing: action.visible};
+      case uiFlagsActionTypes.SHOW_MODAL_PROGRESS:
+         return { ...state, modalProgressShowing: action.visible};
       case uiFlagsActionTypes.SHOW_UPDATE_FAILED:
          return { ...state, updateFailedShowing: action.visible};
+      case uiFlagsActionTypes.SET_REPORT_URL:
+         return { ...state, reportUrl: action.url};
       case uiFlagsActionTypes.SHOW_RFA_PROGRESS:
          return { ...state, rfaProgressShowing: action.visible, rfaDownloadUrl: null};
       case uiFlagsActionTypes.SET_RFA_LINK:
