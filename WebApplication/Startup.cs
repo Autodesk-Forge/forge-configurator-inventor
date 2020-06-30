@@ -77,14 +77,14 @@ namespace WebApplication
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Initializer initializer, ILogger<Startup> logger, LocalCache localCache)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Initializer initializer, ILogger<Startup> logger, LocalCache localCache, IOptions<ForgeConfiguration> forgeConfiguration)
         {
             if(Configuration.GetValue<bool>("clear"))
             {
                 logger.LogInformation("-- Clean up --");
                 // retrieve used Forge Client Id and Client Id where it is allowed to delele user buckets
                 string clientIdCanDeleteUserBuckets = Configuration.GetValue<string>("clientIdCanDeleteUserBuckets");
-                string clientId = Configuration.GetSection(ForgeSectionKey).GetValue<string>("clientId");
+                string clientId = forgeConfiguration.Value.ClientId;
                 // only on allowed Client Id remove the user buckets
                 bool deleteUserBuckets = (clientIdCanDeleteUserBuckets == clientId);
                 initializer.ClearAsync(deleteUserBuckets).Wait();
