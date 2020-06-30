@@ -1,0 +1,149 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`uiFlagsActions check clearCheckedProjects action 1`] = `
+Array [
+  Object {
+    "type": "CLEAR_CHECKED_PROJECTS",
+  },
+]
+`;
+
+exports[`uiFlagsActions check closeParametersEditedMessage action 1`] = `
+Array [
+  Object {
+    "type": "CLOSE_PARAMETERS_EDITED_MESSAGE",
+  },
+]
+`;
+
+exports[`uiFlagsActions check editPackageFile action 1`] = `
+Array [
+  Object {
+    "file": "file",
+    "type": "PACKAGE_FILE_EDITED",
+  },
+]
+`;
+
+exports[`uiFlagsActions check editPackageRoot action 1`] = `
+Array [
+  Object {
+    "file": "root",
+    "type": "PACKAGE_ROOT_EDITED",
+  },
+]
+`;
+
+exports[`uiFlagsActions check fetchShowParametersChanged action 1`] = `
+Array [
+  Object {
+    "show": true,
+    "type": "REJECT_PARAMETERS_EDITED_MESSAGE",
+  },
+]
+`;
+
+exports[`uiFlagsActions check hideUpdateMessageBanner action 1`] = `
+Array [
+  Object {
+    "show": false,
+    "type": "REJECT_PARAMETERS_EDITED_MESSAGE",
+  },
+  Object {
+    "type": "CLOSE_PARAMETERS_EDITED_MESSAGE",
+  },
+]
+`;
+
+exports[`uiFlagsActions check rejectParametersEditedMessage action 1`] = `
+Array [
+  Object {
+    "show": true,
+    "type": "REJECT_PARAMETERS_EDITED_MESSAGE",
+  },
+]
+`;
+
+exports[`uiFlagsActions check setCheckedProjects action 1`] = `
+Array [
+  Object {
+    "projects": Array [
+      "1",
+      "2",
+    ],
+    "type": "SET_CHECKED_PROJECTS",
+  },
+]
+`;
+
+exports[`uiFlagsActions check setProjectAlreadyExists action 1`] = `
+Array [
+  Object {
+    "exists": true,
+    "type": "PROJECT_EXISTS",
+  },
+]
+`;
+
+exports[`uiFlagsActions check setRFALink action 1`] = `
+Array [
+  Object {
+    "type": "SET_RFA_LINK",
+    "url": "link",
+  },
+]
+`;
+
+exports[`uiFlagsActions check showDeleteProject action 1`] = `
+Array [
+  Object {
+    "type": "SHOW_DELETE_PROJECT",
+    "visible": true,
+  },
+]
+`;
+
+exports[`uiFlagsActions check showRFAModalProgress action 1`] = `
+Array [
+  Object {
+    "type": "SHOW_RFA_PROGRESS",
+    "visible": true,
+  },
+]
+`;
+
+exports[`uiFlagsActions check showUpdateFailed action 1`] = `
+Array [
+  Object {
+    "type": "SHOW_UPDATE_FAILED",
+    "visible": true,
+  },
+]
+`;
+
+exports[`uiFlagsActions check showModalProgress action 1`] = `
+Array [
+  Object {
+    "type": "SHOW_MODAL_PROGRESS",
+    "visible": true,
+  },
+]
+`;
+
+exports[`uiFlagsActions check showUploadPackage action 1`] = `
+Array [
+  Object {
+    "type": "SHOW_UPLOAD_PACKAGE",
+    "visible": true,
+  },
+]
+`;
+
+exports[`uiFlagsActions check updateActiveTabIndex action 1`] = `
+Array [
+  Object {
+    "index": 1,
+    "type": "UPDATE_ACTIVE_TAB_INDEX",
+  },
+]
+`;
