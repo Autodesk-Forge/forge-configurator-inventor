@@ -114,7 +114,14 @@ namespace WebApplication
                 _logger.LogInformation($"Deleting user buckets for registered users");
                 // delete all user buckets
                 var buckets = await _bucket.GetBucketsAsync();
-                await _bucket.DeleteBucketsAsync(buckets);
+                string userBucketPrefix = _userResolver.GetBucketPrefix();
+                foreach (string bucket in buckets) {
+                    if (bucket.Contains(userBucketPrefix))
+                    {
+                        _logger.LogInformation($"Deleting user bucket {bucket}");
+                        await _bucket.DeleteBucketAsync(bucket);
+                    }
+                }
             }
 
             // delete bundles and activities

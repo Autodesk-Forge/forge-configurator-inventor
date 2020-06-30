@@ -43,13 +43,12 @@ namespace WebApplication.State
         }
 
         /// <summary>
-        /// Delete the buckets.
+        /// Deletes the bucket.
         /// </summary>
-        /// <param name="buckets">List of backet names</param>
-        public async Task DeleteBucketsAsync(List<string> buckets)
+        /// <param name="bucketName">Bucket name</param>
+        public async Task DeleteBucketAsync(string bucketName)
         {
-            foreach(string bucketName in buckets)
-                await _forgeOSS.DeleteBucketAsync(bucketName);
+            await _forgeOSS.DeleteBucketAsync(bucketName);
         }
 
         /// <summary>
