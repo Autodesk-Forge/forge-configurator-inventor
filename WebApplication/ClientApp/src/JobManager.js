@@ -30,11 +30,11 @@ class JobManager {
                 onComplete(updatedState);
         });
 
-        connection.on("onError", (error) => {
+        connection.on("onError", (jobId, reportUrl) => {
             connection.stop();
 
             if (onError)
-                onError(error);
+                onError(jobId, reportUrl);
         });
 
         await connection.invoke('CreateUpdateJob', projectId, parameters, repo.getAccessToken());

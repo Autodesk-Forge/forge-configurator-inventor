@@ -96,7 +96,7 @@ module.exports = function() {
       this.click(buttonSubmit);
 
       // look for the URL to determine if we are asked 
-      // to aggree to authorize our application
+      // to agree to authorize our application
       this.waitForNavigation();
       const currentUrl = await this.grabCurrentUrl()
       console.log(currentUrl);

@@ -132,6 +132,11 @@ namespace WebApplication.Controllers
             {
                 await job.ProcessJobAsync(_sender);
             }
+            catch (FdaProcessingException fpe)
+            {
+                _logger.LogError(fpe, $"Processing failed for {job.Id}");
+                await _sender.SendErrorAsync(job.Id, fpe.ReportUrl);
+            }
             catch (Exception e)
             {
                 _logger.LogError(e, $"Processing failed for {job.Id}");
