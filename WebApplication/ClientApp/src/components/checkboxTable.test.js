@@ -3,11 +3,9 @@ import Enzyme, { shallow, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import { CheckboxTable as CheckboxTableShallow } from './checkboxTable';
 import CheckboxTable from './checkboxTable';
-import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import Checkbox from '@hig/checkbox';
 
 Enzyme.configure({ adapter: new Adapter() });
 
