@@ -1,8 +1,5 @@
 /* eslint-disable no-console */
 /* eslint-disable no-undef */
-const avatarAnonymous = '//button[@type="button"]//span[contains(@role, "img") and contains(@aria-label, "Avatar for Anonymous")]';
-const avatarDemoTool = '//button[@type="button"]//span[contains(@role, "img") and contains(@aria-label, "Avatar for Demo Tool")]';
-
 
 Before((I) => {
     I.amOnPage('/');
