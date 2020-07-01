@@ -20,6 +20,12 @@ const uploadButton = '//button[@id="upload_button"]';
 const uploadConfirmationDialog = '//p[text()="Upload Finished"]';
 const closeButton = '//button[@title="Close"]';
 
+// Delete
+const projectRow = '//div[div/div/text()="ProjectName"]';
+const checkBox = '//input[@id="checkbox_row"]';
+const deleteProjectButton = '//button[@title="Delete project(s)"]';
+const confirmDelete = '//button[@id="delete_ok_button"]';
+
 module.exports = function() {
 
   const forgeViewerSpinner = '//div[@id="ForgeViewer"]//div[@class="spinner"]';
@@ -131,6 +137,27 @@ module.exports = function() {
       // Wait for file to be uploaded
       this.waitForVisible(uploadConfirmationDialog, 120);
       this.click(closeButton);
+    },
+    deleteProject(projectName) {
+      // hover above project
+      let projectRowWithName = projectRow.replace('ProjectName', projectName);
+      this.waitForVisible(projectRowWithName, 10);
+      this.moveCursorTo(projectRowWithName);
+
+      // click the checkbox to select projetc
+      this.waitForVisible(checkBox);
+      this.click(checkBox);
+
+      // click the delete button
+      this.waitForVisible(deleteProjectButton);
+      this.click(deleteProjectButton);
+
+      // confirm delete
+      this.waitForVisible(confirmDelete);
+      this.click(confirmDelete);
+
+      // wait for project disapear from the list
+      this.waitForInvisible(projectRowWithName, 60);
     }
   });
 }
