@@ -72,12 +72,14 @@ export class ParametersContainer extends Component {
                         label={this.props.activeProject.id}
                         icon="/Assembly_icon.svg"
                         onClose={() => this.onProgressCloseClick()}/>
-                     <ModalUpdateFailed
-                        open={this.props.updateFailedShowing}
-                        title="Update Failed"
-                        label={this.props.activeProject.id}
-                        onClose={() => this.onUpdateFailedCloseClick()}
-                        url={this.props.reportUrl}/>
+                    {this.props.updateFailedShowing &&
+                        <ModalUpdateFailed
+                            open={this.props.updateFailedShowing}
+                            title="Update Failed"
+                            label={this.props.activeProject.id}
+                            onClose={() => this.onUpdateFailedCloseClick()}
+                            url={this.props.reportUrl}/>
+                    }
                 </div>
             </div>
         );
