@@ -110,6 +110,17 @@ namespace WebApplication.State
             ZipFile.ExtractToDirectory(tempFile.Name, localNames.SvfDir, overwriteFiles: true); // TODO: non-default encoding is not supported
         }
 
+        public async Task EnsureSvfAsync(OssBucket ossBucket, string hash)
+        {
+            var localNames = GetLocalNames(hash);
+            var ossNames = GetOssNames(hash);
+
+            using var tempFile = new TempFile();
+            await ossBucket.DownloadFileAsync(ossNames.ModelView, tempFile.Name);
+
+            // extract SVF from the archive
+            ZipFile.ExtractToDirectory(tempFile.Name, localNames.SvfDir, overwriteFiles: true); // TODO: non-default encoding is not supported
+        }
 
         /// <summary>
         /// OSS names for "hashed" files.

@@ -2,7 +2,6 @@
 using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.FileProviders;
 
 namespace WebApplication.Middleware
 {
@@ -22,6 +21,7 @@ namespace WebApplication.Middleware
 
         public LocalCache()
         {
+            // make sure that root directory exists
             Directory.CreateDirectory(LocalRootName);
         }
 
@@ -45,8 +45,7 @@ namespace WebApplication.Middleware
         {
             app.UseStaticFiles(new StaticFileOptions
             {
-                // make sure that directory exists
-                FileProvider = new PhysicalFileProvider(LocalRootName),
+                FileProvider = new LocalCacheFileProvider(LocalRootName, app.ApplicationServices),
                 RequestPath = new PathString(VirtualCacheDir),
                 ServeUnknownFileTypes = true
             });
