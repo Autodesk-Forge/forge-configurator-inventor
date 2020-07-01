@@ -52,7 +52,7 @@ namespace WebApplication.State
             // NOTE: this step is impossible without having project metadata,
             // because file/dir names depends on hash of initial project state
 
-            await PlaceViewablesAsync(ossBucket, GetLocalNames(), GetOssNames());
+            await EnsureViewablesAsync(ossBucket, Metadata.Hash, ensureDir: true);
         }
 
         /// <summary>
@@ -99,16 +99,12 @@ namespace WebApplication.State
                 Directory.CreateDirectory(localNames.BaseDir);
             }
 
-            await PlaceViewablesAsync(ossBucket, localNames, GetOssNames(hash));
-        }
-
-        private async Task PlaceViewablesAsync(OssBucket ossBucket, LocalNameProvider localNames, OSSObjectNameProvider ossNames)
-        {
+            OSSObjectNameProvider ossNames = GetOssNames(hash);
             using var tempFile = new TempFile();
             await Task.WhenAll(
-                                ossBucket.DownloadFileAsync(ossNames.ModelView, tempFile.Name),
-                                ossBucket.DownloadFileAsync(ossNames.Parameters, localNames.Parameters)
-                            );
+                ossBucket.DownloadFileAsync(ossNames.ModelView, tempFile.Name),
+                ossBucket.DownloadFileAsync(ossNames.Parameters, localNames.Parameters)
+            );
 
             // extract SVF from the archive
             ZipFile.ExtractToDirectory(tempFile.Name, localNames.SvfDir, overwriteFiles: true); // TODO: non-default encoding is not supported
