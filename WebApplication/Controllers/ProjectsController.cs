@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using WebApplication.Definitions;
@@ -159,7 +160,7 @@ namespace WebApplication.Controllers
             return Ok(ToDTO(projectStorage));
         }
 
-        [HttpDelete()]
+        [HttpDelete]
         public async Task<StatusCodeResult> DeleteProjects([FromBody] List<string> projectNameList)
         {
             var bucket = await _userResolver.GetBucketAsync(true);
@@ -197,9 +198,10 @@ namespace WebApplication.Controllers
             {
                 Task.WaitAll(tasks.ToArray());
             }
-            catch (AggregateException)
+            catch (AggregateException e)
             {
-                return StatusCode(500);
+                _logger.LogError(e, "Failed to delete project(s)");
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
 
             // delete local cache for all provided projects
@@ -217,8 +219,12 @@ namespace WebApplication.Controllers
         public async Task<ActionResult> Ensure(string projectName, string hash)
         {
             var projectStorage  = await _userResolver.GetProjectStorageAsync(projectName);
-            var bucket = await _userResolver.GetBucketAsync(tryToCreate: false);
-            await projectStorage.EnsureViewablesAsync(bucket, hash, ensureDir: true);
+            if (! projectStorage.IsCached(hash))
+            {
+                var bucket = await _userResolver.GetBucketAsync(tryToCreate: false);
+                await projectStorage.EnsureViewablesAsync(bucket, hash, ensureDir: true);
+            }
+
             return NoContent();
         }
 

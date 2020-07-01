@@ -74,6 +74,16 @@ namespace WebApplication.State
         }
 
         /// <summary>
+        /// Check if directory for the hash is exists.
+        /// It's considered as a sign that project-related data for the hash is cached.
+        /// </summary>
+        public bool IsCached(string hash)
+        {
+            var localNames = GetLocalNames(hash);
+            return Directory.Exists(localNames.BaseDir);
+        }
+
+        /// <summary>
         /// Ensure the project viewables are cached locally.
         /// </summary>
         /// <param name="ossBucket">OSS bucket.</param>
