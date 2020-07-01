@@ -8,6 +8,8 @@ import { actionTypes as uiFlagsActionTypes } from './uiFlagsActions';
 const rfaLink = 'https://some.link';
 const tokenMock = 'theToken';
 const fullLink = `${rfaLink}/${tokenMock}`;
+const errorReportLink = 'https://error.link';
+const jobId = 'job1';
 
 // prepare mock for signalR
 var connectionMock = {
@@ -21,8 +23,8 @@ var connectionMock = {
     simulateComplete: function(link) { 
         this.onHandlers['onComplete'](link); 
     },
-    simulateError: function() { 
-        this.onHandlers['onError'](); 
+    simulateError: function(jobId, link) { 
+        this.onHandlers['onError'](jobId, link); 
     }
 };
 
@@ -70,6 +72,19 @@ describe('downloadActions', () => {
             const actions = store.getActions();
             const linkAction = actions.find(a => a.type === uiFlagsActionTypes.SET_RFA_LINK);
             expect(linkAction.url).toEqual(fullLink);
+        });
+    });
+
+    it('check report url and fail dialog on error', () => {
+        return store.dispatch(downloadActions.getRFADownloadLink("ProjectId", "temp_url"))
+        .then(() => {
+            connectionMock.simulateError(jobId,errorReportLink);
+
+            // check expected store actions
+            const actions = store.getActions();
+            // there are two SET_REPORT_URL actions in the list. The first one come from job start and is called with null to clear old data...
+            expect(actions.some(a => (a.type === uiFlagsActionTypes.SET_REPORT_URL && a.url === errorReportLink))).toEqual(true);
+            expect(actions.some(a => a.type === uiFlagsActionTypes.SHOW_RFA_FAILED)).toEqual(true);
         });
     });
 });
