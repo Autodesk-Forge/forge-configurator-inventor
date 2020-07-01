@@ -32,8 +32,8 @@ module.exports = function() {
   const userButton = '//button[@type="button" and (//span) and (//img)]';
   const loggedAnonymousUser = '//button[contains(@type, "button")]//img[contains(@alt, "Avatar image of Anonymous")]';
   const authorizationButton = '.auth-button';
-  let loginName = process.env.SDRA_USERNAME;
-  let password = process.env.SDRA_PASSWORD;
+  const loginName = process.env.SDRA_USERNAME;
+  const password = process.env.SDRA_PASSWORD;
   const allowButton = '#allow_btn';
 
   // returns Project name locator
