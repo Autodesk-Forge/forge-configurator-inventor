@@ -6,7 +6,7 @@ import { getActiveProject, rfaProgressShowing, rfaDownloadUrl, downloadRfaFailed
 import { getRFADownloadLink } from '../actions/downloadActions';
 import { showRFAModalProgress, showRfaFailed } from '../actions/uiFlagsActions';
 import ModalProgressRfa from './modalProgressRfa';
-import ModalProgressRfaFailed from './modalProgressRfaFailed';
+import ModalFail from './modalFail';
 
 import repo from '../Repository';
 
@@ -119,9 +119,10 @@ export class Downloads extends Component {
                     url={this.props.rfaDownloadUrl}
                     onUrlClick={() => this.onProgressCloseClick()}
                     />}
-                {this.props.rfaFailedShowing && <ModalProgressRfaFailed
+                {this.props.rfaFailedShowing && <ModalFail
                     open={true}
                     title="Preparing RFA Failed"
+                    contentName="Assembly:"
                     label={this.props.activeProject.id}
                     onClose={() => this.onRfaFailedCloseClick()}
                     url={this.props.reportUrl}/>}

@@ -1,8 +1,8 @@
-.modalUpdateFailedContent {
+.modalFailContent {
     height: 119px;
 }
 
-.modalUpdateFailedButtonsContainer {
+.modalFailButtonsContainer {
     display: flex;
     flex-flow: row-reverse;
 }
@@ -34,7 +34,7 @@
 }
 
 svg.errorIcon path {
-    fill: red;
+    fill: #ec4a41;
 }
 
 #customHeader button {

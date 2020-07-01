@@ -1,7 +1,7 @@
 import React from 'react';
 import Enzyme, { shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
-import { ModalUpdateFailed } from './modalUpdateFailed';
+import { ModalFail } from './modalFail';
 Enzyme.configure({ adapter: new Adapter() });
 
 describe('modal update failed ', () => {
@@ -12,8 +12,8 @@ describe('modal update failed ', () => {
             label: "project id"
         };
 
-        const wrapper = shallow(<ModalUpdateFailed {...props} />);
-        const wrapperComponent = wrapper.find('.modalUpdateFailedContent');
+        const wrapper = shallow(<ModalFail {...props} />);
+        const wrapperComponent = wrapper.find('.modalFailContent');
         const children = wrapperComponent.prop('children');
 
         expect(children).toHaveLength(2);
@@ -23,8 +23,8 @@ describe('modal update failed ', () => {
     it('should show message that props.label is missing', () => {
         const propsNoTitle = { title: null };
 
-        const wrapper = shallow(<ModalUpdateFailed {...propsNoTitle} />);
-        const wrapperComponent = wrapper.find('.modalUpdateFailedContent');
+        const wrapper = shallow(<ModalFail {...propsNoTitle} />);
+        const wrapperComponent = wrapper.find('.modalFailContent');
         const children = wrapperComponent.prop('children');
 
         expect(children).toHaveLength(2);
@@ -35,7 +35,7 @@ describe('modal update failed ', () => {
         const closeMockFn = jest.fn();
         const props = { onClose: closeMockFn };
 
-        const wrapper = shallow(<ModalUpdateFailed {...props} />);
+        const wrapper = shallow(<ModalFail {...props} />);
         const openButton = wrapper.find({ title: "Ok" });
         expect(openButton.length).toEqual(1);
 
@@ -46,7 +46,7 @@ describe('modal update failed ', () => {
     it('should link to the reportUrl in the props', () => {
         const props = { url: 'http://example.com' };
 
-        const wrapper = shallow(<ModalUpdateFailed {...props} />);
+        const wrapper = shallow(<ModalFail {...props} />);
         const wrapperComponent = wrapper.find('.logContainer');
         const children = wrapperComponent.prop('children');
 

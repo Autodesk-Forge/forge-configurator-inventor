@@ -52,7 +52,7 @@ export class ModalUpdateFailed extends Component {
                     </header>
                 }
             >
-                <div className="modalUpdateFailedContent">
+                <div className="modalFailContent">
                     <div>
                         <Typography><span className="assemblyText">Assembly:</span> {this.props.label ? this.props.label : "Missing label."}</Typography>
                     </div>
@@ -60,7 +60,7 @@ export class ModalUpdateFailed extends Component {
                         <HyperLink link="Open log file" href={this.props.url} />
                     </div>
                 </div>
-                <div className="modalUpdateFailedButtonsContainer">
+                <div className="modalFailButtonsContainer">
                     <Button className="button" style={
                         { width: '102px', height: '36px', borderRadius: '2px', marginLeft: '12px' }}
                         type="primary"

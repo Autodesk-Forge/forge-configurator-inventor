@@ -3,13 +3,13 @@ import React, { Component } from 'react';
 import Modal from '@hig/modal';
 import { CloseMUI, Error24 } from "@hig/icons";
 import Typography from "@hig/typography";
-import './modalProgressRfaFailed.css';
+import './modalFail.css';
 import merge from "lodash.merge";
 import HyperLink from './hyperlink';
 import Button from '@hig/button';
 import IconButton from "@hig/icon-button";
 
-export class ModalProgressRfaFailed extends Component {
+export class ModalFail extends Component {
 
     render() {
         const modalStyles = /* istanbul ignore next */ styles =>
@@ -43,7 +43,7 @@ export class ModalProgressRfaFailed extends Component {
                                     lineHeight: "inherit"
                                 }}>{this.props.title}</Typography>
                             </div>
-                            <IconButton style={{ width: "16px", height: "24px" }}
+                            <IconButton style={{ width: "24px", height: "24px", marginLeft: "auto", marginRight: "auto" }}
                                 icon={<CloseMUI />}
                                 onClick={this.props.onClose}
                                 title=""
@@ -52,15 +52,15 @@ export class ModalProgressRfaFailed extends Component {
                     </header>
                 }
             >
-            <div className="modalProgressRFAFailedContent">
+                <div className="modalFailContent">
                     <div>
-                        <Typography><span className="assemblyText">Assembly:</span> {this.props.label ? this.props.label : "Missing label."}</Typography>
+                        <Typography><span className="assemblyText">{this.props.contentName}</span> {this.props.label ? this.props.label : "Missing label."}</Typography>
                     </div>
                     <div className="logContainer">
                         <HyperLink link="Open log file" href={this.props.url} />
                     </div>
-            </div>
-            <div className="modalProgressRFAFailedButtonsContainer">
+                </div>
+                <div className="modalFailButtonsContainer">
                     <Button className="button" style={
                         { width: '102px', height: '36px', borderRadius: '2px', marginLeft: '12px' }}
                         type="primary"
@@ -68,10 +68,10 @@ export class ModalProgressRfaFailed extends Component {
                         title="Ok"
                         onClick={this.props.onClose}
                     />
-            </div>
+                </div>
             </Modal>
         );
     }
 }
 
-export default ModalProgressRfaFailed;
+export default ModalFail;
