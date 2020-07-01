@@ -11,14 +11,7 @@ Before((I) => {
 Feature('Authentication');
 
 Scenario('check Sign-in and Sign-out workflow', async (I) => {
-
     await I.signIn();
 
-    //wait for logged 'Demo Tool' user
-    I.waitForElement(avatarDemoTool, 10);
-
     I.signOut();
-
-    // wait for Anonymous user
-    I.waitForElement(avatarAnonymous, 10);
 });
