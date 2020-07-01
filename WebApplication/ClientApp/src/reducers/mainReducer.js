@@ -26,8 +26,6 @@ export const modelAvailabilityState = function(state) {
     const activeProject = getActiveProject(state);
     if (! activeProject) return null;
 
-    console.log(`Active project is ${JSON.stringify(activeProject)}`);
-
     const { id, hash } = activeProject;
 
     return model.modelAvailabilityState(state.model, id, hash);
