@@ -20,7 +20,7 @@ export class ModalProgressRfaFailed extends Component {
                         height: "263px",
                         borderLeftStyle: "solid",
                         borderLeftWidth: "thick",
-                        borderLeftColor: "#ec4a41"
+                        borderLeftColor: "#ec4a41" // by design
                     }
                 }
             });
