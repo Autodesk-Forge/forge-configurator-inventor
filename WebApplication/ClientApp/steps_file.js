@@ -69,7 +69,7 @@ module.exports = function() {
       // wait for spinner to be hidden
       this.waitForInvisible(forgeViewerSpinner, 30);
     },
-    clickToAuthorizationButton(currentUser){
+    clickToAuthorizationButton(){
       // wait for User button
       this.waitForVisible(userButton,10);
       this.click(userButton);
@@ -77,16 +77,13 @@ module.exports = function() {
       // wait for Authorization popUp dialog
       this.waitForVisible(authorizationButton, 10);
 
-      // check the user name
-      this.see(currentUser, '.username');
-
       // click on Authorization Button
       this.click(authorizationButton);
     },
     async signIn(){
      // we use Autodesk Account credentials //https://accounts.autodesk.com/
 
-      this.clickToAuthorizationButton('Anonymous');
+      this.clickToAuthorizationButton();
 
       // check it is Sign-In page
       this.seeTitleEquals('Sign in');
@@ -117,7 +114,7 @@ module.exports = function() {
       this.dontSeeElement(loggedAnonymousUser);
     },
     signOut(){
-      this.clickToAuthorizationButton('Demo Tool');
+      this.clickToAuthorizationButton();
 
       // check if Anonymous user is signed
       this.waitForElement(loggedAnonymousUser, 10);
