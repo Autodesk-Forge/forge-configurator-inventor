@@ -5,7 +5,7 @@ Before((I) => {
    I.amOnPage('/');
 });
 
-Feature('Upload');
+Feature('Upload and delete');
 
 Scenario('upload workflow', async (I) => {
    await I.signIn();

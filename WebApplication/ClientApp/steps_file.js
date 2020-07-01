@@ -32,8 +32,15 @@ module.exports = function() {
   const userButton = '//button[@type="button" and (//span) and (//img)]';
   const loggedAnonymousUser = '//button[contains(@type, "button")]//img[contains(@alt, "Avatar image of Anonymous")]';
   const authorizationButton = '.auth-button';
-  const loginName = process.env.SDRA_USERNAME;
-  const password = process.env.SDRA_PASSWORD;
+  // get user info from enviroment vars
+  let loginName = process.env.SDRA_USERNAME;
+  let password = process.env.SDRA_PASSWORD;
+  // if not defined look at the settings file
+  if (loginName === undefined) {
+    settingsJson = require('../appsettings.Local.json');
+    loginName = settingsJson['sdra-username'];
+    password = settingsJson['sdra-password'];;
+  }
   const allowButton = '#allow_btn';
 
   // returns Project name locator
