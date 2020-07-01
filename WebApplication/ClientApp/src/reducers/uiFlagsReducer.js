@@ -7,6 +7,7 @@ export const initialState = {
    parametersEditedMessageRejected: false,
    modalProgressShowing: false,
    updateFailedShowing: false,
+   downloadRfaFailedShowing: false,
    reportUrl: null,
    rfaProgressShowing: null,
    rfaDownloadUrl: null,
@@ -26,6 +27,10 @@ export const modalProgressShowing = function(state) {
 
 export const updateFailedShowing = function(state) {
    return state.updateFailedShowing;
+};
+
+export const downloadRfaFailedShowing = function(state) {
+   return state.downloadRfaFailedShowing;
 };
 
 export const reportUrl = function(state) {
@@ -86,6 +91,8 @@ export default function(state = initialState, action) {
          return { ...state, modalProgressShowing: action.visible};
       case uiFlagsActionTypes.SHOW_UPDATE_FAILED:
          return { ...state, updateFailedShowing: action.visible};
+      case uiFlagsActionTypes.SHOW_RFA_FAILED:
+         return { ...state, downloadRfaFailedShowing: action.visible};
       case uiFlagsActionTypes.SET_REPORT_URL:
          return { ...state, reportUrl: action.url};
       case uiFlagsActionTypes.SHOW_RFA_PROGRESS:
