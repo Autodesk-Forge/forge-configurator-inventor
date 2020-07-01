@@ -12,21 +12,7 @@ const errorReportLink = 'https://error.link';
 const jobId = 'job1';
 
 // prepare mock for signalR
-var connectionMock = {
-    onHandlers: {},
-    start: function() {},
-    on: function(name, fn) { 
-        this.onHandlers[name] = fn; 
-    },
-    invoke: function() {},
-    stop: function() {},
-    simulateComplete: function(link) { 
-        this.onHandlers['onComplete'](link); 
-    },
-    simulateError: function(jobId, link) { 
-        this.onHandlers['onError'](jobId, link); 
-    }
-};
+import connectionMock from './connectionMock';
 
 import * as signalR from '@aspnet/signalr';
 signalR.HubConnectionBuilder = jest.fn();
