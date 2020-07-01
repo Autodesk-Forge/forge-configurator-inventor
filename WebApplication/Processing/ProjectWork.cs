@@ -111,6 +111,13 @@ namespace WebApplication.Processing
             ProjectStorage storage = await _userResolver.GetProjectStorageAsync(projectName);
             Project project = storage.Project;
 
+            //// *********************************************
+            //// temporary fail *********************************************
+            //_logger.LogError($"Failed to generate SAT file");
+            //throw new FdaProcessingException($"Failed to generate SAT file", "https://localhost:5000/#");
+            //// *********************************************
+
+
             var ossNameProvider = project.OssNameProvider(hash);
 
             var bucket = await _userResolver.GetBucket();
@@ -132,7 +139,11 @@ namespace WebApplication.Processing
             ProcessingArgs rfaData = await _arranger.ForRfaAsync(satData.SatUrl);
 
             ProcessingResult result = await _fdaClient.GenerateRfa(satData, rfaData);
-            if (! result.Success) throw new ApplicationException($"Failed to generate rfa for project {project.Name} and hash {hash}");
+            if (!result.Success)
+            {
+                _logger.LogError($"{result.ErrorMessage} for project {project.Name} and hash {hash}");
+                throw new FdaProcessingException($"{result.ErrorMessage} for project {project.Name} and hash {hash}", result.ReportUrl);
+            }
 
             await _arranger.MoveRfaAsync(project, hash);
         }

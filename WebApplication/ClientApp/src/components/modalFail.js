@@ -3,13 +3,13 @@ import React, { Component } from 'react';
 import Modal from '@hig/modal';
 import { CloseMUI, Error24 } from "@hig/icons";
 import Typography from "@hig/typography";
-import './modalUpdateFailed.css';
+import './modalFail.css';
 import merge from "lodash.merge";
 import HyperLink from './hyperlink';
 import Button from '@hig/button';
 import IconButton from "@hig/icon-button";
 
-export class ModalUpdateFailed extends Component {
+export class ModalFail extends Component {
 
     render() {
         const modalStyles = /* istanbul ignore next */ styles =>
@@ -54,7 +54,7 @@ export class ModalUpdateFailed extends Component {
             >
                 <div className="modalFailContent">
                     <div>
-                        <Typography><span className="assemblyText">Assembly:</span> {this.props.label ? this.props.label : "Missing label."}</Typography>
+                        <Typography><span className="assemblyText">{this.props.contentName}</span> {this.props.label ? this.props.label : "Missing label."}</Typography>
                     </div>
                     <div className="logContainer">
                         <HyperLink link="Open log file" href={this.props.url} />
@@ -74,4 +74,4 @@ export class ModalUpdateFailed extends Component {
     }
 }
 
-export default ModalUpdateFailed;
+export default ModalFail;

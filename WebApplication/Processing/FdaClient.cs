@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WebApplication.Definitions;
 
@@ -17,8 +18,9 @@ namespace WebApplication.Processing
         private readonly UpdateProject _updateProjectWork;
         private readonly AppBundleZipPaths _paths;
         private readonly UpdateParameters _updateParametersWork;
+        private readonly ILogger<FdaClient> _logger;
 
-        public FdaClient(Publisher publisher, IOptions<AppBundleZipPaths> appBundleZipPathsOptionsAccessor)
+        public FdaClient(Publisher publisher, IOptions<AppBundleZipPaths> appBundleZipPathsOptionsAccessor, ILogger<FdaClient> logger)
         {
             _transferData = new TransferData(publisher);
             _svfWork = new CreateSVF(publisher);
@@ -30,6 +32,7 @@ namespace WebApplication.Processing
             _updateParametersWork = new UpdateParameters(publisher);
             _updateProjectWork = new UpdateProject(publisher);
             _paths = appBundleZipPathsOptionsAccessor.Value;
+            _logger = logger;
         }
 
         public async Task InitializeAsync()
@@ -77,10 +80,21 @@ namespace WebApplication.Processing
 
         internal async Task<ProcessingResult> GenerateRfa(ProcessingArgs satData, ProcessingArgs rfaData)
         {
-            ProcessingResult result = await _satWork.ProcessAsync(satData);
-            if (! result.Success) throw new ApplicationException("Failed to generate SAT file"); // TODO: should include the result DTO
+            ProcessingResult satResult = await _satWork.ProcessAsync(satData);
+            if (!satResult.Success)
+            {
+                satResult.ErrorMessage = "Failed to generate SAT file";
+                return satResult;
+            }
 
-            return await _rfaWork.ProcessAsync(rfaData);
+            ProcessingResult rfaResult = await _rfaWork.ProcessAsync(rfaData);
+            if (!rfaResult.Success)
+            {
+                rfaResult.ErrorMessage = "Failed to generate RFA file";
+                return rfaResult;
+            }
+
+            return rfaResult;
         }
     }
 }
