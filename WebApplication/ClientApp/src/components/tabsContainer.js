@@ -37,8 +37,10 @@ class TabsContainer extends Component {
               </Tab>
               <Tab label="Model" >
                 <div id="model" className='tabContent fullheight'>
-                  <ParametersContainer/>
-                  <ForgeView/>
+                  <div className='inRow fullheight'>
+                    <ParametersContainer/>
+                    <ForgeView/>
+                  </div>
                 </div>
               </Tab>
               <Tab label="BOM">

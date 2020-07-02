@@ -23,7 +23,7 @@ namespace WebApplication.Middleware
         {
             var httpRequest = context.Request;
 
-            while (userResolver.IsAuthenticated)
+            while (true)
             {
                 // the expected path is like "/data/4EC4EC1C4C0082AB28582C8A50FFC2BF33E42356/Wrench/0B81352BCE7C9CEB8C8EAA7297A8AB64274C75A5/SVF/bubble.json"
                 // 0 - 'root' for static files (data)
