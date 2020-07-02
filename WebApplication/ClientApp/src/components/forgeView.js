@@ -17,11 +17,11 @@ export class ForgeView extends Component {
       this.viewer = null;
     }
 
-    handleScriptLoad(){
-        const options = {
-//            env: 'Local', // , getAccessToken: this.props.onTokenRequest
-            accessToken: repo.getAccessToken()
-        };
+    handleScriptLoad() {
+
+        const options = repo.hasAccessToken() ?
+                            { accessToken: repo.getAccessToken() } :
+                            { env: 'Local' };
 
         Autodesk = window.Autodesk;
 

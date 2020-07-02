@@ -46,7 +46,11 @@ namespace WebApplication.Middleware
         {
             app.UseWhen(context => context.Request.Path.Value.StartsWith(VirtualCacheDir) &&
                                    context.Request.Path.Value.EndsWith("bubble.json"),
-                a => a.UseMiddleware<SvfRestore>());
+                a =>
+                {
+                    a.UseMiddleware<TokenHandler>();
+                    a.UseMiddleware<SvfRestore>();
+                });
 
             app.UseStaticFiles(new StaticFileOptions
             {
