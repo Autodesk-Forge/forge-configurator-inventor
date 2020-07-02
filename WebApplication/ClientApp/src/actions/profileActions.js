@@ -1,6 +1,8 @@
 import repo from '../Repository';
 import { addError, addLog } from './notificationActions';
 
+import Cookies from 'universal-cookie';
+
 const actionTypes = {
     PROFILE_LOADED: 'PROFILE_LOADED'
 };
@@ -21,6 +23,10 @@ export const detectToken = () => (dispatch) => {
         if (accessToken) {
             dispatch(addLog(`Detected access token = '${accessToken}'`));
             repo.setAccessToken(accessToken);
+
+            const cookies = new Cookies();
+
+            cookies.set('_t_', accessToken, { path: '/' , secure: true });
 
             // remove token from URL
             window.history.pushState("", document.title, window.location.pathname);

@@ -2,6 +2,7 @@
 using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.FileProviders;
 
 namespace WebApplication.Middleware
 {
@@ -43,9 +44,13 @@ namespace WebApplication.Middleware
         /// </summary>
         public void Serve(IApplicationBuilder app)
         {
+            app.UseWhen(context => context.Request.Path.Value.StartsWith(VirtualCacheDir) &&
+                                   context.Request.Path.Value.EndsWith("bubble.json"),
+                a => a.UseMiddleware<SvfRestore>());
+
             app.UseStaticFiles(new StaticFileOptions
             {
-                FileProvider = new LocalCacheFileProvider(LocalRootName, app.ApplicationServices),
+                FileProvider = new PhysicalFileProvider(LocalRootName),
                 RequestPath = new PathString(VirtualCacheDir),
                 ServeUnknownFileTypes = true
             });

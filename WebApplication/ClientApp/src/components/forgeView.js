@@ -4,7 +4,6 @@ import {connect} from 'react-redux';
 import { getActiveProject } from '../reducers/mainReducer';
 import './forgeView.css';
 import Message from './message';
-import repo from '../Repository';
 
 let Autodesk = null;
 
@@ -61,21 +60,20 @@ export class ForgeView extends Component {
             return;
 
         Autodesk.Viewing.Document.load(
-            this.buildSvfUrl(), this.onDocumentLoadSuccess.bind(this), () => {}
+            this.getSvfUrl(), this.onDocumentLoadSuccess.bind(this), () => {}
         );
     }
 
     componentDidUpdate(prevProps) {
         if (Autodesk && (this.props.activeProject.svf !== prevProps.activeProject.svf)) {
             Autodesk.Viewing.Document.load(
-                this.buildSvfUrl(), this.onDocumentLoadSuccess.bind(this), () => {}
+                this.getSvfUrl(), this.onDocumentLoadSuccess.bind(this), () => {}
             );
         }
     }
 
-    buildSvfUrl() {
-        const token = repo.getAccessToken() || "_";
-        return this.props.activeProject.svf + `/${token}.bubble.json`;
+    getSvfUrl() {
+        return this.props.activeProject.svf + `/bubble.json`;
     }
 
     onDocumentLoadSuccess(viewerDocument) {
