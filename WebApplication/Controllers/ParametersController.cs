@@ -28,7 +28,7 @@ namespace WebApplication.Controllers
 
             var localNames = projectStorage.GetLocalNames();
             var paramsFile = localNames.Parameters;
-            if (! System.IO.File.Exists(paramsFile))
+            if (! System.IO.File.Exists(paramsFile)) // TODO: unify it someday, not high priority
             {
                 _logger.LogInformation($"Restoring missing parameters file for '{projectName}'");
 

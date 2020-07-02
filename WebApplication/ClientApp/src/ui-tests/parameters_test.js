@@ -18,7 +18,7 @@ Scenario('should check if Parameter panel has Reset and Update button', async (I
     I.see("Update", locators.xpButtonUpdate );
 });
 
-//ensure that Stripe panel is not diabled!!!
+//ensure that Stripe panel is not disabled!!!
 Scenario('should check if Stripe panel is displayed and hidden', async (I) => {
 
     // click on Model tab
@@ -27,7 +27,7 @@ Scenario('should check if Stripe panel is displayed and hidden', async (I) => {
     // check that Model tab has a parameter - Length
     I.waitForElement('//*[@id="model"]/div/div[1]/div[2]/div[1]/div/input', 20);
 
-    // change the Lenght parameter
+    // change the Length parameter
     I.clearField('//div[2]/div[1]/div/input');
     I.fillField('//div[2]/div[1]/div/input', "12500 mm");
 

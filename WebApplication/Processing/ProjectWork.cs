@@ -163,7 +163,7 @@ namespace WebApplication.Processing
             _logger.LogInformation("Update the project");
             var bucket = await _userResolver.GetBucketAsync();
 
-            var isUpdateExists = await IsGenerated(project, hash, bucket);
+            var isUpdateExists = await IsGenerated(project, bucket, hash);
             if (isUpdateExists)
             {
                 _logger.LogInformation("Detected existing outputs at OSS");
@@ -196,7 +196,11 @@ namespace WebApplication.Processing
             return hash;
         }
 
-        private static async Task<bool> IsGenerated(Project project, string hash, OssBucket bucket)
+        /// <summary>
+        /// Checks if project has outputs for the given parameters hash.
+        /// NOTE: it checks presence of `parameters.json` only.
+        /// </summary>
+        private static async Task<bool> IsGenerated(Project project, OssBucket bucket, string hash)
         {
             var ossNames = project.OssNameProvider(hash);
             return await bucket.ObjectExistsAsync(ossNames.Parameters);

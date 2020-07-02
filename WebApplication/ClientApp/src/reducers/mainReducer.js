@@ -19,7 +19,6 @@ export const getActiveProject = function(state) {
     return list.getActiveProject(state.projectList);
 };
 
-
 export const getProject = function(id, state) {
     return list.getProject(id, state.projectList);
 };
