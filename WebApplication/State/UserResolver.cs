@@ -38,6 +38,10 @@ namespace WebApplication.State
             AnonymousBucket = new OssBucket(_forgeOSS, resourceProvider.BucketKey);
         }
 
+        public string GetBucketPrefix() {
+            return $"authd-{_forgeConfig.ClientId}".ToLowerInvariant();
+        }
+
         public async Task<OssBucket> GetBucketAsync(bool tryToCreate = false)
         {
             if (! IsAuthenticated) return AnonymousBucket;
@@ -49,7 +53,7 @@ namespace WebApplication.State
             // so it a Forge user gets registered into several deployments it will not cause
             // name collisions. So use client ID (as a salt) to generate bucket name.
             var userHash = Crypto.GenerateHashString(_forgeConfig.ClientId + userId);
-            var bucketKey = $"authd-{_forgeConfig.ClientId}-{userId.Substring(0, 3)}-{userHash}".ToLowerInvariant();
+            var bucketKey = $"{GetBucketPrefix()}-{userId.Substring(0, 3)}-{userHash}".ToLowerInvariant();
 
             var bucket = new OssBucket(_forgeOSS, bucketKey);
             if (tryToCreate)

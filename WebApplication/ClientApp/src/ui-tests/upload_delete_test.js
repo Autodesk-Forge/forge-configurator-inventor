@@ -5,10 +5,16 @@ Before((I) => {
    I.amOnPage('/');
 });
 
-Feature('Upload');
+Feature('Upload and delete');
 
-Scenario.skip('upload workflow', async (I) => {
+Scenario('upload workflow', async (I) => {
    await I.signIn();
 
    await I.uploadProject('src\\ui-tests\\SimpleBox.zip', 'SimpleBox.iam');
+});
+
+Scenario('delete workflow', async (I) => {
+   await I.signIn();
+
+   await I.deleteProject('SimpleBox');
 });

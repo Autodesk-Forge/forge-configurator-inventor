@@ -20,6 +20,12 @@ const uploadButton = '//button[@id="upload_button"]';
 const uploadConfirmationDialog = '//p[text()="Upload Finished"]';
 const closeButton = '//button[@title="Close"]';
 
+// Delete
+const projectRow = '//div[div/div/text()="ProjectName"]';
+const checkBox = '//input[@id="checkbox_row"]';
+const deleteProjectButton = '//button[@title="Delete project(s)"]';
+const confirmDelete = '//button[@id="delete_ok_button"]';
+
 module.exports = function() {
 
   const forgeViewerSpinner = '//div[@id="ForgeViewer"]//div[@class="spinner"]';
@@ -63,7 +69,7 @@ module.exports = function() {
       // wait for spinner to be hidden
       this.waitForInvisible(forgeViewerSpinner, 30);
     },
-    clickToAuthorizationButton(currentUser){
+    clickToAuthorizationButton(){
       // wait for User button
       this.waitForVisible(userButton,10);
       this.click(userButton);
@@ -71,16 +77,13 @@ module.exports = function() {
       // wait for Authorization popUp dialog
       this.waitForVisible(authorizationButton, 10);
 
-      // check the user name
-      this.see(currentUser, '.username');
-
       // click on Authorization Button
       this.click(authorizationButton);
     },
     async signIn(){
      // we use Autodesk Account credentials //https://accounts.autodesk.com/
 
-      this.clickToAuthorizationButton('Anonymous');
+      this.clickToAuthorizationButton();
 
       // check it is Sign-In page
       this.seeTitleEquals('Sign in');
@@ -111,7 +114,7 @@ module.exports = function() {
       this.dontSeeElement(loggedAnonymousUser);
     },
     signOut(){
-      this.clickToAuthorizationButton('Demo Tool');
+      this.clickToAuthorizationButton();
 
       // check if Anonymous user is signed
       this.waitForElement(loggedAnonymousUser, 10);
@@ -131,6 +134,27 @@ module.exports = function() {
       // Wait for file to be uploaded
       this.waitForVisible(uploadConfirmationDialog, 120);
       this.click(closeButton);
+    },
+    deleteProject(projectName) {
+      // hover above project
+      let projectRowWithName = projectRow.replace('ProjectName', projectName);
+      this.waitForVisible(projectRowWithName, 10);
+      this.moveCursorTo(projectRowWithName);
+
+      // click the checkbox to select projetc
+      this.waitForVisible(checkBox);
+      this.click(checkBox);
+
+      // click the delete button
+      this.waitForVisible(deleteProjectButton);
+      this.click(deleteProjectButton);
+
+      // confirm delete
+      this.waitForVisible(confirmDelete);
+      this.click(confirmDelete);
+
+      // wait for project disapear from the list
+      this.waitForInvisible(projectRowWithName, 60);
     }
   });
 }

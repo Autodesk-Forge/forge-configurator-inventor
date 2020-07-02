@@ -44,12 +44,30 @@ namespace WebApplication.State
         }
 
         /// <summary>
+        /// Deletes the bucket.
+        /// </summary>
+        /// <param name="bucketName">Bucket name</param>
+        public async Task DeleteBucketAsync(string bucketName)
+        {
+            await _forgeOSS.DeleteBucketAsync(bucketName);
+        }
+
+        /// <summary>
         /// Get bucket objects.
         /// </summary>
         /// <param name="beginsWith">Search filter ("begin with")</param>
         public async Task<List<ObjectDetails>> GetObjectsAsync(string beginsWith = null)
         {
             return await _forgeOSS.GetBucketObjectsAsync(BucketKey, beginsWith);
+        }
+
+        /// <summary>
+        /// List all buckets.
+        /// </summary>
+        /// <returns>List of buckets</returns>
+        public async Task<List<string>> GetBucketsAsync()
+        {
+            return await _forgeOSS.GetBucketsAsync();
         }
 
         /// <summary>

@@ -7,7 +7,7 @@ import { fetchParameters, resetParameters, updateModelWithParameters } from '../
 import { showModalProgress, showUpdateFailed } from '../actions/uiFlagsActions';
 import Button from '@hig/button';
 import ModalProgress from './modalProgress';
-import ModalUpdateFailed from './modalUpdateFailed';
+import ModalFail from './modalFail';
 
 export class ParametersContainer extends Component {
 
@@ -72,12 +72,15 @@ export class ParametersContainer extends Component {
                         label={this.props.activeProject.id}
                         icon="/Assembly_icon.svg"
                         onClose={() => this.onProgressCloseClick()}/>
-                     <ModalUpdateFailed
-                        open={this.props.updateFailedShowing}
-                        title="Update Failed"
-                        label={this.props.activeProject.id}
-                        onClose={() => this.onUpdateFailedCloseClick()}
-                        url={this.props.reportUrl}/>
+                    {this.props.updateFailedShowing &&
+                        <ModalFail
+                            open={this.props.updateFailedShowing}
+                            title="Update Failed"
+                            contentName="Assembly:"
+                            label={this.props.activeProject.id}
+                            onClose={() => this.onUpdateFailedCloseClick()}
+                            url={this.props.reportUrl}/>
+                    }
                 </div>
             </div>
         );

@@ -1,0 +1,54 @@
+.modalFailContent {
+    height: 119px;
+}
+
+.modalFailButtonsContainer {
+    display: flex;
+    flex-flow: row-reverse;
+}
+
+#customHeader {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.666;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-bottom: 1px solid rgba(60,60,60,0.25);
+    min-height: 60px;
+    z-index: 1002;
+}
+
+#customHeader .customHeaderContent {
+    margin: 0 24px;
+    display: flex;
+    justify-content: space-between;
+}
+
+#customHeader .customHeaderContent .title {
+    display: flex;
+}
+
+#customHeader .customHeaderContent .title .errorIcon {
+    margin: auto;
+}
+
+svg.errorIcon path {
+    fill: #ec4a41;
+}
+
+#customHeader button {
+    background-color: transparent;
+    height: calc(20px + (8px * 2));
+    width: calc(20px + (8px * 2));
+    right: -10px;
+}
+
+.assemblyText {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.logContainer {
+    margin-top: 10px;
+}

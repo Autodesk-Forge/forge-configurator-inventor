@@ -1,6 +1,19 @@
-import { fetchParameters, formatParameters } from './parametersActions';
+import { fetchParameters, formatParameters, updateModelWithParameters } from './parametersActions';
 import parameterActionTypes from './parametersActions';
 import notificationTypes from '../actions/notificationActions';
+
+// following is for testing the updateModelWithParameters
+// prepare mock for signalR
+import { actionTypes as uiFlagsActionTypes } from './uiFlagsActions';
+import { actionTypes as projectListActionTypes } from './projectListActions';
+import * as signalR from '@aspnet/signalr';
+
+const errorReportLink = 'https://error.link';
+const jobId = 'job1';
+
+import connectionMock from './connectionMock';
+
+// end of "for testing the updateModelWithParameters"
 
 // the test based on https://redux.js.org/recipes/writing-tests#async-action-creators
 
@@ -209,5 +222,63 @@ describe('fetchParameters', () => {
                     expect(errorMessage).toMatch(/123456/);
                 });
         });
+    });
+
+    describe('updateModelWithParameters', () => {
+        beforeAll(() => {
+            // prepare mock for signalR
+            signalR.HubConnectionBuilder = jest.fn();
+            signalR.HubConnectionBuilder.mockImplementation(() => ({
+                withUrl: function(/*url*/) {
+                    return {
+                        configureLogging: function(/*trace*/) {
+                            return { build: function() { return connectionMock; }};
+                        }
+                    };
+                }
+            }));
         });
+
+        beforeEach(() => { // Runs before each test in the suite
+            store.clearActions();
+        });
+
+        it('check updateModelWithParameters success path', () => {
+            return store.dispatch(updateModelWithParameters(projectId, []))
+            .then(() => {
+                const parameters = { "a1": { "value": "7", "values": [], "unit": "mm" } };
+                const adaptedParams = [ { "name": "a1", "value": "7", "allowedValues": [], "units": "mm", "type": "NYI" } ];
+                const projectData = { "data": "someData" };
+                const updatedState = {
+                    parameters: parameters,
+                    ...projectData
+                };
+
+                connectionMock.simulateComplete(updatedState);
+
+                // check expected store actions
+                const actions = store.getActions();
+                // there are two SET_REPORT_URL actions in the list. The first one come from job start and is called with null to clear old data...
+                const updateParams = actions.find(a => a.type === parameterActionTypes.PARAMETERS_UPDATED);
+                expect(updateParams.projectId).toEqual(projectId);
+                expect(updateParams.parameters).toEqual(adaptedParams);
+                const updateProject = actions.find(a => a.type === projectListActionTypes.UPDATE_PROJECT);
+                expect(updateProject.activeProjectId).toEqual(projectId);
+                expect(updateProject.data).toEqual(projectData);
+            });
+        });
+
+        it('check updateModelWithParameters error path', () => {
+            return store.dispatch(updateModelWithParameters(projectId, []))
+            .then(() => {
+                connectionMock.simulateError(jobId,errorReportLink);
+
+                // check expected store actions
+                const actions = store.getActions();
+                // there are two SET_REPORT_URL actions in the list. The first one come from job start and is called with null to clear old data...
+                expect(actions.some(a => (a.type === uiFlagsActionTypes.SET_REPORT_URL && a.url === errorReportLink))).toEqual(true);
+                expect(actions.some(a => a.type === uiFlagsActionTypes.SHOW_UPDATE_FAILED)).toEqual(true);
+            });
+        });
+    });
 });

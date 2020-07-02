@@ -7,6 +7,7 @@ export const actionTypes = {
     CLOSE_PARAMETERS_EDITED_MESSAGE: 'CLOSE_PARAMETERS_EDITED_MESSAGE',
     SHOW_MODAL_PROGRESS: 'SHOW_MODAL_PROGRESS',
     SHOW_UPDATE_FAILED: 'SHOW_UPDATE_FAILED',
+    SHOW_RFA_FAILED: 'SHOW_RFA_FAILED',
     SET_REPORT_URL: 'SET_REPORT_URL',
     SHOW_RFA_PROGRESS: 'SHOW_RFA_PROGRESS',
     HIDE_RFA_PROGRESS: 'HIDE_RFA_PROGRESS',
@@ -65,6 +66,13 @@ export const showModalProgress = (visible) => {
 export const showUpdateFailed = (visible) => {
     return {
         type: actionTypes.SHOW_UPDATE_FAILED,
+        visible
+    };
+};
+
+export const showRfaFailed = (visible) => {
+    return {
+        type: actionTypes.SHOW_RFA_FAILED,
         visible
     };
 };

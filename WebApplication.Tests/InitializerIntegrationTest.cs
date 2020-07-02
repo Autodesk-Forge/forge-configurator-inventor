@@ -78,7 +78,7 @@ namespace WebApplication.Tests
             };
             IOptions<AppBundleZipPaths> appBundleZipPathsOptions = Options.Create(appBundleZipPathsConfiguration);
 
-            var fdaClient = new FdaClient(publisher, appBundleZipPathsOptions);
+            var fdaClient = new FdaClient(publisher, appBundleZipPathsOptions, new NullLogger<FdaClient>());
             var defaultProjectsConfiguration = new DefaultProjectsConfiguration
             {
                 Projects = new [] { new DefaultProjectConfiguration { Url = testZippedIamUrl, TopLevelAssembly = testIamPathInZip, Name = "Basic" } }
@@ -99,14 +99,14 @@ namespace WebApplication.Tests
 
         public async Task InitializeAsync()
         {
-            await initializer.ClearAsync();
+            await initializer.ClearAsync(false);
         }
 
         public async Task DisposeAsync()
         {
             testFileDirectory.Delete(true);
             httpClient.Dispose();
-            await initializer.ClearAsync();
+            await initializer.ClearAsync(false);
         }
 
         private async Task<string> DownloadTestComparisonFile(string url, string name)
