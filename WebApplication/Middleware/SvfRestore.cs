@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Autodesk.Forge.Core;
 using Microsoft.AspNetCore.Http;
@@ -12,6 +13,8 @@ namespace WebApplication.Middleware
 {
     public class SvfRestore
     {
+        const string BearerPrefix = "Bearer ";
+
         private readonly RequestDelegate _next;
 
         public SvfRestore(RequestDelegate next)
@@ -20,12 +23,19 @@ namespace WebApplication.Middleware
         }
 
         public async Task InvokeAsync(HttpContext context, ResourceProvider resourceProvider, IForgeOSS forgeOSS,
-                                        IOptions<ForgeConfiguration> forgeOptions, LocalCache localCache)
+                                        IOptions<ForgeConfiguration> forgeOptions, LocalCache localCache, UserResolver rrr)
         {
             var httpRequest = context.Request;
 
-            while (httpRequest.Cookies.TryGetValue("_t_", out var token))
+            //while (httpRequest.Cookies.TryGetValue("_t_", out var token))
+            while (httpRequest.Headers.TryGetValue("Authorization", out var values))
             {
+                var headerValue = values[0];
+                if (! headerValue.StartsWith(BearerPrefix)) break;
+
+                string token = headerValue.Substring(BearerPrefix.Length);
+                if (string.IsNullOrEmpty(token)) break;
+
                 // the expected path is like "/data/4EC4EC1C4C0082AB28582C8A50FFC2BF33E42356/Wrench/0B81352BCE7C9CEB8C8EAA7297A8AB64274C75A5/SVF/bubble.json"
                 // 0 - 'root' for static files (data)
                 // 1 - User dir (4EC4EC1C4C0082AB28582C8A50FFC2BF33E42356

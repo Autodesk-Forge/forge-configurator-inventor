@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import { getActiveProject } from '../reducers/mainReducer';
 import './forgeView.css';
 import Message from './message';
+import repo from '../Repository';
 
 let Autodesk = null;
 
@@ -18,7 +19,8 @@ export class ForgeView extends Component {
 
     handleScriptLoad(){
         const options = {
-            env: 'Local' // , getAccessToken: this.props.onTokenRequest
+//            env: 'Local', // , getAccessToken: this.props.onTokenRequest
+            accessToken: repo.getAccessToken()
         };
 
         Autodesk = window.Autodesk;
