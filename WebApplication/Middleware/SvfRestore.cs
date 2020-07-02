@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Autodesk.Forge.Core;
 using Microsoft.AspNetCore.Http;
@@ -23,24 +24,38 @@ namespace WebApplication.Middleware
         {
             var httpRequest = context.Request;
 
-            if (httpRequest.Cookies.TryGetValue("_t_", out var token))
+            while (httpRequest.Cookies.TryGetValue("_t_", out var token))
             {
-                var pieces = httpRequest.Path.Value.Split('/', StringSplitOptions.RemoveEmptyEntries);
+                // the expected path is like "/data/4EC4EC1C4C0082AB28582C8A50FFC2BF33E42356/Wrench/0B81352BCE7C9CEB8C8EAA7297A8AB64274C75A5/SVF/bubble.json"
+                // 0 - 'root' for static files (data)
+                // 1 - User dir (4EC4EC1C4C0082AB28582C8A50FFC2BF33E42356
+                // 2 - Project ID (Wrench)
+                // 3 - Parameters hash (0B81352BCE7C9CEB8C8EAA7297A8AB64274C75A5)
+                // 4 - Subdir for SVF structure (SVF)
+                // 5 - Manifest file for SVF (bubble.json)
+                string[] pieces = httpRequest.Path.Value.Split('/', StringSplitOptions.RemoveEmptyEntries);
+                if (pieces.Length != 6) break;
+
                 string projectName = pieces[2];
                 string hash = pieces[3];
 
-                UserResolver userResolver = new UserResolver(resourceProvider, forgeOSS, forgeOptions, localCache)
-                {
-                    Token = token
-                };
+                var userResolver = new UserResolver(resourceProvider, forgeOSS, forgeOptions, localCache)
+                                    {
+                                        Token = token
+                                    };
 
                 var projectStorage = await userResolver.GetProjectStorageAsync(projectName);
+
+                // check if SVF dir already exists
+                var svfDir = projectStorage.GetLocalNames(hash).SvfDir;
+                if (Directory.Exists(svfDir)) break;
+                
+                // download and extract SVF
                 var bucket = await userResolver.GetBucketAsync();
-
                 await projectStorage.EnsureSvfAsync(bucket, hash);
+
+                break;
             }
-
-
 
             // Call the next delegate/middleware in the pipeline
             await _next(context);
