@@ -114,8 +114,8 @@ export default function(state = initialState, action) {
          return { ...state, uploadProgressStatus: "done"};
       case uploadPackagesActionTypes.SET_UPLOAD_FAILED:
          return { ...state, uploadFailedShowing: true, reportUrl: action.reportUrl };
-      case uploadPackagesActionTypes.SHOW_UPLOAD_FAILED:
-         return { ...state, uploadFailedShowing: action.visible };
+      case uploadPackagesActionTypes.HIDE_UPLOAD_FAILED:
+         return { ...state, uploadFailedShowing: false };
       case uiFlagsActionTypes.PACKAGE_FILE_EDITED:
          return { ...state, package: { file: action.file, root: state.package.root } };
       case uiFlagsActionTypes.PACKAGE_ROOT_EDITED:

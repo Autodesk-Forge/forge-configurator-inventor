@@ -5,7 +5,7 @@ import IconButton from '@hig/icon-button';
 import { Upload24, Trash24 } from '@hig/icons';
 import './projectList.css';
 import { showUploadPackage, updateActiveTabIndex, showDeleteProject, showModalProgress } from '../actions/uiFlagsActions';
-import { setUploadProgressHidden, showUploadFailed } from '../actions/uploadPackageActions';
+import { setUploadProgressHidden, hideUploadFailed } from '../actions/uploadPackageActions';
 import { updateActiveProject } from '../actions/projectListActions';
 import UploadPackage from './uploadPackage';
 import DeleteProject from './deleteProject';
@@ -52,7 +52,7 @@ export class ProjectList extends Component {
   }
 
   onUploadFailedCloseClick() {
-    this.props.showUploadFailed(false);
+    this.props.hideUploadFailed();
   }
 
   render() {
@@ -134,4 +134,4 @@ export default connect(function (store) {
     reportUrl: reportUrl(store),
     modalProgressShowing: modalProgressShowing(store)
   };
-}, { showUploadPackage, updateActiveProject, updateActiveTabIndex, setUploadProgressHidden, showUploadFailed, showDeleteProject, showModalProgress })(ProjectList);
+}, { showUploadPackage, updateActiveProject, updateActiveTabIndex, setUploadProgressHidden, hideUploadFailed, showDeleteProject, showModalProgress })(ProjectList);

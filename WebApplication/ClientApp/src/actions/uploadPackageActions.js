@@ -8,7 +8,7 @@ const actionTypes = {
     SET_UPLOAD_PROGRESS_HIDDEN: 'SET_UPLOAD_PROGRESS_HIDDEN',
     SET_UPLOAD_PROGRESS_DONE: 'SET_UPLOAD_PROGRESS_DONE',
     SET_UPLOAD_FAILED: 'SET_UPLOAD_FAILED',
-    SHOW_UPLOAD_FAILED: 'SHOW_UPLOAD_FAILED'
+    HIDE_UPLOAD_FAILED: 'HIDE_UPLOAD_FAILED'
 };
 
 export default actionTypes;
@@ -59,9 +59,8 @@ export const setUploadFailed = (reportUrl) => {
     };
 };
 
-export const showUploadFailed = (visible) => {
+export const hideUploadFailed = () => {
     return {
-        type: actionTypes.SHOW_UPLOAD_FAILED,
-        visible
+        type: actionTypes.HIDE_UPLOAD_FAILED
     };
 };
