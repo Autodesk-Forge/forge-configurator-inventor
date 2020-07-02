@@ -1,10 +1,14 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Autodesk.Forge.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
+using WebApplication.Services;
 using WebApplication.State;
+using WebApplication.Utilities;
 
 namespace WebApplication.Middleware
 {
@@ -24,26 +28,30 @@ namespace WebApplication.Middleware
             _fileProvider.Dispose();
         }
 
-        public IFileInfo GetFileInfo(string subpath)
+        public IFileInfo GetFileInfo(string subPath)
         {
-            var fileInfo = _fileProvider.GetFileInfo(subpath);
-            if (! fileInfo.Exists && subpath.EndsWith("bubble.json"))
+            var fileInfo = _fileProvider.GetFileInfo(subPath);
+            if (! fileInfo.Exists && subPath.EndsWith(".bubble.json"))
             {
-                var pieces = subpath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+                var pieces = subPath.Split('/', StringSplitOptions.RemoveEmptyEntries);
                 string projectName = pieces[1];
                 string hash = pieces[2];
 
-                var userResolver = _serviceProvider.GetService<UserResolver>();
+                var fileName = pieces[^1];
+                string token = fileName.Substring(0, fileName.Length - ".bubble.json".Length);
+                // TODO: handle "no token" situation
+
+                UserResolver userResolver = new UserResolver(_serviceProvider.GetService<ResourceProvider>(), _serviceProvider.GetService<IForgeOSS>(), 
+                    _serviceProvider.GetService<IOptions<ForgeConfiguration>>(), _serviceProvider.GetService<LocalCache>())
+                {
+                    Token = token
+                };
 
                 LoadSvfAsync(projectName, hash, userResolver).GetAwaiter().GetResult();
 
-                //var userResolver = _serviceProvider.GetService<UserResolver>();
-
-                //var projectStorage = await userResolver.GetProjectStorageAsync(projectName);
-                //await projectStorage.EnsureSvfAsync(userResolver.GetBucketAsync(), hash);
-
                 // and repeat
-                fileInfo = _fileProvider.GetFileInfo(subpath);
+                string realSubPath = Path.Combine(subPath.Substring(0, subPath.Length - fileName.Length), "bubble.json");
+                fileInfo = _fileProvider.GetFileInfo(realSubPath);
             }
 
             return fileInfo;
