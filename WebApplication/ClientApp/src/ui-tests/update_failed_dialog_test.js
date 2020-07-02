@@ -28,10 +28,10 @@ Scenario('should check incorrect input to show failed dialog', (I) => {
     I.see("Update", locators.xpButtonUpdate);
     I.click( locators.xpButtonUpdate);
 
+    // waiting for Updating dialog
     I.waitForVisible(updatingDialogTitle, 10);
-    I.waitForInvisible(updatingDialogTitle, 30);
 
     // check if Failed dialog is displayed
-    I.waitForVisible(failedDialogTitle, 15);
+    I.waitForVisible(failedDialogTitle, 30);
 
 });
