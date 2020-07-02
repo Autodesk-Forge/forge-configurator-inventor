@@ -44,14 +44,17 @@ namespace WebApplication.Middleware
         /// </summary>
         public void Serve(IApplicationBuilder app)
         {
+            // 'bubble.json' is a top-level manifest file for SVF structure. Detect requests to it,
+            // and (if necessary) restore SVF to local cache from OSS
             app.UseWhen(context => context.Request.Path.Value.StartsWith(VirtualCacheDir) &&
                                    context.Request.Path.Value.EndsWith("bubble.json"),
-                a =>
+                appBuilder =>
                 {
-                    a.UseMiddleware<TokenHandler>();
-                    a.UseMiddleware<SvfRestore>();
+                    appBuilder.UseMiddleware<TokenHandler>();
+                    appBuilder.UseMiddleware<SvfRestore>();
                 });
 
+            // serve Local Cache dir as static files in '/data' virtual dir
             app.UseStaticFiles(new StaticFileOptions
             {
                 FileProvider = new PhysicalFileProvider(LocalRootName),

@@ -2,10 +2,14 @@
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using WebApplication.State;
 
 namespace WebApplication.Middleware
 {
+    /// <summary>
+    /// Middleware to restore missing SVFs in local cache
+    /// </summary>
     public class SvfRestore
     {
         private readonly RequestDelegate _next;
@@ -15,7 +19,7 @@ namespace WebApplication.Middleware
             _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context, UserResolver userResolver)
+        public async Task InvokeAsync(HttpContext context, UserResolver userResolver, ILogger<SvfRestore> logger)
         {
             var httpRequest = context.Request;
 
@@ -39,6 +43,8 @@ namespace WebApplication.Middleware
                 // check if SVF dir already exists
                 var svfDir = projectStorage.GetLocalNames(hash).SvfDir;
                 if (Directory.Exists(svfDir)) break;
+
+                logger.LogInformation($"Restoring '{hash}' for '{projectName}'");
                 
                 // download and extract SVF
                 var bucket = await userResolver.GetBucketAsync();
