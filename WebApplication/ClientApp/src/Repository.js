@@ -62,12 +62,6 @@ class Repository {
         return result.data;
     }
 
-    /** Ensure presence of the project state in local cache */
-    async ensureModelData(projectName, hash) {
-        const response = await axios.get(`/projects/ensure/${encodeURIComponent(projectName)}/${hash}`);
-        return response.data;
-    }
-
     getAccessToken() { return this._accessToken; }
 
     setAccessToken(value) {

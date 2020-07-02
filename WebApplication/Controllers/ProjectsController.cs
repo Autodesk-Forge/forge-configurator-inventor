@@ -215,20 +215,6 @@ namespace WebApplication.Controllers
             return NoContent();
         }
 
-        [HttpGet("ensure/{projectName}/{hash?}")]
-        public async Task<ActionResult> Ensure(string projectName, string hash)
-        {
-            var projectStorage  = await _userResolver.GetProjectStorageAsync(projectName);
-            if (! projectStorage.IsCached(hash))
-            {
-                var bucket = await _userResolver.GetBucketAsync(tryToCreate: false);
-                await projectStorage.EnsureViewablesAsync(bucket, hash, ensureDir: true);
-            }
-
-            return NoContent();
-        }
-
-
         /// <summary>
         /// Generate project DTO.
         /// </summary>
