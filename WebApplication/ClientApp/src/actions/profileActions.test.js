@@ -88,39 +88,32 @@ describe('loadProfile', () => {
 
     describe('success', () => {
 
-        it('should fetch profile from repository', () => {
+        it('should fetch profile from repository', async () => {
 
             const profile = { name: "John Smith", avatarUrl: "http://johnsmith.com/avatar.jpg"};
 
             repoInstance.loadProfile.mockImplementation(() => profile);
 
-            return store
-            .dispatch(loadProfile())
-            .then(() => {
-                expect(repoInstance.loadProfile).toHaveBeenCalledTimes(1);
+            await store.dispatch(loadProfile());
+            expect(repoInstance.loadProfile).toHaveBeenCalledTimes(1);
 
-                // check the loaded profile is in store now
-                const profileLoadedAction = store.getActions().find(a => a.type === actionTypes.PROFILE_LOADED);
-                expect(profileLoadedAction.profile).toEqual(profile);
-            });
+            // check the loaded profile is in store now
+            const profileLoadedAction = store.getActions().find(a => a.type === actionTypes.PROFILE_LOADED);
+            expect(profileLoadedAction.profile).toEqual(profile);
         });
     });
 
     describe('failure', () => {
-        it('should log error on failure and forget access token', () => {
+        it('should log error on failure and forget access token', async () => {
 
             repoInstance.loadProfile.mockImplementation(() => { throw new Error(); });
 
-            return store
-            .dispatch(loadProfile())
-            .then(() => {
+            await store.dispatch(loadProfile());
+            expect(repoInstance.loadProfile).toHaveBeenCalledTimes(1);
 
-                expect(repoInstance.loadProfile).toHaveBeenCalledTimes(1);
-
-                // check the error is logged
-                const logAction = store.getActions().find(a => a.type === notificationTypes.ADD_ERROR);
-                expect(logAction).toBeDefined();
-            });
+            // check the error is logged
+            const logAction = store.getActions().find(a => a.type === notificationTypes.ADD_ERROR);
+            expect(logAction).toBeDefined();
         });
     });
 });

@@ -68,82 +68,66 @@ describe('fetchParameters', () => {
             loadParametersMock.mockReturnValue(fakeInventorParams);
         });
 
-        it('should fetch parameters from the server if there are none in the project', () => {
+        it('should fetch parameters from the server if there are none in the project', async () => {
 
-            return store
-                .dispatch(fetchParameters(projectId)) // demand parameters loading
-                .then(() => {
+            await store.dispatch(fetchParameters(projectId)); // demand parameters loading
+            // ensure that the mock called once
+            expect(loadParametersMock).toHaveBeenCalledTimes(1);
 
-                    // ensure that the mock called once
-                    expect(loadParametersMock).toHaveBeenCalledTimes(1);
+            const actions = store.getActions();
+            const updateAction = actions.find(a => a.type === parameterActionTypes.PARAMETERS_UPDATED);
 
-                    const actions = store.getActions();
-                    const updateAction = actions.find(a => a.type === parameterActionTypes.PARAMETERS_UPDATED);
-
-                    // check expected actions and their types
-                    expect(updateAction.projectId).toEqual(projectId);
-                    expect(updateAction.parameters).toHaveLength(4); // not testing for exact content, as adaptParameters messes them up
-                });
+            // check expected actions and their types
+            expect(updateAction.projectId).toEqual(projectId);
+            expect(updateAction.parameters).toHaveLength(4); // not testing for exact content, as adaptParameters messes them up
         });
 
-        it('should fetch parameters from the server if there is empty parameter array in the project', () => {
+        it('should fetch parameters from the server if there is empty parameter array in the project', async () => {
 
             cachedParameters[projectId] = [];
 
-            return store
-                .dispatch(fetchParameters(projectId)) // demand parameters loading
-                .then(() => {
+            await store.dispatch(fetchParameters(projectId)); // demand parameters loading
+            // ensure that the mock called once
+            expect(loadParametersMock).toHaveBeenCalledTimes(1);
 
-                    // ensure that the mock called once
-                    expect(loadParametersMock).toHaveBeenCalledTimes(1);
+            const actions = store.getActions();
+            const updateAction = actions.find(a => a.type === parameterActionTypes.PARAMETERS_UPDATED);
 
-                    const actions = store.getActions();
-                    const updateAction = actions.find(a => a.type === parameterActionTypes.PARAMETERS_UPDATED);
-
-                    // check expected actions and their types
-                    expect(updateAction.projectId).toEqual(projectId);
-                    expect(updateAction.parameters).toHaveLength(4); // not testing for exact content, as adaptParameters messes them up
-            });
+            // check expected actions and their types
+            expect(updateAction.projectId).toEqual(projectId);
+            expect(updateAction.parameters).toHaveLength(4); // not testing for exact content, as adaptParameters messes them up
         });
 
-        it('should NOT fetch parameters from the server if there are SOME in the project', () => {
+        it('should NOT fetch parameters from the server if there are SOME in the project', async () => {
 
             cachedParameters[projectId] = [{ name: 'JawOffset', value: '10 mm', units: 'mm' }];
 
-            return store
-                .dispatch(fetchParameters(projectId)) // demand parameters loading
-                .then(() => {
+            await store.dispatch(fetchParameters(projectId)); // demand parameters loading
+            // ensure that the mock does not called
+            expect(loadParametersMock).toHaveBeenCalledTimes(0);
 
-                    // ensure that the mock does not called
-                    expect(loadParametersMock).toHaveBeenCalledTimes(0);
+            const actions = store.getActions();
 
-                    const actions = store.getActions();
-
-                    // check no update parameters is called
-                    expect(actions.some(a => a.type === parameterActionTypes.PARAMETERS_UPDATED)).toEqual(false);
-            });
+            // check no update parameters is called
+            expect(actions.some(a => a.type === parameterActionTypes.PARAMETERS_UPDATED)).toEqual(false);
         });
 
         // validate conversion from Inventor parameters to internal format
         describe('conversion', () => {
 
-            it('should load simple parameter', () => {
+            it('should load simple parameter', async () => {
 
                 const simpleParam = { JawOffset: { value: '10 mm', unit: 'mm' } };
                 loadParametersMock.mockReturnValue(simpleParam);
 
-                return store
-                    .dispatch(fetchParameters(projectId)) // demand parameters loading
-                    .then(() => {
+                await store.dispatch(fetchParameters(projectId)); // demand parameters loading
+                const action = store.getActions().find(a => a.type === parameterActionTypes.PARAMETERS_UPDATED);
 
-                        const action = store.getActions().find(a => a.type === parameterActionTypes.PARAMETERS_UPDATED);
-
-                        // check expected actions and their types
-                        expect(action.parameters[0]).toMatchObject({ name: 'JawOffset', value: '10 mm', units: 'mm' });
-                });
+                // check expected actions and their types
+                expect(action.parameters[0]).toMatchObject({ name: 'JawOffset', value: '10 mm', units: 'mm' });
             });
 
-            it('should load complex parameter', () => {
+            it('should load complex parameter', async () => {
 
                 const choiceParam = {
                     WrenchSz: {
@@ -154,23 +138,17 @@ describe('fetchParameters', () => {
                 };
                 loadParametersMock.mockReturnValue(choiceParam);
 
-                return store
-                    .dispatch(fetchParameters(projectId)) // demand parameters loading
-                    .then(() => {
+                await store.dispatch(fetchParameters(projectId)); // demand parameters loading
+                const action = store.getActions().find(a => a.type === parameterActionTypes.PARAMETERS_UPDATED);
 
-                        const action = store.getActions().find(a => a.type === parameterActionTypes.PARAMETERS_UPDATED);
-
-                        const result = {
-                            name: 'WrenchSz',
-                            value: 'Small', // note it's unquoted // ER: potential problem with backward conversion
-                            units: 'Text',
-                            allowedValues: [ 'Large', 'Medium', 'Small' ] // note it's unquoted // ER: potential problem with backward conversion
-                        };
-                        expect(action.parameters[0]).toMatchObject(result);
-                });
+                const result = {
+                    name: 'WrenchSz',
+                    value: 'Small', // note it's unquoted // ER: potential problem with backward conversion
+                    units: 'Text',
+                    allowedValues: [ 'Large', 'Medium', 'Small' ] // note it's unquoted // ER: potential problem with backward conversion
+                };
+                expect(action.parameters[0]).toMatchObject(result);
             });
-
-
         });
 
         // validate conversion from internal format back to Inventor parameters
@@ -203,24 +181,20 @@ describe('fetchParameters', () => {
 
     describe('errors', () => {
 
-        it('should handle server error and log it', () => {
+        it('should handle server error and log it', async () => {
 
             loadParametersMock.mockImplementation(() => { throw new Error('123456'); });
 
-            return store
-                .dispatch(fetchParameters('someProjectId')) // demand parameters loading
-                .then(() => {
+            await store.dispatch(fetchParameters('someProjectId')); // demand parameters loading
+            // find logged error
+            const logAction = store.getActions().find(a => a.type === notificationTypes.ADD_ERROR);
 
-                    // find logged error
-                    const logAction = store.getActions().find(a => a.type === notificationTypes.ADD_ERROR);
+            expect(logAction).toBeDefined();
 
-                    expect(logAction).toBeDefined();
-
-                    // log message should contains project ID and error message
-                    const errorMessage = logAction.info;
-                    expect(errorMessage).toMatch(/someProjectId/);
-                    expect(errorMessage).toMatch(/123456/);
-                });
+            // log message should contains project ID and error message
+            const errorMessage = logAction.info;
+            expect(errorMessage).toMatch(/someProjectId/);
+            expect(errorMessage).toMatch(/123456/);
         });
     });
 
@@ -243,42 +217,38 @@ describe('fetchParameters', () => {
             store.clearActions();
         });
 
-        it('check updateModelWithParameters success path', () => {
-            return store.dispatch(updateModelWithParameters(projectId, []))
-            .then(() => {
-                const parameters = { "a1": { "value": "7", "values": [], "unit": "mm" } };
-                const adaptedParams = [ { "name": "a1", "value": "7", "allowedValues": [], "units": "mm", "type": "NYI" } ];
-                const projectData = { "data": "someData" };
-                const updatedState = {
-                    parameters: parameters,
-                    ...projectData
-                };
+        it('check updateModelWithParameters success path', async () => {
+            await store.dispatch(updateModelWithParameters(projectId, []));
+            const parameters = { "a1": { "value": "7", "values": [], "unit": "mm" } };
+            const adaptedParams = [ { "name": "a1", "value": "7", "allowedValues": [], "units": "mm", "type": "NYI" } ];
+            const projectData = { "data": "someData" };
+            const updatedState = {
+                parameters: parameters,
+                ...projectData
+            };
 
-                connectionMock.simulateComplete(updatedState);
+            connectionMock.simulateComplete(updatedState);
 
-                // check expected store actions
-                const actions = store.getActions();
-                // there are two SET_REPORT_URL actions in the list. The first one come from job start and is called with null to clear old data...
-                const updateParams = actions.find(a => a.type === parameterActionTypes.PARAMETERS_UPDATED);
-                expect(updateParams.projectId).toEqual(projectId);
-                expect(updateParams.parameters).toEqual(adaptedParams);
-                const updateProject = actions.find(a => a.type === projectListActionTypes.UPDATE_PROJECT);
-                expect(updateProject.activeProjectId).toEqual(projectId);
-                expect(updateProject.data).toEqual(projectData);
-            });
+            // check expected store actions
+            const actions = store.getActions();
+            // there are two SET_REPORT_URL actions in the list. The first one come from job start and is called with null to clear old data...
+            const updateParams = actions.find(a => a.type === parameterActionTypes.PARAMETERS_UPDATED);
+            expect(updateParams.projectId).toEqual(projectId);
+            expect(updateParams.parameters).toEqual(adaptedParams);
+            const updateProject = actions.find(a => a.type === projectListActionTypes.UPDATE_PROJECT);
+            expect(updateProject.activeProjectId).toEqual(projectId);
+            expect(updateProject.data).toEqual(projectData);
         });
 
-        it('check updateModelWithParameters error path', () => {
-            return store.dispatch(updateModelWithParameters(projectId, []))
-            .then(() => {
-                connectionMock.simulateError(jobId,errorReportLink);
+        it('check updateModelWithParameters error path', async () => {
+            await store.dispatch(updateModelWithParameters(projectId, []));
+            connectionMock.simulateError(jobId,errorReportLink);
 
-                // check expected store actions
-                const actions = store.getActions();
-                // there are two SET_REPORT_URL actions in the list. The first one come from job start and is called with null to clear old data...
-                expect(actions.some(a => (a.type === uiFlagsActionTypes.SET_REPORT_URL && a.url === errorReportLink))).toEqual(true);
-                expect(actions.some(a => a.type === uiFlagsActionTypes.SHOW_UPDATE_FAILED)).toEqual(true);
-            });
+            // check expected store actions
+            const actions = store.getActions();
+            // there are two SET_REPORT_URL actions in the list. The first one come from job start and is called with null to clear old data...
+            expect(actions.some(a => (a.type === uiFlagsActionTypes.SET_REPORT_URL && a.url === errorReportLink))).toEqual(true);
+            expect(actions.some(a => a.type === uiFlagsActionTypes.SHOW_UPDATE_FAILED)).toEqual(true);
         });
     });
 });
