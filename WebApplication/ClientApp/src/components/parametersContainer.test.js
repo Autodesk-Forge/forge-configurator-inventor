@@ -116,8 +116,8 @@ describe('parameters container', () => {
             showModalProgress: fnMock
         };
 
-        const wrapper = shallow(<ParametersContainer {...props} />);
-        const wrapperComponent = wrapper.find(ModalProgress);
+        //const wrapper = shallow(<ParametersContainer {...props} />);
+        //const wrapperComponent = wrapper.find(ModalProgress);
         // hradilm will fix this
         //wrapperComponent.props().onClose();
         //expect(fnMock).toHaveBeenCalledTimes(0);
