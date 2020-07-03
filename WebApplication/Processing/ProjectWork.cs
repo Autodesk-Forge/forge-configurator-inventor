@@ -16,17 +16,15 @@ namespace WebApplication.Processing
     public class ProjectWork
     {
         private readonly ILogger<ProjectWork> _logger;
-        private readonly ResourceProvider _resourceProvider;
         private readonly Arranger _arranger;
         private readonly FdaClient _fdaClient;
         private readonly DtoGenerator _dtoGenerator;
         private readonly UserResolver _userResolver;
 
-        public ProjectWork(ILogger<ProjectWork> logger, ResourceProvider resourceProvider, Arranger arranger, FdaClient fdaClient,
+        public ProjectWork(ILogger<ProjectWork> logger, Arranger arranger, FdaClient fdaClient,
                             DtoGenerator dtoGenerator, UserResolver userResolver)
         {
             _logger = logger;
-            _resourceProvider = resourceProvider;
             _arranger = arranger;
             _fdaClient = fdaClient;
             _dtoGenerator = dtoGenerator;
@@ -55,7 +53,7 @@ namespace WebApplication.Processing
 
             _logger.LogInformation("Cache the project locally");
 
-            var bucket = await _userResolver.GetBucket();
+            var bucket = await _userResolver.GetBucketAsync();
 
             // and now cache the generated stuff locally
             var projectLocalStorage = new ProjectStorage(project);
@@ -83,7 +81,7 @@ namespace WebApplication.Processing
             }
             else
             {
-                var resultingHash = await UpdateAsync(project, storage.Metadata.TLA, parameters);
+                var resultingHash = await UpdateAsync(project, storage.Metadata.TLA, parameters, hash);
                 if (! hash.Equals(resultingHash, StringComparison.Ordinal))
                 {
                     _logger.LogInformation($"Update returned different parameters. Hash is {resultingHash}.");
@@ -120,7 +118,7 @@ namespace WebApplication.Processing
 
             var ossNameProvider = project.OssNameProvider(hash);
 
-            var bucket = await _userResolver.GetBucket();
+            var bucket = await _userResolver.GetBucketAsync();
             // check if RFA file is already generated
             try
             {
@@ -159,25 +157,35 @@ namespace WebApplication.Processing
         /// <summary>
         /// Generate project data for the given parameters and cache results locally.
         /// </summary>
-        private async Task<string> UpdateAsync(Project project, string tlaFilename, InventorParameters parameters)
+        /// <returns>Resulting parameters hash</returns>
+        private async Task<string> UpdateAsync(Project project, string tlaFilename, InventorParameters parameters, string hash)
         {
             _logger.LogInformation("Update the project");
-            var bucket = await _userResolver.GetBucket();
+            var bucket = await _userResolver.GetBucketAsync();
 
-            var inputDocUrl = await bucket.CreateSignedUrlAsync(project.OSSSourceModel);
-            UpdateData updateData = await _arranger.ForUpdateAsync(inputDocUrl, tlaFilename, parameters);
-
-            ProcessingResult result = await _fdaClient.UpdateAsync(updateData);
-            if (!result.Success) 
+            var isUpdateExists = await IsGenerated(project, bucket, hash);
+            if (isUpdateExists)
             {
-                 _logger.LogError($"Failed to update '{project.Name}' project.");
-                throw new FdaProcessingException($"Failed to update '{project.Name}' project.", result.ReportUrl);
+                _logger.LogInformation("Detected existing outputs at OSS");
             }
+            else
+            {
+                var inputDocUrl = await bucket.CreateSignedUrlAsync(project.OSSSourceModel);
+                UpdateData updateData = await _arranger.ForUpdateAsync(inputDocUrl, tlaFilename, parameters);
 
-            _logger.LogInformation("Moving files around");
+                ProcessingResult result = await _fdaClient.UpdateAsync(updateData);
+                if (!result.Success)
+                {
+                    _logger.LogError($"Failed to update '{project.Name}' project.");
+                    throw new FdaProcessingException($"Failed to update '{project.Name}' project.", result.ReportUrl);
+                }
 
-            // rearrange generated data according to the parameters hash
-            string hash = await _arranger.MoveViewablesAsync(project);
+                _logger.LogInformation("Moving files around");
+
+                // rearrange generated data according to the parameters hash
+                // NOTE: hash might be changed if Inventor adjust them!
+                hash = await _arranger.MoveViewablesAsync(project);
+            }
 
             _logger.LogInformation($"Cache the project locally ({hash})");
 
@@ -186,6 +194,16 @@ namespace WebApplication.Processing
             await projectStorage.EnsureViewablesAsync(bucket, hash);
 
             return hash;
+        }
+
+        /// <summary>
+        /// Checks if project has outputs for the given parameters hash.
+        /// NOTE: it checks presence of `parameters.json` only.
+        /// </summary>
+        private static async Task<bool> IsGenerated(Project project, OssBucket bucket, string hash)
+        {
+            var ossNames = project.OssNameProvider(hash);
+            return await bucket.ObjectExistsAsync(ossNames.Parameters);
         }
 
         private async Task CopyStateAsync(Project project, string hashFrom, string hashTo)
@@ -204,7 +222,7 @@ namespace WebApplication.Processing
             // by netcore (https://github.com/dotnet/runtime/issues/24271)
             FileSystem.CopyDir(localFrom.BaseDir, localTo.BaseDir);
 
-            var bucket = await _userResolver.GetBucket();
+            var bucket = await _userResolver.GetBucketAsync();
 
             // copy OSS files
             OSSObjectNameProvider ossFrom = project.OssNameProvider(hashFrom);
