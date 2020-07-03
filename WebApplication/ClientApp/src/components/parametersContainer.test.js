@@ -108,18 +108,18 @@ describe('parameters container', () => {
         expect(fnMock).toHaveBeenCalledWith(projectId, props.projectSourceParameters);
     });
 
-    it('verify when modal close called, here is no operation called NOW', () => {
-        const fnMock = jest.fn();
-        const props = {
-            activeProject: { id: projectId },
-            fetchParameters: () => {},
-            showModalProgress: fnMock
-        };
+    //it('verify when modal close called, here is no operation called NOW', () => {
+    //    const fnMock = jest.fn();
+    //    const props = {
+    //        activeProject: { id: projectId },
+    //        fetchParameters: () => {},
+    //        showModalProgress: fnMock
+    //    };
 
         //const wrapper = shallow(<ParametersContainer {...props} />);
         //const wrapperComponent = wrapper.find(ModalProgress);
         // hradilm will fix this
         //wrapperComponent.props().onClose();
         //expect(fnMock).toHaveBeenCalledTimes(0);
-    });
+    //});
 });
