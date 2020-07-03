@@ -148,4 +148,16 @@ describe('CheckboxTable components', () => {
     });
 
   });
+
+  it("Renders Icon cell", () => {
+    const wrapper = shallow(<CheckboxTable { ...props } />);
+    const autoresizer = wrapper.find('AutoResizer');
+    const basetable = autoresizer.renderProp('children')( {width: 100, height: 200} );
+    const columns = basetable.prop('columns');
+
+    const iconName = 'myIcon.svg';
+    const cell = columns[1].cellRenderer({ cellData: iconName });
+    const cellWrapper = shallow(cell);
+    expect(cellWrapper.find('img').prop('src')).toEqual(iconName);
+  });
 });
