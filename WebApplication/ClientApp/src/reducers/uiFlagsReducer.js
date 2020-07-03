@@ -15,6 +15,7 @@ export const initialState = {
    uploadProgressShowing: false,
    uploadProgressStatus: null,
    package: { file: '', root: ''},
+   uploadFailedShowing: false,
    activeTabIndex: 0,
    projectAlreadyExists: false,
    showDeleteProject: false,
@@ -60,6 +61,10 @@ export const uploadProgressShowing = function(state) {
 export const uploadProgressIsDone = function(state) {
    return state.uploadProgressStatus === "done";
 };
+
+export const uploadFailedShowing = function(state) {
+   return state.uploadFailedShowing;
+}
 
 export const activeTabIndex = function(state) {
    return state.activeTabIndex;
@@ -107,6 +112,10 @@ export default function(state = initialState, action) {
          return { ...state, uploadProgressShowing: false, uploadProgressStatus: null};
       case uploadPackagesActionTypes.SET_UPLOAD_PROGRESS_DONE:
          return { ...state, uploadProgressStatus: "done"};
+      case uploadPackagesActionTypes.SET_UPLOAD_FAILED:
+         return { ...state, uploadFailedShowing: true, reportUrl: action.reportUrl };
+      case uploadPackagesActionTypes.HIDE_UPLOAD_FAILED:
+         return { ...state, uploadFailedShowing: false };
       case uiFlagsActionTypes.PACKAGE_FILE_EDITED:
          return { ...state, package: { file: action.file, root: state.package.root } };
       case uiFlagsActionTypes.PACKAGE_ROOT_EDITED:
