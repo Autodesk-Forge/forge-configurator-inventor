@@ -1,5 +1,6 @@
 import actionTypes, { uploadPackage } from './uploadPackageActions';
 import projectListActions from './projectListActions';
+import { actionTypes as uiFlagsActionTypes } from './uiFlagsActions';
 
 // the test based on https://redux.js.org/recipes/writing-tests#async-action-creators
 
@@ -47,6 +48,52 @@ describe('uploadPackage', () => {
 
                     // TBD check if the expected project is added to the project list
                     // expect(actions[2].projectList).toEqual(testProjects);
+                });
+    });
+
+    it('should handle conflict', () => {
+
+        // set expected value for the mock
+        uploadPackageMock.mockImplementation(() => { throw { response: { status: 409}}; });
+
+        const store = mockStore({ uiFlags: { package: { file: "a.zip", root: "a.asm"}} });
+
+        return store
+                .dispatch(uploadPackage()) // demand projects loading
+                .then(() => {
+
+                    // ensure that the mock called once
+                    expect(uploadPackageMock).toHaveBeenCalledTimes(1);
+
+                    const actions = store.getActions();
+
+                    // check expected actions and their types
+                    const conflictAction = actions.find(a => a.type === uiFlagsActionTypes.PROJECT_EXISTS);
+                    expect(conflictAction.exists).toEqual(true);
+                });
+    });
+
+
+    it('should handle workitem error', () => {
+
+        // set expected value for the mock
+        const reportUrl = 'WI report url';
+        uploadPackageMock.mockImplementation(() => { throw { response: { status: 422, data: { reportUrl: reportUrl}}}; });
+
+        const store = mockStore({ uiFlags: { package: { file: "a.zip", root: "a.asm"}} });
+
+        return store
+                .dispatch(uploadPackage()) // demand projects loading
+                .then(() => {
+
+                    // ensure that the mock called once
+                    expect(uploadPackageMock).toHaveBeenCalledTimes(1);
+
+                    const actions = store.getActions();
+
+                    // check expected actions and their types
+                    const uploadFailedAction = actions.find(a => a.type === actionTypes.SET_UPLOAD_FAILED);
+                    expect(uploadFailedAction.reportUrl).toEqual(reportUrl);
                 });
     });
 });
