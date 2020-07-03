@@ -64,7 +64,7 @@ export const uploadProgressIsDone = function(state) {
 
 export const uploadFailedShowing = function(state) {
    return state.uploadFailedShowing;
-}
+};
 
 export const activeTabIndex = function(state) {
    return state.activeTabIndex;
