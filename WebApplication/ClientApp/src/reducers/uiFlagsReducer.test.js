@@ -1,4 +1,5 @@
-import {closeParametersEditedMessage, rejectParametersEditedMessage, showUploadPackage, editPackageFile, editPackageRoot, showDeleteProject, setProjectAlreadyExists} from '../actions/uiFlagsActions';
+import {closeParametersEditedMessage, rejectParametersEditedMessage, showUploadPackage, editPackageFile, editPackageRoot, 
+   showDeleteProject, setProjectAlreadyExists, setProjectChecked, clearCheckedProjects, setCheckedProjects} from '../actions/uiFlagsActions';
 import uiFlagsReducer, * as uiFlags from './uiFlagsReducer';
 import { editParameter, resetParameters } from '../actions/parametersActions';
 import { stateParametersEditedMessageClosed, stateParametersEditedMessageNotRejected, stateParametersEditedMessageRejected } from './uiFlagsTestStates';
@@ -93,4 +94,40 @@ describe('uiFlags reducer', () => {
       });
    });
 
+   describe('Check / uncheck in project list', () => {
+      const initialCheckedProjects = [ '2', '4' ];
+      const haveSomeCheckedState = {
+         checkedProjects: initialCheckedProjects
+      };
+
+      it('clears all checked projects', () => {
+         expect(uiFlagsReducer(haveSomeCheckedState, clearCheckedProjects()).checkedProjects).toEqual([]);
+      });
+
+      it('replaces checked projects with setCheckedProjects', () => {
+         const newChecked = [ '3', '4', '5' ];
+         expect(uiFlagsReducer(haveSomeCheckedState, setCheckedProjects(newChecked)).checkedProjects).toEqual(newChecked);
+      });
+
+      it('adds a new project to checked projects if not there yet', () => {
+         const projectId = '1';
+         expect(uiFlagsReducer(haveSomeCheckedState, setProjectChecked(projectId, true)).checkedProjects).toEqual(initialCheckedProjects.concat([projectId]));
+      });
+
+      it('does not add a new project to checked projects if already present', () => {
+         const projectId = '2';
+         expect(uiFlagsReducer(haveSomeCheckedState, setProjectChecked(projectId, true)).checkedProjects).toEqual(initialCheckedProjects);
+      });
+
+      it('removes a project from checked projects if present', () => {
+         const projectId = '2';
+         expect(uiFlagsReducer(haveSomeCheckedState, setProjectChecked(projectId, false)).checkedProjects).toEqual([ '4' ]);
+      });
+
+      it('does not alters checked projects if one unchecks a project that is not already there', () => {
+         const projectId = '1';
+         expect(uiFlagsReducer(haveSomeCheckedState, setProjectChecked(projectId, false)).checkedProjects).toEqual(initialCheckedProjects);
+      });
+
+   });
 });

@@ -5,8 +5,7 @@ import BaseTable, { AutoResizer, FrozenDirection } from 'react-base-table';
 import CheckboxTableHeader from './checkboxTableHeader';
 import CheckboxTableRow from './checkboxTableRow';
 import { checkedProjects } from '../reducers/mainReducer';
-import { setCheckedProjects, clearCheckedProjects } from '../actions/uiFlagsActions';
-import { cloneArray } from 'react-base-table/lib/utils';
+import { setProjectChecked, setCheckedProjects, clearCheckedProjects } from '../actions/uiFlagsActions';
 
 import styled from 'styled-components';
 
@@ -114,20 +113,7 @@ export class CheckboxTable extends Component {
     }
 
     onSelectChange(checked, rowData) {
-      const projects = cloneArray(this.props.checkedProjects);
-      const id = rowData.id;
-      const index = projects.indexOf(id);
-
-      if (checked) {
-        if (index === -1) {
-          projects.push(id);
-        }
-      } else {
-        if (index > -1) {
-          projects.splice(index, 1);
-        }
-      }
-      this.props.setCheckedProjects(projects);
+      this.props.setProjectChecked(rowData.id, checked);
     }
 
     render() {
@@ -193,4 +179,4 @@ export default connect(function (store) {
     projectList: store.projectList,
     checkedProjects: checkedProjects(store)
   };
-}, { setCheckedProjects, clearCheckedProjects })(CheckboxTable);
+}, { setProjectChecked, setCheckedProjects, clearCheckedProjects })(CheckboxTable);

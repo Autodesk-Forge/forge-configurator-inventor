@@ -81,8 +81,14 @@ describe('CheckboxTable components', () => {
   describe("CheckboxTable checkboxes", () => {
 
     const clearCheckedProjects = jest.fn();
+    const setProjectChecked = jest.fn();
     const setCheckedProjects = jest.fn();
-    const wrapper = shallow(<CheckboxTableShallow clearCheckedProjects={clearCheckedProjects} setCheckedProjects={setCheckedProjects} selectable={true} {...props } />);
+    const wrapper = shallow(<CheckboxTableShallow
+      setProjectChecked={setProjectChecked}
+      clearCheckedProjects={clearCheckedProjects}
+      setCheckedProjects={setCheckedProjects}
+      selectable={true}
+      {...props } />);
     const autoresizer = wrapper.find('AutoResizer');
     const basetable = autoresizer.renderProp('children')( {width: 100, height: 200} );
     const columns = basetable.prop('columns');
@@ -116,9 +122,10 @@ describe('CheckboxTable components', () => {
       it('RowData given in cell renderer are propagated to rendered cell', () => {
         expect(cell.props.rowData).toEqual(rowData);
       });
+
       it('Checking checkbox', () => {
         cell.props.onChange(true, rowData);
-        expect(setCheckedProjects).toBeCalledWith(['2']);
+        expect(setProjectChecked).toBeCalledWith('2', true);
       });
     });
 
