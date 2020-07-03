@@ -161,7 +161,7 @@ module.exports = function() {
     },
     setParamValue(paramName, paramValue) {
       let paramsInputWithName = paramsInput.replace('ParamName', paramName);
-      this.waitForVisible(paramsInputWithName);
+      this.waitForVisible(paramsInputWithName, 10);
       this.clearField(paramsInputWithName);
       this.fillField(paramsInputWithName, paramValue);
     }
