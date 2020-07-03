@@ -33,28 +33,24 @@ describe('fetchProjects', () => {
         loadProjectsMock.mockClear();
     });
 
-    it('should fetch project from the server', () => {
+    it('should fetch project from the server', async () => {
 
         // set expected value for the mock
         loadProjectsMock.mockReturnValue(testProjects);
 
         const store = mockStore({ /* initial state */ });
 
-        return store
-                .dispatch(fetchProjects()) // demand projects loading
-                .then(() => {
+        await store.dispatch(fetchProjects()); // demand projects loading
+        // ensure that the mock called once
+        expect(loadProjectsMock).toHaveBeenCalledTimes(1);
 
-                    // ensure that the mock called once
-                    expect(loadProjectsMock).toHaveBeenCalledTimes(1);
+        const actions = store.getActions();
 
-                    const actions = store.getActions();
+        // check expected actions and their types
+        expect(actions).toHaveLength(3);
+        expect(actions.map(a => a.type)).toEqual(['ADD_LOG', 'ADD_LOG', 'PROJECT_LIST_UPDATED']);
 
-                    // check expected actions and their types
-                    expect(actions).toHaveLength(3);
-                    expect(actions.map(a => a.type)).toEqual(['ADD_LOG', 'ADD_LOG', 'PROJECT_LIST_UPDATED']);
-
-                    // check if the expected projects are returned
-                    expect(actions[2].projectList).toEqual(testProjects);
-                });
+        // check if the expected projects are returned
+        expect(actions[2].projectList).toEqual(testProjects);
     });
 });

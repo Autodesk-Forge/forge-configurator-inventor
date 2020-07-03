@@ -66,12 +66,14 @@ export class ParametersContainer extends Component {
                         width="grow"
                         onClick={() => {this.updateClicked();}}
                     />
-                    <ModalProgress
-                        open={this.props.modalProgressShowing}
-                        title="Updating Project"
-                        label={this.props.activeProject.id}
-                        icon="/Assembly_icon.svg"
-                        onClose={() => this.onProgressCloseClick()}/>
+                    {this.props.modalProgressShowing &&
+                        <ModalProgress
+                            open={this.props.modalProgressShowing}
+                            title="Updating Project"
+                            label={this.props.activeProject.id}
+                            icon="/Assembly_icon.svg"
+                            onClose={() => this.onProgressCloseClick()}/>
+                    }
                     {this.props.updateFailedShowing &&
                         <ModalFail
                             open={this.props.updateFailedShowing}

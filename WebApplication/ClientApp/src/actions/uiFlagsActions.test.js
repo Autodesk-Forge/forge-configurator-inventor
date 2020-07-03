@@ -29,24 +29,20 @@ describe('uiFlagsActions', () => {
         expect(store.getActions()).toMatchSnapshot();
     });
 
-    it('check hideUpdateMessageBanner action', () => {
+    it('check hideUpdateMessageBanner action', async () => {
         const sendShowParametersChangedMock = repoInstance.sendShowParametersChanged;
         sendShowParametersChangedMock.mockReturnValue(true);
 
-        return store.dispatch(uiFlagsActions.hideUpdateMessageBanner(true))
-        .then(() => {
-            expect(sendShowParametersChangedMock).toHaveBeenCalledTimes(1);
-            expect(store.getActions()).toMatchSnapshot();
-        });
+        await store.dispatch(uiFlagsActions.hideUpdateMessageBanner(true));
+        expect(sendShowParametersChangedMock).toHaveBeenCalledTimes(1);
+        expect(store.getActions()).toMatchSnapshot();
     });
 
-    it ('check fetchShowParametersChanged action', () => {
+    it ('check fetchShowParametersChanged action', async () => {
         const loadShowParametersChangedMock = repoInstance.loadShowParametersChanged;
-        return store.dispatch(uiFlagsActions.fetchShowParametersChanged(true))
-        .then(() => {
-            expect(loadShowParametersChangedMock).toHaveBeenCalledTimes(1);
-            expect(store.getActions()).toMatchSnapshot();
-        });
+        await store.dispatch(uiFlagsActions.fetchShowParametersChanged(true));
+        expect(loadShowParametersChangedMock).toHaveBeenCalledTimes(1);
+        expect(store.getActions()).toMatchSnapshot();
     });
 
     it('check rejectParametersEditedMessage action', () => {
