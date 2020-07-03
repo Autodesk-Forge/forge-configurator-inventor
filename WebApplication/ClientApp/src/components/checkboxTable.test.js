@@ -78,6 +78,7 @@ describe('CheckboxTable components', () => {
         expect(datarow.label).toEqual(projectList.projects[index].label);
     });
   });
+
   describe("CheckboxTable checkboxes", () => {
 
     const clearCheckedProjects = jest.fn();

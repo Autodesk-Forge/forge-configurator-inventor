@@ -32,6 +32,7 @@ export class CheckboxTableHeader extends Component {
     }
   }
 
+/* istanbul ignore next */
 export default connect(function (store) {
   return {
     projectList: store.projectList,
