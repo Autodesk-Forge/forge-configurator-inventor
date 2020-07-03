@@ -51,13 +51,13 @@ namespace ExtractParametersPlugin
 
                     System.IO.File.WriteAllText("documentParams.json", paramsJson);
 
-                    // save current state
-                    LogTrace("Updating");
-                    doc.Update2();
-                    LogTrace("Saving");
-                    doc.Save2(SaveDependents: true);
-                    LogTrace("Closing");
-                    doc.Close(true);
+                    //// save current state
+                    //LogTrace("Updating");
+                    //doc.Update2();
+                    //LogTrace("Saving");
+                    //doc.Save2(SaveDependents: true);
+                    //LogTrace("Closing");
+                    //doc.Close(true);
                 }
             }
             catch (Exception e)
