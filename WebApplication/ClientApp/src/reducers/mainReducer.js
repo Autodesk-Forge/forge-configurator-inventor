@@ -96,6 +96,10 @@ export const uploadPackageData = function(state) {
     return uiFlags.uploadPackageData(state.uiFlags);
 };
 
+export const uploadFailedShowing = function(state) {
+    return uiFlags.uploadFailedShowing(state.uiFlags);
+};
+
 export const getProfile = function (state) {
     return state.profile;
 };
