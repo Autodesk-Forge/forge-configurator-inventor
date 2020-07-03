@@ -5,14 +5,16 @@ import IconButton from '@hig/icon-button';
 import { Upload24, Trash24 } from '@hig/icons';
 import './projectList.css';
 import { showUploadPackage, updateActiveTabIndex, showDeleteProject, showModalProgress } from '../actions/uiFlagsActions';
-import { setUploadProgressHidden } from '../actions/uploadPackageActions';
+import { setUploadProgressHidden, hideUploadFailed } from '../actions/uploadPackageActions';
 import { updateActiveProject } from '../actions/projectListActions';
 import UploadPackage from './uploadPackage';
 import DeleteProject from './deleteProject';
 
 import ModalProgressUpload from './modalProgressUpload';
 import ModalProgress from './modalProgress';
-import { uploadProgressShowing, uploadProgressIsDone, uploadPackageData, checkedProjects, modalProgressShowing } from '../reducers/mainReducer';
+import ModalFail from './modalFail';
+import { uploadProgressShowing, uploadProgressIsDone, uploadPackageData, uploadFailedShowing,
+  checkedProjects, modalProgressShowing, reportUrl } from '../reducers/mainReducer';
 import CheckboxTable from './checkboxTable';
 
 export class ProjectList extends Component {
@@ -47,6 +49,10 @@ export class ProjectList extends Component {
     this.props.updateActiveProject(onlyName);
     // switch to MODEL tab
     this.props.updateActiveTabIndex(1);
+  }
+
+  onUploadFailedCloseClick() {
+    this.props.hideUploadFailed();
   }
 
   render() {
@@ -95,14 +101,21 @@ export class ProjectList extends Component {
                     url={null}
                     isDone={() => this.isDone() === true }
                     />}
+        {this.props.uploadFailedShowing && <ModalFail
+                    open={true}
+                    title="Upload Failed"
+                    contentName="Package:"
+                    label={this.props.uploadPackageData.file.name}
+                    onClose={() => this.onUploadFailedCloseClick()}
+                    url={this.props.reportUrl}/>}
 
         <DeleteProject />
         {this.props.modalProgressShowing && <ModalProgress
-                        open={this.props.modalProgressShowing}
-                        title="Deleting Project(s)"
-                        label="Deleting a project and its cache"
-                        icon="/Assembly_icon.svg"
-                        onClose={() => this.onDeleteCloseClick()}/>
+                    open={this.props.modalProgressShowing}
+                    title="Deleting Project(s)"
+                    label="Deleting a project and its cache"
+                    icon="/Assembly_icon.svg"
+                    onClose={() => this.onDeleteCloseClick()}/>
         }
       </div>
     );
@@ -117,6 +130,8 @@ export default connect(function (store) {
     uploadProgressShowing: uploadProgressShowing(store),
     uploadProgressIsDone: uploadProgressIsDone(store),
     uploadPackageData: uploadPackageData(store),
+    uploadFailedShowing: uploadFailedShowing(store),
+    reportUrl: reportUrl(store),
     modalProgressShowing: modalProgressShowing(store)
   };
-}, { showUploadPackage, updateActiveProject, updateActiveTabIndex, setUploadProgressHidden, showDeleteProject, showModalProgress })(ProjectList);
+}, { showUploadPackage, updateActiveProject, updateActiveTabIndex, setUploadProgressHidden, hideUploadFailed, showDeleteProject, showModalProgress })(ProjectList);
