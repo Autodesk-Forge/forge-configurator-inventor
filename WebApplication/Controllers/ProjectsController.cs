@@ -168,35 +168,33 @@ namespace WebApplication.Controllers
             // delete all oss objects for all provided projects
             var tasks = new List<Task>();
 
-            foreach (var projectName in projectNameList)
+            async Task DeleteByMask(string mask)
             {
-                var objects = await bucket.GetObjectsAsync($"{ONC.AttributesFolder}-{projectName}");
-                foreach (var objectDetail in objects) {
-                    tasks.Add(bucket.DeleteObjectAsync(objectDetail.ObjectKey));
-                }
-
-                objects = await bucket.GetObjectsAsync($"{ONC.CacheFolder}-{projectName}");
+                _logger.LogInformation($"Looking for '{mask}'");
+                var objects = await bucket.GetObjectsAsync(mask);
                 foreach (var objectDetail in objects)
                 {
-                    tasks.Add(bucket.DeleteObjectAsync(objectDetail.ObjectKey));
-                }
-
-                objects = await bucket.GetObjectsAsync($"{ONC.DownloadsFolder}-{projectName}");
-                foreach (var objectDetail in objects)
-                {
-                    tasks.Add(bucket.DeleteObjectAsync(objectDetail.ObjectKey));
-                }
-
-                objects = await bucket.GetObjectsAsync($"{ONC.ProjectsFolder}-{projectName}");
-                foreach (var objectDetail in objects)
-                {
+                    _logger.LogInformation($"Put to delete '{objectDetail.ObjectKey}'");
                     tasks.Add(bucket.DeleteObjectAsync(objectDetail.ObjectKey));
                 }
             }
 
+            foreach (var projectName in projectNameList)
+            {
+                await DeleteByMask($"{ONC.AttributesFolder}-{projectName}");
+                await DeleteByMask($"{ONC.CacheFolder}-{projectName}");
+                await DeleteByMask($"{ONC.DownloadsFolder}-{projectName}");
+                await DeleteByMask($"{ONC.ProjectsFolder}-{projectName}");
+            }
+
             try
             {
-                Task.WaitAll(tasks.ToArray());
+                await Task.WhenAll(tasks);
+                for (var index = 0; index < tasks.Count; index++)
+                {
+                    var task = tasks[index];
+                    _logger.LogInformation($"{index} - {task.Status}");
+                }
             }
             catch (AggregateException e)
             {
