@@ -97,44 +97,10 @@ namespace WebApplication.Controllers
             ProjectStorage projectStorage = await _userResolver.GetProjectStorageAsync(projectName);
 
             string ossSourceModel = projectStorage.Project.OSSSourceModel;
-            await using (var fileReadStream = System.IO.File.OpenRead(file.Name))
-            {
-                // determine if we need to upload in chunks or in one piece
-                long sizeToUpload = fileReadStream.Length;
-                long chunkMBSize = 5;
-                long chunkSize = chunkMBSize * 1024 * 1024; // 2MB is minimal
-
-                // use chunks for all files greater than chunk size
-                if (sizeToUpload > chunkSize)
-                {
-                    _logger.LogInformation($"Uploading in {chunkMBSize}MB chunks");
-
-                    string sessionId = Guid.NewGuid().ToString();
-                    long begin = 0;
-                    byte[] buffer = new byte[chunkSize];
-                    int bytesRead = 0;
-
-                    while (begin < sizeToUpload-1)
-                    {
-                        bytesRead = await fileReadStream.ReadAsync(buffer, 0, (int)chunkSize);
-                        int memoryStreamSize = sizeToUpload - begin < chunkSize ? (int)(sizeToUpload - begin) : (int)(chunkSize);
-                        using (MemoryStream chunkStream = new MemoryStream(buffer, 0, memoryStreamSize))
-                        {
-                            string contentRange = string.Format($"bytes {begin}-{begin + bytesRead -1}/{sizeToUpload}");
-                            await bucket.UploadChunkAsync(ossSourceModel, contentRange, sessionId, chunkStream);
-                        }
-                        begin += bytesRead;
-                    }
-                }
-                else
-                {
-                    await bucket.UploadObjectAsync(ossSourceModel, fileReadStream);
-                }
-            }
-
-            bool adopted = false;
+            await bucket.SmartUploadAsync(file.Name, ossSourceModel);
 
             // adopt the project
+            bool adopted = false;
             try
             {
                 string signedUrl = await bucket.CreateSignedUrlAsync(ossSourceModel);

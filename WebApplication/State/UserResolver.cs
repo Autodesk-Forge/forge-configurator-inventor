@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Autodesk.Forge.Client;
 using Autodesk.Forge.Core;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WebApplication.Middleware;
 using WebApplication.Services;
@@ -18,6 +19,7 @@ namespace WebApplication.State
     {
         private readonly IForgeOSS _forgeOSS;
         private readonly LocalCache _localCache;
+        private readonly ILogger<UserResolver> _logger;
         private readonly ForgeConfiguration _forgeConfig;
 
         private readonly Lazy<Task<dynamic>> _lazyProfile;
@@ -31,13 +33,14 @@ namespace WebApplication.State
         public bool IsAuthenticated => ! string.IsNullOrEmpty(Token);
 
         public UserResolver(ResourceProvider resourceProvider, IForgeOSS forgeOSS,
-                            IOptions<ForgeConfiguration> forgeConfiguration, LocalCache localCache)
+                            IOptions<ForgeConfiguration> forgeConfiguration, LocalCache localCache, ILogger<UserResolver> logger)
         {
             _forgeOSS = forgeOSS;
             _localCache = localCache;
+            _logger = logger;
             _forgeConfig = forgeConfiguration.Value;
 
-            AnonymousBucket = new OssBucket(_forgeOSS, resourceProvider.BucketKey);
+            AnonymousBucket = new OssBucket(_forgeOSS, resourceProvider.BucketKey, logger);
 
             _lazyProfile = new Lazy<Task<dynamic>>(async () => await _forgeOSS.GetProfileAsync(Token));
         }
@@ -60,7 +63,7 @@ namespace WebApplication.State
             var userHash = Crypto.GenerateHashString(_forgeConfig.ClientId + userId);
             var bucketKey = $"{GetBucketPrefix()}-{userId.Substring(0, 3)}-{userHash}".ToLowerInvariant();
 
-            var bucket = new OssBucket(_forgeOSS, bucketKey);
+            var bucket = new OssBucket(_forgeOSS, bucketKey, _logger);
             if (tryToCreate)
             {
                 // TODO: VERY INEFFECTIVE!!!!!
