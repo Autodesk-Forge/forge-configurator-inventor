@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using WebApplication.Definitions;
@@ -66,6 +65,12 @@ namespace WebApplication.Controllers
         [HttpPost]
         public async Task<ActionResult<ProjectDTO>> CreateProject([FromForm]NewProjectModel projectModel)
         {
+            if (!_userResolver.IsAuthenticated)
+            {
+                _logger.LogError("Attempt to create project for anonymous user");
+                return BadRequest();
+            }
+
             var projectName = Path.GetFileNameWithoutExtension(projectModel.package.FileName);
             var bucket = await _userResolver.GetBucketAsync(true);
 
@@ -163,43 +168,39 @@ namespace WebApplication.Controllers
         [HttpDelete]
         public async Task<StatusCodeResult> DeleteProjects([FromBody] List<string> projectNameList)
         {
+            if (!_userResolver.IsAuthenticated)
+            {
+                _logger.LogError("Attempt to delete projects for anonymous user");
+                return BadRequest();
+            }
+
             var bucket = await _userResolver.GetBucketAsync(true);
 
-            // delete all oss objects for all provided projects
+            // collect all oss objects for all provided projects
             var tasks = new List<Task>();
-
-            async Task DeleteByMask(string mask)
-            {
-                _logger.LogInformation($"Looking for '{mask}'");
-                var objects = await bucket.GetObjectsAsync(mask);
-                foreach (var objectDetail in objects)
-                {
-                    _logger.LogInformation($"Put to delete '{objectDetail.ObjectKey}'");
-                    tasks.Add(bucket.DeleteObjectAsync(objectDetail.ObjectKey));
-                }
-            }
 
             foreach (var projectName in projectNameList)
             {
-                await DeleteByMask($"{ONC.AttributesFolder}-{projectName}");
-                await DeleteByMask($"{ONC.CacheFolder}-{projectName}");
-                await DeleteByMask($"{ONC.DownloadsFolder}-{projectName}");
-                await DeleteByMask($"{ONC.ProjectsFolder}-{projectName}");
-            }
+                tasks.Add(bucket.DeleteObjectAsync(Project.ExactOssName(projectName)));
 
-            try
-            {
-                await Task.WhenAll(tasks);
-                for (var index = 0; index < tasks.Count; index++)
+                foreach (var searchMask in ONC.ProjectMasks(projectName))
                 {
-                    var task = tasks[index];
-                    _logger.LogInformation($"{index} - {task.Status}");
+                    var objects = await bucket.GetObjectsAsync(searchMask);
+                    foreach (var objectDetail in objects)
+                    {
+                        tasks.Add(bucket.DeleteObjectAsync(objectDetail.ObjectKey));
+                    }
                 }
             }
-            catch (AggregateException e)
+
+            // delete the OSS objects
+            await Task.WhenAll(tasks);
+            for (var i = 0; i < tasks.Count; i++)
             {
-                _logger.LogError(e, "Failed to delete project(s)");
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                if (tasks[i].IsFaulted)
+                {
+                    _logger.LogError($"Failed to delete file #{i}");
+                }
             }
 
             // delete local cache for all provided projects
