@@ -28,7 +28,7 @@ namespace WebApplication.Controllers
 
             try
             {
-                var bucket = await _userResolver.GetBucket();
+                var bucket = await _userResolver.GetBucketAsync();
                 ossObjectResponse = await bucket.GetObjectAsync(ONC.ShowParametersChanged);
             } 
             catch (ApiException ex) when (ex.ErrorCode == 404)
@@ -50,7 +50,7 @@ namespace WebApplication.Controllers
         [HttpPost]
         public async Task<bool> Set([FromBody]bool show)
         {
-            var bucket = await _userResolver.GetBucket();
+            var bucket = await _userResolver.GetBucketAsync();
             await bucket.UploadObjectAsync(ONC.ShowParametersChanged, Json.ToStream(show));
             return show;
         }

@@ -47,7 +47,7 @@ namespace WebApplication.Controllers
 
             _logger.LogInformation($"Downloading '{ossObjectName}'");
 
-            var bucket = await _userResolver.GetBucket();
+            var bucket = await _userResolver.GetBucketAsync();
             var url = await bucket.CreateSignedUrlAsync(ossObjectName);
 
             // TODO: FIX: file will be downloaded as `cache-Wrench-3CEEF3FDD5135E1F5EF39BF000B62D673B5438FE-xxxxxx.zip`

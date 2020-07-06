@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using WebApplication.Definitions;
@@ -37,7 +38,7 @@ namespace WebApplication.Controllers
         [HttpGet("")]
         public async Task<IEnumerable<ProjectDTO>> ListAsync()
         {
-            var bucket = await _userResolver.GetBucket(tryToCreate: true);
+            var bucket = await _userResolver.GetBucketAsync(tryToCreate: true);
 
             var projectDTOs = new List<ProjectDTO>();
             foreach (var projectName in await GetProjectNamesAsync(bucket))
@@ -46,6 +47,9 @@ namespace WebApplication.Controllers
                 try
                 {
                     ProjectStorage projectStorage = await _userResolver.GetProjectStorageAsync(projectName); // TODO: expensive to do it in the loop
+
+                    // handle situation when project is not cached locally
+                    await projectStorage.EnsureAttributesAsync(bucket, ensureDir: true);
 
                     projectDTOs.Add(ToDTO(projectStorage));
                 }
@@ -63,7 +67,7 @@ namespace WebApplication.Controllers
         public async Task<ActionResult<ProjectDTO>> CreateProject([FromForm]NewProjectModel projectModel)
         {
             var projectName = Path.GetFileNameWithoutExtension(projectModel.package.FileName);
-            var bucket = await _userResolver.GetBucket(true);
+            var bucket = await _userResolver.GetBucketAsync(true);
 
             // Check if project already exists
             foreach (var existingProjectName in await GetProjectNamesAsync(bucket))
@@ -156,10 +160,10 @@ namespace WebApplication.Controllers
             return Ok(ToDTO(projectStorage));
         }
 
-        [HttpDelete()]
+        [HttpDelete]
         public async Task<StatusCodeResult> DeleteProjects([FromBody] List<string> projectNameList)
         {
-            var bucket = await _userResolver.GetBucket(true);
+            var bucket = await _userResolver.GetBucketAsync(true);
 
             // delete all oss objects for all provided projects
             var tasks = new List<Task>();
@@ -194,9 +198,10 @@ namespace WebApplication.Controllers
             {
                 Task.WaitAll(tasks.ToArray());
             }
-            catch (AggregateException)
+            catch (AggregateException e)
             {
-                return StatusCode(500);
+                _logger.LogError(e, "Failed to delete project(s)");
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
 
             // delete local cache for all provided projects
