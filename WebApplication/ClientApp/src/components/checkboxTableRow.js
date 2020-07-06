@@ -25,6 +25,7 @@ export class CheckboxTableRow extends Component {
     }
   }
 
+/* istanbul ignore next */
 export default connect(function (store) {
   return {
     checkedProjects: checkedProjects(store)
