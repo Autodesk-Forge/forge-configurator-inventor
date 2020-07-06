@@ -20,6 +20,8 @@ namespace WebApplication.State
         private readonly LocalCache _localCache;
         private readonly ForgeConfiguration _forgeConfig;
 
+        private readonly Lazy<Task<dynamic>> _lazyProfile;
+
         /// <summary>
         /// OSS bucket for anonymous user.
         /// </summary>
@@ -36,9 +38,12 @@ namespace WebApplication.State
             _forgeConfig = forgeConfiguration.Value;
 
             AnonymousBucket = new OssBucket(_forgeOSS, resourceProvider.BucketKey);
+
+            _lazyProfile = new Lazy<Task<dynamic>>(async () => await _forgeOSS.GetProfileAsync(Token));
         }
 
-        public string GetBucketPrefix() {
+        public string GetBucketPrefix()
+        {
             return $"authd-{_forgeConfig.ClientId}".ToLowerInvariant();
         }
 
@@ -46,7 +51,7 @@ namespace WebApplication.State
         {
             if (! IsAuthenticated) return AnonymousBucket;
 
-            dynamic profile = await GetProfileAsync(); // TODO: cache it
+            dynamic profile = await GetProfileAsync();
             var userId = profile.userId;
 
             // an OSS bucket must have a unique name, so it should be generated in a way,
@@ -88,17 +93,14 @@ namespace WebApplication.State
             return new ProjectStorage(project);
         }
 
-        public async Task<dynamic> GetProfileAsync()
-        {
-            return await _forgeOSS.GetProfileAsync(Token);
-        }
+        public Task<dynamic> GetProfileAsync() => _lazyProfile.Value;
 
         public async Task<string> GetFullUserDir()
         {
             string userDir;
             if (IsAuthenticated)
             {
-                var profile = await GetProfileAsync(); // TODO: cache it
+                var profile = await GetProfileAsync();
 
                 // generate dirname to hide Oxygen user ID
                 userDir = Crypto.GenerateHashString("SDRA" + profile.userId);
