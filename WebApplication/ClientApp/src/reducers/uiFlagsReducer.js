@@ -64,7 +64,7 @@ export const uploadProgressIsDone = function(state) {
 
 export const uploadFailedShowing = function(state) {
    return state.uploadFailedShowing;
-}
+};
 
 export const activeTabIndex = function(state) {
    return state.activeTabIndex;
@@ -126,6 +126,22 @@ export default function(state = initialState, action) {
          return { ...state, projectAlreadyExists: action.exists};
       case uiFlagsActionTypes.SHOW_DELETE_PROJECT:
          return { ...state, showDeleteProject: action.visible};
+      case uiFlagsActionTypes.SET_PROJECT_CHECKED:
+         {
+            const idx = state.checkedProjects.indexOf(action.projectId);
+            let checkedProjects = [];
+            if(action.checked) {
+               // add projectId or nothing
+               checkedProjects = state.checkedProjects.slice();
+               if(idx === -1) {
+                  checkedProjects = checkedProjects.concat([action.projectId]);
+               }
+            } else {
+               // remove
+               checkedProjects = state.checkedProjects.filter( id => id !== action.projectId);
+            }
+            return { ...state, checkedProjects };
+         }
       case uiFlagsActionTypes.SET_CHECKED_PROJECTS:
          return { ...state, checkedProjects: action.projects};
       case uiFlagsActionTypes.CLEAR_CHECKED_PROJECTS:

@@ -62,21 +62,19 @@ class Repository {
         return result.data;
     }
 
-    setAccessToken(accessToken) {
-        axios.defaults.headers.common[AuthorizationHeader] = accessToken;
-    }
+    getAccessToken() { return this._accessToken; }
 
-    getAccessToken() {
-        return axios.defaults.headers.common[AuthorizationHeader];
+    setAccessToken(value) {
+        this._accessToken = value;
+        axios.defaults.headers.common[AuthorizationHeader] = `Bearer ${value}`;
     }
 
     forgetAccessToken() {
         delete axios.defaults.headers.common[AuthorizationHeader];
+        delete this._accessToken;
     }
 
-    hasAccessToken() {
-        return !! axios.defaults.headers.common[AuthorizationHeader];
-    }
+    hasAccessToken() { return !! this._accessToken; }
 }
 
 /** Singleton with repo */

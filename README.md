@@ -119,6 +119,16 @@ https://redux.js.org/
 
 We are using redux-thunk for complex and asynchronous operations https://github.com/reduxjs/redux-thunk
 
+#### Redux DevTool
+In `index.js` replace
+```js
+const store = createStoreWithMiddleware(mainReducer);
+```
+with
+```js
+const store = createStoreWithMiddleware(mainReducer, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
+```
+
 ### Autodesk HIG React
 
 https://github.com/Autodesk/hig

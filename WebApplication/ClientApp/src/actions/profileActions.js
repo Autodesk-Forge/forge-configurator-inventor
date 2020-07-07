@@ -19,7 +19,7 @@ export const detectToken = () => (dispatch) => {
 
         const accessToken = extractToken(window.location.hash.substring(1));
         if (accessToken) {
-            dispatch(addLog(`Detected access token = '${accessToken}'`));
+            dispatch(addLog(`Detected access token`));
             repo.setAccessToken(accessToken);
 
             // remove token from URL

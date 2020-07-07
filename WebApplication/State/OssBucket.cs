@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Autodesk.Forge.Client;
 using Autodesk.Forge.Model;
 using WebApplication.Services;
 
@@ -99,6 +100,18 @@ namespace WebApplication.State
         }
 
         /// <summary>
+        /// Ensure local copy of OSS file.
+        /// NOTE: it only checks presence of local file.
+        /// </summary>
+        public async Task EnsureFileAsync(string objectName, string localFullName)
+        {
+            if (!File.Exists(localFullName))
+            {
+                await _forgeOSS.DownloadFileAsync(BucketKey, objectName, localFullName);
+            }
+        }
+
+        /// <summary>
         /// Rename object.
         /// </summary>
         /// <param name="oldName">Old object name.</param>
@@ -127,9 +140,27 @@ namespace WebApplication.State
             await _forgeOSS.UploadChunkAsync(BucketKey, objectName, contentRange, sessionId, stream);
         }
 
-        public async Task<Autodesk.Forge.Client.ApiResponse<dynamic>> GetObjectAsync(string objectName)
+        public async Task<ApiResponse<dynamic>> GetObjectAsync(string objectName)
         {
             return await _forgeOSS.GetObjectAsync(BucketKey, objectName);
+        }
+
+        /// <summary>
+        /// Check if bucket contains the object.
+        /// </summary>
+        public async Task<bool> ObjectExistsAsync(string objectName)
+        {
+            try
+            {
+                await GetObjectAsync(objectName); // TODO: find better alternative
+                return true;
+            }
+            catch (ApiException ex) when (ex.ErrorCode == 404)
+            {
+                // the file is not found. Just swallow the exception
+            }
+
+            return false;
         }
     }
 }
