@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
 const locators = require('./elements_definition.js');
-const jawOffsetInput = '//div[text()="JawOffset"]//input';
 const updatingDialogTitle = '//div[@role="dialog" and .//p[contains(.,"Updating Project")]]';
 const failedDialogTitle = '//div[@role="dialog" and .//p[contains(.,"Update Failed")]]';
 
@@ -11,10 +10,10 @@ Before((I) => {
 
 Feature('Failed Dialog');
 
-//ensure that Stripe panel is not disabled!!!
+//ensure that Failed Dialog is displayed when you entered an incorrect value!!!
 Scenario('should check incorrect input to show failed dialog', (I) => {
 
-    // click to show popup menu with list of projects
+    // select Wrench project in the Project Switcher
     I.selectProject('Wrench');
 
     // set incorrect value - 'xyz'
