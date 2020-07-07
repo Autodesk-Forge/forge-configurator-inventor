@@ -140,7 +140,7 @@ module.exports = function() {
     },
     deleteProject(projectName) {
       // hover above project
-      let projectRowWithName = projectRow.replace('ProjectName', projectName);
+      const projectRowWithName = projectRow.replace('ProjectName', projectName);
       this.waitForVisible(projectRowWithName, 10);
       this.moveCursorTo(projectRowWithName);
 
@@ -160,7 +160,7 @@ module.exports = function() {
       this.waitForInvisible(projectRowWithName, 60);
     },
     setParamValue(paramName, paramValue) {
-      let paramsInputWithName = paramsInput.replace('ParamName', paramName);
+      const paramsInputWithName = paramsInput.replace('ParamName', paramName);
       this.waitForVisible(paramsInputWithName, 10);
       this.clearField(paramsInputWithName);
       this.fillField(paramsInputWithName, paramValue);

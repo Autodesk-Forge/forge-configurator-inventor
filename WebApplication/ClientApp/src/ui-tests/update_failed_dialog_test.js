@@ -11,18 +11,14 @@ Before((I) => {
 
 Feature('Failed Dialog');
 
-//ensure that Stripe panel is not diabled!!!
+//ensure that Stripe panel is not disabled!!!
 Scenario('should check incorrect input to show failed dialog', (I) => {
 
     // click to show popup menu with list of projects
     I.selectProject('Wrench');
 
-    // wait for Input element
-    I.waitForVisible(jawOffsetInput, 10);
-
     // set incorrect value - 'xyz'
-    I.clearField(jawOffsetInput);
-    I.fillField(jawOffsetInput, 'xyz');
+    I.setParamValue('JawOffset', 'xyz'  );
 
     // click on Update button
     I.see("Update", locators.xpButtonUpdate);
@@ -30,9 +26,8 @@ Scenario('should check incorrect input to show failed dialog', (I) => {
 
     // waiting for Updating dialog
     I.waitForVisible(updatingDialogTitle, 10);
-    I.waitForInvisible(updatingDialogTitle, 30);
+    I.waitForInvisible(updatingDialogTitle, 120);
 
     // check if Failed dialog is displayed
     I.waitForVisible(failedDialogTitle, 30);
-
 });
