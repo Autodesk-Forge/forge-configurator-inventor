@@ -42,7 +42,7 @@ namespace WebApplication.Processing
         /// <param name="tlaFilename">Top level assembly in the ZIP. (if any)</param>
         public async Task<AdoptionData> ForAdoptionAsync(string docUrl, string tlaFilename)
         {
-            var bucket = await _userResolver.GetBucket();
+            var bucket = await _userResolver.GetBucketAsync();
 
             var urls = await Task.WhenAll(bucket.CreateSignedUrlAsync(Thumbnail, ObjectAccess.Write), 
                                             bucket.CreateSignedUrlAsync(SVF, ObjectAccess.Write), 
@@ -68,7 +68,7 @@ namespace WebApplication.Processing
         /// <param name="parameters">Inventor parameters.</param>
         public async Task<UpdateData> ForUpdateAsync(string docUrl, string tlaFilename, InventorParameters parameters)
         {
-            var bucket = await _userResolver.GetBucket();
+            var bucket = await _userResolver.GetBucketAsync();
 
             var urls = await Task.WhenAll(
                                             bucket.CreateSignedUrlAsync(OutputModel, ObjectAccess.Write),
@@ -102,7 +102,7 @@ namespace WebApplication.Processing
 
             var ossNames = project.OssNameProvider(hashString);
 
-            var bucket = await _userResolver.GetBucket();
+            var bucket = await _userResolver.GetBucketAsync();
 
             // move data to expected places
             await Task.WhenAll(bucket.RenameObjectAsync(Thumbnail, project.OssAttributes.Thumbnail),
@@ -119,7 +119,7 @@ namespace WebApplication.Processing
         /// </summary>
         internal async Task MoveRfaAsync(Project project, string hash)
         {
-            var bucket = await _userResolver.GetBucket();
+            var bucket = await _userResolver.GetBucketAsync();
 
             var ossNames = project.OssNameProvider(hash);
             await Task.WhenAll(bucket.RenameObjectAsync(OutputRFA, ossNames.Rfa),
@@ -128,7 +128,7 @@ namespace WebApplication.Processing
 
         internal async Task<ProcessingArgs> ForSatAsync(string inputDocUrl, string topLevelAssembly)
         {
-            var bucket = await _userResolver.GetBucket();
+            var bucket = await _userResolver.GetBucketAsync();
 
             // SAT file is intermediate and will be used later for further conversion (to RFA),
             // so request both read and write access to avoid extra calls to OSS
@@ -144,7 +144,7 @@ namespace WebApplication.Processing
 
         internal async Task<ProcessingArgs> ForRfaAsync(string inputDocUrl)
         {
-            var bucket = await _userResolver.GetBucket();
+            var bucket = await _userResolver.GetBucketAsync();
             var rfaUrl = await bucket.CreateSignedUrlAsync(OutputRFA, ObjectAccess.Write);
 
             return new ProcessingArgs
@@ -165,7 +165,7 @@ namespace WebApplication.Processing
 
             var ossNames = project.OssNameProvider(hashString);
 
-            var bucket = await _userResolver.GetBucket();
+            var bucket = await _userResolver.GetBucketAsync();
 
             // move data to expected places
             await Task.WhenAll(bucket.RenameObjectAsync(SVF, ossNames.ModelView),
@@ -184,7 +184,7 @@ namespace WebApplication.Processing
             var client = _clientFactory.CreateClient();
 
             // rearrange generated data according to the parameters hash
-            var bucket = await _userResolver.GetBucket();
+            var bucket = await _userResolver.GetBucketAsync();
             var url = await bucket.CreateSignedUrlAsync(Parameters);
             using var response = await client.GetAsync(url); // TODO: find
             response.EnsureSuccessStatusCode();

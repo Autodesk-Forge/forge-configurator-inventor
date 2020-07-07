@@ -7,18 +7,18 @@ export class CheckboxTableHeader extends Component {
 
   onChange(checked) {
     const { checkedProjects } = this.props;
-    const allRowsCount = this.props.projectList.projects ? this.props.projectList.projects.length : 0;
+    const allRowsCount = this.props.projects ? this.props.projects.length : 0;
     const clearAll = !checked && checkedProjects.length === allRowsCount;
     this.props.onChange( clearAll );
   }
 
   render() {
     const { selectable, checkedProjects } = this.props;
-    const allRowsCount = this.props.projectList.projects ? this.props.projectList.projects.length : 0;
+    const allRowsCount = this.props.projects ? this.props.projects.length : 0;
     const hasSomeCheckedProject = checkedProjects.length > 0;
     const selectedAll = checkedProjects.length === allRowsCount;
     const indeterminate = hasSomeCheckedProject && !selectedAll;
-    const visible = hasSomeCheckedProject || (selectable && allRowsCount > 0);
+    const visible = selectable && (hasSomeCheckedProject || allRowsCount > 0);
 
       return (
         <div id={hasSomeCheckedProject ? "checkbox_checked_visible" : "checkbox_hover_visible"}>
@@ -32,9 +32,10 @@ export class CheckboxTableHeader extends Component {
     }
   }
 
+/* istanbul ignore next */
 export default connect(function (store) {
   return {
-    projectList: store.projectList,
+    projects: store.projectList.projects,
     checkedProjects: checkedProjects(store)
   };
 })(CheckboxTableHeader);

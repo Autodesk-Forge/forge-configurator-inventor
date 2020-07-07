@@ -18,6 +18,7 @@ export const actionTypes = {
     UPDATE_ACTIVE_TAB_INDEX: 'UPDATE_ACTIVE_TAB_INDEX',
     PROJECT_EXISTS: 'PROJECT_EXISTS',
     SHOW_DELETE_PROJECT: 'SHOW_DELETE_PROJECT',
+    SET_PROJECT_CHECKED: 'SET_PROJECT_CHECKED',
     SET_CHECKED_PROJECTS: 'SET_CHECKED_PROJECTS',
     CLEAR_CHECKED_PROJECTS: 'CLEAR_CHECKED_PROJECTS'
 };
@@ -137,6 +138,14 @@ export const showDeleteProject = (visible) => {
     return {
         type: actionTypes.SHOW_DELETE_PROJECT,
         visible
+    };
+};
+
+export const setProjectChecked = (projectId, checked) => {
+    return {
+        type: actionTypes.SET_PROJECT_CHECKED,
+        projectId,
+        checked
     };
 };
 

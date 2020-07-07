@@ -10,6 +10,8 @@ namespace WebApplication.Middleware
     /// </summary>
     public class TokenHandler
     {
+        private const string BearerPrefix = "Bearer ";
+
         private readonly RequestDelegate _next;
 
         public TokenHandler(RequestDelegate next)
@@ -19,9 +21,17 @@ namespace WebApplication.Middleware
 
         public async Task InvokeAsync(HttpContext context, UserResolver resolver)
         {
-            if (context.Request.Headers.TryGetValue(HeaderNames.Authorization, out var token))
+            while (context.Request.Headers.TryGetValue(HeaderNames.Authorization, out var values))
             {
+                var headerValue = values[0];
+                if (headerValue.Length <= BearerPrefix.Length) break;
+                if (! headerValue.StartsWith(BearerPrefix)) break;
+
+                string token = headerValue.Substring(BearerPrefix.Length);
+                if (string.IsNullOrEmpty(token)) break;
+
                 resolver.Token = token;
+                break;
             }
 
             // Call the next delegate/middleware in the pipeline
