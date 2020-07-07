@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using WebApplication.State;
 
 namespace WebApplication.Utilities
 {
@@ -52,12 +54,26 @@ namespace WebApplication.Utilities
         /// <param name="ossObjectName">OSS name for the project</param>
         public static string ToProjectName(string ossObjectName)
         {
-            if(!ossObjectName.StartsWith($"{ONC.ProjectsFolder}-"))
+            if(!ossObjectName.StartsWith($"{ProjectsFolder}-"))
             {
                 throw new ApplicationException("Initializing Project from invalid bucket key: " + ossObjectName);
             }
 
             return ossObjectName.Substring(ProjectsFolder.Length+1);
+        }
+
+        /// <summary>
+        /// Get collection of OSS search masks for the project.
+        /// It allows to get all OSS files related to the project.
+        /// </summary>
+        /// <remarks>
+        /// The collection does NOT include name of the project itself. Use <see cref="Project.ExactOssName"/> to generate it.
+        /// </remarks>
+        public static IEnumerable<string> ProjectMasks(string projectName)
+        {
+            yield return $"{AttributesFolder}-{projectName}-";
+            yield return $"{CacheFolder}-{projectName}-";
+            yield return $"{DownloadsFolder}-{projectName}-";
         }
     }
 

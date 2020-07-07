@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Autodesk.Forge.Client;
 using Autodesk.Forge.Core;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WebApplication.Middleware;
 using WebApplication.Services;
@@ -18,7 +19,10 @@ namespace WebApplication.State
     {
         private readonly IForgeOSS _forgeOSS;
         private readonly LocalCache _localCache;
+        private readonly ILogger<UserResolver> _logger;
         private readonly ForgeConfiguration _forgeConfig;
+
+        private readonly Lazy<Task<dynamic>> _lazyProfile;
 
         /// <summary>
         /// OSS bucket for anonymous user.
@@ -29,16 +33,20 @@ namespace WebApplication.State
         public bool IsAuthenticated => ! string.IsNullOrEmpty(Token);
 
         public UserResolver(ResourceProvider resourceProvider, IForgeOSS forgeOSS,
-                            IOptions<ForgeConfiguration> forgeConfiguration, LocalCache localCache)
+                            IOptions<ForgeConfiguration> forgeConfiguration, LocalCache localCache, ILogger<UserResolver> logger)
         {
             _forgeOSS = forgeOSS;
             _localCache = localCache;
+            _logger = logger;
             _forgeConfig = forgeConfiguration.Value;
 
-            AnonymousBucket = new OssBucket(_forgeOSS, resourceProvider.BucketKey);
+            AnonymousBucket = new OssBucket(_forgeOSS, resourceProvider.BucketKey, logger);
+
+            _lazyProfile = new Lazy<Task<dynamic>>(async () => await _forgeOSS.GetProfileAsync(Token));
         }
 
-        public string GetBucketPrefix() {
+        public string GetBucketPrefix()
+        {
             return $"authd-{_forgeConfig.ClientId}".ToLowerInvariant();
         }
 
@@ -46,7 +54,7 @@ namespace WebApplication.State
         {
             if (! IsAuthenticated) return AnonymousBucket;
 
-            dynamic profile = await GetProfileAsync(); // TODO: cache it
+            dynamic profile = await GetProfileAsync();
             var userId = profile.userId;
 
             // an OSS bucket must have a unique name, so it should be generated in a way,
@@ -55,7 +63,7 @@ namespace WebApplication.State
             var userHash = Crypto.GenerateHashString(_forgeConfig.ClientId + userId);
             var bucketKey = $"{GetBucketPrefix()}-{userId.Substring(0, 3)}-{userHash}".ToLowerInvariant();
 
-            var bucket = new OssBucket(_forgeOSS, bucketKey);
+            var bucket = new OssBucket(_forgeOSS, bucketKey, _logger);
             if (tryToCreate)
             {
                 // TODO: VERY INEFFECTIVE!!!!!
@@ -88,17 +96,14 @@ namespace WebApplication.State
             return new ProjectStorage(project);
         }
 
-        public async Task<dynamic> GetProfileAsync()
-        {
-            return await _forgeOSS.GetProfileAsync(Token);
-        }
+        public Task<dynamic> GetProfileAsync() => _lazyProfile.Value;
 
         public async Task<string> GetFullUserDir()
         {
             string userDir;
             if (IsAuthenticated)
             {
-                var profile = await GetProfileAsync(); // TODO: cache it
+                var profile = await GetProfileAsync();
 
                 // generate dirname to hide Oxygen user ID
                 userDir = Crypto.GenerateHashString("SDRA" + profile.userId);

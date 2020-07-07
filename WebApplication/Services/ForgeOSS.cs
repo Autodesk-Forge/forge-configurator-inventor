@@ -9,8 +9,10 @@ using Autodesk.Forge.Client;
 using Autodesk.Forge.Core;
 using Autodesk.Forge.Model;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using Polly;
 using Polly.Retry;
 using WebApplication.Utilities;
@@ -22,6 +24,11 @@ namespace WebApplication.Services
     /// </summary>
     public class ForgeOSS : IForgeOSS
     {
+        /// <summary>
+        /// Page size for "Get Bucket Objects" operation.
+        /// </summary>
+        private const int PageSize = 50;
+
         private readonly IHttpClientFactory _clientFactory;
         private readonly ILogger<ForgeOSS> _logger;
         private static readonly Scope[] _scope = { Scope.DataRead, Scope.DataWrite, Scope.BucketCreate, Scope.BucketDelete, Scope.BucketRead };
@@ -53,27 +60,59 @@ namespace WebApplication.Services
                                     .RetryAsync(5, (_, __) => RefreshApiToken());
         }
 
+        public static bool PropertyExists(dynamic obj, string name)
+        {
+            if (obj == null) return false;
+            if (obj is IDictionary<string, object> dict) {
+                return dict.ContainsKey(name);
+            }
+
+            var property = obj.GetType().GetProperty(name);
+            return property != null;
+        }
+
         public Task<List<ObjectDetails>> GetBucketObjectsAsync(string bucketKey, string beginsWith = null)
         {
             return WithObjectsApiAsync(async api =>
             {
                 var objects = new List<ObjectDetails>();
+                string startAt = null; // next page pointer
 
-                dynamic objectsList = await api.GetObjectsAsync(bucketKey, null, beginsWith);
-
-                foreach (KeyValuePair<string, dynamic> objInfo in new DynamicDictionaryItems(objectsList.items))
+                do
                 {
-                    var details = new ObjectDetails
+                    DynamicJsonResponse response = await api.GetObjectsAsync(bucketKey, PageSize, beginsWith, startAt);
+
+                    foreach (KeyValuePair<string, dynamic> objInfo in new DynamicDictionaryItems((response as dynamic).items))
                     {
-                        BucketKey = objInfo.Value.bucketKey,
-                        ObjectId = objInfo.Value.objectId,
-                        ObjectKey = objInfo.Value.objectKey,
-                        Sha1 = Encoding.ASCII.GetBytes(objInfo.Value.sha1),
-                        Size = (int?) objInfo.Value.size,
-                        Location = objInfo.Value.location
-                    };
-                    objects.Add(details);
-                }
+                        dynamic item = objInfo.Value;
+
+                        var details = new ObjectDetails
+                        {
+                            BucketKey = item.bucketKey,
+                            ObjectId = item.objectId,
+                            ObjectKey = item.objectKey,
+                            Sha1 = Encoding.ASCII.GetBytes(item.sha1),
+                            Size = (int?) item.size,
+                            Location = item.location
+                        };
+                        objects.Add(details);
+                    }
+
+                    startAt = null;
+
+                    // check if there is a next page with projects
+                    if (response.Dictionary.TryGetValue("next", out var nextPage))
+                    {
+                        string nextPageUrl = (string) nextPage;
+                        if (! string.IsNullOrEmpty(nextPageUrl))
+                        {
+                            Uri nextUri = new Uri(nextPageUrl, UriKind.Absolute);
+                            Dictionary<string, StringValues> query = QueryHelpers.ParseNullableQuery(nextUri.Query);
+                            startAt = query["startAt"];
+                        }
+                    }
+
+                } while (startAt != null);
 
                 return objects;
             });
