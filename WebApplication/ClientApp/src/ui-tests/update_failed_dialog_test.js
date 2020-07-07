@@ -30,6 +30,7 @@ Scenario('should check incorrect input to show failed dialog', (I) => {
 
     // waiting for Updating dialog
     I.waitForVisible(updatingDialogTitle, 10);
+    I.waitForInvisible(updatingDialogTitle, 30);
 
     // check if Failed dialog is displayed
     I.waitForVisible(failedDialogTitle, 30);
