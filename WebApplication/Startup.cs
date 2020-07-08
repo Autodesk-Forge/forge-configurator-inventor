@@ -96,6 +96,12 @@ namespace WebApplication
                 initializer.InitializeAsync().Wait();
             }
 
+            if(Configuration.GetValue<bool>("bundles"))
+            {
+                logger.LogInformation("-- Initialization of AppBundles and Activities --");
+                initializer.InitializeBundlesAsync().Wait();
+            }
+
             if (env.IsDevelopment())
             {
                 logger.LogInformation("In Development environment");
