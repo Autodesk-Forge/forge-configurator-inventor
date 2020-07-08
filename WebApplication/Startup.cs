@@ -82,7 +82,7 @@ namespace WebApplication
             if(Configuration.GetValue<bool>("clear"))
             {
                 logger.LogInformation("-- Clean up --");
-                // retrieve used Forge Client Id and Client Id where it is allowed to delele user buckets
+                // retrieve used Forge Client Id and Client Id where it is allowed to delete user buckets
                 string clientIdCanDeleteUserBuckets = Configuration.GetValue<string>("clientIdCanDeleteUserBuckets");
                 string clientId = forgeConfiguration.Value.ClientId;
                 // only on allowed Client Id remove the user buckets
