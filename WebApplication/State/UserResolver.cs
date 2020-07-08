@@ -80,19 +80,22 @@ namespace WebApplication.State
             return bucket;
         }
 
-        public async Task<Project> GetProjectAsync(string projectName)
+        public async Task<Project> GetProjectAsync(string projectName, bool ensureDir = true)
         {
             var userFullDirName = await GetFullUserDir();
-            Directory.CreateDirectory(userFullDirName); // TODO: should not do it each time
+            if (ensureDir)
+            {
+                Directory.CreateDirectory(userFullDirName); // TODO: should not do it each time
+            }
             return new Project(projectName, userFullDirName);
         }
 
         /// <summary>
         /// Get project storage by project name.
         /// </summary>
-        public async Task<ProjectStorage> GetProjectStorageAsync(string projectName)
+        public async Task<ProjectStorage> GetProjectStorageAsync(string projectName, bool ensureDir = true)
         {
-            var project = await GetProjectAsync(projectName);
+            var project = await GetProjectAsync(projectName, ensureDir);
             return new ProjectStorage(project);
         }
 
