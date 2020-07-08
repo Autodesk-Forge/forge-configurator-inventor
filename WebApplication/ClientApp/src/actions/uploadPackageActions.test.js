@@ -38,10 +38,11 @@ describe('uploadPackage', () => {
         const actions = store.getActions();
 
         // check expected actions and their types
-        expect(actions).toHaveLength(3); // TBD, currently just uiFlags to show and hide the progress
-        expect(actions[0].type).toEqual(actionTypes.SET_UPLOAD_PROGRESS_VISIBLE);
-        expect(actions[1].type).toEqual(projectListActions.ADD_PROJECT);
-        expect(actions[2].type).toEqual(actionTypes.SET_UPLOAD_PROGRESS_DONE);
+        expect(actions).toHaveLength(4); // TBD, currently just uiFlags to show and hide the progress
+        expect(actions[0].type).toEqual(uiFlagsActionTypes.SHOW_UPLOAD_PACKAGE);
+        expect(actions[1].type).toEqual(actionTypes.SET_UPLOAD_PROGRESS_VISIBLE);
+        expect(actions[2].type).toEqual(projectListActions.ADD_PROJECT);
+        expect(actions[3].type).toEqual(actionTypes.SET_UPLOAD_PROGRESS_DONE);
 
         // TBD check if the expected project is added to the project list
         // expect(actions[2].projectList).toEqual(testProjects);
@@ -83,5 +84,41 @@ describe('uploadPackage', () => {
         // check expected actions and their types
         const uploadFailedAction = actions.find(a => a.type === actionTypes.SET_UPLOAD_FAILED);
         expect(uploadFailedAction.reportUrl).toEqual(reportUrl);
+    });
+
+    it('should do nothing when all the form values are empty', async () => {
+
+        const store = mockStore({ uiFlags: { package: { file: null, root: ''}} });
+
+        await store.dispatch(uploadPackage());
+        expect(uploadPackageMock).toHaveBeenCalledTimes(0);
+
+        const actions = store.getActions();
+
+        expect(actions).toHaveLength(0);
+    });
+
+    it('should do nothing when file is empty', async () => {
+
+        const store = mockStore({ uiFlags: { package: { file: null, root: 'asm.iam'}} });
+
+        await store.dispatch(uploadPackage());
+        expect(uploadPackageMock).toHaveBeenCalledTimes(0);
+
+        const actions = store.getActions();
+
+        expect(actions).toHaveLength(0);
+    });
+
+    it('should do nothing when root is empty', async () => {
+
+        const store = mockStore({ uiFlags: { package: { file: "a.zip", root: ''}} });
+
+        await store.dispatch(uploadPackage());
+        expect(uploadPackageMock).toHaveBeenCalledTimes(0);
+
+        const actions = store.getActions();
+
+        expect(actions).toHaveLength(0);
     });
 });

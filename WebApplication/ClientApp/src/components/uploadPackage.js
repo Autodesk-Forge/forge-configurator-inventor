@@ -22,7 +22,9 @@ export class UploadPackage extends Component {
     }
 
     onPackageFileChange(data) {
-        this.props.editPackageFile(data.target.files[0]);
+        if(data.target.files.length > 0) {
+            this.props.editPackageFile(data.target.files[0]);
+        }
     }
 
     onPackageRootChange(data) {
@@ -106,7 +108,6 @@ export class UploadPackage extends Component {
                             title="Upload"
                             type="primary"
                             onClick={() => {
-                                this.props.showUploadPackage(false);
                                 this.props.uploadPackage();
                             }}
                         />
