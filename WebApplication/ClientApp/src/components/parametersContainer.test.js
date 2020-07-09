@@ -113,7 +113,8 @@ describe('parameters container', () => {
         const props = {
             activeProject: { id: projectId },
             fetchParameters: () => {},
-            showModalProgress: fnMock
+            showModalProgress: fnMock,
+            modalProgressShowing: true
         };
 
         const wrapper = shallow(<ParametersContainer {...props} />);

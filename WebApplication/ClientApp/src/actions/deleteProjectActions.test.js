@@ -50,24 +50,19 @@ describe('deleteProject', () => {
     });
 
     describe('success', () => {
-        it('refreshes projects and checkboxes after delete', () => {
+        it('refreshes projects and checkboxes after delete', async () => {
 
-            return store
-                .dispatch(deleteProject())
-                .then(() => {
+            await store.dispatch(deleteProject());
+            expect(deleteProjectsMock).toHaveBeenCalledTimes(1);
+            expect(deleteProjectsMock).toBeCalledWith(projectsToDelete);
+            expect(loadProjectsMock).toHaveBeenCalledTimes(1);
 
-                    // ensure the mocks to be called with proper data
-                    expect(deleteProjectsMock).toHaveBeenCalledTimes(1);
-                    expect(deleteProjectsMock).toBeCalledWith(projectsToDelete);
-                    expect(loadProjectsMock).toHaveBeenCalledTimes(1);
+            // check expected store actions
+            const actions = store.getActions();
+            const updateAction = actions.find(a => a.type === projectListActionTypes.PROJECT_LIST_UPDATED);
+            expect(updateAction.projectList).toEqual(remainingProjects);
 
-                    // check expected store actions
-                    const actions = store.getActions();
-                    const updateAction = actions.find(a => a.type === projectListActionTypes.PROJECT_LIST_UPDATED);
-                    expect(updateAction.projectList).toEqual(remainingProjects);
-
-                    expect(actions.some(a => a.type === uiFlagsActionTypes.CLEAR_CHECKED_PROJECTS)).toEqual(true);
-                });
+            expect(actions.some(a => a.type === uiFlagsActionTypes.CLEAR_CHECKED_PROJECTS)).toEqual(true);
         });
     });
 });

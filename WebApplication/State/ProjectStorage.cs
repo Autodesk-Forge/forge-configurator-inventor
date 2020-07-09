@@ -45,21 +45,45 @@ namespace WebApplication.State
         /// </summary>
         public async Task EnsureLocalAsync(OssBucket ossBucket)
         {
-            // ensure the directory exists
-            Directory.CreateDirectory(Project.LocalAttributes.BaseDir);
+            // make sure that there are no leftovers from previous incarnations of the project
+            DeleteLocal();
 
-            // download metadata and thumbnail
-            await Task.WhenAll(
-                                ossBucket.DownloadFileAsync(Project.OssAttributes.Metadata, Project.LocalAttributes.Metadata),
-                                ossBucket.DownloadFileAsync(Project.OssAttributes.Thumbnail, Project.LocalAttributes.Thumbnail)
-                            );
+            await EnsureAttributesAsync(ossBucket, ensureDir: true);
 
 
             // download ZIP with SVF model
             // NOTE: this step is impossible without having project metadata,
             // because file/dir names depends on hash of initial project state
 
-            await PlaceViewablesAsync(ossBucket, GetLocalNames(), GetOssNames());
+            await EnsureViewablesAsync(ossBucket, Metadata.Hash, ensureDir: true);
+        }
+
+        /// <summary>
+        /// Ensure that project attributes are cached locally.
+        /// </summary>
+        public async Task EnsureAttributesAsync(OssBucket ossBucket, bool ensureDir = true)
+        {
+            // ensure the directory exists
+            if (ensureDir)
+            {
+                Directory.CreateDirectory(Project.LocalAttributes.BaseDir);
+            }
+
+            // download metadata and thumbnail
+            await Task.WhenAll(
+                ossBucket.EnsureFileAsync(Project.OssAttributes.Metadata, Project.LocalAttributes.Metadata),
+                ossBucket.EnsureFileAsync(Project.OssAttributes.Thumbnail, Project.LocalAttributes.Thumbnail)
+            );
+        }
+
+        /// <summary>
+        /// Check if directory for the hash is exists.
+        /// It's considered as a sign that project-related data for the hash is cached.
+        /// </summary>
+        public bool IsCached(string hash)
+        {
+            var localNames = GetLocalNames(hash);
+            return Directory.Exists(localNames.BaseDir);
         }
 
         /// <summary>
@@ -67,26 +91,39 @@ namespace WebApplication.State
         /// </summary>
         /// <param name="ossBucket">OSS bucket.</param>
         /// <param name="hash">Parameters hash.</param>
-        public async Task EnsureViewablesAsync(OssBucket ossBucket, string hash)
+        /// <param name="ensureDir">Create local dir if necessary.</param>
+        public async Task EnsureViewablesAsync(OssBucket ossBucket, string hash, bool ensureDir = true)
         {
-            await PlaceViewablesAsync(ossBucket, GetLocalNames(hash), GetOssNames(hash));
-        }
+            var localNames = GetLocalNames(hash);
 
-        private async Task PlaceViewablesAsync(OssBucket ossBucket, LocalNameProvider localNames, OSSObjectNameProvider ossNames)
-        {
             // create the "hashed" dir
-            Directory.CreateDirectory(localNames.BaseDir);
+            if (ensureDir)
+            {
+                Directory.CreateDirectory(localNames.BaseDir);
+            }
 
+            OSSObjectNameProvider ossNames = GetOssNames(hash);
             using var tempFile = new TempFile();
             await Task.WhenAll(
-                                ossBucket.DownloadFileAsync(ossNames.ModelView, tempFile.Name),
-                                ossBucket.DownloadFileAsync(ossNames.Parameters, localNames.Parameters)
-                            );
+                ossBucket.DownloadFileAsync(ossNames.ModelView, tempFile.Name),
+                ossBucket.DownloadFileAsync(ossNames.Parameters, localNames.Parameters)
+            );
 
             // extract SVF from the archive
             ZipFile.ExtractToDirectory(tempFile.Name, localNames.SvfDir, overwriteFiles: true); // TODO: non-default encoding is not supported
         }
 
+        public async Task EnsureSvfAsync(OssBucket ossBucket, string hash)
+        {
+            var localNames = GetLocalNames(hash);
+            var ossNames = GetOssNames(hash);
+
+            using var tempFile = new TempFile();
+            await ossBucket.DownloadFileAsync(ossNames.ModelView, tempFile.Name);
+
+            // extract SVF from the archive
+            ZipFile.ExtractToDirectory(tempFile.Name, localNames.SvfDir, overwriteFiles: true); // TODO: non-default encoding is not supported
+        }
 
         /// <summary>
         /// OSS names for "hashed" files.
@@ -97,5 +134,16 @@ namespace WebApplication.State
         /// Local names for "hashed" files.
         /// </summary>
         public LocalNameProvider GetLocalNames(string hash = null) => Project.LocalNameProvider(hash ?? Metadata.Hash);
+
+        /// <summary>
+        /// Delete local cache for the project.
+        /// </summary>
+        public void DeleteLocal()
+        {
+            if (Directory.Exists(Project.LocalAttributes.BaseDir))
+            {
+                Directory.Delete(Project.LocalAttributes.BaseDir, recursive: true);
+            }
+        }
     }
 }

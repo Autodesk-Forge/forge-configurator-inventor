@@ -22,7 +22,7 @@ export class ProjectSwitcher extends Component {
         this.props.updateActiveProject(id);
         // switch to the model tab
         this.props.updateActiveTabIndex(1);
-        this.props.fetchParameters(id);
+        //this.props.fetchParameters(id);
         this.props.addLog('Selected: ' + id);
     }
 

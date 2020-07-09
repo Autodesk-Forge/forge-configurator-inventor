@@ -43,7 +43,11 @@ namespace WebApplication
             // bucket for anonymous user
             _bucket = _userResolver.AnonymousBucket;
         }
-
+        public async Task InitializeBundlesAsync()
+        {
+            using var scope = _logger.BeginScope("Init AppBundles and Activities");
+            await _fdaClient.InitializeAsync();
+        }
         public async Task InitializeAsync()
         {
             using var scope = _logger.BeginScope("Init");

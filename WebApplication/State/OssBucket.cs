@@ -1,7 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Autodesk.Forge.Client;
 using Autodesk.Forge.Model;
+using Microsoft.Extensions.Logging;
 using WebApplication.Services;
 
 namespace WebApplication.State
@@ -13,16 +16,19 @@ namespace WebApplication.State
     {
         public string BucketKey { get; }
         private readonly IForgeOSS _forgeOSS;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Constructor.
         /// </summary>
         /// <param name="forgeOSS">Forge OSS service.</param>
         /// <param name="bucketKey">The bucket key.</param>
-        public OssBucket(IForgeOSS forgeOSS, string bucketKey)
+        /// <param name="logger">Logger to use.</param>
+        public OssBucket(IForgeOSS forgeOSS, string bucketKey, ILogger logger)
         {
             BucketKey = bucketKey;
             _forgeOSS = forgeOSS;
+            _logger = logger;
         }
 
         /// <summary>
@@ -99,6 +105,18 @@ namespace WebApplication.State
         }
 
         /// <summary>
+        /// Ensure local copy of OSS file.
+        /// NOTE: it only checks presence of local file.
+        /// </summary>
+        public async Task EnsureFileAsync(string objectName, string localFullName)
+        {
+            if (!File.Exists(localFullName))
+            {
+                await _forgeOSS.DownloadFileAsync(BucketKey, objectName, localFullName);
+            }
+        }
+
+        /// <summary>
         /// Rename object.
         /// </summary>
         /// <param name="oldName">Old object name.</param>
@@ -127,9 +145,69 @@ namespace WebApplication.State
             await _forgeOSS.UploadChunkAsync(BucketKey, objectName, contentRange, sessionId, stream);
         }
 
-        public async Task<Autodesk.Forge.Client.ApiResponse<dynamic>> GetObjectAsync(string objectName)
+        public async Task<ApiResponse<dynamic>> GetObjectAsync(string objectName)
         {
             return await _forgeOSS.GetObjectAsync(BucketKey, objectName);
+        }
+
+        /// <summary>
+        /// Check if bucket contains the object.
+        /// </summary>
+        public async Task<bool> ObjectExistsAsync(string objectName)
+        {
+            try
+            {
+                await GetObjectAsync(objectName); // TODO: find better alternative
+                return true;
+            }
+            catch (ApiException ex) when (ex.ErrorCode == 404)
+            {
+                // the file is not found. Just swallow the exception
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Upload file to OSS.
+        /// Uses upload in chunks if necessary.
+        /// </summary>
+        public async Task SmartUploadAsync(string fileName, string objectName, int chunkMbSize = 5)
+        {
+            // 2MB is minimal, clamp to it
+            chunkMbSize = Math.Max(2, chunkMbSize);
+            long chunkSize = chunkMbSize * 1024 * 1024;
+
+            await using var fileReadStream = File.OpenRead(fileName);
+
+            // determine if we need to upload in chunks or in one piece
+            long sizeToUpload = fileReadStream.Length;
+
+            // use chunks for all files greater than chunk size
+            if (sizeToUpload > chunkSize)
+            {
+                _logger.LogInformation($"Uploading in {chunkMbSize}MB chunks");
+
+                string sessionId = Guid.NewGuid().ToString();
+                long begin = 0;
+                byte[] buffer = new byte[chunkSize];
+
+                while (begin < sizeToUpload-1)
+                {
+                    var bytesRead = await fileReadStream.ReadAsync(buffer, 0, (int)chunkSize);
+
+                    int memoryStreamSize = sizeToUpload - begin < chunkSize ? (int)(sizeToUpload - begin) : (int)chunkSize;
+                    await using var chunkStream = new MemoryStream(buffer, 0, memoryStreamSize);
+                    
+                    var contentRange = $"bytes {begin}-{begin + bytesRead - 1}/{sizeToUpload}";
+                    await UploadChunkAsync(objectName, contentRange, sessionId, chunkStream);
+                    begin += bytesRead;
+                }
+            }
+            else
+            {
+                await UploadObjectAsync(objectName, fileReadStream);
+            }
         }
     }
 }

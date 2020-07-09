@@ -15,7 +15,7 @@ module.exports = {
      xpProjectWrench : '//li[contains(@role,"menuitem") and .//span[contains(., "Wrench")]]',
      xpProjectList : '//ul//span[text()="Projects"]',
      xpButtonLog : '//button[contains(@title, "Log")]',
-     xpStripeElement : '//div[contains(@role,"alert") and .//*[local-name()="svg"]]',
+     xpStripeElement : '//p[contains(text(),"The assembly is out-of-date.")]',
      PrametersList : '.parameters',
      ParametersContainer : '.parametersContainer',
      xpPopUpLog : '//div[contains(h3, "Navigation Action")]',

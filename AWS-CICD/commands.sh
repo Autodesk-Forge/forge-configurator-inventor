@@ -1,3 +1,3 @@
 #!/bin/sh -e
 /opt/aws/amazon-cloudwatch-agent/bin/start-amazon-cloudwatch-agent &
-dotnet WebApplication.dll clear=true initialize=true
+dotnet WebApplication.dll

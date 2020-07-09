@@ -84,12 +84,12 @@ namespace WebApplication.Tests
                 Projects = new [] { new DefaultProjectConfiguration { Url = testZippedIamUrl, TopLevelAssembly = testIamPathInZip, Name = "Basic" } }
             };
             IOptions<DefaultProjectsConfiguration> defaultProjectsOptions = Options.Create(defaultProjectsConfiguration);
-            var userResolver = new UserResolver(resourceProvider, forgeOSS, forgeConfigOptions, localCache);
+            var userResolver = new UserResolver(resourceProvider, forgeOSS, forgeConfigOptions, localCache, NullLogger<UserResolver>.Instance);
             var arranger = new Arranger(httpClientFactory, userResolver);
 
             // TODO: linkGenerator should be mocked
             var dtoGenerator = new DtoGenerator(linkGenerator: null, localCache);
-            var projectWork = new ProjectWork(new NullLogger<ProjectWork>(), resourceProvider, arranger, fdaClient, dtoGenerator, userResolver);
+            var projectWork = new ProjectWork(new NullLogger<ProjectWork>(), arranger, fdaClient, dtoGenerator, userResolver);
             initializer = new Initializer(new NullLogger<Initializer>(), fdaClient, 
                                             defaultProjectsOptions, projectWork, userResolver, localCache);
 

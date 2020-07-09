@@ -48,29 +48,25 @@ describe('downloadActions', () => {
         store.clearActions();
     });
 
-    it('check getRFADownloadLink action', () => {
-        return store.dispatch(downloadActions.getRFADownloadLink("ProjectId", "temp_url"))
-        .then(() => {
-            // simulate conection.onComplete(rfaLink);
-            connectionMock.simulateComplete(rfaLink);
+    it('check getRFADownloadLink action', async () => {
+        await store.dispatch(downloadActions.getRFADownloadLink("ProjectId", "temp_url"));
+        // simulate conection.onComplete(rfaLink);
+        connectionMock.simulateComplete(rfaLink);
 
-            // check expected store actions
-            const actions = store.getActions();
-            const linkAction = actions.find(a => a.type === uiFlagsActionTypes.SET_RFA_LINK);
-            expect(linkAction.url).toEqual(fullLink);
-        });
+        // check expected store actions
+        const actions = store.getActions();
+        const linkAction = actions.find(a => a.type === uiFlagsActionTypes.SET_RFA_LINK);
+        expect(linkAction.url).toEqual(fullLink);
     });
 
-    it('check report url and fail dialog on error', () => {
-        return store.dispatch(downloadActions.getRFADownloadLink("ProjectId", "temp_url"))
-        .then(() => {
-            connectionMock.simulateError(jobId,errorReportLink);
+    it('check report url and fail dialog on error', async () => {
+        await store.dispatch(downloadActions.getRFADownloadLink("ProjectId", "temp_url"));
+        connectionMock.simulateError(jobId,errorReportLink);
 
-            // check expected store actions
-            const actions = store.getActions();
-            // there are two SET_REPORT_URL actions in the list. The first one come from job start and is called with null to clear old data...
-            expect(actions.some(a => (a.type === uiFlagsActionTypes.SET_REPORT_URL && a.url === errorReportLink))).toEqual(true);
-            expect(actions.some(a => a.type === uiFlagsActionTypes.SHOW_RFA_FAILED)).toEqual(true);
-        });
+        // check expected store actions
+        const actions = store.getActions();
+        // there are two SET_REPORT_URL actions in the list. The first one come from job start and is called with null to clear old data...
+        expect(actions.some(a => (a.type === uiFlagsActionTypes.SET_REPORT_URL && a.url === errorReportLink))).toEqual(true);
+        expect(actions.some(a => a.type === uiFlagsActionTypes.SHOW_RFA_FAILED)).toEqual(true);
     });
 });

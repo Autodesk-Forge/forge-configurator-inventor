@@ -37,7 +37,7 @@ namespace WebApplication.Controllers
         [HttpGet("")]
         public async Task<IEnumerable<ProjectDTO>> ListAsync()
         {
-            var bucket = await _userResolver.GetBucket(tryToCreate: true);
+            var bucket = await _userResolver.GetBucketAsync(tryToCreate: true);
 
             var projectDTOs = new List<ProjectDTO>();
             foreach (var projectName in await GetProjectNamesAsync(bucket))
@@ -46,6 +46,9 @@ namespace WebApplication.Controllers
                 try
                 {
                     ProjectStorage projectStorage = await _userResolver.GetProjectStorageAsync(projectName); // TODO: expensive to do it in the loop
+
+                    // handle situation when project is not cached locally
+                    await projectStorage.EnsureAttributesAsync(bucket, ensureDir: true);
 
                     projectDTOs.Add(ToDTO(projectStorage));
                 }
@@ -62,8 +65,14 @@ namespace WebApplication.Controllers
         [HttpPost]
         public async Task<ActionResult<ProjectDTO>> CreateProject([FromForm]NewProjectModel projectModel)
         {
+            if (!_userResolver.IsAuthenticated)
+            {
+                _logger.LogError("Attempt to create project for anonymous user");
+                return BadRequest();
+            }
+
             var projectName = Path.GetFileNameWithoutExtension(projectModel.package.FileName);
-            var bucket = await _userResolver.GetBucket(true);
+            var bucket = await _userResolver.GetBucketAsync(true);
 
             // Check if project already exists
             foreach (var existingProjectName in await GetProjectNamesAsync(bucket))
@@ -88,44 +97,10 @@ namespace WebApplication.Controllers
             ProjectStorage projectStorage = await _userResolver.GetProjectStorageAsync(projectName);
 
             string ossSourceModel = projectStorage.Project.OSSSourceModel;
-            await using (var fileReadStream = System.IO.File.OpenRead(file.Name))
-            {
-                // determine if we need to upload in chunks or in one piece
-                long sizeToUpload = fileReadStream.Length;
-                long chunkMBSize = 5;
-                long chunkSize = chunkMBSize * 1024 * 1024; // 2MB is minimal
-
-                // use chunks for all files greater than chunk size
-                if (sizeToUpload > chunkSize)
-                {
-                    _logger.LogInformation($"Uploading in {chunkMBSize}MB chunks");
-
-                    string sessionId = Guid.NewGuid().ToString();
-                    long begin = 0;
-                    byte[] buffer = new byte[chunkSize];
-                    int bytesRead = 0;
-
-                    while (begin < sizeToUpload-1)
-                    {
-                        bytesRead = await fileReadStream.ReadAsync(buffer, 0, (int)chunkSize);
-                        int memoryStreamSize = sizeToUpload - begin < chunkSize ? (int)(sizeToUpload - begin) : (int)(chunkSize);
-                        using (MemoryStream chunkStream = new MemoryStream(buffer, 0, memoryStreamSize))
-                        {
-                            string contentRange = string.Format($"bytes {begin}-{begin + bytesRead -1}/{sizeToUpload}");
-                            await bucket.UploadChunkAsync(ossSourceModel, contentRange, sessionId, chunkStream);
-                        }
-                        begin += bytesRead;
-                    }
-                }
-                else
-                {
-                    await bucket.UploadObjectAsync(ossSourceModel, fileReadStream);
-                }
-            }
-
-            bool adopted = false;
+            await bucket.SmartUploadAsync(file.Name, ossSourceModel);
 
             // adopt the project
+            bool adopted = false;
             try
             {
                 string signedUrl = await bucket.CreateSignedUrlAsync(ossSourceModel);
@@ -156,55 +131,49 @@ namespace WebApplication.Controllers
             return Ok(ToDTO(projectStorage));
         }
 
-        [HttpDelete()]
+        [HttpDelete]
         public async Task<StatusCodeResult> DeleteProjects([FromBody] List<string> projectNameList)
         {
-            var bucket = await _userResolver.GetBucket(true);
+            if (!_userResolver.IsAuthenticated)
+            {
+                _logger.LogError("Attempt to delete projects for anonymous user");
+                return BadRequest();
+            }
 
-            // delete all oss objects for all provided projects
+            var bucket = await _userResolver.GetBucketAsync(true);
+
+            // collect all oss objects for all provided projects
             var tasks = new List<Task>();
 
             foreach (var projectName in projectNameList)
             {
-                var objects = await bucket.GetObjectsAsync($"{ONC.AttributesFolder}-{projectName}");
-                foreach (var objectDetail in objects) {
-                    tasks.Add(bucket.DeleteObjectAsync(objectDetail.ObjectKey));
-                }
+                tasks.Add(bucket.DeleteObjectAsync(Project.ExactOssName(projectName)));
 
-                objects = await bucket.GetObjectsAsync($"{ONC.CacheFolder}-{projectName}");
-                foreach (var objectDetail in objects)
+                foreach (var searchMask in ONC.ProjectMasks(projectName))
                 {
-                    tasks.Add(bucket.DeleteObjectAsync(objectDetail.ObjectKey));
-                }
-
-                objects = await bucket.GetObjectsAsync($"{ONC.DownloadsFolder}-{projectName}");
-                foreach (var objectDetail in objects)
-                {
-                    tasks.Add(bucket.DeleteObjectAsync(objectDetail.ObjectKey));
-                }
-
-                objects = await bucket.GetObjectsAsync($"{ONC.ProjectsFolder}-{projectName}");
-                foreach (var objectDetail in objects)
-                {
-                    tasks.Add(bucket.DeleteObjectAsync(objectDetail.ObjectKey));
+                    var objects = await bucket.GetObjectsAsync(searchMask);
+                    foreach (var objectDetail in objects)
+                    {
+                        tasks.Add(bucket.DeleteObjectAsync(objectDetail.ObjectKey));
+                    }
                 }
             }
 
-            try
+            // delete the OSS objects
+            await Task.WhenAll(tasks);
+            for (var i = 0; i < tasks.Count; i++)
             {
-                Task.WaitAll(tasks.ToArray());
-            }
-            catch (AggregateException)
-            {
-                return StatusCode(500);
+                if (tasks[i].IsFaulted)
+                {
+                    _logger.LogError($"Failed to delete file #{i}");
+                }
             }
 
             // delete local cache for all provided projects
-            var fullUserDir = await _userResolver.GetFullUserDir();
             foreach (var projectName in projectNameList)
             {
-                var fullDirName = Path.Combine(fullUserDir, projectName);
-                Directory.Delete(fullDirName, true);
+                var projectStorage = await _userResolver.GetProjectStorageAsync(projectName, ensureDir: false);
+                projectStorage.DeleteLocal();
             }
 
             return NoContent();

@@ -26,6 +26,9 @@ const checkBox = '//input[@id="checkbox_row"]';
 const deleteProjectButton = '//button[@title="Delete project(s)"]';
 const confirmDelete = '//button[@id="delete_ok_button"]';
 
+// Set param value
+const paramsInput = '//div[@class="parameter"][text()="ParamName"]//input';
+
 module.exports = function() {
 
   const forgeViewerSpinner = '//div[@id="ForgeViewer"]//div[@class="spinner"]';
@@ -137,7 +140,7 @@ module.exports = function() {
     },
     deleteProject(projectName) {
       // hover above project
-      let projectRowWithName = projectRow.replace('ProjectName', projectName);
+      const projectRowWithName = projectRow.replace('ProjectName', projectName);
       this.waitForVisible(projectRowWithName, 10);
       this.moveCursorTo(projectRowWithName);
 
@@ -155,6 +158,12 @@ module.exports = function() {
 
       // wait for project disapear from the list
       this.waitForInvisible(projectRowWithName, 60);
+    },
+    setParamValue(paramName, paramValue) {
+      const paramsInputWithName = paramsInput.replace('ParamName', paramName);
+      this.waitForVisible(paramsInputWithName, 10);
+      this.clearField(paramsInputWithName);
+      this.fillField(paramsInputWithName, paramValue);
     }
   });
 }

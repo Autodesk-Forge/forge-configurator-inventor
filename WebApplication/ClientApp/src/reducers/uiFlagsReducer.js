@@ -14,7 +14,8 @@ export const initialState = {
    showUploadPackage: false,
    uploadProgressShowing: false,
    uploadProgressStatus: null,
-   package: { file: '', root: ''},
+   package: { file: null, root: ''},
+   uploadFailedShowing: false,
    activeTabIndex: 0,
    projectAlreadyExists: false,
    showDeleteProject: false,
@@ -59,6 +60,10 @@ export const uploadProgressShowing = function(state) {
 
 export const uploadProgressIsDone = function(state) {
    return state.uploadProgressStatus === "done";
+};
+
+export const uploadFailedShowing = function(state) {
+   return state.uploadFailedShowing;
 };
 
 export const activeTabIndex = function(state) {
@@ -107,6 +112,10 @@ export default function(state = initialState, action) {
          return { ...state, uploadProgressShowing: false, uploadProgressStatus: null};
       case uploadPackagesActionTypes.SET_UPLOAD_PROGRESS_DONE:
          return { ...state, uploadProgressStatus: "done"};
+      case uploadPackagesActionTypes.SET_UPLOAD_FAILED:
+         return { ...state, uploadFailedShowing: true, reportUrl: action.reportUrl };
+      case uploadPackagesActionTypes.HIDE_UPLOAD_FAILED:
+         return { ...state, uploadFailedShowing: false };
       case uiFlagsActionTypes.PACKAGE_FILE_EDITED:
          return { ...state, package: { file: action.file, root: state.package.root } };
       case uiFlagsActionTypes.PACKAGE_ROOT_EDITED:
@@ -117,6 +126,22 @@ export default function(state = initialState, action) {
          return { ...state, projectAlreadyExists: action.exists};
       case uiFlagsActionTypes.SHOW_DELETE_PROJECT:
          return { ...state, showDeleteProject: action.visible};
+      case uiFlagsActionTypes.SET_PROJECT_CHECKED:
+         {
+            const idx = state.checkedProjects.indexOf(action.projectId);
+            let checkedProjects = [];
+            if(action.checked) {
+               // add projectId or nothing
+               checkedProjects = state.checkedProjects.slice();
+               if(idx === -1) {
+                  checkedProjects = checkedProjects.concat([action.projectId]);
+               }
+            } else {
+               // remove
+               checkedProjects = state.checkedProjects.filter( id => id !== action.projectId);
+            }
+            return { ...state, checkedProjects };
+         }
       case uiFlagsActionTypes.SET_CHECKED_PROJECTS:
          return { ...state, checkedProjects: action.projects};
       case uiFlagsActionTypes.CLEAR_CHECKED_PROJECTS:
