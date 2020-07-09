@@ -9,6 +9,8 @@ phases:
     commands:
       - echo "Powershell version:"
       - echo $PSVersionTable.PSVersion
+      - ServicePointManager.Expect100Continue = true;
+      - ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
       - Invoke-WebRequest -Uri 'https://www.seznam.cz' -UseBasicParsing -ErrorAction Stop
       - $slnDir=$PWD.ToString()
       - echo "Selecting right ClientId and Secret from the list"
