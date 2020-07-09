@@ -24,7 +24,7 @@ phases:
       - cd ..
       - Start-Process -NoNewWindow dotnet -ArgumentList "run", "clear=true", "initialize=true"
       - echo "Waiting for server to initialize"
-      - ..\AWS-CICD\build-specs\setClientId.ps1
+      - ..\AWS-CICD\build-specs\waitForServer.ps1
       - echo "**** running the UI tests ****"
       - cd ClientApp
       - mkdir output
