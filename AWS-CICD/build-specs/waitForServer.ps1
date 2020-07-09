@@ -1,3 +1,4 @@
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 while ($statusCodeInt -ne 200) {
   $response = try {
     (Invoke-WebRequest -Uri 'https://localhost:5001' -UseBasicParsing -SslProtocol Tls12 -ErrorAction Stop)

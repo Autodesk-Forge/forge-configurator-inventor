@@ -7,10 +7,6 @@ phases:
       - expand-archive -path .\buildExtras.zip -destinationpath ./
   build:
     commands:
-      - echo "Powershell version:"
-      - echo $PSVersionTable.PSVersion
-      - [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-      - Invoke-WebRequest -Uri 'https://www.seznam.cz' -UseBasicParsing -ErrorAction Stop
       - $slnDir=$PWD.ToString()
       - echo "Selecting right ClientId and Secret from the list"
       - .\AWS-CICD\build-specs\setClientId.ps1
