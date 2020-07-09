@@ -7,6 +7,10 @@ phases:
       - expand-archive -path .\buildExtras.zip -destinationpath ./
   build:
     commands:
+      - echo "Powershell version:"
+      - echo $PSVersionTable.PSVersion
+      - Invoke-WebRequest -Uri 'https://localhost:5001' -UseBasicParsing -ErrorAction Stop
+      - Invoke-WebRequest -Uri 'https://www.seznam.cz' -UseBasicParsing -ErrorAction Stop
       - $slnDir=$PWD.ToString()
       - echo "Selecting right ClientId and Secret from the list"
       - .\AWS-CICD\build-specs\setClientId.ps1

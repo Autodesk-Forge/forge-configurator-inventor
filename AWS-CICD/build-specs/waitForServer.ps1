@@ -1,4 +1,3 @@
-echo "Powershell version: $PSVersionTable.PSVersion"
 while ($statusCodeInt -ne 200) {
   $response = try {
     (Invoke-WebRequest -Uri 'https://localhost:5001' -UseBasicParsing -SslProtocol Tls12 -ErrorAction Stop)
