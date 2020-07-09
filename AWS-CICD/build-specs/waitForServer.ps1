@@ -1,7 +1,7 @@
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 while ($statusCodeInt -ne 200) {
   $response = try {
-    (Invoke-WebRequest -Uri 'https://localhost:5001' -UseBasicParsing -SslProtocol Tls12 -ErrorAction Stop)
+    (Invoke-WebRequest -Uri 'https://localhost:5001' -UseBasicParsing -ErrorAction Stop)
   } catch [System.Net.WebException] {
     echo "An exception was caught: $($_.Exception.Message)"
     $_.Exception.Response
