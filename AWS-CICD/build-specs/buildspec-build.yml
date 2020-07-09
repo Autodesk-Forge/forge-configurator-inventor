@@ -23,8 +23,8 @@ phases:
       - echo "**** Starting the server ****"
       - cd ..
       - Start-Process -NoNewWindow dotnet -ArgumentList "run", "clear=true", "initialize=true"
-      - echo "Waiting 5 minutes"
-      - sleep 300
+      - echo "Waiting for server to initialize"
+      - ..\AWS-CICD\build-specs\setClientId.ps1
       - echo "**** running the UI tests ****"
       - cd ClientApp
       - mkdir output
