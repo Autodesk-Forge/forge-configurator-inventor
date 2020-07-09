@@ -1,14 +1,17 @@
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-while ($statusCodeInt -ne 200) {
-  $response = try {
-    (Invoke-WebRequest -Uri 'https://localhost:5001' -UseBasicParsing -ErrorAction Stop)
+while ($statusCode -ne 200) {
+  $statusCode = try {
+    (Invoke-WebRequest -Uri 'https://localhost:5001' -UseBasicParsing -ErrorAction Stop).BaseResponce.StatusCode
   } catch [System.Net.WebException] {
     echo "An exception was caught: $($_.Exception.Message)"
-    $_.Exception.Response
+    if ($_.Exception.Message.IndexOf("The underlying connection was closed") -eq 0) {
+      200
+    } else {
+      0
+    }
   }
 
-  echo $response
-  $statusCodeInt = [int]$response.BaseResponse.StatusCode
-  # echo $statusCodeInt
+  echo "StatusCode:"
+  echo $statusCode
   sleep 10
 }
