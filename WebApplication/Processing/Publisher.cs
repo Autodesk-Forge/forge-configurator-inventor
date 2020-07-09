@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Autodesk.Forge.Client;
 using Autodesk.Forge.DesignAutomation;
 using Autodesk.Forge.DesignAutomation.Model;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using WebApplication.Utilities;
 
@@ -60,8 +62,17 @@ namespace WebApplication.Processing
             if (!File.Exists(packagePathname))
                 throw new Exception($"App Bundle with package is not found ({packagePathname}).");
 
-            Trace($"Creating app bundle '{config.Bundle.Id}'.");
-            await _client.CreateAppBundleAsync(config.Bundle, config.Label, packagePathname);
+            try {
+                Trace($"Creating new app bundle '{config.Bundle.Id}' version.");
+                Alias oldVersion = await _client.GetAppBundleAliasAsync(config.Bundle.Id, config.Label);
+                await _client.UpdateAppBundleAsync(config.Bundle, config.Label, packagePathname);
+                await _client.DeleteAppBundleVersionAsync(config.Bundle.Id, oldVersion.Version);
+            }
+            catch (System.Net.Http.HttpRequestException e) when (e.Message.Contains("404"))
+            {
+                Trace($"Creating app bundle '{config.Bundle.Id}'.");
+                await _client.CreateAppBundleAsync(config.Bundle, config.Label, packagePathname);
+            }
         }
 
 
@@ -84,8 +95,17 @@ namespace WebApplication.Processing
                 Parameters = config.GetActivityParams()
             };
 
-            Trace($"Creating activity '{config.ActivityId}'");
-            await _client.CreateActivityAsync(activity, config.ActivityLabel);
+            try {
+                Trace($"Creating new activity '{config.ActivityId}' version.");
+                Alias oldVersion = await _client.GetActivityAliasAsync(config.ActivityId, config.ActivityLabel);
+                await _client.UpdateActivityAsync(activity, config.ActivityLabel);
+                await _client.DeleteActivityVersionAsync(config.ActivityId, oldVersion.Version);
+            }
+            catch (System.Net.Http.HttpRequestException e) when (e.Message.Contains("404"))
+            {
+                Trace($"Creating activity '{config.ActivityId}'");
+                await _client.CreateActivityAsync(activity, config.ActivityLabel);
+            }
         }
 
         /// <summary>
