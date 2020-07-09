@@ -9,4 +9,5 @@ while ($statusCodeInt -ne 200) {
   echo $response
   $statusCodeInt = [int]$response.BaseResponse.StatusCode
   # echo $statusCodeInt
+  sleep 10
 }
