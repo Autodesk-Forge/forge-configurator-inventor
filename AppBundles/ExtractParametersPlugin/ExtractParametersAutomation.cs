@@ -5,9 +5,7 @@ using System.Runtime.InteropServices;
 using Inventor;
 using Autodesk.Forge.DesignAutomation.Inventor.Utils;
 using System.Collections.Generic;
-using System.IO;
 using Newtonsoft.Json;
-using Path = System.IO.Path;
 
 namespace ExtractParametersPlugin
 {
@@ -28,6 +26,12 @@ namespace ExtractParametersPlugin
     /// </summary>
     public class InventorParameters : Dictionary<string, InventorParameter> {} // TODO: unify its usage
 
+    public class iLogicForm
+    {
+        public string Name { get; set; }
+        public InventorParameters Parameters { get; set; }
+    }
+
     [ComVisible(true)]
     public class ExtractParametersAutomation
     {
@@ -40,14 +44,31 @@ namespace ExtractParametersPlugin
 
         public void Run(Document doc)
         {
-            LogTrace("Run called with {0}", doc.DisplayName);
+            LogTrace($"Run called with {doc.DisplayName}");
 
             try
             {
                 using (new HeartBeat())
                 {
-                    dynamic dynDoc = doc;
-                    string paramsJson = GetParamsAsJson(dynDoc.ComponentDefinition.Parameters.UserParameters);
+                    Parameters parameters;
+                    switch (doc.DocumentType)
+                    {
+                        case DocumentTypeEnum.kPartDocumentObject:
+                            parameters = ((PartDocument) doc).ComponentDefinition.Parameters;
+                            break;
+                        case DocumentTypeEnum.kAssemblyDocumentObject:
+                            parameters = ((AssemblyDocument) doc).ComponentDefinition.Parameters;
+                            break;
+                        default:
+                            LogError($"Unsupported document type: {doc.DocumentType}");
+                            return;
+                    }
+
+                    // generate resulting JSON. Note it's not formatted (to have consistent hash)
+                    var extractedParams = ExtractParameters(parameters.UserParameters);
+
+                    string paramsJson = JsonConvert.SerializeObject(extractedParams, Formatting.None);
+
 
                     System.IO.File.WriteAllText("documentParams.json", paramsJson);
 
@@ -56,6 +77,12 @@ namespace ExtractParametersPlugin
                     doc.Update2();
                     LogTrace("Saving");
                     doc.Save2(SaveDependents: true);
+
+                    iLogicFormsReader reader = new iLogicFormsReader(doc, extractedParams);
+                    var forms = reader.Extract();
+
+                    //LogTrace(forms);
+
                     LogTrace("Closing");
                     doc.Close(true);
                 }
@@ -66,7 +93,7 @@ namespace ExtractParametersPlugin
             }
         }
 
-        public string GetParamsAsJson(dynamic userParameters)
+        public InventorParameters ExtractParameters(dynamic userParameters)
         {
             /* The resulting json will be like this:
               { 
@@ -95,16 +122,12 @@ namespace ExtractParametersPlugin
                     parameters.Add(param.Name, parameter);
                 }
 
-                // generate resulting JSON. Note it's not formatted (to have consistent hash)
-                string paramsJson = JsonConvert.SerializeObject(parameters, Formatting.None);
-                LogTrace(paramsJson);
-
-                return paramsJson;
+                return parameters;
             }
             catch (Exception e)
             {
                 LogError("Error reading params: " + e.Message);
-                return "";
+                return null;
             }
         }
 
@@ -113,15 +136,7 @@ namespace ExtractParametersPlugin
         /// <summary>
         /// Log message with 'trace' log level.
         /// </summary>
-        private static void LogTrace(string format, params object[] args)
-        {
-            Trace.TraceInformation(format, args);
-        }
-
-        /// <summary>
-        /// Log message with 'trace' log level.
-        /// </summary>
-        private static void LogTrace(string message)
+        public void LogTrace(string message)
         {
             Trace.TraceInformation(message);
         }
@@ -129,15 +144,7 @@ namespace ExtractParametersPlugin
         /// <summary>
         /// Log message with 'error' log level.
         /// </summary>
-        private static void LogError(string format, params object[] args)
-        {
-            Trace.TraceError(format, args);
-        }
-
-        /// <summary>
-        /// Log message with 'error' log level.
-        /// </summary>
-        private static void LogError(string message)
+        public void LogError(string message)
         {
             Trace.TraceError(message);
         }
