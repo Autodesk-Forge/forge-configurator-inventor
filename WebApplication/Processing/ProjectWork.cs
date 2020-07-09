@@ -38,26 +38,23 @@ namespace WebApplication.Processing
         {
             _logger.LogInformation("Adopt the project");
 
-            var project = await _userResolver.GetProjectAsync(projectInfo.Name);
+            var projectStorage = await _userResolver.GetProjectStorageAsync(projectInfo.Name);
             var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, projectInfo.TopLevelAssembly);
 
             ProcessingResult result = await _fdaClient.AdoptAsync(adoptionData);
             if (! result.Success)
             {
-                _logger.LogError($"Failed to process '{project.Name}' project.");
-                throw new FdaProcessingException($"Failed to process '{project.Name}' project.", result.ReportUrl);
+                _logger.LogError($"Failed to process '{projectInfo.Name}' project.");
+                throw new FdaProcessingException($"Failed to process '{projectInfo.Name}' project.", result.ReportUrl);
             }
 
             // rearrange generated data according to the parameters hash
-            await _arranger.MoveProjectAsync(project, projectInfo.TopLevelAssembly);
+            await _arranger.MoveProjectAsync(projectStorage.Project, projectInfo.TopLevelAssembly);
 
             _logger.LogInformation("Cache the project locally");
-
             var bucket = await _userResolver.GetBucketAsync();
 
-            // and now cache the generated stuff locally
-            var projectLocalStorage = new ProjectStorage(project);
-            await projectLocalStorage.EnsureLocalAsync(bucket);
+            await projectStorage.EnsureLocalAsync(bucket);
         }
 
         /// <summary>
