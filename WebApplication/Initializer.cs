@@ -46,7 +46,6 @@ namespace WebApplication
         public async Task InitializeBundlesAsync()
         {
             using var scope = _logger.BeginScope("Init AppBundles and Activities");
-            _logger.LogInformation("Initializing base data");
             await _fdaClient.InitializeAsync();
         }
         public async Task InitializeAsync()
