@@ -13,7 +13,15 @@ namespace WebApplication.Processing
     public abstract class ForgeAppBase
     {
         public virtual string Engine { protected set; get; } = "Autodesk.Inventor+24"; // use version 24
-        public readonly string Label = "alpha";
+        public readonly string Label = GetLabel();
+
+        private static string GetLabel() {
+            string label = Environment.GetEnvironmentVariable("ProductionEnv");
+            if (label == null)
+                label = "alpha";
+
+            return label;
+        }
 
         public abstract string Id { get; }
         public abstract string Description { get; }
