@@ -24,6 +24,12 @@ using Inventor;
 
 namespace ExtractParametersPlugin
 {
+    public class iLogicForm
+    {
+        public string Name { get; set; }
+        public InventorParameters Parameters { get; set; }
+    }
+
     /// <summary>
     /// Read model-specific UI data from iLogic forms that are stored in an Inventor document.
     /// </summary>
@@ -108,7 +114,9 @@ namespace ExtractParametersPlugin
         private readonly InventorParameters _allowedParameters;
         private readonly UiStorage _storage;
 
-        /// <summary> Constructor. </summary>
+        /// <summary>Constructor.</summary>
+        /// <param name="document">Inventor document.</param>
+        /// <param name="allowedParameters">Map with Inventor parameters, which are allowed to be extracted.</param>
         public iLogicFormsReader(Document document, InventorParameters allowedParameters)
         {
             _allowedParameters = allowedParameters;

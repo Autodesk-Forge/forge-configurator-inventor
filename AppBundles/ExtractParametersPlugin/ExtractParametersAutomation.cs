@@ -27,11 +27,6 @@ namespace ExtractParametersPlugin
     /// </summary>
     public class InventorParameters : Dictionary<string, InventorParameter> {} // TODO: unify its usage
 
-    public class iLogicForm
-    {
-        public string Name { get; set; }
-        public InventorParameters Parameters { get; set; }
-    }
 
     [ComVisible(true)]
     public class ExtractParametersAutomation
@@ -66,7 +61,7 @@ namespace ExtractParametersPlugin
                     }
 
                     // extract user parameters
-                    InventorParameters extractedParams = ExtractParameters(parameters.UserParameters);
+                    InventorParameters userParameters = ExtractParameters(parameters.UserParameters);
 
                     // save current state
                     LogTrace("Updating");
@@ -74,7 +69,8 @@ namespace ExtractParametersPlugin
                     LogTrace("Saving");
                     doc.Save2(SaveDependents: true);
 
-                    iLogicFormsReader reader = new iLogicFormsReader(doc, extractedParams);
+                    // detect iLogic forms
+                    iLogicFormsReader reader = new iLogicFormsReader(doc, userParameters);
                     iLogicForm[] forms = reader.Extract();
                     LogTrace($"Found {forms.Length} iLogic forms");
                     foreach (var form in forms)
@@ -82,24 +78,27 @@ namespace ExtractParametersPlugin
                         LogTrace($" - {form.Name}");
                     }
 
+                    // Choose set of parameters to use with the following algorithm:
+                    // - extract all iLogic forms from the document
+                    //   - keep only 'user parameters' from a form
+                    // - use _first_ iLogic form with non-empty list of parameters
+                    // - if no forms - use UserParameters from the document
                     InventorParameters resultingParameters;
                     var candidate = forms.FirstOrDefault(form => form.Parameters.Count > 0);
                     if (candidate != null)
                     {
-                        LogTrace($"Using '{candidate.Name}' as parameters filter");
+                        LogTrace($"Using '{candidate.Name}' form as a parameter filter");
                         resultingParameters = candidate.Parameters;
                     }
                     else
                     {
-                        LogTrace($"No non-empty iLogic forms found. Using whole list of user parameters.");
-                        resultingParameters = extractedParams;
+                        LogTrace("No non-empty iLogic forms found. Using whole list of user parameters.");
+                        resultingParameters = userParameters;
                     }
 
                     // generate resulting JSON. Note it's not formatted (to have consistent hash)
                     string paramsJson = JsonConvert.SerializeObject(resultingParameters, Formatting.None);
                     System.IO.File.WriteAllText("documentParams.json", paramsJson);
-
-                    //LogTrace(forms);
 
                     LogTrace("Closing");
                     doc.Close(true);
