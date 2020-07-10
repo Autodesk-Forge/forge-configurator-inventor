@@ -61,7 +61,7 @@ namespace WebApplication
             services.AddTransient<Arranger>();
             services.AddTransient<ProjectWork>();
             services.AddTransient<DtoGenerator>();
-            services.AddSingleton<DesignAutomationClient>(provider =>
+            services.AddSingleton<DesignAutomationClient>((provider) =>
                                     {
                                         var forge = provider.GetService<IForgeOSS>();
                                         var httpMessageHandler = new ForgeHandler(Options.Create(forge.Configuration))
@@ -69,7 +69,11 @@ namespace WebApplication
                                             InnerHandler = new HttpClientHandler()
                                         };
                                         var forgeService = new ForgeService(new HttpClient(httpMessageHandler));
-                                        return new DesignAutomationClient(forgeService);
+
+                                        var rsdkCfg = Configuration.GetSection("DesignAutomation").Get<Configuration>();
+                                        var options = (rsdkCfg == null) ? null : Options.Create(rsdkCfg);
+
+                                        return new DesignAutomationClient(forgeService, options);
                                     });
             services.AddSingleton<Publisher>();
             services.AddScoped<UserResolver>(); // TODO: use interface
