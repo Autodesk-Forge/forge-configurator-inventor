@@ -33,7 +33,11 @@ namespace CreateThumbnailPlugin
                 invDoc.ObjectVisibility.AllWorkFeatures = false;
                 invDoc.ObjectVisibility.Sketches = false;
                 invDoc.ObjectVisibility.Sketches3D = false;
-                invDoc.ObjectVisibility.WeldmentSymbols = false;
+
+                if (doc.DocumentType == DocumentTypeEnum.kAssemblyDocumentObject)
+                {
+                    invDoc.ObjectVisibility.WeldmentSymbols = false;
+                }
 
                 string fileNameLarge = "thumbnail-large.png";
                 string filePathLarge = Path.Combine(Directory.GetCurrentDirectory(), fileNameLarge);
