@@ -103,7 +103,7 @@ namespace WebApplication.Processing
             };
 
             try {
-                // checking existance of Activity
+                // checking existence of Activity
                 await _client.GetActivityVersionsAsync(config.ActivityId);
                 Alias oldVersion = null;
                 try {
