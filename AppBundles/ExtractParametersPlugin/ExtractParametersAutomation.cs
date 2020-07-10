@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using Inventor;
 using Autodesk.Forge.DesignAutomation.Inventor.Utils;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace ExtractParametersPlugin
@@ -64,13 +65,8 @@ namespace ExtractParametersPlugin
                             return;
                     }
 
-                    // generate resulting JSON. Note it's not formatted (to have consistent hash)
-                    var extractedParams = ExtractParameters(parameters.UserParameters);
-
-                    string paramsJson = JsonConvert.SerializeObject(extractedParams, Formatting.None);
-
-
-                    System.IO.File.WriteAllText("documentParams.json", paramsJson);
+                    // extract user parameters
+                    InventorParameters extractedParams = ExtractParameters(parameters.UserParameters);
 
                     // save current state
                     LogTrace("Updating");
@@ -79,7 +75,29 @@ namespace ExtractParametersPlugin
                     doc.Save2(SaveDependents: true);
 
                     iLogicFormsReader reader = new iLogicFormsReader(doc, extractedParams);
-                    var forms = reader.Extract();
+                    iLogicForm[] forms = reader.Extract();
+                    LogTrace($"Found {forms.Length} iLogic forms");
+                    foreach (var form in forms)
+                    {
+                        LogTrace($" - {form.Name}");
+                    }
+
+                    InventorParameters resultingParameters;
+                    var candidate = forms.FirstOrDefault(form => form.Parameters.Count > 0);
+                    if (candidate != null)
+                    {
+                        LogTrace($"Using '{candidate.Name}' as parameters filter");
+                        resultingParameters = candidate.Parameters;
+                    }
+                    else
+                    {
+                        LogTrace($"No non-empty iLogic forms found. Using whole list of user parameters.");
+                        resultingParameters = extractedParams;
+                    }
+
+                    // generate resulting JSON. Note it's not formatted (to have consistent hash)
+                    string paramsJson = JsonConvert.SerializeObject(resultingParameters, Formatting.None);
+                    System.IO.File.WriteAllText("documentParams.json", paramsJson);
 
                     //LogTrace(forms);
 
