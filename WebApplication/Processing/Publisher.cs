@@ -63,7 +63,7 @@ namespace WebApplication.Processing
                 throw new Exception($"App Bundle with package is not found ({packagePathname}).");
 
             try {
-                // checking existance of the AppBundle
+                // checking existence of the AppBundle
                 await _client.GetAppBundleVersionsAsync(config.Bundle.Id);
                 Alias oldVersion = null;
                 try {
