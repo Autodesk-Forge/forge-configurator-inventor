@@ -126,7 +126,7 @@ describe('uploadPackage', () => {
 
         const store = mockStore({ uiFlags: { package: { file: {name: "a.ipt"}, root: ''}} });
 
-        uploadPackageMock.mockImplementation(() => { throw { response: { status: 200 }}; });
+        uploadPackageMock.mockImplementation(() => { return { response: { status: 200 }}; });
 
         await store.dispatch(uploadPackage());
         expect(uploadPackageMock).toHaveBeenCalledTimes(1);
