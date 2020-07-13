@@ -81,4 +81,19 @@ describe('Upload package dialog', () => {
     expect(editPackageFileMockFn).toHaveBeenCalledTimes(0);
     expect(editPackageRootMockFn).toHaveBeenCalledWith(newRootAsm);
   });
+
+  it('Hides Top Level Assembly field when extension in not .zip', () => {
+    const wrapper = shallow(<UploadPackage { ...{package: {file:{name:'part.ipt'}}} } />);
+    expect(wrapper.find('#package_root').exists()).toBe(false);
+  });
+
+  it('Shows Top Level Assembly field when extension is .zip', () => {
+    const wrapper = shallow(<UploadPackage { ...{package: {file:{name:'assembly.zip'}}} } />);
+    expect(wrapper.find('#package_root').exists()).toBe(true);
+  });
+
+  it('Hides Top Level Assembly field when nothing is assigned', () => {
+    const wrapper = shallow(<UploadPackage { ...{package: {file:null}} } />);
+    expect(wrapper.find('#package_root').exists()).toBe(false);
+  });
 });
