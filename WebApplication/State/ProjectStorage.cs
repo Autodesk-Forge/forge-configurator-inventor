@@ -45,6 +45,9 @@ namespace WebApplication.State
         /// </summary>
         public async Task EnsureLocalAsync(OssBucket ossBucket)
         {
+            // make sure that there are no leftovers from previous incarnations of the project
+            DeleteLocal();
+
             await EnsureAttributesAsync(ossBucket, ensureDir: true);
 
 
@@ -131,5 +134,16 @@ namespace WebApplication.State
         /// Local names for "hashed" files.
         /// </summary>
         public LocalNameProvider GetLocalNames(string hash = null) => Project.LocalNameProvider(hash ?? Metadata.Hash);
+
+        /// <summary>
+        /// Delete local cache for the project.
+        /// </summary>
+        public void DeleteLocal()
+        {
+            if (Directory.Exists(Project.LocalAttributes.BaseDir))
+            {
+                Directory.Delete(Project.LocalAttributes.BaseDir, recursive: true);
+            }
+        }
     }
 }

@@ -13,11 +13,13 @@ namespace WebApplication.State
             }
 
             Name = projectName; 
-            OSSSourceModel = $"{ONC.ProjectsFolder}-{projectName}";
+            OSSSourceModel = ExactOssName(projectName);
 
             OssAttributes = new OssAttributes(projectName);
             LocalAttributes = new LocalAttributes(rootDir, Name);
         }
+
+        public static string ExactOssName(string projectName) => $"{ONC.ProjectsFolder}-{projectName}";
 
         public string Name { get; }
         public string OSSSourceModel { get; }
