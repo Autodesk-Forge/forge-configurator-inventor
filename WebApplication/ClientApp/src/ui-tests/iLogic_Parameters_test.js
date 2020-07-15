@@ -1,13 +1,9 @@
-/* eslint-disable prefer-const */
-/* eslint-disable jest/no-standalone-expect */
-/* eslint-disable no-console */
-/* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
 
 const assert = require('assert');
-const locators = require('./elements_definition.js');
 
 const parametersElement = '.parameters';
+const elements = '//div[@class="parameter" or @class="parameter checkbox"]';
 const iLogicParameterList = ['Length', 'Width', 'Legs', 'Height', 'Chute', 'Rollers'];
 
 // compare two Arrays and return true or false
@@ -41,21 +37,10 @@ Scenario('should check parameters in iLogic Form with list of parameters in Mode
     I.selectProject('Conveyor');
     I.waitForElement(parametersElement, 10);
 
-    // check iLogic Form Parameters
-    const modelTabParamList = await I.executeScript(function(){
-        let parameterList = new Array();
-        const elements = document.getElementsByClassName('parameter');
+    // get list of paramater from Model tab
+    const modelTabParamList = await I.grabTextFrom(elements);
 
-        if (!elements)
-            return parameterList;
-
-        for (let index = 0; index < elements.length; ++index) {
-          parameterList.push(elements[index].innerText);
-          console.log('parameter ' + index + ' value : ' + elements[index].innerText);
-        }
-
-        return parameterList;
-    });
+    // comapre lists and validate
     const result = await compareArrays(iLogicParameterList, modelTabParamList);
     assert.equal(result, true);
 });
