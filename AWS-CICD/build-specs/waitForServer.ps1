@@ -23,14 +23,16 @@ public static class Dummy {
 [System.Net.ServicePointManager]::ServerCertificateValidationCallback = [dummy]::GetDelegate()
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-while ($statusCode -ne " 200") {
+while ($statusCode -ne 200) {
+  # wait a bit between requests
+  sleep 10
+  # make request agains
   $statusCode = try {
     $responce = $(Invoke-WebRequest -Uri 'https://localhost:5001' -UseBasicParsing -ErrorAction Stop)
     $responce.StatusCode
   } catch {
     404
   }
-
-  Write-Host "StatusCode: --${statusCode}--"
-  sleep 10
 }
+
+Write-Host "Server responded. Waiting is over."
