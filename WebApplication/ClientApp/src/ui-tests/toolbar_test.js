@@ -24,8 +24,12 @@ Scenario('should check Project switcher is loaded', async (I) => {
     // check name of the first project
     I.see("Conveyor", locators.xpProjectConveyor);
 
+    // check name of the third project
+    I.see("Wheel", locators.xpProjectWheel);
+
     // check name of the second project
     I.see("Wrench", locators.xpProjectWrench);
+
 });
 
 Scenario('should check Project switcher is correctly changed', async (I) => {
@@ -48,6 +52,12 @@ Scenario('should check Project switcher is correctly changed', async (I) => {
 
     // check the current project name
     I.see("Wrench", currentProjectName);
+
+    // click to show popup menu with list of projects
+    I.selectProject('Wheel');
+
+    // check the current project name
+    I.see("Wheel", currentProjectName);
 });
 
 Feature('Log button');
