@@ -63,7 +63,7 @@ export class Downloads extends Component {
         }
         const iamDownloadLink = <a href={downloadUrl} onClick={(e) => { e.stopPropagation(); }} ref = {(h) => {
             iamDownloadHyperlink = h;
-        }}>IAM</a>;
+        }}>IAM/IPT</a>;
 
         const rfaDownloadLink =
         <a href="" onClick={(e) => { e.preventDefault(); }}>RFA</a>;
