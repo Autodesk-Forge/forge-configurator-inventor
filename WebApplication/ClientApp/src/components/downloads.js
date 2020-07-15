@@ -63,7 +63,7 @@ export class Downloads extends Component {
         }
         const iamDownloadLink = <a href={downloadUrl} onClick={(e) => { e.stopPropagation(); }} ref = {(h) => {
             iamDownloadHyperlink = h;
-        }}>IAM</a>;
+        }}>IAM/IPT</a>;
 
         const rfaDownloadLink =
         <a href="" onClick={(e) => { e.preventDefault(); }}>RFA</a>;
@@ -122,7 +122,7 @@ export class Downloads extends Component {
                 {this.props.rfaFailedShowing && <ModalFail
                     open={true}
                     title="Preparing RFA Failed"
-                    contentName="Assembly:"
+                    contentName="Project:"
                     label={this.props.activeProject.id}
                     onClose={() => this.onRfaFailedCloseClick()}
                     url={this.props.reportUrl}/>}
