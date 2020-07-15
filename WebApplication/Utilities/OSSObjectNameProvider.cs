@@ -43,7 +43,8 @@ namespace WebApplication.Utilities
         public const string DownloadsFolder = "downloads";
         public const string AttributesFolder = "attributes";
 
-        public const string OssSeparator = "-";
+        public const string OssSeparator = "/";
+        public const string ProjectsMask = ProjectsFolder + OssSeparator;
 
         /// <summary>
         /// Extract project name from OSS object name.
