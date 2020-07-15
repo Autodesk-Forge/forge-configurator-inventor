@@ -55,7 +55,7 @@ export class ModalProgressRfa extends Component {
                     link="click here" href={this.props.url}
                     suffix=" to download it manually."/>
                     <Button className="button" style={
-                        { width: '102px', height: '36px', borderRadius: '2px', marginLeft: '12px'}}
+                        { width: '116px', height: '36px', borderRadius: '2px', marginLeft: '12px'}}
                         type="secondary"
                         size="small"
                         title="Done"
