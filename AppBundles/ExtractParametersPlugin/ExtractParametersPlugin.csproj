@@ -25,6 +25,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -35,13 +36,38 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="autodesk.inventor.interop, Version=25.0.0.0, Culture=neutral, PublicKeyToken=d84147f8b4276564, processorArchitecture=MSIL">
+    <Reference Include="Autodesk.iLogic.Common">
+      <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Inventor Server 2020\Inventor Server\Bin\Autodesk.iLogic.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Autodesk.iLogic.Core">
+      <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Inventor Server 2020\Inventor Server\Bin\Autodesk.iLogic.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Autodesk.iLogic.Exec">
+      <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Inventor Server 2020\Inventor Server\Bin\Autodesk.iLogic.Exec.dll</HintPath>
+    </Reference>
+    <Reference Include="Autodesk.iLogic.Interfaces">
+      <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Inventor Server 2020\Inventor Server\Bin\Autodesk.iLogic.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Autodesk.iLogic.Plugin">
+      <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Inventor Server 2020\Inventor Server\Bin\Autodesk.iLogic.Plugin.dll</HintPath>
+    </Reference>
+    <Reference Include="Autodesk.iLogic.Runtime">
+      <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Inventor Server 2020\Inventor Server\Bin\Autodesk.iLogic.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Autodesk.iLogic.Types">
+      <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Inventor Server 2020\Inventor Server\Bin\Autodesk.iLogic.Types.dll</HintPath>
+    </Reference>
+    <Reference Include="Autodesk.iLogic.UiBuilderCore">
+      <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Inventor Server 2020\Inventor Server\Bin\Autodesk.iLogic.UiBuilderCore.dll</HintPath>
+    </Reference>
+    <Reference Include="autodesk.inventor.interop, Version=24.0.0.0, Culture=neutral, PublicKeyToken=d84147f8b4276564, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>True</EmbedInteropTypes>
       <HintPath>$(PackagePath)\autodesk\autodesk.inventor.interop.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.IO.Log" />
@@ -51,6 +77,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="iLogicUtility.cs" />
     <Compile Include="PluginServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ExtractParametersAutomation.cs" />
