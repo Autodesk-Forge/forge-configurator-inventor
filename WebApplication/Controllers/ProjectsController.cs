@@ -170,11 +170,10 @@ namespace WebApplication.Controllers
             }
 
             // delete local cache for all provided projects
-            var fullUserDir = await _userResolver.GetFullUserDir();
             foreach (var projectName in projectNameList)
             {
-                var fullDirName = Path.Combine(fullUserDir, projectName);
-                Directory.Delete(fullDirName, true);
+                var projectStorage = await _userResolver.GetProjectStorageAsync(projectName, ensureDir: false);
+                projectStorage.DeleteLocal();
             }
 
             return NoContent();

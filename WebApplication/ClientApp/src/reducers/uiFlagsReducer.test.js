@@ -1,4 +1,4 @@
-import {closeParametersEditedMessage, rejectParametersEditedMessage, showUploadPackage, editPackageFile, editPackageRoot, 
+import {closeParametersEditedMessage, rejectParametersEditedMessage, showUploadPackage, editPackageFile, editPackageRoot,
    showDeleteProject, setProjectAlreadyExists, setProjectChecked, clearCheckedProjects, setCheckedProjects} from '../actions/uiFlagsActions';
 import uiFlagsReducer, * as uiFlags from './uiFlagsReducer';
 import { editParameter, resetParameters } from '../actions/parametersActions';

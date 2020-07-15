@@ -1,7 +1,7 @@
 import repo from '../Repository';
 import { uploadPackageData } from '../reducers/mainReducer';
 import { addProject } from './projectListActions';
-import { setProjectAlreadyExists } from './uiFlagsActions';
+import { setProjectAlreadyExists, showUploadPackage } from './uiFlagsActions';
 
 const actionTypes = {
     SET_UPLOAD_PROGRESS_VISIBLE: 'SET_UPLOAD_PROGRESS_VISIBLE',
@@ -14,22 +14,26 @@ const actionTypes = {
 export default actionTypes;
 
 export const uploadPackage = () => async (dispatch, getState) => {
+    const packageData = uploadPackageData(getState());
 
-    dispatch(setUploadProgressVisible());
+    if (packageData.file !== null && packageData.root.length > 0) {
+        dispatch(showUploadPackage(false));
+        dispatch(setUploadProgressVisible());
 
-    try {
-        const newProject = await repo.uploadPackage(uploadPackageData(getState()));
-        dispatch(addProject(newProject));
-        dispatch(setUploadProgressDone());
-    } catch (e) {
-        dispatch(setUploadProgressHidden());
+        try {
+            const newProject = await repo.uploadPackage(packageData);
+            dispatch(addProject(newProject));
+            dispatch(setUploadProgressDone());
+        } catch (e) {
+            dispatch(setUploadProgressHidden());
 
-        const httpStatus = e.response.status;
-        if (httpStatus === 409) {
-            dispatch(setProjectAlreadyExists(true));
-        } else {
-            const reportUrl = (httpStatus === 422) ? e.response.data.reportUrl : null;  // <<<---- the major change
-            dispatch(setUploadFailed(reportUrl));
+            const httpStatus = e.response.status;
+            if (httpStatus === 409) {
+                dispatch(setProjectAlreadyExists(true));
+            } else {
+                const reportUrl = (httpStatus === 422) ? e.response.data.reportUrl : null;  // <<<---- the major change
+                dispatch(setUploadFailed(reportUrl));
+            }
         }
     }
 };

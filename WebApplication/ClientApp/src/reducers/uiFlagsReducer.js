@@ -14,7 +14,7 @@ export const initialState = {
    showUploadPackage: false,
    uploadProgressShowing: false,
    uploadProgressStatus: null,
-   package: { file: '', root: ''},
+   package: { file: null, root: ''},
    uploadFailedShowing: false,
    activeTabIndex: 0,
    projectAlreadyExists: false,

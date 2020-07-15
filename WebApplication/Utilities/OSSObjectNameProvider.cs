@@ -27,11 +27,6 @@ namespace WebApplication.Utilities
         public const string ModelView = "model-view.zip";
 
         /// <summary>
-        /// Marker file, serves as a flag that project is locally cached.
-        /// </summary>
-        public const string Marker = "__marker";
-
-        /// <summary>
         /// JSON file with parameters.
         /// </summary>
         public const string Parameters = "parameters.json";
