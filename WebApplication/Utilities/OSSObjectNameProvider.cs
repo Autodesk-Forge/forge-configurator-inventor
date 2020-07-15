@@ -37,14 +37,17 @@ namespace WebApplication.Utilities
     /// </summary>
     public static class ONC // aka ObjectNameConstants
     {
+        /// <summary>
+        /// Separator to fake directories in OSS filename.
+        /// </summary>
+        private const string OssSeparator = "/"; // This must stay private
+
         public const string ProjectsFolder = "projects";
         public const string ShowParametersChanged = "showparameterschanged.json";
         public const string CacheFolder = "cache";
-        public const string DownloadsFolder = "downloads";
         public const string AttributesFolder = "attributes";
 
-        public const string OssSeparator = "/";
-        public const string ProjectsMask = ProjectsFolder + OssSeparator;
+        public static readonly string ProjectsMask = ToPathMask(ProjectsFolder);
 
         /// <summary>
         /// Extract project name from OSS object name.
@@ -69,9 +72,8 @@ namespace WebApplication.Utilities
         /// </remarks>
         public static IEnumerable<string> ProjectFileMasks(string projectName)
         {
-            yield return $"{AttributesFolder}{OssSeparator}{projectName}{OssSeparator}";
-            yield return $"{CacheFolder}{OssSeparator}{projectName}{OssSeparator}";
-            yield return $"{DownloadsFolder}{OssSeparator}{projectName}{OssSeparator}";
+            yield return ToPathMask(AttributesFolder, projectName);
+            yield return ToPathMask(CacheFolder, projectName);
         }
 
         /// <summary>
@@ -80,6 +82,14 @@ namespace WebApplication.Utilities
         public static string Join(params string[] pieces)
         {
             return string.Join(OssSeparator, pieces);
+        }
+
+        /// <summary>
+        /// Generate OSS name, which serves as a folder mask for subfolders and files.
+        /// </summary>
+        private static string ToPathMask(params string[] pieces)
+        {
+            return Join(pieces) + OssSeparator;
         }
     }
 
