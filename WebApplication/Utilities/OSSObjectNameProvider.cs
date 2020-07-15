@@ -43,18 +43,20 @@ namespace WebApplication.Utilities
         public const string DownloadsFolder = "downloads";
         public const string AttributesFolder = "attributes";
 
+        public const string OssSeparator = "-";
+
         /// <summary>
         /// Extract project name from OSS object name.
         /// </summary>
         /// <param name="ossObjectName">OSS name for the project</param>
         public static string ToProjectName(string ossObjectName)
         {
-            if(!ossObjectName.StartsWith($"{ProjectsFolder}-"))
+            if(!ossObjectName.StartsWith($"{ProjectsFolder}{OssSeparator}"))
             {
                 throw new ApplicationException("Initializing Project from invalid bucket key: " + ossObjectName);
             }
 
-            return ossObjectName.Substring(ProjectsFolder.Length+1);
+            return ossObjectName.Substring(ProjectsFolder.Length + OssSeparator.Length);
         }
 
         /// <summary>
@@ -66,9 +68,9 @@ namespace WebApplication.Utilities
         /// </remarks>
         public static IEnumerable<string> ProjectMasks(string projectName)
         {
-            yield return $"{AttributesFolder}-{projectName}-";
-            yield return $"{CacheFolder}-{projectName}-";
-            yield return $"{DownloadsFolder}-{projectName}-";
+            yield return $"{AttributesFolder}{OssSeparator}{projectName}{OssSeparator}";
+            yield return $"{CacheFolder}{OssSeparator}{projectName}{OssSeparator}";
+            yield return $"{DownloadsFolder}{OssSeparator}{projectName}{OssSeparator}";
         }
     }
 
@@ -89,7 +91,7 @@ namespace WebApplication.Utilities
         /// </summary>
         protected string ToFullName(string fileName)
         {
-            return _namePrefix + "-" + fileName;
+            return _namePrefix + ONC.OssSeparator + fileName;
         }
     }
 
@@ -99,7 +101,7 @@ namespace WebApplication.Utilities
     public class OSSObjectNameProvider : OssNameConverter
     {
         public OSSObjectNameProvider(string projectName, string parametersHash) :
-                base($"{ONC.CacheFolder}-{projectName}-{parametersHash}") {}
+                base($"{ONC.CacheFolder}{ONC.OssSeparator}{projectName}{ONC.OssSeparator}{parametersHash}") {}
 
         /// <summary>
         /// Filename for ZIP with current model state.
@@ -115,8 +117,6 @@ namespace WebApplication.Utilities
         /// Filename for JSON with Inventor document parameters.
         /// </summary>
         public string Parameters => ToFullName(LocalName.Parameters);
-
-        public string DownloadsPath => ToFullName(ONC.DownloadsFolder);
 
         public string Rfa => ToFullName("result.rfa");
     }
@@ -139,6 +139,6 @@ namespace WebApplication.Utilities
         /// <summary>
         /// Constructor.
         /// </summary>
-        public OssAttributes(string projectName) : base($"{ONC.AttributesFolder}-{projectName}") {}
+        public OssAttributes(string projectName) : base($"{ONC.AttributesFolder}{ONC.OssSeparator}{projectName}") {}
     }
 }
