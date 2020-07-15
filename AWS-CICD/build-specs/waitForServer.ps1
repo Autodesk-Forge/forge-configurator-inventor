@@ -26,7 +26,7 @@ public static class Dummy {
 while ($statusCode -ne 200) {
   # wait a bit between requests
   sleep 10
-  # make request agains
+  # make request agains local server
   $statusCode = try {
     $responce = $(Invoke-WebRequest -Uri 'https://localhost:5001' -UseBasicParsing -ErrorAction Stop)
     $responce.StatusCode
