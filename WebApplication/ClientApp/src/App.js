@@ -18,9 +18,7 @@ export class App extends Component {
   }
   render () {
     return (
-      <Surface className="fullheight" id="main" level={200}
-        shadow="high"
-        borderRadius="m">
+      <Surface className="fullheight" id="main" level={200}>
         <Toolbar>
           <ProjectSwitcher />
         </Toolbar>
