@@ -78,7 +78,7 @@ export class ParametersContainer extends Component {
                         <ModalFail
                             open={this.props.updateFailedShowing}
                             title="Update Failed"
-                            contentName="Assembly:"
+                            contentName="Project:"
                             label={this.props.activeProject.id}
                             onClose={() => this.onUpdateFailedCloseClick()}
                             url={this.props.reportUrl}/>

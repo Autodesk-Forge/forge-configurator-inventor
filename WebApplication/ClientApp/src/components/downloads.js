@@ -122,7 +122,7 @@ export class Downloads extends Component {
                 {this.props.rfaFailedShowing && <ModalFail
                     open={true}
                     title="Preparing RFA Failed"
-                    contentName="Assembly:"
+                    contentName="Project:"
                     label={this.props.activeProject.id}
                     onClose={() => this.onRfaFailedCloseClick()}
                     url={this.props.reportUrl}/>}
