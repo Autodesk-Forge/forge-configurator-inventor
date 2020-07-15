@@ -8,8 +8,7 @@ const assert = require('assert');
 const locators = require('./elements_definition.js');
 
 const parametersElement = '.parameters';
-const iLogicParameterList = new Array('WrenchSz', 'JawOffset', 'PartMaterial', 'iTrigger0');
-//const iLogicParameterList = ['Length', 'Width', 'Legs', 'Height', 'Chute', 'Rollers'];
+const iLogicParameterList = ['Length', 'Width', 'Legs', 'Height', 'Chute', 'Rollers'];
 
 // compare two Arrays and return true or false
 async function compareArrays(array1, array2)
@@ -19,7 +18,7 @@ async function compareArrays(array1, array2)
     return false;
   }
 
-  // commpare if All iLogic params are the same as Model Tab params
+  // commpare if All iLogic parameters are the same as Model Tab has
   for (let index = 0; index < array1.length; ++index)
   {
     if(array2.indexOf(array1[index], 0) === -1)
@@ -35,11 +34,11 @@ Before((I) => {
 
 Feature('iLogic Parameters');
 
-// validate that all Parameters in iLogic form is displayed in the List of Parameters
+// validate that all parameters in iLogic form is displayed in the List of Parameters
 Scenario('should check parameters in iLogic Form with list of parameters in Model Tab', async (I) => {
 
     // select Conveyor project in the Project Switcher
-    I.selectProject('Wrench');
+    I.selectProject('Conveyor');
     I.waitForElement(parametersElement, 10);
 
     // check iLogic Form Parameters
