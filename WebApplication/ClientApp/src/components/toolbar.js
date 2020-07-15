@@ -19,7 +19,7 @@ import styled from 'styled-components';
 import { Service24 } from "@hig/icons";
 
 const PlaceCenterContainer = styled.div`
-  place-items: center;
+  align-items: center;
   display: flex;
 `;
 
