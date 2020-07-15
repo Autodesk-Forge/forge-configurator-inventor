@@ -52,12 +52,12 @@ namespace WebApplication.Utilities
         /// <param name="ossObjectName">OSS name for the project</param>
         public static string ToProjectName(string ossObjectName)
         {
-            if(!ossObjectName.StartsWith($"{ProjectsFolder}{OssSeparator}"))
+            if(!ossObjectName.StartsWith(ProjectsMask))
             {
                 throw new ApplicationException("Initializing Project from invalid bucket key: " + ossObjectName);
             }
 
-            return ossObjectName.Substring(ProjectsFolder.Length + OssSeparator.Length);
+            return ossObjectName.Substring(ProjectsMask.Length);
         }
 
         /// <summary>
@@ -67,11 +67,19 @@ namespace WebApplication.Utilities
         /// <remarks>
         /// The collection does NOT include name of the project itself. Use <see cref="Project.ExactOssName"/> to generate it.
         /// </remarks>
-        public static IEnumerable<string> ProjectMasks(string projectName)
+        public static IEnumerable<string> ProjectFileMasks(string projectName)
         {
             yield return $"{AttributesFolder}{OssSeparator}{projectName}{OssSeparator}";
             yield return $"{CacheFolder}{OssSeparator}{projectName}{OssSeparator}";
             yield return $"{DownloadsFolder}{OssSeparator}{projectName}{OssSeparator}";
+        }
+
+        /// <summary>
+        /// Join path pieces into OSS name.
+        /// </summary>
+        public static string Join(params string[] pieces)
+        {
+            return string.Join(OssSeparator, pieces);
         }
     }
 
@@ -92,7 +100,7 @@ namespace WebApplication.Utilities
         /// </summary>
         protected string ToFullName(string fileName)
         {
-            return _namePrefix + ONC.OssSeparator + fileName;
+            return ONC.Join(_namePrefix, fileName);
         }
     }
 
@@ -102,7 +110,7 @@ namespace WebApplication.Utilities
     public class OSSObjectNameProvider : OssNameConverter
     {
         public OSSObjectNameProvider(string projectName, string parametersHash) :
-                base($"{ONC.CacheFolder}{ONC.OssSeparator}{projectName}{ONC.OssSeparator}{parametersHash}") {}
+                base(ONC.Join(ONC.CacheFolder, projectName, parametersHash)) {}
 
         /// <summary>
         /// Filename for ZIP with current model state.
@@ -140,6 +148,6 @@ namespace WebApplication.Utilities
         /// <summary>
         /// Constructor.
         /// </summary>
-        public OssAttributes(string projectName) : base($"{ONC.AttributesFolder}{ONC.OssSeparator}{projectName}") {}
+        public OssAttributes(string projectName) : base(ONC.Join(ONC.AttributesFolder, projectName)) {}
     }
 }
