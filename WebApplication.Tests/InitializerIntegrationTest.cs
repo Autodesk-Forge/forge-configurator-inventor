@@ -84,7 +84,7 @@ namespace WebApplication.Tests
                 Projects = new [] { new DefaultProjectConfiguration { Url = testZippedIamUrl, TopLevelAssembly = testIamPathInZip, Name = "Basic" } }
             };
             IOptions<DefaultProjectsConfiguration> defaultProjectsOptions = Options.Create(defaultProjectsConfiguration);
-            var userResolver = new UserResolver(resourceProvider, forgeOSS, forgeConfigOptions, localCache, NullLogger<UserResolver>.Instance);
+            var userResolver = new UserResolver(resourceProvider, forgeOSS, forgeConfigOptions, localCache, NullLogger<UserResolver>.Instance, null);
             var arranger = new Arranger(httpClientFactory, userResolver);
 
             // TODO: linkGenerator should be mocked

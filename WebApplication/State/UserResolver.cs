@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Autodesk.Forge.Client;
 using Autodesk.Forge.Core;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WebApplication.Middleware;
@@ -20,6 +21,7 @@ namespace WebApplication.State
         private readonly IForgeOSS _forgeOSS;
         private readonly LocalCache _localCache;
         private readonly ILogger<UserResolver> _logger;
+        private readonly IConfiguration _configuration;
         private readonly ForgeConfiguration _forgeConfig;
 
         private readonly Lazy<Task<dynamic>> _lazyProfile;
@@ -33,11 +35,12 @@ namespace WebApplication.State
         public bool IsAuthenticated => ! string.IsNullOrEmpty(Token);
 
         public UserResolver(ResourceProvider resourceProvider, IForgeOSS forgeOSS,
-                            IOptions<ForgeConfiguration> forgeConfiguration, LocalCache localCache, ILogger<UserResolver> logger)
+                            IOptions<ForgeConfiguration> forgeConfiguration, LocalCache localCache, ILogger<UserResolver> logger, IConfiguration configuration)
         {
             _forgeOSS = forgeOSS;
             _localCache = localCache;
             _logger = logger;
+            _configuration = configuration;
             _forgeConfig = forgeConfiguration.Value;
 
             AnonymousBucket = new OssBucket(_forgeOSS, resourceProvider.BucketKey, logger);
@@ -47,7 +50,8 @@ namespace WebApplication.State
 
         public string GetBucketPrefix()
         {
-            return $"authd-{_forgeConfig.ClientId}".ToLowerInvariant();
+            string suffix = _configuration?.GetValue<string>("BucketKeySuffix");
+            return $"authd{suffix}-{_forgeConfig.ClientId}".ToLowerInvariant();
         }
 
         public async Task<OssBucket> GetBucketAsync(bool tryToCreate = false)
