@@ -108,7 +108,7 @@ namespace WebApplication.Processing
             await Task.WhenAll(bucket.RenameObjectAsync(Thumbnail, project.OssAttributes.Thumbnail),
                                 bucket.RenameObjectAsync(SVF, ossNames.ModelView),
                                 bucket.RenameObjectAsync(Parameters, ossNames.Parameters),
-                                bucket.RenameObjectAsync(OutputModel, ossNames.CurrentModel),
+                                bucket.RenameObjectAsync(OutputModel, ossNames.GetCurrentModel(tlaFilename != null)),
                                 bucket.UploadObjectAsync(project.OssAttributes.Metadata, Json.ToStream(attributes, writeIndented: true)));
 
             return hashString;
@@ -159,7 +159,7 @@ namespace WebApplication.Processing
         /// NOTE: it's expected that the data is generated already.
         /// </summary>
         /// <returns>Parameters hash.</returns>
-        public async Task<string> MoveViewablesAsync(Project project)
+        public async Task<string> MoveViewablesAsync(Project project, bool assembly)
         {
             var hashString = await GenerateParametersHashAsync();
 
@@ -170,7 +170,7 @@ namespace WebApplication.Processing
             // move data to expected places
             await Task.WhenAll(bucket.RenameObjectAsync(SVF, ossNames.ModelView),
                                 bucket.RenameObjectAsync(Parameters, ossNames.Parameters),
-                                bucket.RenameObjectAsync(OutputModel, ossNames.CurrentModel),
+                                bucket.RenameObjectAsync(OutputModel, ossNames.GetCurrentModel(assembly)),
                                 bucket.DeleteObjectAsync(InputParams));
 
             return hashString;

@@ -14,7 +14,8 @@ namespace WebApplication.Processing
         private readonly CreateRFA _rfaWork;
         private readonly CreateThumbnail _thumbnailWork;
         private readonly ExtractParameters _parametersWork;
-        private readonly AdoptProject _adoptWork;
+        private readonly AdoptProject _adoptAssemblyWork;
+        private readonly AdoptProject _adoptPartWork;
         private readonly UpdateProject _updateProjectWork;
         private readonly AppBundleZipPaths _paths;
         private readonly UpdateParameters _updateParametersWork;
@@ -28,7 +29,8 @@ namespace WebApplication.Processing
             _rfaWork = new CreateRFA(publisher);
             _thumbnailWork = new CreateThumbnail(publisher);
             _parametersWork = new ExtractParameters(publisher);
-            _adoptWork = new AdoptProject(publisher);
+            _adoptAssemblyWork = new AdoptProject(publisher, true);
+            _adoptPartWork = new AdoptProject(publisher, false);
             _updateParametersWork = new UpdateParameters(publisher);
             _updateProjectWork = new UpdateProject(publisher);
             _paths = appBundleZipPathsOptionsAccessor.Value;
@@ -45,7 +47,8 @@ namespace WebApplication.Processing
             await _thumbnailWork.InitializeAsync(_paths.CreateThumbnail);
             await _parametersWork.InitializeAsync(_paths.ExtractParameters);
             await _updateParametersWork.InitializeAsync(_paths.UpdateParameters);
-            await _adoptWork.InitializeAsync(null /* does not matter */);
+            await _adoptAssemblyWork.InitializeAsync(null /* does not matter */);
+            await _adoptPartWork.InitializeAsync(null /* does not matter */);
             await _updateProjectWork.InitializeAsync(null /* does not matter */);
         }
 
@@ -59,13 +62,17 @@ namespace WebApplication.Processing
             await _thumbnailWork.CleanUpAsync();
             await _parametersWork.CleanUpAsync();
             await _updateParametersWork.CleanUpAsync();
-            await _adoptWork.CleanUpAsync();
+            await _adoptAssemblyWork.CleanUpAsync();
+            await _adoptPartWork.CleanUpAsync();
             await _updateProjectWork.CleanUpAsync();
         }
 
         public Task<ProcessingResult> AdoptAsync(AdoptionData projectData)
         {
-            return _adoptWork.ProcessAsync(projectData);
+            if (projectData.IsAssembly)
+                return _adoptAssemblyWork.ProcessAsync(projectData);
+
+            return _adoptPartWork.ProcessAsync(projectData);
         }
 
         public Task<ProcessingResult> UpdateAsync(UpdateData projectData)

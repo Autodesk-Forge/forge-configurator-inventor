@@ -82,7 +82,7 @@ namespace WebApplication.Processing
                 if (! hash.Equals(resultingHash, StringComparison.Ordinal))
                 {
                     _logger.LogInformation($"Update returned different parameters. Hash is {resultingHash}.");
-                    await CopyStateAsync(project, resultingHash, hash);
+                    await CopyStateAsync(project, resultingHash, hash, !string.IsNullOrEmpty(storage.Metadata.TLA));
 
                     // update 
                     hash = resultingHash;
@@ -129,7 +129,7 @@ namespace WebApplication.Processing
             }
 
             // OK, nothing in cache - generate it now
-            var inputDocUrl = await bucket.CreateSignedUrlAsync(ossNameProvider.CurrentModel);
+            var inputDocUrl = await bucket.CreateSignedUrlAsync(ossNameProvider.GetCurrentModel(!string.IsNullOrEmpty(storage.Metadata.TLA)));
             ProcessingArgs satData = await _arranger.ForSatAsync(inputDocUrl, storage.Metadata.TLA);
             ProcessingArgs rfaData = await _arranger.ForRfaAsync(satData.SatUrl);
 
@@ -181,7 +181,7 @@ namespace WebApplication.Processing
 
                 // rearrange generated data according to the parameters hash
                 // NOTE: hash might be changed if Inventor adjust them!
-                hash = await _arranger.MoveViewablesAsync(project);
+                hash = await _arranger.MoveViewablesAsync(project, !string.IsNullOrEmpty(tlaFilename));
             }
 
             _logger.LogInformation($"Cache the project locally ({hash})");
@@ -203,7 +203,7 @@ namespace WebApplication.Processing
             return await bucket.ObjectExistsAsync(ossNames.Parameters);
         }
 
-        private async Task CopyStateAsync(Project project, string hashFrom, string hashTo)
+        private async Task CopyStateAsync(Project project, string hashFrom, string hashTo, bool assembly)
         {
             // see if the dir exists already
             LocalNameProvider localTo = project.LocalNameProvider(hashTo);
@@ -227,7 +227,7 @@ namespace WebApplication.Processing
 
             await Task.WhenAll(
                 bucket.CopyAsync(ossFrom.Parameters, ossTo.Parameters),
-                bucket.CopyAsync(ossFrom.CurrentModel, ossTo.CurrentModel),
+                bucket.CopyAsync(ossFrom.GetCurrentModel(assembly), ossTo.GetCurrentModel(assembly)),
                 bucket.CopyAsync(ossFrom.ModelView, ossTo.ModelView));
 
             _logger.LogInformation($"Cache the project locally ({hashTo})");
