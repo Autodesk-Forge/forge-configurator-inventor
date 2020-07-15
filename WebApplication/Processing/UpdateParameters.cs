@@ -6,6 +6,7 @@ namespace WebApplication.Processing
 {
     public class UpdateParameters : ForgeAppBase
     {
+        private readonly bool _assembly;
         private const string OutputModelParameterName = "OutputModelFile";
         /// <summary>
         /// Design Automation parameter name for JSON file with Inventor parameters.
@@ -36,14 +37,17 @@ namespace WebApplication.Processing
                 },
                 {
                     OutputModelParameterName,
-                    new Parameter { Verb = Verb.Put, LocalName = FolderToBeZippedName, Zip = true }
+                    new Parameter { Verb = Verb.Put, LocalName = _assembly ? FolderToBeZippedName : IptName, Zip = _assembly }
                 }
             };
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        public UpdateParameters(Publisher publisher) : base(publisher) {}
+        public UpdateParameters(Publisher publisher, bool assembly) : base(publisher) 
+        {
+            _assembly = assembly;
+        }
 
         public override Dictionary<string, IArgument> ToWorkItemArgs(ProcessingArgs data)
         {

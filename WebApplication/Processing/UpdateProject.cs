@@ -8,15 +8,17 @@
     /// </summary>
     public class UpdateProject : AggregatedDefinition
     {
-        public UpdateProject(Publisher publisher) :
+        private readonly bool _assembly;
+        public UpdateProject(Publisher publisher, bool assembly) :
             base(publisher,
-                new UpdateParameters(publisher),
+                new UpdateParameters(publisher, assembly),
                 new CreateSVF(publisher),
                 new ExtractParameters(publisher))
         {
+            _assembly = assembly;
         }
 
-        public override string Id => nameof(UpdateProject);
+        public override string Id => $"{nameof(UpdateProject)}{(this._assembly ? "A" : "P")}";
         public override string Description => "Update parameters";
     }
 }

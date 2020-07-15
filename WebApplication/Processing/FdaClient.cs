@@ -16,7 +16,8 @@ namespace WebApplication.Processing
         private readonly ExtractParameters _parametersWork;
         private readonly AdoptProject _adoptAssemblyWork;
         private readonly AdoptProject _adoptPartWork;
-        private readonly UpdateProject _updateProjectWork;
+        private readonly UpdateProject _updateProjectAssemblyWork;
+        private readonly UpdateProject _updateProjectIptWork;
         private readonly AppBundleZipPaths _paths;
         private readonly UpdateParameters _updateParametersWork;
         private readonly ILogger<FdaClient> _logger;
@@ -31,8 +32,9 @@ namespace WebApplication.Processing
             _parametersWork = new ExtractParameters(publisher);
             _adoptAssemblyWork = new AdoptProject(publisher, true);
             _adoptPartWork = new AdoptProject(publisher, false);
-            _updateParametersWork = new UpdateParameters(publisher);
-            _updateProjectWork = new UpdateProject(publisher);
+            _updateParametersWork = new UpdateParameters(publisher, true /*doesn't matter this should just deploy appbundle*/);
+            _updateProjectAssemblyWork = new UpdateProject(publisher, true);
+            _updateProjectIptWork = new UpdateProject(publisher, false);
             _paths = appBundleZipPathsOptionsAccessor.Value;
             _logger = logger;
         }
@@ -49,7 +51,8 @@ namespace WebApplication.Processing
             await _updateParametersWork.InitializeAsync(_paths.UpdateParameters);
             await _adoptAssemblyWork.InitializeAsync(null /* does not matter */);
             await _adoptPartWork.InitializeAsync(null /* does not matter */);
-            await _updateProjectWork.InitializeAsync(null /* does not matter */);
+            await _updateProjectAssemblyWork.InitializeAsync(null /* does not matter */);
+            await _updateProjectIptWork.InitializeAsync(null /* does not matter */);
         }
 
         public async Task CleanUpAsync()
@@ -64,7 +67,8 @@ namespace WebApplication.Processing
             await _updateParametersWork.CleanUpAsync();
             await _adoptAssemblyWork.CleanUpAsync();
             await _adoptPartWork.CleanUpAsync();
-            await _updateProjectWork.CleanUpAsync();
+            await _updateProjectAssemblyWork.CleanUpAsync();
+            await _updateProjectIptWork.CleanUpAsync();
         }
 
         public Task<ProcessingResult> AdoptAsync(AdoptionData projectData)
@@ -77,7 +81,9 @@ namespace WebApplication.Processing
 
         public Task<ProcessingResult> UpdateAsync(UpdateData projectData)
         {
-            return _updateProjectWork.ProcessAsync(projectData);
+            if (projectData.IsAssembly)
+                return _updateProjectAssemblyWork.ProcessAsync(projectData);
+            return _updateProjectIptWork.ProcessAsync(projectData);
         }
 
         internal Task<ProcessingResult> TransferAsync(string source, string target)
