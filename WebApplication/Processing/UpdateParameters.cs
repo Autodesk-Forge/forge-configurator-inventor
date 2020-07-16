@@ -6,7 +6,8 @@ namespace WebApplication.Processing
 {
     public class UpdateParameters : ForgeAppBase
     {
-        private const string OutputModelParameterName = "OutputModelFile";
+        private const string OutputModelIAMParameterName = "OutputModelIAMFile";
+        private const string OutputModelIPTParameterName = "OutputModelIPTFile";
         /// <summary>
         /// Design Automation parameter name for JSON file with Inventor parameters.
         /// </summary>
@@ -35,8 +36,12 @@ namespace WebApplication.Processing
                     new Parameter { Verb = Verb.Get, Description = "JSON file with Inventor parameters" }
                 },
                 {
-                    OutputModelParameterName,
+                    OutputModelIAMParameterName,
                     new Parameter { Verb = Verb.Put, LocalName = FolderToBeZippedName, Zip = true }
+                },
+                {
+                    OutputModelIPTParameterName,
+                    new Parameter { Verb = Verb.Put, LocalName = IptName }
                 }
             };
 
@@ -53,7 +58,8 @@ namespace WebApplication.Processing
             if (projectData.InputParamsUrl != null) // TODO: use generics
             {
                 workItemArgs.Add(InventorParameters, new XrefTreeArgument { Url = projectData.InputParamsUrl });
-                workItemArgs.Add(OutputModelParameterName, new XrefTreeArgument { Verb = Verb.Put, Url = data.OutputModelUrl });
+                workItemArgs.Add(OutputModelIAMParameterName, new XrefTreeArgument { Verb = Verb.Put, Url = data.OutputIAMModelUrl, Optional = true });
+                workItemArgs.Add(OutputModelIPTParameterName, new XrefTreeArgument { Verb = Verb.Put, Url = data.OutputIPTModelUrl, Optional = true });
             }
             return workItemArgs;
         }

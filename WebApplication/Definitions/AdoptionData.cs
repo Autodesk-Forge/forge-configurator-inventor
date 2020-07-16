@@ -18,7 +18,8 @@ namespace WebApplication.Definitions
         /// </summary>
         public bool IsAssembly => ! string.IsNullOrEmpty(TLA);
 
-        public string OutputModelUrl { get; set; }
+        public string OutputIAMModelUrl { get; set; }
+        public string OutputIPTModelUrl { get; set; }
         public string SatUrl { get; internal set; }
         public string RfaUrl { get; internal set; }
     }

@@ -104,9 +104,9 @@ namespace WebApplication.Utilities
         /// <summary>
         /// Filename for ZIP with current model state.
         /// </summary>
-        public string GetCurrentModel(bool assembly)
+        public string GetCurrentModel(bool isAssembly)
         {
-            return ToFullName(assembly ? "model.zip" : "model.ipt");
+            return ToFullName(isAssembly ? "model.zip" : "model.ipt");
         }
 
         /// <summary>
