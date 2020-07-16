@@ -37,11 +37,17 @@ namespace WebApplication.Utilities
     /// </summary>
     public static class ONC // aka ObjectNameConstants
     {
+        /// <summary>
+        /// Separator to fake directories in OSS filename.
+        /// </summary>
+        private const string OssSeparator = "/"; // This must stay private
+
         public const string ProjectsFolder = "projects";
         public const string ShowParametersChanged = "showparameterschanged.json";
         public const string CacheFolder = "cache";
-        public const string DownloadsFolder = "downloads";
         public const string AttributesFolder = "attributes";
+
+        public static readonly string ProjectsMask = ToPathMask(ProjectsFolder);
 
         /// <summary>
         /// Extract project name from OSS object name.
@@ -49,12 +55,12 @@ namespace WebApplication.Utilities
         /// <param name="ossObjectName">OSS name for the project</param>
         public static string ToProjectName(string ossObjectName)
         {
-            if(!ossObjectName.StartsWith($"{ProjectsFolder}-"))
+            if(!ossObjectName.StartsWith(ProjectsMask))
             {
                 throw new ApplicationException("Initializing Project from invalid bucket key: " + ossObjectName);
             }
 
-            return ossObjectName.Substring(ProjectsFolder.Length+1);
+            return ossObjectName.Substring(ProjectsMask.Length);
         }
 
         /// <summary>
@@ -64,11 +70,26 @@ namespace WebApplication.Utilities
         /// <remarks>
         /// The collection does NOT include name of the project itself. Use <see cref="Project.ExactOssName"/> to generate it.
         /// </remarks>
-        public static IEnumerable<string> ProjectMasks(string projectName)
+        public static IEnumerable<string> ProjectFileMasks(string projectName)
         {
-            yield return $"{AttributesFolder}-{projectName}-";
-            yield return $"{CacheFolder}-{projectName}-";
-            yield return $"{DownloadsFolder}-{projectName}-";
+            yield return ToPathMask(AttributesFolder, projectName);
+            yield return ToPathMask(CacheFolder, projectName);
+        }
+
+        /// <summary>
+        /// Join path pieces into OSS name.
+        /// </summary>
+        public static string Join(params string[] pieces)
+        {
+            return string.Join(OssSeparator, pieces);
+        }
+
+        /// <summary>
+        /// Generate OSS name, which serves as a folder mask for subfolders and files.
+        /// </summary>
+        private static string ToPathMask(params string[] pieces)
+        {
+            return Join(pieces) + OssSeparator;
         }
     }
 
@@ -89,7 +110,7 @@ namespace WebApplication.Utilities
         /// </summary>
         protected string ToFullName(string fileName)
         {
-            return _namePrefix + "-" + fileName;
+            return ONC.Join(_namePrefix, fileName);
         }
     }
 
@@ -99,7 +120,7 @@ namespace WebApplication.Utilities
     public class OSSObjectNameProvider : OssNameConverter
     {
         public OSSObjectNameProvider(string projectName, string parametersHash) :
-                base($"{ONC.CacheFolder}-{projectName}-{parametersHash}") {}
+                base(ONC.Join(ONC.CacheFolder, projectName, parametersHash)) {}
 
         /// <summary>
         /// Filename for ZIP with current model state.
@@ -115,8 +136,6 @@ namespace WebApplication.Utilities
         /// Filename for JSON with Inventor document parameters.
         /// </summary>
         public string Parameters => ToFullName(LocalName.Parameters);
-
-        public string DownloadsPath => ToFullName(ONC.DownloadsFolder);
 
         public string Rfa => ToFullName("result.rfa");
     }
@@ -139,6 +158,6 @@ namespace WebApplication.Utilities
         /// <summary>
         /// Constructor.
         /// </summary>
-        public OssAttributes(string projectName) : base($"{ONC.AttributesFolder}-{projectName}") {}
+        public OssAttributes(string projectName) : base(ONC.Join(ONC.AttributesFolder, projectName)) {}
     }
 }

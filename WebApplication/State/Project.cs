@@ -19,7 +19,7 @@ namespace WebApplication.State
             LocalAttributes = new LocalAttributes(rootDir, Name);
         }
 
-        public static string ExactOssName(string projectName) => $"{ONC.ProjectsFolder}-{projectName}";
+        public static string ExactOssName(string projectName) => ONC.Join(ONC.ProjectsFolder, projectName);
 
         public string Name { get; }
         public string OSSSourceModel { get; }
