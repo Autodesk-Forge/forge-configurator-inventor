@@ -78,11 +78,11 @@ namespace WebApplication.Processing
             }
             else
             {
-                var resultingHash = await UpdateAsync(project, storage.Metadata.TLA, parameters, hash);
+                var resultingHash = await UpdateAsync(project, storage, parameters, hash);
                 if (! hash.Equals(resultingHash, StringComparison.Ordinal))
                 {
                     _logger.LogInformation($"Update returned different parameters. Hash is {resultingHash}.");
-                    await CopyStateAsync(project, resultingHash, hash, !string.IsNullOrEmpty(storage.Metadata.TLA));
+                    await CopyStateAsync(project, resultingHash, hash, storage.IsAssembly);
 
                     // update 
                     hash = resultingHash;
@@ -129,7 +129,7 @@ namespace WebApplication.Processing
             }
 
             // OK, nothing in cache - generate it now
-            var inputDocUrl = await bucket.CreateSignedUrlAsync(ossNameProvider.GetCurrentModel(!string.IsNullOrEmpty(storage.Metadata.TLA)));
+            var inputDocUrl = await bucket.CreateSignedUrlAsync(ossNameProvider.GetCurrentModel(storage.IsAssembly));
             ProcessingArgs satData = await _arranger.ForSatAsync(inputDocUrl, storage.Metadata.TLA);
             ProcessingArgs rfaData = await _arranger.ForRfaAsync(satData.SatUrl);
 
@@ -155,7 +155,7 @@ namespace WebApplication.Processing
         /// Generate project data for the given parameters and cache results locally.
         /// </summary>
         /// <returns>Resulting parameters hash</returns>
-        private async Task<string> UpdateAsync(Project project, string tlaFilename, InventorParameters parameters, string hash)
+        private async Task<string> UpdateAsync(Project project, ProjectStorage storage, InventorParameters parameters, string hash)
         {
             _logger.LogInformation("Update the project");
             var bucket = await _userResolver.GetBucketAsync();
@@ -168,7 +168,7 @@ namespace WebApplication.Processing
             else
             {
                 var inputDocUrl = await bucket.CreateSignedUrlAsync(project.OSSSourceModel);
-                UpdateData updateData = await _arranger.ForUpdateAsync(inputDocUrl, tlaFilename, parameters);
+                UpdateData updateData = await _arranger.ForUpdateAsync(inputDocUrl, storage.Metadata.TLA, parameters);
 
                 ProcessingResult result = await _fdaClient.UpdateAsync(updateData);
                 if (!result.Success)
@@ -181,7 +181,7 @@ namespace WebApplication.Processing
 
                 // rearrange generated data according to the parameters hash
                 // NOTE: hash might be changed if Inventor adjust them!
-                hash = await _arranger.MoveViewablesAsync(project, !string.IsNullOrEmpty(tlaFilename));
+                hash = await _arranger.MoveViewablesAsync(project, storage.IsAssembly);
             }
 
             _logger.LogInformation($"Cache the project locally ({hash})");
@@ -203,7 +203,7 @@ namespace WebApplication.Processing
             return await bucket.ObjectExistsAsync(ossNames.Parameters);
         }
 
-        private async Task CopyStateAsync(Project project, string hashFrom, string hashTo, bool assembly)
+        private async Task CopyStateAsync(Project project, string hashFrom, string hashTo, bool isAssembly)
         {
             // see if the dir exists already
             LocalNameProvider localTo = project.LocalNameProvider(hashTo);
@@ -227,7 +227,7 @@ namespace WebApplication.Processing
 
             await Task.WhenAll(
                 bucket.CopyAsync(ossFrom.Parameters, ossTo.Parameters),
-                bucket.CopyAsync(ossFrom.GetCurrentModel(assembly), ossTo.GetCurrentModel(assembly)),
+                bucket.CopyAsync(ossFrom.GetCurrentModel(isAssembly), ossTo.GetCurrentModel(isAssembly)),
                 bucket.CopyAsync(ossFrom.ModelView, ossTo.ModelView));
 
             _logger.LogInformation($"Cache the project locally ({hashTo})");

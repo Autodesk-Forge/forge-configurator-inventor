@@ -110,10 +110,6 @@ namespace WebApplication.Utilities
         }
 
         /// <summary>
-        /// Filename for ZIP with current model state.
-        /// </summary>
-        public string CurrentIptModel => ToFullName("model.ipt");
-        /// <summary>
         /// Filename for ZIP with SVF model.
         /// </summary>
         public string ModelView => ToFullName(LocalName.ModelView);

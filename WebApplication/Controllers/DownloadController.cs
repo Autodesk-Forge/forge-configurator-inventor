@@ -26,7 +26,7 @@ namespace WebApplication.Controllers
             if (token != null)
                 _userResolver.Token = token;
 
-            return RedirectToOssObject(projectName, hash, (ossNames, assembly ) => ossNames.GetCurrentModel(assembly));
+            return RedirectToOssObject(projectName, hash, (ossNames, isAssembly ) => ossNames.GetCurrentModel(isAssembly));
         }
 
         [HttpGet("{projectName}/{hash}/rfa/{token?}")]
@@ -43,7 +43,7 @@ namespace WebApplication.Controllers
             ProjectStorage projectStorage = await _userResolver.GetProjectStorageAsync(projectName);
             
             var ossNameProvider = projectStorage.GetOssNames(hash);
-            string ossObjectName = nameExtractor(ossNameProvider, !string.IsNullOrEmpty(projectStorage.Metadata.TLA));
+            string ossObjectName = nameExtractor(ossNameProvider, projectStorage.IsAssembly);
 
             _logger.LogInformation($"Downloading '{ossObjectName}'");
 

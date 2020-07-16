@@ -113,7 +113,7 @@ namespace WebApplication.Processing
             await Task.WhenAll(bucket.RenameObjectAsync(Thumbnail, project.OssAttributes.Thumbnail),
                                 bucket.RenameObjectAsync(SVF, ossNames.ModelView),
                                 bucket.RenameObjectAsync(Parameters, ossNames.Parameters),
-                                bucket.RenameObjectAsync(string.IsNullOrEmpty(tlaFilename) ? OutputModelIPT : OutputModelIAM, ossNames.GetCurrentModel(tlaFilename != null)),
+                                bucket.RenameObjectAsync(attributes.IsAssembly ? OutputModelIPT : OutputModelIAM, ossNames.GetCurrentModel(attributes.IsAssembly)),
                                 bucket.UploadObjectAsync(project.OssAttributes.Metadata, Json.ToStream(attributes, writeIndented: true)));
 
             return hashString;
