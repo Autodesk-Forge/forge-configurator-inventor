@@ -24,10 +24,10 @@ Scenario('should check Project switcher is loaded', async (I) => {
     // check name of the first project
     I.see("Conveyor", locators.xpProjectConveyor);
 
-    // check name of the third project
+    // check name of the second project
     I.see("Wheel", locators.xpProjectWheel);
 
-    // check name of the second project
+    // check name of the third project
     I.see("Wrench", locators.xpProjectWrench);
 
 });
