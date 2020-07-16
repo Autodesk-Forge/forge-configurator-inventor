@@ -17,6 +17,7 @@ using WebApplication.Services;
 using WebApplication.State;
 using WebApplication.Utilities;
 using Xunit;
+using Project = WebApplication.State.Project;
 
 namespace WebApplication.Tests
 {
@@ -61,7 +62,7 @@ namespace WebApplication.Tests
 
             projectsBucketKey = Guid.NewGuid().ToString();
             
-            var resourceProvider = new ResourceProvider(forgeConfigOptions, designAutomationClient, projectsBucketKey);
+            var resourceProvider = new ResourceProvider(forgeConfigOptions, designAutomationClient, null, projectsBucketKey);
             var localCache = new LocalCache();
             var postProcessing = new PostProcessing(httpClientFactory, new NullLogger<PostProcessing>(), localCache);
             var publisher = new Publisher(designAutomationClient, new NullLogger<Publisher>(), resourceProvider, postProcessing);
@@ -141,22 +142,25 @@ namespace WebApplication.Tests
         {
             await initializer.InitializeAsync();
 
+            var project = new Project("Basic", Path.GetTempPath());
+
             // check thumbnail generated
-            List<ObjectDetails> objects = await forgeOSS.GetBucketObjectsAsync(projectsBucketKey, "attributes-Basic-thumbnail.png");
+            List<ObjectDetails> objects = await forgeOSS.GetBucketObjectsAsync(projectsBucketKey, project.OssAttributes.Thumbnail);
             Assert.Single(objects);
             string signedOssUrl = await forgeOSS.CreateSignedUrlAsync(projectsBucketKey, objects[0].ObjectKey);
             string testComparisonFilePath = await DownloadTestComparisonFile("http://testipt.s3-us-west-2.amazonaws.com/iLogicBasic1IamThumbnail.png", "iLogicBasic1IamThumbnail.png");
             await CompareOutputFileBytes(testComparisonFilePath, signedOssUrl);
 
             // check parameters generated with hashed name
-            objects = await forgeOSS.GetBucketObjectsAsync(projectsBucketKey, "cache-Basic-13B8EF6A8506CC3ECB08FF6F0B09ACD194DE6A55-parameters.json");
+            var ossNames = project.OssNameProvider("13B8EF6A8506CC3ECB08FF6F0B09ACD194DE6A55");
+            objects = await forgeOSS.GetBucketObjectsAsync(projectsBucketKey, ossNames.Parameters);
             Assert.Single(objects);
             signedOssUrl = await forgeOSS.CreateSignedUrlAsync(projectsBucketKey, objects[0].ObjectKey);
             testComparisonFilePath = await DownloadTestComparisonFile("http://testipt.s3-us-west-2.amazonaws.com/iLogicBasic1IamDocumentParams.json", "iLogicBasic1IamDocumentParams.json");
             await CompareOutputFileBytes(testComparisonFilePath, signedOssUrl);
 
             // check model view generated with hashed name (zip of SVF size/content varies slightly each time so we can only check if it was created)
-            objects = await forgeOSS.GetBucketObjectsAsync(projectsBucketKey, "cache-Basic-13B8EF6A8506CC3ECB08FF6F0B09ACD194DE6A55-model-view.zip");
+            objects = await forgeOSS.GetBucketObjectsAsync(projectsBucketKey, ossNames.ModelView);
             Assert.Single(objects);
         }
     }

@@ -68,7 +68,7 @@ See [high level diagram](architecture.png)
 * Note that the server needs to be running for these tests
 
 1. From the `WebApplication/ClientApp` directory:
-    * For all UI tests Run this command: `npx codeceptjs run`
+    * For all UI tests Run this command: `npx codeceptjs run` or `npm run uitest`.
     * For particular file you can use this command: `npx codeceptjs run src/ui-tests/<test file name>`
 
 # Additional Information
