@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="InventorBinFolder.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -37,28 +38,28 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Autodesk.iLogic.Common">
-      <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Inventor Server 2020\Inventor Server\Bin\Autodesk.iLogic.Common.dll</HintPath>
+      <HintPath>$(InventorBinFolder)\Autodesk.iLogic.Common.dll</HintPath>
     </Reference>
     <Reference Include="Autodesk.iLogic.Core">
-      <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Inventor Server 2020\Inventor Server\Bin\Autodesk.iLogic.Core.dll</HintPath>
+      <HintPath>$(InventorBinFolder)\Autodesk.iLogic.Core.dll</HintPath>
     </Reference>
     <Reference Include="Autodesk.iLogic.Exec">
-      <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Inventor Server 2020\Inventor Server\Bin\Autodesk.iLogic.Exec.dll</HintPath>
+      <HintPath>$(InventorBinFolder)\Autodesk.iLogic.Exec.dll</HintPath>
     </Reference>
     <Reference Include="Autodesk.iLogic.Interfaces">
-      <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Inventor Server 2020\Inventor Server\Bin\Autodesk.iLogic.Interfaces.dll</HintPath>
+      <HintPath>$(InventorBinFolder)\Autodesk.iLogic.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="Autodesk.iLogic.Plugin">
-      <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Inventor Server 2020\Inventor Server\Bin\Autodesk.iLogic.Plugin.dll</HintPath>
+      <HintPath>$(InventorBinFolder)\Autodesk.iLogic.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="Autodesk.iLogic.Runtime">
-      <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Inventor Server 2020\Inventor Server\Bin\Autodesk.iLogic.Runtime.dll</HintPath>
+      <HintPath>$(InventorBinFolder)\Autodesk.iLogic.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Autodesk.iLogic.Types">
-      <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Inventor Server 2020\Inventor Server\Bin\Autodesk.iLogic.Types.dll</HintPath>
+      <HintPath>$(InventorBinFolder)\Autodesk.iLogic.Types.dll</HintPath>
     </Reference>
     <Reference Include="Autodesk.iLogic.UiBuilderCore">
-      <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Inventor Server 2020\Inventor Server\Bin\Autodesk.iLogic.UiBuilderCore.dll</HintPath>
+      <HintPath>$(InventorBinFolder)\Autodesk.iLogic.UiBuilderCore.dll</HintPath>
     </Reference>
     <Reference Include="autodesk.inventor.interop, Version=24.0.0.0, Culture=neutral, PublicKeyToken=d84147f8b4276564, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
