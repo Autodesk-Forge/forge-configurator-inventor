@@ -4,17 +4,17 @@
 Before((I) => {
     I.amOnPage('/');
  });
- 
- Feature('Upload and delete IPT File');
- 
- Scenario('upload workflow', async (I) => {
+
+ Feature('Upload and delete IPT design');
+
+ Scenario('upload IPT design workflow', async (I) => {
     await I.signIn();
- 
-    I.uploadIPTFile('src\\ui-tests\\EndCap.ipt');
+
+    I.uploadIPTFile('src/ui-tests/dataset/EndCap.ipt');
  });
- 
- Scenario('delete workflow', async (I) => {
+
+ Scenario('delete IPT design workflow', async (I) => {
     await I.signIn();
- 
+
     I.deleteProject('EndCap');
  });
