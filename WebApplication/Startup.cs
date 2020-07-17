@@ -74,6 +74,7 @@ namespace WebApplication
             services.AddSingleton<Publisher>();
             services.AddScoped<UserResolver>(); // TODO: use interface
             services.AddSingleton<LocalCache>();
+            services.AddSingleton<Uploads>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
