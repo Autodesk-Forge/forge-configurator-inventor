@@ -7,6 +7,7 @@ using WebApplication.Processing;
 using WebApplication.State;
 using WebApplication.Definitions;
 using WebApplication.Utilities;
+using System.IO;
 
 namespace WebApplication.Job
 {
@@ -41,6 +42,10 @@ namespace WebApplication.Job
 
             string ossSourceModel = projectStorage.Project.OSSSourceModel;
             await bucket.SmartUploadAsync(fileName, ossSourceModel);
+
+            // cleanup before adoption
+            File.Delete(fileName);
+            _uploads.ClearUploadData(_packageId);
 
             // adopt the project
             bool adopted = false;

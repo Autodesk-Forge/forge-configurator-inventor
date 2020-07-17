@@ -87,14 +87,14 @@ namespace WebApplication.Controllers
             };
             
             // download file locally (a place to improve... would be good to stream it directly to OSS)
-            using var file = new TempFile();
-            await using (var fileWriteStream = System.IO.File.OpenWrite(file.Name))
+            var fileName = Path.GetTempFileName();
+            await using (var fileWriteStream = System.IO.File.OpenWrite(fileName))
             {
                 await projectModel.package.CopyToAsync(fileWriteStream);
             }
 
             var packageId = Guid.NewGuid().ToString();
-            _uploads.AddUploadData(packageId, projectInfo, file.Name);
+            _uploads.AddUploadData(packageId, projectInfo, fileName);
 
             return Ok(packageId);
 

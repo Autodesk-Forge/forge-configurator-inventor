@@ -27,5 +27,11 @@ namespace WebApplication.State
         {
             return (projectInfo: _uploadProjects[uploadId], filename: _uploadFilenames[uploadId]);
         }
+
+        public void ClearUploadData(string uploadId)
+        {
+            _uploadFilenames[uploadId] = null;
+            _uploadProjects[uploadId] = null;
+        }
     }
 }
