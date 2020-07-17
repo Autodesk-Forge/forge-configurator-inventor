@@ -44,7 +44,7 @@ describe('uploadPackage', () => {
         // set expected value for the mock
         uploadPackageMock.mockReturnValue(packageData);
 
-        const store = mockStore({ uiFlags: { package: { file: "a.zip", root: "a.asm"}} });
+        const store = mockStore({ uiFlags: { package: { file: {name: "a.zip"}, root: "a.asm"}} });
 
         await store.dispatch(uploadPackage()); // demand projects loading
         // ensure that the mock called once
@@ -68,7 +68,7 @@ describe('uploadPackage', () => {
         // set expected value for the mock
         uploadPackageMock.mockImplementation(() => { throw { response: { status: 409}}; });
 
-        const store = mockStore({ uiFlags: { package: { file: "a.zip", root: "a.asm"}} });
+        const store = mockStore({ uiFlags: { package: { file: {name: "a.zip"}, root: "a.asm"}} });
 
         await store.dispatch(uploadPackage()); // demand projects loading
         // ensure that the mock called once
@@ -88,7 +88,7 @@ describe('uploadPackage', () => {
         const reportUrl = 'WI report url';
         uploadPackageMock.mockImplementation(() => { throw { response: { status: 422, data: { reportUrl: reportUrl}}}; });
 
-        const store = mockStore({ uiFlags: { package: { file: "a.zip", root: "a.asm"}} });
+        const store = mockStore({ uiFlags: { package: { file: {name: "a.zip"}, root: "a.asm"}} });
 
         await store.dispatch(uploadPackage()); // demand projects loading
         // ensure that the mock called once
@@ -125,9 +125,9 @@ describe('uploadPackage', () => {
         expect(actions).toHaveLength(0);
     });
 
-    it('should do nothing when root is empty', async () => {
+    it('should do nothing when root is empty and file is assembly', async () => {
 
-        const store = mockStore({ uiFlags: { package: { file: "a.zip", root: ''}} });
+        const store = mockStore({ uiFlags: { package: { file: {name: "a.zip"}, root: ''}} });
 
         await store.dispatch(uploadPackage());
         expect(uploadPackageMock).toHaveBeenCalledTimes(0);
@@ -135,5 +135,20 @@ describe('uploadPackage', () => {
         const actions = store.getActions();
 
         expect(actions).toHaveLength(0);
+    });
+
+    it('should be able to upload when root is not defined for other than zip file', async () => {
+
+        const store = mockStore({ uiFlags: { package: { file: {name: "a.ipt"}, root: ''}} });
+
+        uploadPackageMock.mockImplementation(() => { return { response: { status: 200 }}; });
+
+        await store.dispatch(uploadPackage());
+        expect(uploadPackageMock).toHaveBeenCalledTimes(1);
+
+        const actions = store.getActions();
+
+        expect(actions).toContainEqual({type: actionTypes.SET_UPLOAD_PROGRESS_VISIBLE});
+
     });
 });

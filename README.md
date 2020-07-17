@@ -23,6 +23,8 @@ See [high level diagram](architecture.png)
 1. Note the Client ID and Secret generated.
 1. Clone repository
 1. Specify [forge credentials](#specify-forge-credentials).
+1. Copy AppBundles\ExtractParametersPlugin\InventorBinFolder.props.template file to AppBundles\ExtractParametersPlugin\InventorBinFolder.props
+1. Replace PATH_TO_YOUR_INVENTOR_BIN string in the AppBundles\ExtractParametersPlugin\InventorBinFolder.props with your actual Inventor's bin folder
 
 ## Build
 * Building the projects also installs required packages (this can take several minutes).
@@ -68,7 +70,7 @@ See [high level diagram](architecture.png)
 * Note that the server needs to be running for these tests
 
 1. From the `WebApplication/ClientApp` directory:
-    * For all UI tests Run this command: `npx codeceptjs run`
+    * For all UI tests Run this command: `npx codeceptjs run` or `npm run uitest`.
     * For particular file you can use this command: `npx codeceptjs run src/ui-tests/<test file name>`
 
 # Additional Information

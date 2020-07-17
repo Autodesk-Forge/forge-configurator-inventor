@@ -18,7 +18,7 @@ export default actionTypes;
 export const uploadPackage = () => async (dispatch, getState) => {
     const packageData = uploadPackageData(getState());
 
-    if (packageData.file !== null && packageData.root.length > 0) {
+    if (packageData.file !== null && (packageData.root.length > 0 || packageData.file?.name.endsWith('.zip') === false)) {
         dispatch(showUploadPackage(false));
         dispatch(setUploadProgressVisible());
 

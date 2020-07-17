@@ -119,7 +119,7 @@ namespace WebApplication.Processing
             if (data.IsAssembly)
                 args.Add(InputDocParameterName, new XrefTreeArgument { PathInZip = data.TLA, LocalName = ZipName, Url = data.InputDocUrl });
             else
-                args.Add(InputDocParameterName, new XrefTreeArgument { Url = data.InputDocUrl });
+                args.Add(InputDocParameterName, new XrefTreeArgument { Url = data.InputDocUrl, LocalName = IptName });
         }
 
         /// <summary>
@@ -156,6 +156,8 @@ namespace WebApplication.Processing
         /// </summary>
         /// <remarks>NOTE: arg name is misleading, this actually is a dirname, where the zip is extracted.</remarks>
         protected const string ZipName = "zippedIam.zip";
+
+        protected const string IptName = "part.ipt";
 
         /// <summary>
         /// Name of the output parameter.

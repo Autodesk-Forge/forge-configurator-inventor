@@ -118,7 +118,7 @@ namespace WebApplication.Controllers
             {
                 tasks.Add(bucket.DeleteObjectAsync(Project.ExactOssName(projectName)));
 
-                foreach (var searchMask in ONC.ProjectMasks(projectName))
+                foreach (var searchMask in ONC.ProjectFileMasks(projectName))
                 {
                     var objects = await bucket.GetObjectsAsync(searchMask);
                     foreach (var objectDetail in objects)
@@ -153,7 +153,7 @@ namespace WebApplication.Controllers
         /// </summary>
         private async Task<ICollection<string>> GetProjectNamesAsync(OssBucket bucket)
         {
-            return (await bucket.GetObjectsAsync($"{ONC.ProjectsFolder}-"))
+            return (await bucket.GetObjectsAsync(ONC.ProjectsMask))
                                 .Select(objDetails =>  ONC.ToProjectName(objDetails.ObjectKey))
                                 .ToList();
         }

@@ -54,7 +54,7 @@ export class ModalUpdateFailed extends Component {
             >
                 <div className="modalFailContent">
                     <div>
-                        <Typography><span className="assemblyText">Assembly:</span> {this.props.label ? this.props.label : "Missing label."}</Typography>
+                        <Typography><span className="assemblyText">Project:</span> {this.props.label ? this.props.label : "Missing label."}</Typography>
                     </div>
                     <div className="logContainer">
                         <HyperLink link="Open log file" href={this.props.url} />
