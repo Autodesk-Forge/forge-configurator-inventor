@@ -5,6 +5,7 @@ phases:
     commands:
       - aws s3 cp s3://sdra-build/buildExtras.zip ./
       - expand-archive -path .\buildExtras.zip -destinationpath ./
+      - copy AppBundles\ExtractParametersPlugin\InventorBinFolder.props.template AppBundles\ExtractParametersPlugin\InventorBinFolder.props
   build:
     commands:
       - $slnDir=$PWD.ToString()
