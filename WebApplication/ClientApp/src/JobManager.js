@@ -67,6 +67,30 @@ class JobManager {
 
         await connection.invoke('CreateRFAJob', projectId, hash, repo.getAccessToken());
     }
+
+    async doAdoptJob(packageId, onStart, onComplete, onError) {
+        const connection = await this.startConnection();
+
+        if (onStart)
+            onStart();
+
+        connection.on("onComplete", (newProject) => {
+            // stop connection
+            connection.stop();
+
+            if (onComplete)
+                onComplete(newProject);
+        });
+
+        connection.on("onError", (jobId, reportUrl) => {
+            connection.stop();
+
+            if (onError)
+                onError(jobId, reportUrl);
+        });
+
+        await connection.invoke('CreateAdoptJob', packageId, repo.getAccessToken());
+    }
 }
 
 const jobManager = new JobManager();

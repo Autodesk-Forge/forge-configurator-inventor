@@ -6,8 +6,8 @@ const connectionMock = {
     },
     invoke: function() {},
     stop: function() {},
-    simulateComplete: function(link) {
-        this.onHandlers['onComplete'](link);
+    simulateComplete: function(data) {
+        this.onHandlers['onComplete'](data);
     },
     simulateError: function(jobId, link) {
         this.onHandlers['onError'](jobId, link);
