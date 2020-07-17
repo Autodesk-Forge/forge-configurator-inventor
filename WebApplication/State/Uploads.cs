@@ -30,8 +30,8 @@ namespace WebApplication.State
 
         public void ClearUploadData(string uploadId)
         {
-            _uploadFilenames[uploadId] = null;
-            _uploadProjects[uploadId] = null;
+            _uploadFilenames.Remove(uploadId);
+            _uploadProjects.Remove(uploadId);
         }
     }
 }

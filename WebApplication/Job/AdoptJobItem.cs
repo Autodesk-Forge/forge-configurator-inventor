@@ -13,17 +13,17 @@ namespace WebApplication.Job
 {
     internal class AdoptJobItem : JobItemBase
     {
-        private readonly string _packageId;
+        private readonly ProjectInfo _projectInfo;
+        private readonly string _fileName;
         private readonly UserResolver _userResolver;
-        private readonly Uploads _uploads;
         private readonly DtoGenerator _dtoGenerator;
 
-        public AdoptJobItem(ILogger logger, string packageId, ProjectWork projectWork, UserResolver userResolver, Uploads uploads, DtoGenerator dtoGenerator)
+        public AdoptJobItem(ILogger logger, ProjectInfo projectInfo, string fileName, ProjectWork projectWork, UserResolver userResolver, DtoGenerator dtoGenerator)
             : base(logger, null, projectWork)
         {
-            _packageId = packageId;
+            _projectInfo = projectInfo;
+            _fileName = fileName;
             _userResolver = userResolver;
-            _uploads = uploads;
             _dtoGenerator = dtoGenerator;
         }
 
@@ -31,28 +31,24 @@ namespace WebApplication.Job
         {
             using var scope = Logger.BeginScope("Project Adoption ({Id})");
 
-            Logger.LogInformation($"ProcessJob (Adopt) {Id} for package {_packageId} started.");
-
-            // get upload information
-            (ProjectInfo projectInfo, string fileName) = _uploads.GetUploadData(_packageId);
+            Logger.LogInformation($"ProcessJob (Adopt) {Id} for project {_projectInfo.Name} started.");
             
             // upload the file to OSS
             var bucket = await _userResolver.GetBucketAsync(true);
-            ProjectStorage projectStorage = await _userResolver.GetProjectStorageAsync(projectInfo.Name);
+            ProjectStorage projectStorage = await _userResolver.GetProjectStorageAsync(_projectInfo.Name);
 
             string ossSourceModel = projectStorage.Project.OSSSourceModel;
-            await bucket.SmartUploadAsync(fileName, ossSourceModel);
+            await bucket.SmartUploadAsync(_fileName, ossSourceModel);
 
             // cleanup before adoption
-            File.Delete(fileName);
-            _uploads.ClearUploadData(_packageId);
+            File.Delete(_fileName);
 
             // adopt the project
             bool adopted = false;
             try
             {
                 string signedUrl = await bucket.CreateSignedUrlAsync(ossSourceModel);
-                await ProjectWork.AdoptAsync(projectInfo, signedUrl);
+                await ProjectWork.AdoptAsync(_projectInfo, signedUrl);
 
                 adopted = true;
             }
@@ -77,7 +73,7 @@ namespace WebApplication.Job
                 }
             }
 
-            Logger.LogInformation($"ProcessJob (Adopt) {Id} for package {_packageId} completed.");
+            Logger.LogInformation($"ProcessJob (Adopt) {Id} for project {_projectInfo.Name} completed.");
             await resultSender.SendSuccessAsync(_dtoGenerator.ToDTO(projectStorage));
         }
     }

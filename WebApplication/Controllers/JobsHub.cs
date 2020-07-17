@@ -137,8 +137,12 @@ namespace WebApplication.Controllers
 
             _userResolver.Token = token;
 
+            // get upload information
+            (ProjectInfo projectInfo, string fileName) = _uploads.GetUploadData(packageId);
+            _uploads.ClearUploadData(packageId);
+
             // create job and run it
-            var job = new AdoptJobItem(_logger, packageId, _projectWork, _userResolver, _uploads, _dtoGenerator);
+            var job = new AdoptJobItem(_logger, projectInfo, fileName, _projectWork, _userResolver, _dtoGenerator);
             await RunJobAsync(job);
         }
 
