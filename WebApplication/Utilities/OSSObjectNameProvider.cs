@@ -125,7 +125,10 @@ namespace WebApplication.Utilities
         /// <summary>
         /// Filename for ZIP with current model state.
         /// </summary>
-        public string CurrentModel => ToFullName("model.zip");
+        public string GetCurrentModel(bool isAssembly)
+        {
+            return ToFullName(isAssembly ? "model.zip" : "model.ipt");
+        }
 
         /// <summary>
         /// Filename for ZIP with SVF model.

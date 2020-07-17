@@ -9,7 +9,7 @@ namespace WebApplication.Processing
     /// </summary>
     public class ExtractParameters : ForgeAppBase
     {
-        private const string OutputModelParameterName = "OutputModelFile";
+        
 
         public override string Id => nameof(ExtractParameters);
         public override string Description => "Extract Parameters and Save Inventor document";
@@ -21,19 +21,5 @@ namespace WebApplication.Processing
         /// Constructor.
         /// </summary>
         public ExtractParameters(Publisher publisher) : base(publisher) { }
-
-        protected override void AddOutputArgs(IDictionary<string, IArgument> args, ProcessingArgs data)
-        {
-            base.AddOutputArgs(args, data);
-            args.Add(OutputModelParameterName, new XrefTreeArgument { Verb = Verb.Put, Url = data.OutputModelUrl });
-
-        }
-
-        public override Dictionary<string, Parameter> GetActivityParams()
-        {
-            Dictionary<string, Parameter> activityParams = base.GetActivityParams();
-            activityParams.Add(OutputModelParameterName, new Parameter { Verb = Verb.Put, LocalName = ZipName, Zip = true });
-            return activityParams;
-        }
     }
 }
