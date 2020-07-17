@@ -4,6 +4,21 @@ import { actionTypes as uiFlagsActionTypes } from './uiFlagsActions';
 
 // the test based on https://redux.js.org/recipes/writing-tests#async-action-creators
 
+// prepare mock for signalR
+import connectionMock from './connectionMock';
+
+import * as signalR from '@aspnet/signalr';
+signalR.HubConnectionBuilder = jest.fn();
+signalR.HubConnectionBuilder.mockImplementation(() => ({
+    withUrl: function(/*url*/) {
+        return {
+            configureLogging: function(/*trace*/) {
+                return { build: function() { return connectionMock; }};
+            }
+        };
+    }
+}));
+
 // prepare mock for Repository module
 jest.mock('../Repository');
 import repoInstance from '../Repository';
@@ -35,17 +50,17 @@ describe('uploadPackage', () => {
         // ensure that the mock called once
         expect(uploadPackageMock).toHaveBeenCalledTimes(1);
 
+        const newProject = { name: "newProject" };
+        connectionMock.simulateComplete(newProject);
+
         const actions = store.getActions();
 
         // check expected actions and their types
-        expect(actions).toHaveLength(4); // TBD, currently just uiFlags to show and hide the progress
         expect(actions[0].type).toEqual(uiFlagsActionTypes.SHOW_UPLOAD_PACKAGE);
         expect(actions[1].type).toEqual(actionTypes.SET_UPLOAD_PROGRESS_VISIBLE);
-        expect(actions[2].type).toEqual(projectListActions.ADD_PROJECT);
-        expect(actions[3].type).toEqual(actionTypes.SET_UPLOAD_PROGRESS_DONE);
-
-        // TBD check if the expected project is added to the project list
-        // expect(actions[2].projectList).toEqual(testProjects);
+        // there are some logs in action in between...
+        expect(actions[actions.length-2].type).toEqual(projectListActions.ADD_PROJECT);
+        expect(actions[actions.length-1].type).toEqual(actionTypes.SET_UPLOAD_PROGRESS_DONE);
     });
 
     it('should handle conflict', async () => {
