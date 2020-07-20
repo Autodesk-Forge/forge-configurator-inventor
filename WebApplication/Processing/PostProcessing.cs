@@ -44,7 +44,7 @@ namespace WebApplication.Processing
             // TODO: make it in background
             if (wiStatus.Status != Status.Success)
             {
-                var reportName = $"{DateTime.UtcNow:yyyy-MM-dd_hh-mm-ss}_{wiStatus.Id}.txt";
+                var reportName = $"{DateTime.UtcNow:yyyy-MM-dd_HH-mm-ss}_{wiStatus.Id}.txt";
                 string reportFullname = Path.Combine(_lazyReportDir.Value, reportName);
 
                 _logger.LogInformation($"Saving {wiStatus.Id} report to {reportName}");
