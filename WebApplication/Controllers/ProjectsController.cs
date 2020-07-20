@@ -22,16 +22,16 @@ namespace WebApplication.Controllers
         private readonly DtoGenerator _dtoGenerator;
         private readonly UserResolver _userResolver;
         private readonly LocalCache _localCache;
-        private readonly ProjectWork _projectWork;
+        private Uploads _uploads;
 
         public ProjectsController(ILogger<ProjectsController> logger, DtoGenerator dtoGenerator, UserResolver userResolver,
-            LocalCache localCache, ProjectWork projectWork)
+            LocalCache localCache, ProjectWork projectWork, Uploads uploads)
         {
             _logger = logger;
             _dtoGenerator = dtoGenerator;
             _userResolver = userResolver;
             _localCache = localCache;
-            _projectWork = projectWork;
+            _uploads = uploads;
         }
 
         [HttpGet("")]
@@ -50,7 +50,7 @@ namespace WebApplication.Controllers
                     // handle situation when project is not cached locally
                     await projectStorage.EnsureAttributesAsync(bucket, ensureDir: true);
 
-                    projectDTOs.Add(ToDTO(projectStorage));
+                    projectDTOs.Add(_dtoGenerator.ToDTO(projectStorage));
                 }
                 catch (Exception e)
                 {
@@ -87,48 +87,17 @@ namespace WebApplication.Controllers
             };
             
             // download file locally (a place to improve... would be good to stream it directly to OSS)
-            using var file = new TempFile();
-            await using (var fileWriteStream = System.IO.File.OpenWrite(file.Name))
+            var fileName = Path.GetTempFileName();
+            await using (var fileWriteStream = System.IO.File.OpenWrite(fileName))
             {
                 await projectModel.package.CopyToAsync(fileWriteStream);
             }
 
-            // upload the file to OSS
-            ProjectStorage projectStorage = await _userResolver.GetProjectStorageAsync(projectName);
+            var packageId = Guid.NewGuid().ToString();
+            _uploads.AddUploadData(packageId, projectInfo, fileName);
 
-            string ossSourceModel = projectStorage.Project.OSSSourceModel;
-            await bucket.SmartUploadAsync(file.Name, ossSourceModel);
+            return Ok(packageId);
 
-            // adopt the project
-            bool adopted = false;
-            try
-            {
-                string signedUrl = await bucket.CreateSignedUrlAsync(ossSourceModel);
-                await _projectWork.AdoptAsync(projectInfo, signedUrl);
-
-                adopted = true;
-            }
-            catch (FdaProcessingException fpe)
-            {
-                var result = new ResultDTO
-                {
-                    Success = false,
-                    Message = fpe.Message,
-                    ReportUrl = fpe.ReportUrl
-                };
-                return UnprocessableEntity(result);
-            }
-            finally
-            {
-                // on any failure during adoption we consider that project adoption failed and it's not usable
-                if (! adopted)
-                {
-                    _logger.LogInformation($"Adoption failed. Removing '{ossSourceModel}' OSS object.");
-                    await bucket.DeleteObjectAsync(ossSourceModel);
-                }
-            }
-
-            return Ok(ToDTO(projectStorage));
         }
 
         [HttpDelete]
@@ -149,7 +118,7 @@ namespace WebApplication.Controllers
             {
                 tasks.Add(bucket.DeleteObjectAsync(Project.ExactOssName(projectName)));
 
-                foreach (var searchMask in ONC.ProjectMasks(projectName))
+                foreach (var searchMask in ONC.ProjectFileMasks(projectName))
                 {
                     var objects = await bucket.GetObjectsAsync(searchMask);
                     foreach (var objectDetail in objects)
@@ -180,25 +149,11 @@ namespace WebApplication.Controllers
         }
 
         /// <summary>
-        /// Generate project DTO.
-        /// </summary>
-        private ProjectDTO ToDTO(ProjectStorage projectStorage)
-        {
-            Project project = projectStorage.Project;
-
-            var dto = _dtoGenerator.MakeProjectDTO<ProjectDTO>(project, projectStorage.Metadata.Hash);
-            dto.Id = project.Name;
-            dto.Label = project.Name;
-            dto.Image = _localCache.ToDataUrl(project.LocalAttributes.Thumbnail);
-            return dto;
-        }
-
-        /// <summary>
         /// Get list of project names for a bucket.
         /// </summary>
         private async Task<ICollection<string>> GetProjectNamesAsync(OssBucket bucket)
         {
-            return (await bucket.GetObjectsAsync($"{ONC.ProjectsFolder}-"))
+            return (await bucket.GetObjectsAsync(ONC.ProjectsMask))
                                 .Select(objDetails =>  ONC.ToProjectName(objDetails.ObjectKey))
                                 .ToList();
         }

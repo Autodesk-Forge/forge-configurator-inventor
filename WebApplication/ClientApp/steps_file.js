@@ -1,3 +1,5 @@
+/* eslint-disable prefer-const */
+/* eslint-disable jest/no-standalone-expect */
 /* eslint-disable no-console */
 /* eslint-disable no-constant-condition */
 /* eslint-disable no-undef */
@@ -6,7 +8,7 @@
 require('dotenv').config();
 const locators = require('./src/ui-tests/elements_definition.js');
 
-//Authentivation
+//Authentication
 const inputUserName = '#userName';
 const inputPassword = '#password';
 const buttonNext = '#verify_user_btn';
@@ -15,7 +17,7 @@ const buttonSubmit = '#btnSubmit';
 // Upload
 const uploadPackageButton = '//button[@title="Upload package"]';
 const uploadPackageRoot = '//input[@id="package_root"]';
-const uploadFileElement = 'input[id="packageFileInput"]';
+const uploadFileElement = '//input[@id="packageFileInput"]';
 const uploadButton = '//button[@id="upload_button"]';
 const uploadConfirmationDialog = '//p[text()="Upload Finished"]';
 const closeButton = '//button[@title="Close"]';
@@ -101,10 +103,10 @@ module.exports = function() {
       this.fillField(inputPassword, password);
       this.click(buttonSubmit);
 
-      // look for the URL to determine if we are asked 
+      // look for the URL to determine if we are asked
       // to agree to authorize our application
       this.waitForNavigation();
-      const currentUrl = await this.grabCurrentUrl()
+      const currentUrl = await this.grabCurrentUrl();
       console.log(currentUrl);
       if (currentUrl.includes('auth.autodesk.com')) {
         // click on Allow Button
@@ -129,7 +131,22 @@ module.exports = function() {
 
       // select file to upload
       this.attachFile(uploadFileElement, projectZipFile);
-      this.fillField(uploadPackageRoot, projectAssemblyLocation)
+      this.fillField(uploadPackageRoot, projectAssemblyLocation);
+
+      // upload the zip to server
+      this.click(uploadButton);
+
+      // Wait for file to be uploaded
+      this.waitForVisible(uploadConfirmationDialog, 120);
+      this.click(closeButton);
+    },
+    uploadIPTFile(IPT_File) {
+      // invoke upload UI
+      this.waitForVisible(uploadPackageButton);
+      this.click(uploadPackageButton);
+
+      // select file to upload
+      this.attachFile(uploadFileElement, IPT_File);
 
       // upload the zip to server
       this.click(uploadButton);
@@ -166,4 +183,4 @@ module.exports = function() {
       this.fillField(paramsInputWithName, paramValue);
     }
   });
-}
+};

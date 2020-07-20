@@ -22,6 +22,7 @@ namespace WebApplication.State
         /// </summary>
         public ProjectMetadata Metadata => _lazyMetadata.Value;
         private readonly Lazy<ProjectMetadata> _lazyMetadata;
+        public bool IsAssembly => Metadata.IsAssembly;
 
         /// <summary>
         /// Constructor.

@@ -22,7 +22,8 @@ namespace WebApplication.Processing
         public readonly string Thumbnail = $"{Guid.NewGuid():N}.png";
         public readonly string SVF = $"{Guid.NewGuid():N}.zip";
         public readonly string InputParams = $"{Guid.NewGuid():N}.json";
-        public readonly string OutputModel = $"{Guid.NewGuid():N}.zip";
+        public readonly string OutputModelIAM = $"{Guid.NewGuid():N}.zip";
+        public readonly string OutputModelIPT = $"{Guid.NewGuid():N}.ipt";
         public readonly string OutputSAT = $"{Guid.NewGuid():N}.sat";
         public readonly string OutputRFA = $"{Guid.NewGuid():N}.rfa";
 
@@ -47,7 +48,8 @@ namespace WebApplication.Processing
             var urls = await Task.WhenAll(bucket.CreateSignedUrlAsync(Thumbnail, ObjectAccess.Write), 
                                             bucket.CreateSignedUrlAsync(SVF, ObjectAccess.Write), 
                                             bucket.CreateSignedUrlAsync(Parameters, ObjectAccess.Write),
-                                            bucket.CreateSignedUrlAsync(OutputModel, ObjectAccess.Write));
+                                            bucket.CreateSignedUrlAsync(OutputModelIAM, ObjectAccess.Write),
+                                            bucket.CreateSignedUrlAsync(OutputModelIPT, ObjectAccess.Write));
 
             return new AdoptionData
             {
@@ -55,7 +57,8 @@ namespace WebApplication.Processing
                 ThumbnailUrl      = urls[0],
                 SvfUrl            = urls[1],
                 ParametersJsonUrl = urls[2],
-                OutputModelUrl    = urls[3],
+                OutputIAMModelUrl    = urls[3],
+                OutputIPTModelUrl = urls[4],
                 TLA               = tlaFilename
             };
         }
@@ -71,7 +74,8 @@ namespace WebApplication.Processing
             var bucket = await _userResolver.GetBucketAsync();
 
             var urls = await Task.WhenAll(
-                                            bucket.CreateSignedUrlAsync(OutputModel, ObjectAccess.Write),
+                                            bucket.CreateSignedUrlAsync(OutputModelIAM, ObjectAccess.Write),
+                                            bucket.CreateSignedUrlAsync(OutputModelIPT, ObjectAccess.Write),
                                             bucket.CreateSignedUrlAsync(SVF, ObjectAccess.Write),
                                             bucket.CreateSignedUrlAsync(Parameters, ObjectAccess.Write),
                                             bucket.CreateSignedUrlAsync(InputParams, ObjectAccess.ReadWrite));
@@ -82,10 +86,11 @@ namespace WebApplication.Processing
             return new UpdateData
             {
                 InputDocUrl       = docUrl,
-                OutputModelUrl    = urls[0],
-                SvfUrl            = urls[1],
-                ParametersJsonUrl = urls[2],
-                InputParamsUrl    = urls[3],
+                OutputIAMModelUrl    = urls[0],
+                OutputIPTModelUrl = urls[1],
+                SvfUrl            = urls[2],
+                ParametersJsonUrl = urls[3],
+                InputParamsUrl    = urls[4],
                 TLA               = tlaFilename
             };
         }
@@ -108,7 +113,7 @@ namespace WebApplication.Processing
             await Task.WhenAll(bucket.RenameObjectAsync(Thumbnail, project.OssAttributes.Thumbnail),
                                 bucket.RenameObjectAsync(SVF, ossNames.ModelView),
                                 bucket.RenameObjectAsync(Parameters, ossNames.Parameters),
-                                bucket.RenameObjectAsync(OutputModel, ossNames.CurrentModel),
+                                bucket.RenameObjectAsync(attributes.IsAssembly ? OutputModelIAM : OutputModelIPT, ossNames.GetCurrentModel(attributes.IsAssembly)),
                                 bucket.UploadObjectAsync(project.OssAttributes.Metadata, Json.ToStream(attributes, writeIndented: true)));
 
             return hashString;
@@ -159,7 +164,7 @@ namespace WebApplication.Processing
         /// NOTE: it's expected that the data is generated already.
         /// </summary>
         /// <returns>Parameters hash.</returns>
-        public async Task<string> MoveViewablesAsync(Project project)
+        public async Task<string> MoveViewablesAsync(Project project, bool isAssembly)
         {
             var hashString = await GenerateParametersHashAsync();
 
@@ -170,7 +175,7 @@ namespace WebApplication.Processing
             // move data to expected places
             await Task.WhenAll(bucket.RenameObjectAsync(SVF, ossNames.ModelView),
                                 bucket.RenameObjectAsync(Parameters, ossNames.Parameters),
-                                bucket.RenameObjectAsync(OutputModel, ossNames.CurrentModel),
+                                bucket.RenameObjectAsync(isAssembly ? OutputModelIAM : OutputModelIPT, ossNames.GetCurrentModel(isAssembly)),
                                 bucket.DeleteObjectAsync(InputParams));
 
             return hashString;

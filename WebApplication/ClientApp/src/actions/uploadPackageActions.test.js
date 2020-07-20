@@ -4,6 +4,21 @@ import { actionTypes as uiFlagsActionTypes } from './uiFlagsActions';
 
 // the test based on https://redux.js.org/recipes/writing-tests#async-action-creators
 
+// prepare mock for signalR
+import connectionMock from './connectionMock';
+
+import * as signalR from '@aspnet/signalr';
+signalR.HubConnectionBuilder = jest.fn();
+signalR.HubConnectionBuilder.mockImplementation(() => ({
+    withUrl: function(/*url*/) {
+        return {
+            configureLogging: function(/*trace*/) {
+                return { build: function() { return connectionMock; }};
+            }
+        };
+    }
+}));
+
 // prepare mock for Repository module
 jest.mock('../Repository');
 import repoInstance from '../Repository';
@@ -29,23 +44,23 @@ describe('uploadPackage', () => {
         // set expected value for the mock
         uploadPackageMock.mockReturnValue(packageData);
 
-        const store = mockStore({ uiFlags: { package: { file: "a.zip", root: "a.asm"}} });
+        const store = mockStore({ uiFlags: { package: { file: {name: "a.zip"}, root: "a.asm"}} });
 
         await store.dispatch(uploadPackage()); // demand projects loading
         // ensure that the mock called once
         expect(uploadPackageMock).toHaveBeenCalledTimes(1);
 
+        const newProject = { name: "newProject" };
+        connectionMock.simulateComplete(newProject);
+
         const actions = store.getActions();
 
         // check expected actions and their types
-        expect(actions).toHaveLength(4); // TBD, currently just uiFlags to show and hide the progress
         expect(actions[0].type).toEqual(uiFlagsActionTypes.SHOW_UPLOAD_PACKAGE);
         expect(actions[1].type).toEqual(actionTypes.SET_UPLOAD_PROGRESS_VISIBLE);
-        expect(actions[2].type).toEqual(projectListActions.ADD_PROJECT);
-        expect(actions[3].type).toEqual(actionTypes.SET_UPLOAD_PROGRESS_DONE);
-
-        // TBD check if the expected project is added to the project list
-        // expect(actions[2].projectList).toEqual(testProjects);
+        // there are some logs in action in between...
+        expect(actions[actions.length-2].type).toEqual(projectListActions.ADD_PROJECT);
+        expect(actions[actions.length-1].type).toEqual(actionTypes.SET_UPLOAD_PROGRESS_DONE);
     });
 
     it('should handle conflict', async () => {
@@ -53,7 +68,7 @@ describe('uploadPackage', () => {
         // set expected value for the mock
         uploadPackageMock.mockImplementation(() => { throw { response: { status: 409}}; });
 
-        const store = mockStore({ uiFlags: { package: { file: "a.zip", root: "a.asm"}} });
+        const store = mockStore({ uiFlags: { package: { file: {name: "a.zip"}, root: "a.asm"}} });
 
         await store.dispatch(uploadPackage()); // demand projects loading
         // ensure that the mock called once
@@ -73,7 +88,7 @@ describe('uploadPackage', () => {
         const reportUrl = 'WI report url';
         uploadPackageMock.mockImplementation(() => { throw { response: { status: 422, data: { reportUrl: reportUrl}}}; });
 
-        const store = mockStore({ uiFlags: { package: { file: "a.zip", root: "a.asm"}} });
+        const store = mockStore({ uiFlags: { package: { file: {name: "a.zip"}, root: "a.asm"}} });
 
         await store.dispatch(uploadPackage()); // demand projects loading
         // ensure that the mock called once
@@ -110,9 +125,9 @@ describe('uploadPackage', () => {
         expect(actions).toHaveLength(0);
     });
 
-    it('should do nothing when root is empty', async () => {
+    it('should do nothing when root is empty and file is assembly', async () => {
 
-        const store = mockStore({ uiFlags: { package: { file: "a.zip", root: ''}} });
+        const store = mockStore({ uiFlags: { package: { file: {name: "a.zip"}, root: ''}} });
 
         await store.dispatch(uploadPackage());
         expect(uploadPackageMock).toHaveBeenCalledTimes(0);
@@ -120,5 +135,20 @@ describe('uploadPackage', () => {
         const actions = store.getActions();
 
         expect(actions).toHaveLength(0);
+    });
+
+    it('should be able to upload when root is not defined for other than zip file', async () => {
+
+        const store = mockStore({ uiFlags: { package: { file: {name: "a.ipt"}, root: ''}} });
+
+        uploadPackageMock.mockImplementation(() => { return { response: { status: 200 }}; });
+
+        await store.dispatch(uploadPackage());
+        expect(uploadPackageMock).toHaveBeenCalledTimes(1);
+
+        const actions = store.getActions();
+
+        expect(actions).toContainEqual({type: actionTypes.SET_UPLOAD_PROGRESS_VISIBLE});
+
     });
 });

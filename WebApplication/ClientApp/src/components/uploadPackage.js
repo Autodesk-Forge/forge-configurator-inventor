@@ -31,13 +31,19 @@ export class UploadPackage extends Component {
         this.props.editPackageRoot(data.target.value);
     }
 
+    shouldShowTopLevelAssembly() {
+        return this.props.package.file?.name.endsWith('.zip');
+    }
+
     render() {
+
+        const height = this.shouldShowTopLevelAssembly() ? 327 : 280;
         const modalStyles = /* istanbul ignore next */ styles =>
         merge(styles, {
           modal: {
                 window: { // by design
                     width: "370px",
-                    height: "327px"
+                    height: `${height}px`
                 }
             }
         });
@@ -82,24 +88,28 @@ export class UploadPackage extends Component {
                             </label>
                             <input id="packageFileInput"
                                 type="file"
-                                accept=".zip"
+                                accept=".zip,.ipt"
                                 onChange={ (e) => {
                                     this.onPackageFileChange(e);
                                 }}
                             />
                         </div>
                     </div>
-                    <Spacer  spacing="xs"/>
-                    <Label
-                        variant="top"
-                        disabled={false} >
-                        Top Level Assembly
-                    </Label>
-                    <Input id="package_root"
-                        variant="box"
-                        onChange={this.onPackageRootChange}
-                        value={this.props.package.root}
-                    />
+                    { this.shouldShowTopLevelAssembly() &&
+                        <React.Fragment>
+                            <Spacer spacing="xs"/>
+                            <Label
+                                variant="top"
+                                disabled={false} >
+                                Top Level Assembly
+                            </Label>
+                            <Input id="package_root"
+                                variant="box"
+                                onChange={this.onPackageRootChange}
+                                value={this.props.package.root}
+                            />
+                        </React.Fragment>
+                    }
                     <Spacer  spacing="l"/>
                     <div className="buttonsContainer">
                         <Button
