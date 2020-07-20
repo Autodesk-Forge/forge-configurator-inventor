@@ -2,6 +2,7 @@ import React from 'react';
 import Enzyme, { shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import { ProjectList } from './projectList';
+import { showUploadPackage } from '../actions/uiFlagsActions';
 
 Enzyme.configure({ adapter: new Adapter() });
 
@@ -50,5 +51,42 @@ describe('ProjectList components', () => {
     const wrapper = shallow(<ProjectList { ...propsWithProfile } />);
     const deleteBtn = wrapper.find('#projectList_deleteButton');
     expect(deleteBtn.prop("className")).toContain('hidden');
+  });
+
+  describe('click handlers', () => {
+    const showUploadPackageMock = jest.fn();
+    const showDeleteProjectMock = jest.fn();
+    const updateActiveProjectMock = jest.fn();
+    const updateActiveTabIndexMock = jest.fn();
+
+    it('handles click on upload button', () => {
+      const propsWithProfile = { ...props, isLoggedIn: true };
+      const wrapper = shallow(<ProjectList { ...propsWithProfile } showUploadPackage = {showUploadPackageMock} />);
+      const uploadDiv = wrapper.find('#projectList_uploadButton');
+      const button = uploadDiv.find('IconButton');
+      button.simulate('click');
+      expect(showUploadPackageMock).toHaveBeenCalledWith(true);
+    });
+
+    it('handles click on delete button', () => {
+      const propsWithProfile = { ...props, isLoggedIn: true };
+      const wrapper = shallow(<ProjectList { ...propsWithProfile } showDeleteProject = {showDeleteProjectMock} />);
+      const deleteDiv = wrapper.find('#projectList_deleteButton');
+      const button = deleteDiv.find('IconButton');
+      button.simulate('click');
+      expect(showDeleteProjectMock).toHaveBeenCalledWith(true);
+    });
+
+    it('handles click on project row', () => {
+      const propsWithProfile = { ...props, isLoggedIn: true };
+      const wrapper = shallow(<ProjectList { ...propsWithProfile } updateActiveProject = {updateActiveProjectMock} updateActiveTabIndex = {updateActiveTabIndexMock} />);
+      const table = wrapper.find('Connect(CheckboxTable)');
+      const projectId = '7';
+      table.simulate('ProjectClick', projectId);
+      // project change
+      expect(updateActiveProjectMock).toHaveBeenCalledWith(projectId);
+      // model tab open
+      expect(updateActiveTabIndexMock).toHaveBeenCalledWith(1);
+    });
   });
 });
