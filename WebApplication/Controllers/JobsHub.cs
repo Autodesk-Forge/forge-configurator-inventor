@@ -7,6 +7,7 @@ using WebApplication.Definitions;
 using WebApplication.Job;
 using WebApplication.Processing;
 using WebApplication.State;
+using WebApplication.Utilities;
 
 namespace WebApplication.Controllers
 {
@@ -93,13 +94,17 @@ namespace WebApplication.Controllers
         private readonly LinkGenerator _linkGenerator;
         private readonly UserResolver _userResolver;
         private readonly Sender _sender;
+        private readonly Uploads _uploads;
+        private readonly DtoGenerator _dtoGenerator;
 
-        public JobsHub(ILogger<JobsHub> logger, ProjectWork projectWork, LinkGenerator linkGenerator, UserResolver userResolver)
+        public JobsHub(ILogger<JobsHub> logger, ProjectWork projectWork, LinkGenerator linkGenerator, UserResolver userResolver, Uploads uploads, DtoGenerator dtoGenerator)
         {
             _logger = logger;
             _projectWork = projectWork;
             _linkGenerator = linkGenerator;
             _userResolver = userResolver;
+            _uploads = uploads;
+            _dtoGenerator = dtoGenerator;
 
             _sender = new Sender(this);
         }
@@ -123,6 +128,21 @@ namespace WebApplication.Controllers
 
             // create job and run it
             var job = new RFAJobItem(_logger, projectId, hash, _projectWork, _linkGenerator);
+            await RunJobAsync(job);
+        }
+
+        public async Task CreateAdoptJob(string packageId, string token)
+        {
+            _logger.LogInformation($"invoked CreateAdoptJob, connectionId : {Context.ConnectionId}");
+
+            _userResolver.Token = token;
+
+            // get upload information
+            (ProjectInfo projectInfo, string fileName) = _uploads.GetUploadData(packageId);
+            _uploads.ClearUploadData(packageId);
+
+            // create job and run it
+            var job = new AdoptJobItem(_logger, projectInfo, fileName, _projectWork, _userResolver, _dtoGenerator);
             await RunJobAsync(job);
         }
 

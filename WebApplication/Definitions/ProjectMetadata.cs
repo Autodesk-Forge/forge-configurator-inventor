@@ -15,5 +15,7 @@ namespace WebApplication.Definitions
         /// </summary>
         [JsonPropertyName("tla")]
         public string TLA { get; set; }
+
+        public bool IsAssembly => !string.IsNullOrEmpty(TLA);
     }
 }
