@@ -2,7 +2,6 @@ import React from 'react';
 import Enzyme, { shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import { ProjectList } from './projectList';
-import { showUploadPackage } from '../actions/uiFlagsActions';
 
 Enzyme.configure({ adapter: new Adapter() });
 
@@ -58,10 +57,36 @@ describe('ProjectList components', () => {
     const showDeleteProjectMock = jest.fn();
     const updateActiveProjectMock = jest.fn();
     const updateActiveTabIndexMock = jest.fn();
+    const setUploadProgressHiddenMock = jest.fn();
+    const hideUploadFailedMock = jest.fn();
+    const showModalProgressMock = jest.fn();
+
+    const projectId = '3';
+    const propsWithProfile = { ...props, isLoggedIn: true, uploadPackageData: { file: { name: projectId}} };
+    // a bit of mess here, allowing to show all the dialogs at once, but it works, so...
+    const wrapper = shallow(<ProjectList { ...propsWithProfile } uploadProgressShowing = {true}
+      uploadFailedShowing = {true}
+      modalProgressShowing = {true}
+      showUploadPackage = {showUploadPackageMock}
+      showDeleteProject = {showDeleteProjectMock}
+      setUploadProgressHidden = {setUploadProgressHiddenMock}
+      updateActiveProject = {updateActiveProjectMock}
+      updateActiveTabIndex = {updateActiveTabIndexMock}
+      hideUploadFailed = {hideUploadFailedMock}
+      showModalProgress = {showModalProgressMock}
+    />);
+
+    beforeEach(() => {
+      showUploadPackageMock.mockClear();
+      showDeleteProjectMock.mockClear();
+      updateActiveProjectMock.mockClear();
+      updateActiveTabIndexMock.mockClear();
+      setUploadProgressHiddenMock.mockClear();
+      hideUploadFailedMock.mockClear();
+      showModalProgressMock.mockClear();
+    });
 
     it('handles click on upload button', () => {
-      const propsWithProfile = { ...props, isLoggedIn: true };
-      const wrapper = shallow(<ProjectList { ...propsWithProfile } showUploadPackage = {showUploadPackageMock} />);
       const uploadDiv = wrapper.find('#projectList_uploadButton');
       const button = uploadDiv.find('IconButton');
       button.simulate('click');
@@ -69,8 +94,6 @@ describe('ProjectList components', () => {
     });
 
     it('handles click on delete button', () => {
-      const propsWithProfile = { ...props, isLoggedIn: true };
-      const wrapper = shallow(<ProjectList { ...propsWithProfile } showDeleteProject = {showDeleteProjectMock} />);
       const deleteDiv = wrapper.find('#projectList_deleteButton');
       const button = deleteDiv.find('IconButton');
       button.simulate('click');
@@ -78,15 +101,44 @@ describe('ProjectList components', () => {
     });
 
     it('handles click on project row', () => {
-      const propsWithProfile = { ...props, isLoggedIn: true };
-      const wrapper = shallow(<ProjectList { ...propsWithProfile } updateActiveProject = {updateActiveProjectMock} updateActiveTabIndex = {updateActiveTabIndexMock} />);
       const table = wrapper.find('Connect(CheckboxTable)');
-      const projectId = '7';
       table.simulate('ProjectClick', projectId);
       // project change
       expect(updateActiveProjectMock).toHaveBeenCalledWith(projectId);
       // model tab open
       expect(updateActiveTabIndexMock).toHaveBeenCalledWith(1);
+    });
+
+    it('handles click in progress dialog - close', () => {
+      const modalProgressUpload = wrapper.find('ModalProgressUpload');
+      modalProgressUpload.simulate('Close');
+      expect(setUploadProgressHiddenMock).toHaveBeenCalledTimes(1);
+      // NO project change
+      expect(updateActiveProjectMock).toHaveBeenCalledTimes(0);
+      // NO model tab open
+      expect(updateActiveTabIndexMock).toHaveBeenCalledTimes(0);
+    });
+
+    it('handles click in progress dialog - open', () => {
+      const modalProgressUpload = wrapper.find('ModalProgressUpload');
+      modalProgressUpload.simulate('Open');
+      expect(setUploadProgressHiddenMock).toHaveBeenCalledTimes(1);
+      // project change
+      expect(updateActiveProjectMock).toHaveBeenCalledWith(projectId);
+      // model tab open
+      expect(updateActiveTabIndexMock).toHaveBeenCalledWith(1);
+    });
+
+    it('handles click in fail dialog', () => {
+      const modalFail = wrapper.find('ModalFail');
+      modalFail.simulate('Close');
+      expect(hideUploadFailedMock).toHaveBeenCalledTimes(1);
+    });
+
+    it('handles click in delete progress dialog', () => {
+      const modalProgress = wrapper.find('ModalProgress');
+      modalProgress.simulate('Close');
+      expect(showModalProgressMock).toHaveBeenCalledTimes(1);
     });
   });
 });
