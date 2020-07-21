@@ -10,7 +10,7 @@ Feature('Upload and delete');
 Scenario('upload workflow', async (I) => {
    await I.signIn();
 
-   I.uploadProject('src\\ui-tests\\SimpleBox.zip', 'SimpleBox.iam');
+   I.uploadProject('src/ui-tests/dataset/SimpleBox.zip', 'SimpleBox.iam');
 });
 
 Scenario('delete workflow', async (I) => {

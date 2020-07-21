@@ -49,28 +49,46 @@ namespace UpdateParametersPlugin
 
             using (new HeartBeat())
             {
+                Parameters parameters;
+                switch (doc.DocumentType)
+                {
+                    case DocumentTypeEnum.kPartDocumentObject:
+                        parameters = ((PartDocument) doc).ComponentDefinition.Parameters;
+                        break;
+                    case DocumentTypeEnum.kAssemblyDocumentObject:
+                        parameters = ((AssemblyDocument) doc).ComponentDefinition.Parameters;
+                        break;
+                    default:
+                        LogError($"Unsupported document type: {doc.DocumentType}");
+                        return;
+                }
+
+                UserParameters userParameters = parameters.UserParameters;
+
                 LogTrace("Read parameters");
 
                 string paramFile = (string) map.Value["_1"];
                 string json = System.IO.File.ReadAllText(paramFile);
+                LogTrace(json);
 
-                var parameters = JsonConvert.DeserializeObject<InventorParameters>(json);
+                var incomingParams = JsonConvert.DeserializeObject<InventorParameters>(json);
 
                 bool changed = false;
-                dynamic dynDoc = doc;
-                foreach (var pair in parameters)
+
+                foreach (var pair in incomingParams)
                 {
                     string paramName = pair.Key;
                     InventorParameter paramData = pair.Value;
 
                     try
                     {
-                        var userParameter = dynDoc.ComponentDefinition.Parameters.UserParameters[paramName];
+                        UserParameter userParameter = userParameters[paramName];
+
                         string expression = userParameter.Expression;
-                        if (!paramData.Value.Equals(expression))
+                        if (! paramData.Value.Equals(expression))
                         {
                             LogTrace($"Applying '{paramData.Value}' to '{paramName}'");
-                            userParameter.Expression = paramData.Value;
+                            SetExpression(userParameter, paramData);
 
                             changed = true;
                         }
@@ -81,8 +99,9 @@ namespace UpdateParametersPlugin
                     }
                     catch (Exception e)
                     {
-                        LogError($"Failed to set '{paramName}' parameter. Error is {e}");
-                        throw;
+                        // some parameters (maybe when parameter gets driven by iLogic rule) are throwing error on change.
+                        // so swallow the thrown error, log about it and continue
+                        LogError($"Failed to set '{paramName}' parameter. Error is {e}.");
                     }
                 }
 
@@ -90,7 +109,7 @@ namespace UpdateParametersPlugin
                 if (changed)
                 {
                     LogTrace("Updating");
-                    doc.Update2();     
+                    doc.Update2();
 
                     LogTrace("Saving");
                     doc.Save2(true);
@@ -102,6 +121,29 @@ namespace UpdateParametersPlugin
                     LogTrace("Update is not required.");
                 }
             }
+        }
+
+        private static void SetExpression(UserParameter userParameter, InventorParameter paramData)
+        {
+            // using strongly typed `userParameter.get_Units()` throws:
+            //    "Failed to set 'PartMaterial' parameter. Error is System.Runtime.InteropServices.COMException (0x80020003): Member not found. (Exception from HRESULT: 0x80020003 (DISP_E_MEMBERNOTFOUND))"
+            // and using dynamic (late binding) helps. So stick with it.
+            dynamic parameter = userParameter;
+
+            string expression  = paramData.Value;
+
+            if (parameter.Units != "Text")
+            {
+                // it's necessary to trim off double quote for non-text parameters
+                if (expression.StartsWith("\"") && expression.EndsWith("\""))
+                {
+                    expression = expression.Substring(1, expression.Length - 2);
+                    LogTrace($"Expression normalized to '{expression}'");
+                }
+            }
+
+            // apply the expression
+            parameter.Expression = expression;
         }
 
         #region Logging utilities

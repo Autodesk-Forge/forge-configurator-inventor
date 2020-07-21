@@ -36,5 +36,19 @@ namespace WebApplication.Utilities
                         Hash = hash
             };
         }
+
+        /// <summary>
+        /// Generate project DTO.
+        /// </summary>
+        public ProjectDTO ToDTO(ProjectStorage projectStorage)
+        {
+            Project project = projectStorage.Project;
+
+            var dto = MakeProjectDTO<ProjectDTO>(project, projectStorage.Metadata.Hash);
+            dto.Id = project.Name;
+            dto.Label = project.Name;
+            dto.Image = _localCache.ToDataUrl(project.LocalAttributes.Thumbnail);
+            return dto;
+        }
     }
 }
