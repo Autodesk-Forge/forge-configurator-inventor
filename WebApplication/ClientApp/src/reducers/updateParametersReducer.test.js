@@ -2,24 +2,25 @@ import updateParametersReducer, { initialState } from './updateParametersReducer
 import { updateParameters, editParameter, resetParameters } from '../actions/parametersActions';
 
 describe('updateParameters reducer', () => {
-    test('should return the initial state', () => {
+    it('should return the initial state', () => {
         expect(updateParametersReducer(undefined, {})).toEqual(initialState);
     });
 
-    test('handles update parameters for a project', () => {
-        const projectId = 'Conveyor';
+    const projectId = 'Conveyor';
+    const parameterSet = [
+        {
+            name: "ABC",
+            value: 123,
+            changedOnUpdate: true
+        },
+        {
+            name: "XYZ",
+            value: "a string",
+            other: "an attribute"
+        }
+    ];
 
-        const parameterSet = [
-            {
-                name: "ABC",
-                value: 123
-            },
-            {
-                name: "XYZ",
-                value: "a string"
-            }
-        ];
-
+    it('handles update parameters for a project with empty initial state', () => {
         const initialState = {};
 
         const expectedState = {};
@@ -29,13 +30,56 @@ describe('updateParameters reducer', () => {
         expect(returnedState).toMatchObject(expectedState);
     });
 
-    it('handles edit a single parameter - sets value and does not loose other attributes', () => {
-        const projectId = 'Conveyor';
+    it('handles update parameters for a project with filled initial state', () => {
+        const initialState = {};
+        initialState[projectId] = parameterSet;
 
-        const parameterSet = [
+        const newParameterSet = [
             {
                 name: "ABC",
                 value: 123
+            },
+            {
+                name: "XYZ",
+                value: "some other string",
+                other: "an attribute"
+            }
+        ];
+
+        const expectedParameterSet = [
+            {
+                name: "ABC",
+                value: 123
+            },
+            {
+                name: "XYZ",
+                value: "some other string",
+                other: "an attribute",
+                changedOnUpdate: true
+            }
+        ];
+
+        const expectedState = {};
+        expectedState[projectId] = expectedParameterSet;
+
+        const returnedState = updateParametersReducer(initialState, updateParameters(projectId, newParameterSet));
+        expect(returnedState).toMatchObject(expectedState);
+    });
+
+    it('handles edit a single parameter - sets value and nullifies changedOnUpdate attribute', () => {
+        const initialState = {};
+        initialState[projectId] = parameterSet;
+
+        const newParameterValue = {
+            name: "ABC",
+            value: 234
+        };
+
+        const expectedParameterSet = [
+            {
+                name: "ABC",
+                value: 234,
+                changedOnUpdate: null
             },
             {
                 name: "XYZ",
@@ -44,6 +88,14 @@ describe('updateParameters reducer', () => {
             }
         ];
 
+        const expectedState = {};
+        expectedState[projectId] = expectedParameterSet;
+
+        expect(updateParametersReducer(initialState, editParameter(projectId, newParameterValue))).toStrictEqual(expectedState);
+    });
+
+
+    it('handles edit a single parameter - sets value and does not loose other attributes', () => {
         const initialState = {};
         initialState[projectId] = parameterSet;
 
@@ -52,7 +104,7 @@ describe('updateParameters reducer', () => {
             value: "a new string"
         };
 
-        const newParameterSet = [
+        const expectedParameterSet = [
             {
                 name: "ABC",
                 value: 123
@@ -64,26 +116,13 @@ describe('updateParameters reducer', () => {
             }
         ];
 
-        const newState = {};
-        newState[projectId] = newParameterSet;
+        const expectedState = {};
+        expectedState[projectId] = expectedParameterSet;
 
-        expect(updateParametersReducer(initialState, editParameter(projectId, newParameterValue))).toMatchObject(newState);
+        expect(updateParametersReducer(initialState, editParameter(projectId, newParameterValue))).toMatchObject(expectedState);
     });
 
     it('does reset parameters', () => {
-        const projectId = 'Conveyor';
-
-        const parameterSet = [
-            {
-                name: "ABC",
-                value: 123
-            },
-            {
-                name: "XYZ",
-                value: "a string"
-            }
-        ];
-
         const initialState = {};
         initialState[projectId] = parameterSet;
 
