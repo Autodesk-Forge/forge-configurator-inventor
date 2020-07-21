@@ -115,8 +115,8 @@ module.exports = function() {
       }
 
       // check logged user
-      this.waitForElement(userButton, 10);
-      this.dontSeeElement(loggedAnonymousUser);
+      this.waitForInvisible(loggedAnonymousUser, 30);
+
     },
     signOut(){
       this.clickToAuthorizationButton();

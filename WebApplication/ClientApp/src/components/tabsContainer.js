@@ -10,7 +10,7 @@ import './tabs.css';
 import { activeTabIndex } from '../reducers/mainReducer';
 import { updateActiveTabIndex } from '../actions/uiFlagsActions';
 
-class TabsContainer extends Component {
+export class TabsContainer extends Component {
 
     onTabChange(index) {
       this.props.updateActiveTabIndex(index);
@@ -64,6 +64,7 @@ class TabsContainer extends Component {
     }
 }
 
+/* istanbul ignore next */
 export default connect(function (store){
   return {
     activeTabIndex: activeTabIndex(store)
