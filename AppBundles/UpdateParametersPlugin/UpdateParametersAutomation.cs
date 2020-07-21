@@ -4,29 +4,11 @@ using System.Runtime.InteropServices;
 
 using Inventor;
 using Autodesk.Forge.DesignAutomation.Inventor.Utils;
-using System.Collections.Generic;
 using Newtonsoft.Json;
+using Shared;
 
 namespace UpdateParametersPlugin
 {
-    public class InventorParameter // TODO: unify its usage
-    {
-        [JsonProperty("value")]
-        public string Value { get; set; }
-
-        [JsonProperty("unit")]
-        public string Unit { get; set; }
-
-        [JsonProperty("values")]
-        public string[] Values { get; set; }
-    }
-
-    /// <summary>
-    /// Format for data stored in `parameters.json`.
-    /// </summary>
-    public class InventorParameters : Dictionary<string, InventorParameter> {} // TODO: unify its usage
-
-
     [ComVisible(true)]
     public class UpdateParametersAutomation
     {

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
+using Shared;
 using WebApplication.Definitions;
 using WebApplication.Job;
 using WebApplication.Processing;

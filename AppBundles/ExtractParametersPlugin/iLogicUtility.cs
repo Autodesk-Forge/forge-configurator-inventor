@@ -21,6 +21,7 @@ using Autodesk.iLogic.Core.UiBuilderStorage;
 using Autodesk.iLogic.UiBuilderCore.Data;
 using Autodesk.iLogic.UiBuilderCore.Storage;
 using Inventor;
+using Shared;
 
 namespace ExtractParametersPlugin
 {
