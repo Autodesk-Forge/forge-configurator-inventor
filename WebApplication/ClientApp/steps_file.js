@@ -20,6 +20,8 @@ const uploadPackageRoot = '//input[@id="package_root"]';
 const uploadFileElement = '//input[@id="packageFileInput"]';
 const uploadButton = '//button[@id="upload_button"]';
 const uploadConfirmationDialog = '//p[text()="Upload Finished"]';
+const uploadFailedDialog = '//p[text()="Upload Failed"]';
+const uploadFailLogLink = '//*[contains(@href,"report.txt")]';
 const closeButton = '//button[@title="Close"]';
 
 // Delete
@@ -153,6 +155,24 @@ module.exports = function() {
 
       // Wait for file to be uploaded
       this.waitForVisible(uploadConfirmationDialog, 120);
+      this.click(closeButton);
+    },
+    uploadInvalidIPTFile(IPT_File) {
+      // invoke upload UI
+      this.waitForVisible(uploadPackageButton);
+      this.click(uploadPackageButton);
+
+      // select file to upload
+      this.attachFile(uploadFileElement, IPT_File);
+
+      // upload the zip to server
+      this.click(uploadButton);
+
+      // Wait for Upload Failed dialog
+      this.waitForVisible(uploadFailedDialog, 120);
+      // check log url link
+      this.seeElement(uploadFailLogLink);
+
       this.click(closeButton);
     },
     deleteProject(projectName) {
