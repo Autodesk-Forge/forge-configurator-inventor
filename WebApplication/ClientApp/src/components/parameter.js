@@ -29,17 +29,21 @@ export class Parameter extends Component {
     }
 
     render() {
+        const changedOnUpdateClassName = this.props.parameter.changedOnUpdate == true ? "changedOnUpdate" : "";
+
         if (this.props.parameter.units === "Boolean")
             return (
                 <div className="parameter checkbox">
-                    <Checkbox
-                        disabled={false}
-                        indeterminate={false}
-                        onBlur={null}
-                        onChange={this.onCheckboxChange}
-                        onMouseDown={null}
-                        checked={this.props.parameter.value === "True"}
-                    />
+                    <div className={changedOnUpdateClassName}>
+                        <Checkbox
+                            disabled={false}
+                            indeterminate={false}
+                            onBlur={null}
+                            onChange={this.onCheckboxChange}
+                            onMouseDown={null}
+                            checked={this.props.parameter.value === "True"}
+                        />
+                    </div>
                     <div className="parameter checkboxtext">
                         {this.props.parameter.name}
                     </div>
@@ -49,7 +53,7 @@ export class Parameter extends Component {
             return (
                 <div className="parameter">
                     {this.props.parameter.name}
-                    <Dropdown
+                    <Dropdown className={changedOnUpdateClassName}
                         variant="box"
                         disabled={false}
                         error={false}
@@ -66,7 +70,7 @@ export class Parameter extends Component {
             return (
             <div className="parameter">
                 {this.props.parameter.name}
-                <Input
+                <Input className={changedOnUpdateClassName}
                     disabled={false}
                     onBlur={null}
                     onChange={this.onEditChange}
