@@ -101,11 +101,20 @@ namespace ExtractParametersPlugin
                 }
             }
 
-            private void ProcessParameter(ParameterControlSpec pcs)
+            private void ProcessParameter(ParameterControlSpec spec)
             {
-                if (_allowedParameters.TryGetValue(pcs.ParameterName, out var knownParameter))
+                if (_allowedParameters.TryGetValue(spec.ParameterName, out var knownParameter))
                 {
-                    _collectedParameters.Add(pcs.ParameterName, knownParameter);
+                    var result = new InventorParameter
+                                    {
+                                        Label = spec.Name,
+                                        Unit = knownParameter.Unit,
+                                        ReadOnly = spec.ReadOnly,
+                                        Value = knownParameter.Value,
+                                        Values = knownParameter.Values
+                                    };
+
+                    _collectedParameters.Add(spec.ParameterName, result);
                 }
             }
         }
