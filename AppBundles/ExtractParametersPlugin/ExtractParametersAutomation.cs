@@ -79,7 +79,7 @@ namespace ExtractParametersPlugin
                     }
 
                     // generate resulting JSON. Note it's not formatted (to have consistent hash)
-                    string paramsJson = JsonConvert.SerializeObject(resultingParameters, Formatting.None);
+                    string paramsJson = JsonConvert.SerializeObject(resultingParameters, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.None });
                     System.IO.File.WriteAllText("documentParams.json", paramsJson);
 
                     LogTrace("Closing");
