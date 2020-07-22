@@ -1,5 +1,6 @@
 import repo from '../Repository';
 import { addError, addLog } from './notificationActions';
+import { showLoginFailed } from './uiFlagsActions';
 
 const actionTypes = {
     PROFILE_LOADED: 'PROFILE_LOADED'
@@ -50,6 +51,10 @@ export const loadProfile = () => async (dispatch) => {
         const isLoggedIn = repo.hasAccessToken();
         dispatch(updateProfile(profile, isLoggedIn));
     } catch (error) {
-        dispatch(addError('Failed to get profile. (' + error + ')'));
+        if (error.response.status === 403) {
+            dispatch(showLoginFailed(true));
+        } else {
+            dispatch(addError('Failed to get profile. (' + error + ')'));
+        }
     }
 };

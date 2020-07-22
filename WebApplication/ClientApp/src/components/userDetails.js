@@ -10,16 +10,11 @@ class UserDetails extends Component {
 
     handleAuthClick() {
         if (this.props.profile.isLoggedIn) {
-            const logoutFrame = document.getElementById('hiddenLogoutFrame');
-            logoutFrame.onload = () => {
-                logoutFrame.removeEventListener('load', this, false);
-                window.location.reload(false);
-            };
-            logoutFrame.src = 'https://accounts.autodesk.com/Authentication/LogOut';
+            this.props.logout();
         } else {
             window.location.href = '/login';
         }
-    }
+      }
 
     render() {
         return (
@@ -34,8 +29,6 @@ class UserDetails extends Component {
                         {this.props.profile.isLoggedIn ? "Sign Out" : "Sign In"}
                     </span>
                 </div>
-                {/* Use a hidden iframe to make a logout request to autodesk since it isn't supported in a better way yet */}
-                <iframe id="hiddenLogoutFrame" />
             </div>
         );
     }
