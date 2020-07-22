@@ -4,30 +4,12 @@ using System.Runtime.InteropServices;
 
 using Inventor;
 using Autodesk.Forge.DesignAutomation.Inventor.Utils;
-using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using Shared;
 
 namespace ExtractParametersPlugin
 {
-    public class InventorParameter // TODO: unify its usage
-    {
-        [JsonProperty("value")]
-        public string Value { get; set; }
-
-        [JsonProperty("unit")]
-        public string Unit { get; set; }
-
-        [JsonProperty("values")]
-        public string[] Values { get; set; }
-    }
-
-    /// <summary>
-    /// Format for data stored in `parameters.json`.
-    /// </summary>
-    public class InventorParameters : Dictionary<string, InventorParameter> {} // TODO: unify its usage
-
-
     [ComVisible(true)]
     public class ExtractParametersAutomation
     {
@@ -61,7 +43,7 @@ namespace ExtractParametersPlugin
                     }
 
                     // extract user parameters
-                    InventorParameters userParameters = ExtractParameters(parameters.UserParameters);
+                    InventorParameters allParams = ExtractParameters(parameters);
 
                     // save current state
                     LogTrace("Updating");
@@ -70,7 +52,7 @@ namespace ExtractParametersPlugin
                     doc.Save2(SaveDependents: true);
 
                     // detect iLogic forms
-                    iLogicFormsReader reader = new iLogicFormsReader(doc, userParameters);
+                    iLogicFormsReader reader = new iLogicFormsReader(doc, allParams);
                     iLogicForm[] forms = reader.Extract();
                     LogTrace($"Found {forms.Length} iLogic forms");
                     foreach (var form in forms)
@@ -92,12 +74,12 @@ namespace ExtractParametersPlugin
                     }
                     else
                     {
-                        LogTrace("No non-empty iLogic forms found. Using whole list of user parameters.");
-                        resultingParameters = userParameters;
+                        LogTrace("No non-empty iLogic forms found. Using all user parameters.");
+                        resultingParameters = ExtractParameters(parameters.UserParameters);
                     }
 
                     // generate resulting JSON. Note it's not formatted (to have consistent hash)
-                    string paramsJson = JsonConvert.SerializeObject(resultingParameters, Formatting.None);
+                    string paramsJson = JsonConvert.SerializeObject(resultingParameters, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.None });
                     System.IO.File.WriteAllText("documentParams.json", paramsJson);
 
                     LogTrace("Closing");

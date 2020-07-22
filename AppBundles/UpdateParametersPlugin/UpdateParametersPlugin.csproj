@@ -48,6 +48,9 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\Shared\InventorParameters.cs">
+      <Link>InventorParameters.cs</Link>
+    </Compile>
     <Compile Include="PluginServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UpdateParametersAutomation.cs" />
