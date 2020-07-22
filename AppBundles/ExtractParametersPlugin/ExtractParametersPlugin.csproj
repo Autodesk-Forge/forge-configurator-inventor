@@ -75,6 +75,9 @@
     <Compile Include="..\..\Shared\InventorParameters.cs">
       <Link>InventorParameters.cs</Link>
     </Compile>
+    <Compile Include="..\..\Shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="iLogicUtility.cs" />
     <Compile Include="PluginServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
