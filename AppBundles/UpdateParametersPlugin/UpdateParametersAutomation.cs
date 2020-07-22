@@ -45,8 +45,6 @@ namespace UpdateParametersPlugin
                         return;
                 }
 
-                UserParameters userParameters = parameters.UserParameters;
-
                 LogTrace("Read parameters");
 
                 string paramFile = (string) map.Value["_1"];
@@ -64,7 +62,7 @@ namespace UpdateParametersPlugin
 
                     try
                     {
-                        UserParameter userParameter = userParameters[paramName];
+                        var userParameter = parameters[paramName];
 
                         string expression = userParameter.Expression;
                         if (! paramData.Value.Equals(expression))
@@ -94,7 +92,7 @@ namespace UpdateParametersPlugin
                     doc.Update2();
 
                     LogTrace("Saving");
-                    doc.Save2(true);
+                    doc.Save2(SaveDependents: true);
                     LogTrace("Closing");
                     doc.Close(true);
                 }
@@ -105,16 +103,16 @@ namespace UpdateParametersPlugin
             }
         }
 
-        private static void SetExpression(UserParameter userParameter, InventorParameter paramData)
+        private static void SetExpression(Parameter parameter, InventorParameter paramData)
         {
-            // using strongly typed `userParameter.get_Units()` throws:
+            // using strongly typed `parameter.get_Units()` throws:
             //    "Failed to set 'PartMaterial' parameter. Error is System.Runtime.InteropServices.COMException (0x80020003): Member not found. (Exception from HRESULT: 0x80020003 (DISP_E_MEMBERNOTFOUND))"
             // and using dynamic (late binding) helps. So stick with it.
-            dynamic parameter = userParameter;
+            dynamic dynParameter = parameter;
 
             string expression  = paramData.Value;
 
-            if (parameter.Units != "Text")
+            if (dynParameter.Units != "Text")
             {
                 // it's necessary to trim off double quote for non-text parameters
                 if (expression.StartsWith("\"") && expression.EndsWith("\""))
@@ -125,7 +123,7 @@ namespace UpdateParametersPlugin
             }
 
             // apply the expression
-            parameter.Expression = expression;
+            dynParameter.Expression = expression;
         }
 
         #region Logging utilities

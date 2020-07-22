@@ -43,7 +43,7 @@ namespace ExtractParametersPlugin
                     }
 
                     // extract user parameters
-                    InventorParameters userParameters = ExtractParameters(parameters.UserParameters);
+                    InventorParameters allParams = ExtractParameters(parameters);
 
                     // save current state
                     LogTrace("Updating");
@@ -52,7 +52,7 @@ namespace ExtractParametersPlugin
                     doc.Save2(SaveDependents: true);
 
                     // detect iLogic forms
-                    iLogicFormsReader reader = new iLogicFormsReader(doc, userParameters);
+                    iLogicFormsReader reader = new iLogicFormsReader(doc, allParams);
                     iLogicForm[] forms = reader.Extract();
                     LogTrace($"Found {forms.Length} iLogic forms");
                     foreach (var form in forms)
@@ -74,8 +74,8 @@ namespace ExtractParametersPlugin
                     }
                     else
                     {
-                        LogTrace("No non-empty iLogic forms found. Using whole list of user parameters.");
-                        resultingParameters = userParameters;
+                        LogTrace("No non-empty iLogic forms found. Using all user parameters.");
+                        resultingParameters = ExtractParameters(parameters.UserParameters);
                     }
 
                     // generate resulting JSON. Note it's not formatted (to have consistent hash)
