@@ -64,6 +64,10 @@ export const updateFailedShowing = function(state) {
     return uiFlags.updateFailedShowing(state.uiFlags);
 };
 
+export const loginFailedShowing = function(state) {
+    return uiFlags.loginFailedShowing(state.uiFlags);
+};
+
 export const downloadRfaFailedShowing = function(state) {
     return uiFlags.downloadRfaFailedShowing(state.uiFlags);
 };

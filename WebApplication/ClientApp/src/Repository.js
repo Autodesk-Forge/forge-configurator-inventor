@@ -42,7 +42,7 @@ class Repository {
         return response.data;
     }
 
-    /** Load users profile */
+    /** Load user's profile */
     async loadProfile() {
         const response = await axios.get("/login/profile");
         return response.data;
