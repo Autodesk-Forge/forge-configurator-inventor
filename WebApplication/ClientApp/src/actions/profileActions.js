@@ -51,7 +51,7 @@ export const loadProfile = () => async (dispatch) => {
         const isLoggedIn = repo.hasAccessToken();
         dispatch(updateProfile(profile, isLoggedIn));
     } catch (error) {
-        if (error.response.status === 403) {
+        if (error.response && error.response.status === 403) {
             dispatch(showLoginFailed(true));
         } else {
             dispatch(addError('Failed to get profile. (' + error + ')'));
