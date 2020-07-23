@@ -26,6 +26,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{4AB64238-3EE2-415C-8602-40C809B9DBCA}"
 	ProjectSection(SolutionItems) = preProject
 		Shared\InventorParameters.cs = Shared\InventorParameters.cs
+		Shared\SharedAssemblyInfo.cs = Shared\SharedAssemblyInfo.cs
 	EndProjectSection
 EndProject
 Global
