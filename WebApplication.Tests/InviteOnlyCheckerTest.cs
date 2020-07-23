@@ -36,7 +36,7 @@ namespace WebApplication.Tests
         [Fact]
         public void IsInvitedEmailTest()
         {
-            string invitedEmail = "test@yahoo.com";
+            string invitedEmail = "adsk.demo.tool@gmail.com";
             string nonInvitedEmail = "test@autodesk.com";
 
             var inviteOnlyConfig = new InviteOnlyModeConfiguration { Enabled = true, Domains = new string[] { }, Addresses = new string[] { invitedEmail } };
@@ -52,7 +52,7 @@ namespace WebApplication.Tests
         [Fact]
         public void IsInvitedDomainsAndOtherEmailTest()
         {
-            string invitedEmail = "test@yahoo.com";
+            string invitedEmail = "adsk.demo.tool@gmail.com";
             string nonInvitedEmail = "test@gmail.com";
 
             var inviteOnlyConfig = new InviteOnlyModeConfiguration { Enabled = true, Domains = new string[] { "autodesk.com" }, Addresses = new string[] { invitedEmail } };
