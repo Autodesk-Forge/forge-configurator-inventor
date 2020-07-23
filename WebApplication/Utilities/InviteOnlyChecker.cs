@@ -19,7 +19,7 @@ public class InviteOnlyChecker
             bool isInDomains = false;
             if (_inviteOnlyModeConfig.Domains?.Length > 0)
             {
-                MailAddress address = new MailAddress(email); // email comes from oxygen so it should be in a valid format
+                MailAddress address = new MailAddress(email); // email comes from autodesk auth service so it should be in a valid format
                 string host = address.Host;
                 isInDomains = _inviteOnlyModeConfig.Domains.Contains(host);
             }
