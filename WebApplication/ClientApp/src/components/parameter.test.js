@@ -5,7 +5,7 @@ import { Parameter } from './parameter';
 
 Enzyme.configure({ adapter: new Adapter() });
 
-const param1 = {
+const editboxParam = {
   "name": "editbox",
   "value": "1000 mm",
   "type": "",
@@ -13,7 +13,7 @@ const param1 = {
   "allowedValues": []
 };
 
-const param2 = {
+const listboxParam = {
   "name": "listbox",
   "value": "green",
   "type": "",
@@ -21,7 +21,7 @@ const param2 = {
   "allowedValues": ["reg","green","blue"]
 };
 
-const param3 = {
+const checkboxParam = {
   "name": "checkbox",
   "value": "True",
   "type": "",
@@ -32,28 +32,31 @@ const param3 = {
 describe('components', () => {
   describe('parameter', () => {
     it('test editbox', () => {
-        const wrapper = shallow(<Parameter parameter={param1}/>);
+        const wrapper = shallow(<Parameter parameter={editboxParam}/>);
         const wrapperComponent = wrapper.find('Input');
         expect(wrapperComponent.length).toEqual(1);
-        expect(wrapperComponent.prop("value")).toEqual(param1.value);
+        expect(wrapperComponent.prop("value")).toEqual(editboxParam.value);
+        expect(wrapperComponent.prop("disabled")).toBeFalsy();
       });
     it('test listbox', () => {
-        const wrapper = shallow(<Parameter parameter={param2}/>);
+        const wrapper = shallow(<Parameter parameter={listboxParam}/>);
         const wrapperComponent = wrapper.find('Dropdown');
         expect(wrapperComponent.length).toEqual(1);
-        expect(wrapperComponent.prop("value")).toEqual(param2.value);
+        expect(wrapperComponent.prop("value")).toEqual(listboxParam.value);
+        expect(wrapperComponent.prop("disabled")).toBeFalsy();
       });
     it('test checkbox', () => {
-        const wrapper = shallow(<Parameter parameter={param3}/>);
+        const wrapper = shallow(<Parameter parameter={checkboxParam}/>);
         const wrapperComponent = wrapper.find('Checkbox');
         expect(wrapperComponent.length).toEqual(1);
         expect(wrapperComponent.prop("checked")).toEqual(true);
+        expect(wrapperComponent.prop("disabled")).toBeFalsy();
       });
 
       it('test onEditChange called when changed value', () => {
         const editParameterMock = jest.fn();
         const props = {
-          parameter: param1,
+          parameter: editboxParam,
           activeProject: { id: "1" },
           editParameter: editParameterMock
         };
@@ -69,7 +72,7 @@ describe('components', () => {
       it('test onComboChange called when changed value', () => {
         const editParameterMock = jest.fn();
         const props = {
-          parameter: param2,
+          parameter: listboxParam,
           activeProject: { id: "1" },
           editParameter: editParameterMock
         };
@@ -85,7 +88,7 @@ describe('components', () => {
       it('test onCheckboxChange called when changed value', () => {
         const editCheckBoxMock = jest.fn();
         const props = {
-          parameter: param3,
+          parameter: checkboxParam,
           activeProject: { id: "1" },
           editParameter: editCheckBoxMock
         };
@@ -99,6 +102,32 @@ describe('components', () => {
         editCheckBoxMock.mockClear();
         input.simulate('change', 'True');
         expect(editCheckBoxMock).toHaveBeenCalledWith("1", {"name": "checkbox", "value": "True"});
+      });
+
+      describe('readonly flag', () => {
+
+        /** Create readonly parameter */
+        function makeRO(param) {
+          return { ...param, readonly: true };
+        }
+
+        it('checks disabled editbox', () => {
+
+          const component = shallow(<Parameter parameter={ makeRO(editboxParam) }/>).find('Input');
+          expect(component.prop("disabled")).toBe(true);
+        });
+
+        it('checks disabled listbox', () => {
+
+          const wrapperComponent = shallow(<Parameter parameter={ makeRO(listboxParam) }/>).find('Dropdown');
+          expect(wrapperComponent.prop("disabled")).toBe(true);
+        });
+
+        it('checks disabled checkbox', () => {
+
+          const wrapperComponent = shallow(<Parameter parameter={ makeRO(checkboxParam) }/>).find('Checkbox');
+          expect(wrapperComponent.prop("disabled")).toEqual(true);
+        });
       });
   });
 });
