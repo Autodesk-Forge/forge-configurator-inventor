@@ -75,7 +75,8 @@ function adaptParameters(rawParameters) {
             value: unquote(param.value),
             allowedValues: (param.values) ? param.values.map( item => unquote(item)) : [],
             units: param.unit,
-            type: "NYI" // TODO: remove?
+            label: param.label || key,
+            readonly: !! param.readonly
         };
     });
 }

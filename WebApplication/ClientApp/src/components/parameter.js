@@ -33,7 +33,7 @@ export class Parameter extends Component {
             return (
                 <div className="parameter checkbox">
                     <Checkbox
-                        disabled={false}
+                        disabled={this.props.parameter.readonly}
                         indeterminate={false}
                         onBlur={null}
                         onChange={this.onCheckboxChange}
@@ -41,17 +41,17 @@ export class Parameter extends Component {
                         checked={this.props.parameter.value === "True"}
                     />
                     <div className="parameter checkboxtext">
-                        {this.props.parameter.name}
+                        {this.props.parameter.label}
                     </div>
                 </div>
             );
         else if (this.props.parameter.allowedValues != null && this.props.parameter.allowedValues.length > 0)
             return (
                 <div className="parameter">
-                    {this.props.parameter.name}
+                    {this.props.parameter.label}
                     <Dropdown
                         variant="box"
-                        disabled={false}
+                        disabled={this.props.parameter.readonly}
                         error={false}
                         required=""
                         multiple={false}
@@ -65,9 +65,9 @@ export class Parameter extends Component {
         else
             return (
             <div className="parameter">
-                {this.props.parameter.name}
+                {this.props.parameter.label}
                 <Input
-                    disabled={false}
+                    disabled={this.props.parameter.readonly}
                     onBlur={null}
                     onChange={this.onEditChange}
                     onMouseEnter={null}
