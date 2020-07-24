@@ -10,7 +10,8 @@ const editboxParam = {
   "value": "1000 mm",
   "type": "",
   "units": "mm",
-  "allowedValues": []
+  "allowedValues": [],
+  "label": "text"
 };
 
 const listboxParam = {
@@ -18,7 +19,8 @@ const listboxParam = {
   "value": "green",
   "type": "",
   "units": "",
-  "allowedValues": ["reg","green","blue"]
+  "allowedValues": ["reg","green","blue"],
+  "label": "combo"
 };
 
 const checkboxParam = {
@@ -26,8 +28,21 @@ const checkboxParam = {
   "value": "True",
   "type": "",
   "units": "Boolean",
-  "allowedValues": []
+  "allowedValues": [],
+  "label": "check"
 };
+
+/** Utility function to extract title from parameter component */
+function getTitle(paramWrapper) {
+
+  // checkbox has a special handling
+  const checkBoxTextWrapper = paramWrapper.find('.checkboxtext');
+  if (checkBoxTextWrapper.length > 0) {
+    return checkBoxTextWrapper.text();
+  } else {
+    return paramWrapper.children().first().text();
+  }
+}
 
 describe('components', () => {
   describe('parameter', () => {
@@ -37,20 +52,25 @@ describe('components', () => {
         expect(wrapperComponent.length).toEqual(1);
         expect(wrapperComponent.prop("value")).toEqual(editboxParam.value);
         expect(wrapperComponent.prop("disabled")).toBeFalsy();
+        expect(getTitle(wrapper)).toEqual("text");
       });
+
     it('test listbox', () => {
         const wrapper = shallow(<Parameter parameter={listboxParam}/>);
         const wrapperComponent = wrapper.find('Dropdown');
         expect(wrapperComponent.length).toEqual(1);
         expect(wrapperComponent.prop("value")).toEqual(listboxParam.value);
         expect(wrapperComponent.prop("disabled")).toBeFalsy();
+        expect(getTitle(wrapper)).toEqual("combo");
       });
+
     it('test checkbox', () => {
         const wrapper = shallow(<Parameter parameter={checkboxParam}/>);
         const wrapperComponent = wrapper.find('Checkbox');
         expect(wrapperComponent.length).toEqual(1);
         expect(wrapperComponent.prop("checked")).toEqual(true);
         expect(wrapperComponent.prop("disabled")).toBeFalsy();
+        expect(getTitle(wrapper)).toEqual("check");
       });
 
       it('test onEditChange called when changed value', () => {
@@ -106,27 +126,20 @@ describe('components', () => {
 
       describe('readonly flag', () => {
 
-        /** Create readonly parameter */
+        /** Create read-only parameter */
         function makeRO(param) {
           return { ...param, readonly: true };
         }
 
-        it('checks disabled editbox', () => {
+        it.each([
+          [ editboxParam, 'Input' ],
+          [ listboxParam, 'Dropdown' ],
+          [ checkboxParam, 'Checkbox' ]
+        ])('ensure `disabled` attribute - case #%#', (param, componentType) => {
 
-          const component = shallow(<Parameter parameter={ makeRO(editboxParam) }/>).find('Input');
+          const wrapper = shallow(<Parameter parameter={ makeRO(param) }/>);
+          const component = wrapper.find(componentType);
           expect(component.prop("disabled")).toBe(true);
-        });
-
-        it('checks disabled listbox', () => {
-
-          const wrapperComponent = shallow(<Parameter parameter={ makeRO(listboxParam) }/>).find('Dropdown');
-          expect(wrapperComponent.prop("disabled")).toBe(true);
-        });
-
-        it('checks disabled checkbox', () => {
-
-          const wrapperComponent = shallow(<Parameter parameter={ makeRO(checkboxParam) }/>).find('Checkbox');
-          expect(wrapperComponent.prop("disabled")).toEqual(true);
         });
       });
   });
