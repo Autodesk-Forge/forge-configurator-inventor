@@ -22,4 +22,11 @@
     {
         public string Url { get; set; }
     }
+
+    public class InviteOnlyModeConfiguration
+    {
+        public bool Enabled { get; set; }
+        public string[] Domains { get; set; }
+        public string[] Addresses { get; set; }
+    }
 }
