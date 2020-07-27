@@ -5,55 +5,78 @@ import { Parameter } from './parameter';
 
 Enzyme.configure({ adapter: new Adapter() });
 
-const param1 = {
+const editboxParam = {
   "name": "editbox",
   "value": "1000 mm",
   "type": "",
   "units": "mm",
-  "allowedValues": []
+  "allowedValues": [],
+  "label": "text"
 };
 
-const param2 = {
+const listboxParam = {
   "name": "listbox",
   "value": "green",
   "type": "",
   "units": "",
-  "allowedValues": ["reg","green","blue"]
+  "allowedValues": ["reg","green","blue"],
+  "label": "combo"
 };
 
-const param3 = {
+const checkboxParam = {
   "name": "checkbox",
   "value": "True",
   "type": "",
   "units": "Boolean",
-  "allowedValues": []
+  "allowedValues": [],
+  "label": "check"
 };
+
+/** Utility function to extract title from parameter component */
+function getTitle(paramWrapper) {
+
+  // checkbox has a special handling
+  const checkBoxTextWrapper = paramWrapper.find('.checkboxtext');
+  if (checkBoxTextWrapper.length > 0) {
+    return checkBoxTextWrapper.text();
+  } else {
+    return paramWrapper.children().first().text();
+  }
+}
 
 describe('components', () => {
   describe('parameter', () => {
     it('test editbox', () => {
-        const wrapper = shallow(<Parameter parameter={param1}/>);
+        const wrapper = shallow(<Parameter parameter={editboxParam}/>);
         const wrapperComponent = wrapper.find('Input');
         expect(wrapperComponent.length).toEqual(1);
-        expect(wrapperComponent.prop("value")).toEqual(param1.value);
+        expect(wrapperComponent.prop("value")).toEqual(editboxParam.value);
+        expect(wrapperComponent.prop("disabled")).toBeFalsy();
+        expect(getTitle(wrapper)).toEqual("text");
       });
+
     it('test listbox', () => {
-        const wrapper = shallow(<Parameter parameter={param2}/>);
+        const wrapper = shallow(<Parameter parameter={listboxParam}/>);
         const wrapperComponent = wrapper.find('Dropdown');
         expect(wrapperComponent.length).toEqual(1);
-        expect(wrapperComponent.prop("value")).toEqual(param2.value);
+        expect(wrapperComponent.prop("value")).toEqual(listboxParam.value);
+        expect(wrapperComponent.prop("disabled")).toBeFalsy();
+        expect(getTitle(wrapper)).toEqual("combo");
       });
+
     it('test checkbox', () => {
-        const wrapper = shallow(<Parameter parameter={param3}/>);
+        const wrapper = shallow(<Parameter parameter={checkboxParam}/>);
         const wrapperComponent = wrapper.find('Checkbox');
         expect(wrapperComponent.length).toEqual(1);
         expect(wrapperComponent.prop("checked")).toEqual(true);
+        expect(wrapperComponent.prop("disabled")).toBeFalsy();
+        expect(getTitle(wrapper)).toEqual("check");
       });
 
       it('test onEditChange called when changed value', () => {
         const editParameterMock = jest.fn();
         const props = {
-          parameter: param1,
+          parameter: editboxParam,
           activeProject: { id: "1" },
           editParameter: editParameterMock
         };
@@ -69,7 +92,7 @@ describe('components', () => {
       it('test onComboChange called when changed value', () => {
         const editParameterMock = jest.fn();
         const props = {
-          parameter: param2,
+          parameter: listboxParam,
           activeProject: { id: "1" },
           editParameter: editParameterMock
         };
@@ -85,7 +108,7 @@ describe('components', () => {
       it('test onCheckboxChange called when changed value', () => {
         const editCheckBoxMock = jest.fn();
         const props = {
-          parameter: param3,
+          parameter: checkboxParam,
           activeProject: { id: "1" },
           editParameter: editCheckBoxMock
         };
@@ -99,6 +122,25 @@ describe('components', () => {
         editCheckBoxMock.mockClear();
         input.simulate('change', 'True');
         expect(editCheckBoxMock).toHaveBeenCalledWith("1", {"name": "checkbox", "value": "True"});
+      });
+
+      describe('readonly flag', () => {
+
+        /** Create read-only parameter */
+        function makeRO(param) {
+          return { ...param, readonly: true };
+        }
+
+        it.each([
+          [ editboxParam, 'Input' ],
+          [ listboxParam, 'Dropdown' ],
+          [ checkboxParam, 'Checkbox' ]
+        ])('ensure `disabled` attribute - case #%#', (param, componentType) => {
+
+          const wrapper = shallow(<Parameter parameter={ makeRO(param) }/>);
+          const component = wrapper.find(componentType);
+          expect(component.prop("disabled")).toBe(true);
+        });
       });
   });
 });

@@ -61,7 +61,7 @@ export class Parameter extends Component {
                                 />
                             </div>
                             <div className="parameter checkboxtext">
-                                {this.props.parameter.name}
+                                {this.props.parameter.label}
                             </div>
                         </Tooltip>
                     </div>
@@ -70,7 +70,7 @@ export class Parameter extends Component {
         else if (this.props.parameter.allowedValues != null && this.props.parameter.allowedValues.length > 0)
             return (
                 <div className="parameter">
-                    {this.props.parameter.name}
+                    {this.props.parameter.label}
                     <div>
                         <Tooltip {...tooltipProps} className="paramTooltip" anchorPoint="top-center" content={paramTooltipRenderer}>
                             <Dropdown className={changedOnUpdateClassName}
@@ -91,11 +91,11 @@ export class Parameter extends Component {
         else
             return (
             <div className="parameter">
-                {this.props.parameter.name}
+                {this.props.parameter.label}
                 <div>
                     <Tooltip {...tooltipProps} className="paramTooltip" anchorPoint="top-center" content={paramTooltipRenderer}>
                         <Input className={changedOnUpdateClassName}
-                            disabled={false}
+                            disabled={this.props.parameter.readonly}
                             onBlur={null}
                             onChange={this.onEditChange}
                             onMouseEnter={null}
