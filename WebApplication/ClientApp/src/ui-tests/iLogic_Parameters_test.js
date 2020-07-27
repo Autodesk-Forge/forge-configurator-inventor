@@ -9,7 +9,7 @@ const iLogicParameterList = ['LENGTH', 'WIDTH', 'HEIGHT', 'CHUTE', 'LEGS (MIN:12
 // compare two Arrays and return true or false
 function compareArrays(array1, array2)
 {
-<<<<<<< HEAD
+
   if (array1.length != array2.length)
   {
     return false;
@@ -23,21 +23,6 @@ function compareArrays(array1, array2)
   }
 
   return true;
-=======
-    if (array1.length != array2.length)
-    {
-        return false;
-    }
-
-    // compare if All iLogic parameters are the same as Model Tab has
-    for (let index = 0; index < array1.length; ++index)
-    {
-        if(array2.indexOf(array1[index], 0) === -1)
-            return false;
-    }
-
-    return true;
->>>>>>> origin/er/INVGEN-37608-ilogic-form-ui-changes
 }
 
 Before((I) => {
