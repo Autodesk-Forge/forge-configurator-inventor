@@ -42,7 +42,7 @@ describe('Components', () => {
         {disableLifecycleMethods: true}
       );
 
-      const rightActionsFragment = wrapper.prop('rightActions');
+      const rightActionsFragment = wrapper.find('TopNav').prop('rightActions');
       const rightActionsWrapper = shallow(rightActionsFragment.props.children[1]);
       const profileActionWrapper = rightActionsWrapper.find('ProfileAction');
       expect(profileActionWrapper.prop('avatarName')).toEqual(toolbarProps.profile.name);

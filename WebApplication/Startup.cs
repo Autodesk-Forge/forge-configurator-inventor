@@ -23,6 +23,7 @@ namespace WebApplication
         private const string ForgeSectionKey = "Forge";
         private const string AppBundleZipPathsKey = "AppBundleZipPaths";
         private const string DefaultProjectsSectionKey = "DefaultProjects";
+        private const string InviteOnlyModeKey = "InviteOnlyMode";
 
         public Startup(IConfiguration configuration)
         {
@@ -34,7 +35,13 @@ namespace WebApplication
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
+            services
+                .AddControllersWithViews()
+                .AddJsonOptions(options =>
+                                {
+                                    options.JsonSerializerOptions.IgnoreNullValues = true;
+                                });
+
             services.AddSignalR(o =>
             {
                 o.EnableDetailedErrors = true;
@@ -75,6 +82,7 @@ namespace WebApplication
             services.AddScoped<UserResolver>(); // TODO: use interface
             services.AddSingleton<LocalCache>();
             services.AddSingleton<Uploads>();
+            services.Configure<InviteOnlyModeConfiguration>(Configuration.GetSection(InviteOnlyModeKey));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

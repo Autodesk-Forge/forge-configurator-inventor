@@ -17,7 +17,7 @@ namespace WebApplication.Utilities
             var memoryStream = new MemoryStream();
             using (var jsonWriter = new Utf8JsonWriter(memoryStream))
             {
-                JsonSerializer.Serialize(jsonWriter, data, typeof(T), new JsonSerializerOptions { WriteIndented = writeIndented });
+                JsonSerializer.Serialize(jsonWriter, data, typeof(T), new JsonSerializerOptions { WriteIndented = writeIndented, IgnoreNullValues = true });
             }
 
             memoryStream.Position = 0;

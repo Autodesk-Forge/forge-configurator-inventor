@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Autodesk.Forge.Client;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Shared;
 using WebApplication.Definitions;
 using WebApplication.State;
 using WebApplication.Utilities;
