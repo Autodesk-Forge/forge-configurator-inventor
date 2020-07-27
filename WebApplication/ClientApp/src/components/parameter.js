@@ -7,6 +7,15 @@ import Input from '@hig/input';
 import Checkbox from '@hig/checkbox';
 import Dropdown from '@hig/dropdown';
 import Tooltip from '@hig/tooltip';
+import Spacer from "@hig/spacer";
+
+const paramTooltipRenderer = () => {
+    return (<div>
+        <div style={{"font-weight": "bold"}}>Parameter has changed.</div>
+        <Spacer  spacing="s"/>
+        <div>The Inventor Server has updated the parameter. Your initial input is overridden.</div>
+    </div>);
+};
 
 export class Parameter extends Component {
 
@@ -39,8 +48,7 @@ export class Parameter extends Component {
             return (
                 <div className="parameter checkbox">
                     <div>
-                        <Tooltip {...tooltipProps} className = "paramTooltip" anchorPoint="top-center"
-                            content="Parameter has changed.  The Inventor Server has updated the parameter. Your initial input is overridden.">
+                        <Tooltip {...tooltipProps} className="paramTooltip" anchorPoint="top-center" content={paramTooltipRenderer}>
                             <div className={changedOnUpdateClassName}>
                                 <Checkbox
                                     disabled={false}
@@ -63,8 +71,7 @@ export class Parameter extends Component {
                 <div className="parameter">
                     {this.props.parameter.name}
                     <div>
-                        <Tooltip {...tooltipProps} className = "paramTooltip" anchorPoint="top-center"
-                            content="Parameter has changed.  The Inventor Server has updated the parameter. Your initial input is overridden.">
+                        <Tooltip {...tooltipProps} className="paramTooltip" anchorPoint="top-center" content={paramTooltipRenderer}>
                             <Dropdown className={changedOnUpdateClassName}
                                 variant="box"
                                 disabled={false}
@@ -85,8 +92,7 @@ export class Parameter extends Component {
             <div className="parameter">
                 {this.props.parameter.name}
                 <div>
-                    <Tooltip {...tooltipProps} className = "paramTooltip" anchorPoint="top-center"
-                        content="Parameter has changed.  The Inventor Server has updated the parameter. Your initial input is overridden.">
+                    <Tooltip {...tooltipProps} className="paramTooltip" anchorPoint="top-center" content={paramTooltipRenderer}>
                         <Input className={changedOnUpdateClassName}
                             disabled={false}
                             onBlur={null}
