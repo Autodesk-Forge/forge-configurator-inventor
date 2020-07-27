@@ -115,16 +115,24 @@ describe('fetchParameters', () => {
         // validate conversion from Inventor parameters to internal format
         describe('conversion', () => {
 
-            it('should load simple parameter', async () => {
+            /** Utility method to hide parameter conversion details */
+            async function convertParam(inputParam) {
 
-                const simpleParam = { JawOffset: { value: '10 mm', unit: 'mm' } };
-                loadParametersMock.mockReturnValue(simpleParam);
+                loadParametersMock.mockReturnValue(inputParam);
 
                 await store.dispatch(fetchParameters(projectId)); // demand parameters loading
                 const action = store.getActions().find(a => a.type === parameterActionTypes.PARAMETERS_UPDATED);
+                return action.parameters[0];
+            }
 
-                // check expected actions and their types
-                expect(action.parameters[0]).toMatchObject({ name: 'JawOffset', value: '10 mm', units: 'mm' });
+            it('should load simple parameter and set defaults for optional fields', async () => {
+
+                const simpleParam = { JawOffset: { value: '10 mm', unit: 'mm' } };
+                const result = await convertParam(simpleParam);
+
+                // check correct conversion. Note the exact object comparison, because it checks
+                // optional 'readonly', 'label' and 'allowedValues' fields
+                expect(result).toEqual({ name: 'JawOffset', value: '10 mm', units: 'mm', readonly: false, label: 'JawOffset', allowedValues: [] });
             });
 
             it('should load complex parameter', async () => {
@@ -136,18 +144,33 @@ describe('fetchParameters', () => {
                         values: ['"Large"', '"Medium"', '"Small"']
                     }
                 };
-                loadParametersMock.mockReturnValue(choiceParam);
 
-                await store.dispatch(fetchParameters(projectId)); // demand parameters loading
-                const action = store.getActions().find(a => a.type === parameterActionTypes.PARAMETERS_UPDATED);
+                const result = await convertParam(choiceParam);
 
-                const result = {
-                    name: 'WrenchSz',
-                    value: 'Small', // note it's unquoted // ER: potential problem with backward conversion
-                    units: 'Text',
-                    allowedValues: [ 'Large', 'Medium', 'Small' ] // note it's unquoted // ER: potential problem with backward conversion
-                };
-                expect(action.parameters[0]).toMatchObject(result);
+                expect(result).toMatchObject({
+                                            name: 'WrenchSz',
+                                            value: 'Small', // note it's unquoted
+                                            units: 'Text',
+                                            allowedValues: [ 'Large', 'Medium', 'Small' ] // note it's unquoted
+                                        });
+            });
+
+            it('should recognize "readonly" flag', async () => {
+
+                const input = { JawOffset: { value: '10 mm', unit: 'mm', readonly: true } };
+                const result = await convertParam(input);
+
+                // check expected actions and their types
+                expect(result).toMatchObject({ name: 'JawOffset', value: '10 mm', units: 'mm', readonly: true, label: 'JawOffset' });
+            });
+
+            it('should recognize "label" field', async () => {
+
+                const input = { JawOffset: { value: '10 mm', unit: 'mm', label: 'Jaw Offset' } };
+                const result = await convertParam(input);
+
+                // check expected actions and their types
+                expect(result).toMatchObject({ name: 'JawOffset', value: '10 mm', units: 'mm', label: 'Jaw Offset', readonly: false });
             });
         });
 
@@ -220,7 +243,7 @@ describe('fetchParameters', () => {
         it('check updateModelWithParameters success path', async () => {
             await store.dispatch(updateModelWithParameters(projectId, []));
             const parameters = { "a1": { "value": "7", "values": [], "unit": "mm" } };
-            const adaptedParams = [ { "name": "a1", "value": "7", "allowedValues": [], "units": "mm", "type": "NYI" } ];
+            const adaptedParams = [ { "name": "a1", "value": "7", "allowedValues": [], "units": "mm", "readonly": false, "label": "a1" } ];
             const projectData = { "data": "someData" };
             const updatedState = {
                 parameters: parameters,

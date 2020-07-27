@@ -107,7 +107,7 @@ namespace ExtractParametersPlugin
                 {
                     var result = new InventorParameter
                                     {
-                                        Label = spec.Name,
+                                        Label = spec.Name.Trim(),
                                         Unit = knownParameter.Unit,
                                         ReadOnly = spec.ReadOnly,
                                         Value = knownParameter.Value,
