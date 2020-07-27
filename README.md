@@ -25,6 +25,7 @@ See [high level diagram](architecture.png)
 1. Specify [forge credentials](#specify-forge-credentials).
 1. Copy AppBundles\ExtractParametersPlugin\InventorBinFolder.props.template file to AppBundles\ExtractParametersPlugin\InventorBinFolder.props
 1. Replace PATH_TO_YOUR_INVENTOR_BIN string in the AppBundles\ExtractParametersPlugin\InventorBinFolder.props with your actual Inventor's bin folder
+1. Specify if access should be limited in `WebApplication\appsettings.json`. Set `Enabled` to `true` or `false`, and populate the `Domains` and `Addresses` fields with comma delimited lists such as `["autodesk.com", "company.com"]` and `["person@company2.com", "person@company3.com"]`.
 
 ## Build
 * Building the projects also installs required packages (this can take several minutes).

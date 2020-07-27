@@ -19,17 +19,19 @@ namespace WebApplication.Controllers
 
         private readonly ILogger<LoginController> _logger;
         private readonly UserResolver _userResolver;
+        private readonly InviteOnlyModeConfiguration _inviteOnlyModeConfig;
 
         /// <summary>
         /// Forge configuration.
         /// </summary>
         public ForgeConfiguration Configuration { get; }
 
-        public LoginController(ILogger<LoginController> logger, IOptions<ForgeConfiguration> optionsAccessor, UserResolver userResolver)
+        public LoginController(ILogger<LoginController> logger, IOptions<ForgeConfiguration> optionsAccessor, UserResolver userResolver, IOptions<InviteOnlyModeConfiguration> inviteOnlyModeOptionsAccessor)
         {
             _logger = logger;
             _userResolver = userResolver;
             Configuration = optionsAccessor.Value.Validate();
+            _inviteOnlyModeConfig = inviteOnlyModeOptionsAccessor.Value;
         }
 
         [HttpGet]
@@ -59,12 +61,20 @@ namespace WebApplication.Controllers
         }
 
         [HttpGet("profile")]
-        public async Task<ProfileDTO> Profile()
+        public async Task<ActionResult<ProfileDTO>> Profile()
         {
             _logger.LogInformation("Get profile");
             if (_userResolver.IsAuthenticated)
             {
                 dynamic profile = await _userResolver.GetProfileAsync();
+                if (_inviteOnlyModeConfig.Enabled)
+                {
+                    var inviteOnlyChecker = new InviteOnlyChecker(_inviteOnlyModeConfig);
+                    if (!profile.emailVerified || !inviteOnlyChecker.IsInvited(profile.emailId))
+                    {
+                        return StatusCode(403);
+                    }
+                }
                 return new ProfileDTO { Name = profile.firstName + " " + profile.lastName, AvatarUrl = profile.profileImages.sizeX40 };
             }
             else

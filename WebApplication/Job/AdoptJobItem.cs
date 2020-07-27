@@ -54,13 +54,7 @@ namespace WebApplication.Job
             }
             catch (FdaProcessingException fpe)
             {
-                var result = new ResultDTO
-                {
-                    Success = false,
-                    Message = fpe.Message,
-                    ReportUrl = fpe.ReportUrl
-                };
-                await resultSender.SendErrorAsync(result);
+                await resultSender.SendErrorAsync(Id, fpe.ReportUrl);
                 return;
             }
             finally

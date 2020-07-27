@@ -23,6 +23,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SatExportPlugin", "AppBundl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RFAExportPlugin", "AppBundles\RFAExportPlugin\RFAExportPlugin.csproj", "{23CECA7F-2FB1-4783-BEAB-3549885D89D7}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{4AB64238-3EE2-415C-8602-40C809B9DBCA}"
+	ProjectSection(SolutionItems) = preProject
+		Shared\InventorParameters.cs = Shared\InventorParameters.cs
+		Shared\SharedAssemblyInfo.cs = Shared\SharedAssemblyInfo.cs
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

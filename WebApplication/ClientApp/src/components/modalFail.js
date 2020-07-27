@@ -56,9 +56,11 @@ export class ModalFail extends Component {
                     <div>
                         <Typography><span className="assemblyText">{this.props.contentName}</span> {this.props.label ? this.props.label : "Missing label."}</Typography>
                     </div>
-                    <div className="logContainer">
-                        <HyperLink link="Open log file" href={this.props.url} />
-                    </div>
+                    {this.props.url &&
+                        <div className="logContainer">
+                            <HyperLink link="Open log file" href={this.props.url} />
+                        </div>
+                    }
                 </div>
                 <div className="modalFailButtonsContainer">
                     <Button className="button" style={

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using WebApplication.Definitions;
 using System.Threading.Tasks;
+using Shared;
 using WebApplication.Processing;
 
 namespace WebApplication.Job
