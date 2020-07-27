@@ -15,7 +15,7 @@ Scenario('Updating parameters for conveyor model', (I) => {
     I.clickToModelTab();
 
     // enter new parameter value
-    I.setParamValue('Legs', '6 ul');
+    I.setParamValue('LEGS (MIN:12 | MAX:8 | STEP:2)', '6 ul');
 
     // check that stripe appeared
     I.waitForVisible(locators.xpStripeElement);
