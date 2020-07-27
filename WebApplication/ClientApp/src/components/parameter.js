@@ -52,7 +52,7 @@ export class Parameter extends Component {
                         <Tooltip {...tooltipProps} className="paramTooltip" anchorPoint="top-center" content={paramTooltipRenderer}>
                             <div className={changedOnUpdateClassName}>
                                 <Checkbox
-                                    disabled={false}
+                                    disabled={this.props.parameter.readonly}
                                     indeterminate={false}
                                     onBlur={null}
                                     onChange={this.onCheckboxChange}
@@ -75,7 +75,7 @@ export class Parameter extends Component {
                         <Tooltip {...tooltipProps} className="paramTooltip" anchorPoint="top-center" content={paramTooltipRenderer}>
                             <Dropdown className={changedOnUpdateClassName}
                                 variant="box"
-                                disabled={false}
+                                disabled={this.props.parameter.readonly}
                                 error={false}
                                 required=""
                                 multiple={false}
