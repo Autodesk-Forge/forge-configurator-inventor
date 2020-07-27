@@ -14,10 +14,10 @@ async function compareArrays(array1, array2)
     return false;
   }
 
-  // commpare if All iLogic parameters are the same as Model Tab has
+  // commpare if All iLogic parameters have the same order
   for (let index = 0; index < array1.length; ++index)
   {
-    if(array2.indexOf(array1[index], 0) === -1)
+    if(array1[index] !== array2[index])
       return false;
   }
 
