@@ -58,7 +58,8 @@ export class Downloads extends Component {
         let iamDownloadHyperlink = null;
         const access_token = repo.getAccessToken();
         let downloadUrl = this.props.activeProject.modelDownloadUrl;
-        if (access_token != null) {
+
+        if (downloadUrl != null && access_token != null) {
             downloadUrl += "/" + access_token;
         }
         const iamDownloadLink = <a href={downloadUrl} onClick={(e) => { e.stopPropagation(); }} ref = {(h) => {
@@ -68,7 +69,7 @@ export class Downloads extends Component {
         const rfaDownloadLink =
         <a href="" onClick={(e) => { e.preventDefault(); }}>RFA</a>;
 
-        const data = [
+        const data = downloadUrl != null ? [
             {
                 id: 'updatedIam',
                 icon: 'products-and-services-24.svg',
@@ -90,7 +91,7 @@ export class Downloads extends Component {
                     this.props.getRFADownloadLink(this.props.activeProject.id, this.props.activeProject.hash);
                 }
             }
-        ];
+        ] : [];
 
         return (
         <React.Fragment>
