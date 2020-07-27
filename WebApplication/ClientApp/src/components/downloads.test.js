@@ -69,4 +69,19 @@ describe('Downloads components', () => {
     expect(icons.length).toEqual(2);
     expect(hyperlinks.length).toEqual(2);
   });
+
+  it('Base table renders NO links and icons when projects are empty', () => {
+    // simulate activeProject (getActiveProject) like we have in these two scenarios:
+    // 1) don't have initialized projects yet
+    // 2) user don't have any projects
+    const noActiveProjectProps = { activeProject: {} };
+    const wrapper = mount(<Downloads { ...noActiveProjectProps } />);
+    const as = wrapper.find('AutoResizer');
+    const bt = as.renderProp('children')( {width: 100, height: 200} );
+    const icons = bt.find('Icon');
+    const hyperlinks = bt.find('a');
+    expect(icons.length).toEqual(0);
+    expect(hyperlinks.length).toEqual(0);
+  });
+
 });
