@@ -6,6 +6,7 @@ import './parametersContainer.css';
 import Input from '@hig/input';
 import Checkbox from '@hig/checkbox';
 import Dropdown from '@hig/dropdown';
+import Tooltip from '@hig/tooltip';
 
 export class Parameter extends Component {
 
@@ -29,23 +30,31 @@ export class Parameter extends Component {
     }
 
     render() {
-        const changedOnUpdateClassName = this.props.parameter.changedOnUpdate == true ? "changedOnUpdate" : "";
+        // const changedOnUpdateClassName = this.props.parameter.changedOnUpdate == true ? "changedOnUpdate" : "";
+        // const tooltipProps = this.props.parameter.changedOnUpdate == true ? {openOnHover: true} : {open: false};
+        const changedOnUpdateClassName = "changedOnUpdate";
+        const tooltipProps = {openOnHover: true};
 
         if (this.props.parameter.units === "Boolean")
             return (
                 <div className="parameter checkbox">
-                    <div className={changedOnUpdateClassName}>
-                        <Checkbox
-                            disabled={false}
-                            indeterminate={false}
-                            onBlur={null}
-                            onChange={this.onCheckboxChange}
-                            onMouseDown={null}
-                            checked={this.props.parameter.value === "True"}
-                        />
-                    </div>
-                    <div className="parameter checkboxtext">
-                        {this.props.parameter.name}
+                    <div>
+                        <Tooltip {...tooltipProps} className = "paramTooltip" anchorPoint="top-center"
+                            content="Parameter has changed.  The Inventor Server has updated the parameter. Your initial input is overridden.">
+                            <div className={changedOnUpdateClassName}>
+                                <Checkbox
+                                    disabled={false}
+                                    indeterminate={false}
+                                    onBlur={null}
+                                    onChange={this.onCheckboxChange}
+                                    onMouseDown={null}
+                                    checked={this.props.parameter.value === "True"}
+                                />
+                            </div>
+                            <div className="parameter checkboxtext">
+                                {this.props.parameter.name}
+                            </div>
+                        </Tooltip>
                     </div>
                 </div>
             );
@@ -53,33 +62,42 @@ export class Parameter extends Component {
             return (
                 <div className="parameter">
                     {this.props.parameter.name}
-                    <Dropdown className={changedOnUpdateClassName}
-                        variant="box"
-                        disabled={false}
-                        error={false}
-                        required=""
-                        multiple={false}
-                        onBlur={null}
-                        onChange={this.onComboChange}
-                        options={this.props.parameter.allowedValues}
-                        value={this.props.parameter.value}
-                    />
+                    <div>
+                        <Tooltip {...tooltipProps} className = "paramTooltip" anchorPoint="top-center"
+                            content="Parameter has changed.  The Inventor Server has updated the parameter. Your initial input is overridden.">
+                            <Dropdown className={changedOnUpdateClassName}
+                                variant="box"
+                                disabled={false}
+                                error={false}
+                                required=""
+                                multiple={false}
+                                onBlur={null}
+                                onChange={this.onComboChange}
+                                options={this.props.parameter.allowedValues}
+                                value={this.props.parameter.value}
+                            />
+                        </Tooltip>
+                    </div>
                 </div>
             );
         else
             return (
             <div className="parameter">
                 {this.props.parameter.name}
-                <Input className={changedOnUpdateClassName}
-                    disabled={false}
-                    onBlur={null}
-                    onChange={this.onEditChange}
-                    onMouseEnter={null}
-                    onMouseLeave={null}
-                    variant="box"
-                    value={this.props.parameter.value}
-                />
-
+                <div>
+                    <Tooltip {...tooltipProps} className = "paramTooltip" anchorPoint="top-center"
+                        content="Parameter has changed.  The Inventor Server has updated the parameter. Your initial input is overridden.">
+                        <Input className={changedOnUpdateClassName}
+                            disabled={false}
+                            onBlur={null}
+                            onChange={this.onEditChange}
+                            onMouseEnter={null}
+                            onMouseLeave={null}
+                            variant="box"
+                            value={this.props.parameter.value}
+                        />
+                    </Tooltip>
+                </div>
             </div>
         );
     }

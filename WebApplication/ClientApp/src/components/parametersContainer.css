@@ -63,3 +63,8 @@ div.changedOnUpdate-input-wrapper {
     border-bottom: solid 1px red;
     height: 17px;
 }
+
+.paramTooltip__flyout-container {
+    color: white;
+    width: 260px;
+}
