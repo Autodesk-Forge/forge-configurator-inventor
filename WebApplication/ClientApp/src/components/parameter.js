@@ -39,10 +39,11 @@ export class Parameter extends Component {
     }
 
     render() {
-        // const changedOnUpdateClassName = this.props.parameter.changedOnUpdate == true ? "changedOnUpdate" : "";
-        // const tooltipProps = this.props.parameter.changedOnUpdate == true ? {openOnHover: true} : {open: false};
-        const changedOnUpdateClassName = "changedOnUpdate";
-        const tooltipProps = {openOnHover: true};
+        const changedOnUpdateClassName = this.props.parameter.changedOnUpdate == true ? "changedOnUpdate" : "";
+        const tooltipProps = this.props.parameter.changedOnUpdate == true ? {openOnHover: true} : {open: false};
+        // for debugging the tooltip, replace the above two lines with these:
+        // const changedOnUpdateClassName = "changedOnUpdate";
+        // const tooltipProps = {openOnHover: true};
 
         if (this.props.parameter.units === "Boolean")
             return (
