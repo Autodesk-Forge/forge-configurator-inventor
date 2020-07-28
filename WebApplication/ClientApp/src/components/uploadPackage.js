@@ -43,7 +43,7 @@ export class UploadPackage extends Component {
     }
 
     async listZipAssemblies(file) {
-        if (!file?.name.endsWith('.zip'))
+        if (!file?.name.toLowerCase().endsWith('.zip'))
             return null;
 
         const assemblies = [];
@@ -51,7 +51,7 @@ export class UploadPackage extends Component {
 
         const {entries} = await unzip(file);
         Object.entries(entries).forEach(([name]) => {
-            if (name.endsWith('.iam')) {
+            if (name.toLowerCase().endsWith('.iam')) {
                 assemblies.push(name);
             }
         });
