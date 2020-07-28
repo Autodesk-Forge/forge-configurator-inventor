@@ -43,18 +43,18 @@ Scenario('should check if Stripe panel is displayed and hidden', async (I) => {
     I.clickToModelTab();
 
     // check that Model tab has a parameter - Length
-    I.waitForElement('//*[@id="model"]/div/div[1]/div[2]/div[1]/div/input', 20);
+    I.waitForElement(locators.xpFirstInputOnModelTab, 20);
 
     // change the Length parameter
-    I.clearField('//div[2]/div[1]/div/input');
-    I.fillField('//div[2]/div[1]/div/input', "12500 mm");
+    I.clearField(locators.xpFirstInput);
+    I.fillField(locators.xpFirstInput, "12500 mm");
 
     // check if the Stripe element is displayed
     I.seeElement(locators.xpStripeElement);
 
     // change the Length parameter
-    I.clearField('//div[2]/div[1]/div/input');
-    I.fillField('//div[2]/div[1]/div/input', "12000 mm");
+    I.clearField(locators.xpFirstInput);
+    I.fillField(locators.xpFirstInput, "12000 mm");
 
     // check if the Stripe element was hidden
     I.waitForInvisible(locators.xpStripeElement, 5);

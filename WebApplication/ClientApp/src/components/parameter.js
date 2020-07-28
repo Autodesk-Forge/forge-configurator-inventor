@@ -24,6 +24,16 @@ import './parametersContainer.css';
 import Input from '@hig/input';
 import Checkbox from '@hig/checkbox';
 import Dropdown from '@hig/dropdown';
+import Tooltip from '@hig/tooltip';
+import Spacer from "@hig/spacer";
+
+const paramTooltipRenderer = () => {
+    return (<div>
+        <div style={{"font-weight": "bold"}}>Parameter has changed.</div>
+        <Spacer  spacing="s"/>
+        <div>Inventor Server updated the parameter. Your initial input was overridden.</div>
+    </div>);
+};
 
 export class Parameter extends Component {
 
@@ -47,53 +57,68 @@ export class Parameter extends Component {
     }
 
     render() {
+        const changedOnUpdateClassName = this.props.parameter.changedOnUpdate == true ? "changedOnUpdate" : "";
+        const tooltipProps = this.props.parameter.changedOnUpdate == true ? {openOnHover: true} : {open: false};
+        // for debugging the tooltip, replace the above two lines with these:
+        // const changedOnUpdateClassName = "changedOnUpdate";
+        // const tooltipProps = {openOnHover: true};
+
         if (this.props.parameter.units === "Boolean")
             return (
                 <div className="parameter checkbox">
-                    <Checkbox
-                        disabled={this.props.parameter.readonly}
-                        indeterminate={false}
-                        onBlur={null}
-                        onChange={this.onCheckboxChange}
-                        onMouseDown={null}
-                        checked={this.props.parameter.value === "True"}
-                    />
-                    <div className="parameter checkboxtext">
-                        {this.props.parameter.label}
-                    </div>
+                    <Tooltip {...tooltipProps} className="paramTooltip" anchorPoint="top-center" content={paramTooltipRenderer}>
+                        <div style={{"display": "flex"}}>
+                            <div className={changedOnUpdateClassName}>
+                                <Checkbox
+                                    disabled={this.props.parameter.readonly}
+                                    indeterminate={false}
+                                    onBlur={null}
+                                    onChange={this.onCheckboxChange}
+                                    onMouseDown={null}
+                                    checked={this.props.parameter.value === "True"}
+                                />
+                            </div>
+                            <div className="parameter checkboxtext">
+                                {this.props.parameter.label}
+                            </div>
+                        </div>
+                    </Tooltip>
                 </div>
             );
         else if (this.props.parameter.allowedValues != null && this.props.parameter.allowedValues.length > 0)
             return (
                 <div className="parameter">
                     {this.props.parameter.label}
-                    <Dropdown
-                        variant="box"
-                        disabled={this.props.parameter.readonly}
-                        error={false}
-                        required=""
-                        multiple={false}
-                        onBlur={null}
-                        onChange={this.onComboChange}
-                        options={this.props.parameter.allowedValues}
-                        value={this.props.parameter.value}
-                    />
+                    <Tooltip {...tooltipProps} className="paramTooltip" anchorPoint="top-center" content={paramTooltipRenderer}>
+                        <Dropdown className={changedOnUpdateClassName}
+                            variant="box"
+                            disabled={this.props.parameter.readonly}
+                            error={false}
+                            required=""
+                            multiple={false}
+                            onBlur={null}
+                            onChange={this.onComboChange}
+                            options={this.props.parameter.allowedValues}
+                            value={this.props.parameter.value}
+                        />
+                    </Tooltip>
                 </div>
             );
         else
             return (
             <div className="parameter">
                 {this.props.parameter.label}
-                <Input
-                    disabled={this.props.parameter.readonly}
-                    onBlur={null}
-                    onChange={this.onEditChange}
-                    onMouseEnter={null}
-                    onMouseLeave={null}
-                    variant="box"
-                    value={this.props.parameter.value}
-                />
-
+                <Tooltip {...tooltipProps} className="paramTooltip" anchorPoint="top-center" content={paramTooltipRenderer}>
+                    <Input className={changedOnUpdateClassName}
+                        disabled={this.props.parameter.readonly}
+                        onBlur={null}
+                        onChange={this.onEditChange}
+                        onMouseEnter={null}
+                        onMouseLeave={null}
+                        variant="box"
+                        value={this.props.parameter.value}
+                    />
+                </Tooltip>
             </div>
         );
     }
