@@ -44,4 +44,6 @@ module.exports = {
      bomTab : locate('li').find('p').withText('BOM'),
      drawingTab : locate('li').find('p').withText('Drawing'),
      downloadsTab : locate('li').find('p').withText('Downloads'),
+     xpFirstInput : '//div[2]/div[1] //input',
+     xpFirstInputOnModelTab : '//*[@id="model"]/div/div[1]/div[2]/div[1] //input'
 };
