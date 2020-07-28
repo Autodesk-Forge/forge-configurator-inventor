@@ -37,7 +37,7 @@ function compareArrays(array1, array2)
     return false;
   }
 
-  // commpare if All iLogic parameters have the same order
+  // compare if All iLogic parameters have the same order
   for (let index = 0; index < array1.length; ++index)
   {
     if(array1[index] !== array2[index])
@@ -56,16 +56,16 @@ Feature('iLogic Parameters');
 // validate that all parameters in iLogic form are displayed in the List of Parameters
 Scenario('should check parameters in iLogic Form with list of parameters in Model Tab', async (I) => {
 
-    // select Conveyor project in the Project Switcher
-    I.selectProject('Conveyor');
-    I.waitForElement(parametersElement, 10);
+  // select Conveyor project in the Project Switcher
+  I.selectProject('Conveyor');
+  I.waitForElement(parametersElement, 20);
 
-    // get list of paramater from Model tab
-    const modelTabParamList = await I.grabTextFrom(elements);
+  // get list of parameter from Model tab
+  const modelTabParamList = await I.grabTextFrom(elements);
 
-    // comapre all parameters and validate
-    const result = compareArrays(iLogicParameterList, modelTabParamList);
-    assert.equal(result, true, "There is incorrect number of parameters or parameter names");
+  // compare all parameters and validate
+  const result = compareArrays(iLogicParameterList, modelTabParamList);
+  assert.equal(result, true, "There is incorrect number of parameters or parameter names");
 });
 
 // validate that all Read only parameters in iLogic form are displayed in the List of Parameters
@@ -75,15 +75,14 @@ Scenario('should check parameters in iLogic Form with list of Read Only paramete
 
   I.uploadIPTFile('src/ui-tests/dataset/EndCap.ipt');
 
+  // select EndCap project in the Project Switcher
   I.selectProject('EndCap');
-
-  // select Conveyor project in the Project Switcher
-  I.waitForElement(parametersElement, 10);
+  I.waitForElement(parametersElement, 20);
 
   // get list of read Only inputs from Model tab
   const modelTabReadOnlyParamList = await I.grabTextFrom(readOnlyElements);
 
-  // comapre Read Only labels and validate
+  // compare Read Only labels and validate
   const readOnlyResult = compareArrays(iLogicReadOnlyParameterList, modelTabReadOnlyParamList);
   assert.equal(readOnlyResult, true);
 
