@@ -3,8 +3,12 @@
 const assert = require('assert');
 
 const parametersElement = '.parameters';
+
 const elements = '//div[@class="parameter" or @class="parameter checkbox"]';
 const iLogicParameterList = ['LENGTH', 'WIDTH', 'HEIGHT', 'CHUTE', 'LEGS (MIN:12 | MAX:8 | STEP:2)', 'ROLLERS (MIN:3 | MAX:11 | STEP:2)'];
+
+const readOnlyElements = '//div[(@class = "parameter" or @class = "parameter checkbox") and .//input[@disabled]]';
+const iLogicReadOnlyParameterList = ['ReadOnly', 'Diameter [mm]'];
 
 // compare two Arrays and return true or false
 function compareArrays(array1, array2)
@@ -31,7 +35,7 @@ Before((I) => {
 
 Feature('iLogic Parameters');
 
-// validate that all parameters in iLogic form is displayed in the List of Parameters
+// validate that all parameters in iLogic form are displayed in the List of Parameters
 Scenario('should check parameters in iLogic Form with list of parameters in Model Tab', async (I) => {
 
     // select Conveyor project in the Project Switcher
@@ -41,7 +45,34 @@ Scenario('should check parameters in iLogic Form with list of parameters in Mode
     // get list of paramater from Model tab
     const modelTabParamList = await I.grabTextFrom(elements);
 
-    // comapre lists and validate
+    // comapre all parameters and validate
     const result = compareArrays(iLogicParameterList, modelTabParamList);
-    assert.equal(result, true);
+    assert.equal(result, true, "There is incorrect number of parameters or parameter names");
+});
+
+// validate that all Read only parameters in iLogic form are displayed in the List of Parameters
+Scenario('should check parameters in iLogic Form with list of Read Only parameters in Model Tab', async (I) => {
+
+  I.signIn();
+
+  I.uploadIPTFile('src/ui-tests/dataset/EndCap.ipt');
+
+  I.selectProject('EndCap');
+
+  // select Conveyor project in the Project Switcher
+  I.waitForElement(parametersElement, 10);
+
+  // get list of read Only inputs from Model tab
+  const modelTabReadOnlyParamList = await I.grabTextFrom(readOnlyElements);
+
+  // comapre Read Only labels and validate
+  const readOnlyResult = compareArrays(iLogicReadOnlyParameterList, modelTabReadOnlyParamList);
+  assert.equal(readOnlyResult, true);
+
+});
+
+Scenario('Delete the project', (I) => {
+
+  I.signIn();
+  I.deleteProject('EndCap');
 });
