@@ -24,8 +24,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using WebApplication.Definitions;
-using WebApplication.Middleware;
-using WebApplication.Processing;
 using WebApplication.State;
 using WebApplication.Utilities;
 using Project = WebApplication.State.Project;
@@ -39,16 +37,13 @@ namespace WebApplication.Controllers
         private readonly ILogger<ProjectsController> _logger;
         private readonly DtoGenerator _dtoGenerator;
         private readonly UserResolver _userResolver;
-        private readonly LocalCache _localCache;
-        private Uploads _uploads;
+        private readonly Uploads _uploads;
 
-        public ProjectsController(ILogger<ProjectsController> logger, DtoGenerator dtoGenerator, UserResolver userResolver,
-            LocalCache localCache, ProjectWork projectWork, Uploads uploads)
+        public ProjectsController(ILogger<ProjectsController> logger, DtoGenerator dtoGenerator, UserResolver userResolver, Uploads uploads)
         {
             _logger = logger;
             _dtoGenerator = dtoGenerator;
             _userResolver = userResolver;
-            _localCache = localCache;
             _uploads = uploads;
         }
 
