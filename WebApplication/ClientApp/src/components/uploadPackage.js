@@ -30,6 +30,8 @@ import { uploadPackageDlgVisible, uploadPackageData, projectAlreadyExists } from
 import { showUploadPackage, editPackageFile, editPackageRoot, setProjectAlreadyExists } from '../actions/uiFlagsActions';
 import { uploadPackage } from '../actions/uploadPackageActions.js';
 import './uploadPackage.css';
+import { unzip, setOptions } from 'unzipit';
+import Select from 'react-select';
 
 export class UploadPackage extends Component {
 
@@ -37,16 +39,51 @@ export class UploadPackage extends Component {
         super(props);
         this.onPackageFileChange = this.onPackageFileChange.bind(this);
         this.onPackageRootChange = this.onPackageRootChange.bind(this);
+        this.getAssemblies = this.getAssemblies.bind(this);
     }
 
-    onPackageFileChange(data) {
+    async listZipAssemblies(file) {
+        if (!file?.name.endsWith('.zip'))
+            return null;
+
+        const assemblies = [];
+        setOptions({ numWorkers: 0 });
+
+        const {entries} = await unzip(file);
+        Object.entries(entries).forEach(([name]) => {
+            if (name.endsWith('.iam')) {
+                assemblies.push(name);
+            }
+        });
+
+        return assemblies;
+    }
+
+    getAssemblies() {
+        const hasAssemblies = this.props.package.assemblies && this.props.package.assemblies.length>0;
+        let data = [];
+        if (hasAssemblies)
+            data = this.props.package.assemblies.map(item => { return { value: item, label: item }; });
+
+        return data;
+    }
+
+    async onPackageFileChange(data) {
         if(data.target.files.length > 0) {
-            this.props.editPackageFile(data.target.files[0]);
+            const file = data.target.files[0];
+            const assemblies = await this.listZipAssemblies(file);
+            this.props.editPackageFile(file, assemblies);
+
+            // preselect assembly if there is only one
+            if (assemblies?.length === 1)
+                this.props.editPackageRoot(assemblies[0]);
         }
     }
 
-    onPackageRootChange(data) {
-        this.props.editPackageRoot(data.target.value);
+    onPackageRootChange(item, actionMeta) {
+        if  (actionMeta.action === 'select-option') {
+            this.props.editPackageRoot(item.value);
+        }
     }
 
     shouldShowTopLevelAssembly() {
@@ -62,6 +99,9 @@ export class UploadPackage extends Component {
                 window: { // by design
                     width: "370px",
                     height: `${height}px`
+                },
+                bodyContent: {
+                    overflow: "hidden" // no scrollbar
                 }
             }
         });
@@ -74,6 +114,55 @@ export class UploadPackage extends Component {
                 }
             }
         });
+
+        const greyBorderColor = 'rgba(128,128,128,0.2)';
+        const selectedBlueColor = '#0696d7';
+        const selectControlHeight = '34px';
+        const customSelectStyles = {
+            control: (base) => ({ ...base,
+                minHeight: {selectControlHeight}, // height
+                height: {selectControlHeight}, // height
+                boxShadow: null,
+                fontSize: '14px'
+            }),
+            menu: styles => ({ ...styles, fontSize: '12px' }), // smaller menu fonts
+            menuPortal: base => ({ ...base, zIndex: 10500 }), // allow menu to cross modal border
+            valueContainer: (base) => ({
+                ...base,
+                minHeight: `${selectControlHeight}`, // height
+                height: `${selectControlHeight}`, // height
+                padding: '0 12px'
+            }),
+            indicatorSeparator: () => ({
+                display: 'none',
+            }),
+            indicatorsContainer: (provided) => ({
+                ...provided,
+                height: `${selectControlHeight}`,
+            }),
+            singleValue: (provided) => ({
+                ...provided,
+                maxWidth: 'calc(100% - 20px)',
+                direction: 'rtl', // make text ellipsis on the beginning of the text
+                textAlign: 'left'
+            })
+        };
+
+        const customSelectTheme = (theme) => ({
+            ...theme,
+            borderRadius: 0,
+            fontFamily: 'ArtifaktElement, sans-serif',
+            colors: {
+              ...theme.colors,
+              primary25: `${greyBorderColor}`,
+              primary: `${selectedBlueColor}`,
+            }
+          });
+
+        const data = this.getAssemblies();
+        let selectedItem = null;
+        if (this.props.package.root?.length > 0)
+            selectedItem = data.find(element => element.value == this.props.package.root);// { value: this.props.package.root, label: this.props.package.root};
 
         return (
             <React.Fragment>
@@ -121,10 +210,19 @@ export class UploadPackage extends Component {
                                 disabled={false} >
                                 Top Level Assembly
                             </Label>
-                            <Input id="package_root"
-                                variant="box"
-                                onChange={this.onPackageRootChange}
-                                value={this.props.package.root}
+                            <Select
+                                id="package_root"
+                                className="singleselect"
+                                classNamePrefix="asm"
+                                value={selectedItem}
+                                isSearchable={true}
+                                name="assemblies"
+                                options={data}
+                                styles={customSelectStyles}
+                                theme={customSelectTheme}
+                                maxMenuHeight={150}
+                                menuPortalTarget={document.querySelector('body')}
+                                onChange={ (item, actionMeta) => {this.onPackageRootChange(item, actionMeta);}}
                             />
                         </React.Fragment>
                     }
@@ -138,6 +236,7 @@ export class UploadPackage extends Component {
                             onClick={() => {
                                 this.props.uploadPackage();
                             }}
+                            disabled={!this.props.package.root}
                         />
                         <div style={{width: '14px'}}/>
                         <Button
