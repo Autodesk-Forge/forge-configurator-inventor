@@ -13,7 +13,7 @@ See [high level diagram](architecture.png)
     * [Debugger for Chrome](https://marketplace.visualstudio.com/items?itemName=msjsdiag.debugger-for-chrome) (for debugging client side code)
     * [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
     * [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
-    * [psioniq File Header](https://marketplace.visualstudio.com/items?itemName=psioniq.psi-header#configuration) (to insert copyright header)
+    * [psioniq File Header](https://marketplace.visualstudio.com/items?itemName=psioniq.psi-header) (to insert copyright header)
 ### App Bundles
 1. Autodesk Inventor 2021
 1. Visual Studio 2019
@@ -24,8 +24,8 @@ See [high level diagram](architecture.png)
 1. Note the Client ID and Secret generated.
 1. Clone repository
 1. Specify [forge credentials](#specify-forge-credentials).
-1. Copy AppBundles\ExtractParametersPlugin\InventorBinFolder.props.template file to AppBundles\ExtractParametersPlugin\InventorBinFolder.props
-1. Replace PATH_TO_YOUR_INVENTOR_BIN string in the AppBundles\ExtractParametersPlugin\InventorBinFolder.props with your actual Inventor's bin folder
+1. Copy `AppBundles\ExtractParametersPlugin\InventorBinFolder.props.template` file to `AppBundles\ExtractParametersPlugin\InventorBinFolder.props`.
+1. Replace `PATH_TO_YOUR_INVENTOR_BIN` string in the `AppBundles\ExtractParametersPlugin\InventorBinFolder.props` with your actual Inventor's bin folder
 1. Specify if access should be limited in `WebApplication\appsettings.json`. Set `Enabled` to `true` or `false`, and populate the `Domains` and `Addresses` fields with comma delimited lists such as `["autodesk.com", "company.com"]` and `["person@company2.com", "person@company3.com"]`.
 
 ## Build
@@ -59,7 +59,7 @@ See [high level diagram](architecture.png)
 * Note that running the tests clears initialization data, so you will either need to change forge credentials before running them, or run the initializer again afterward. See [Clear and load initial data...](#clear-and-load-initial-data-during-app-launch-time)
 1. From Visual Studio 2019
     * Open Test Explorer and select tests to run or debug
-1. From Visual Studo Code
+1. From Visual Studio Code
     * Open a test file in the `WebApplication.Tests` directory and click on either `Run Test` or `Debug Test` above one of the methods decorated with the `[Fact]` attribute. Or, above the class declaration click on either `Run All Tests` or `Debug All Tests`
 1. From the command line, in either the root or `WebApplication.Tests` directory run `dotnet test`
 ### Frontend
@@ -145,12 +145,9 @@ Table is not part of todays React HIG implementation so we will use https://gith
 
 We are using npm.
 
-1. Using command line go to WebApplication/ClientApp and run `npm install <package>`
+1. Using command line go to `WebApplication/ClientApp` and run `npm install <package>`
     * Note that packages are normally installed as part of the build, but only if the `npm_modules` directory is not found. This means that when new packages are added, `WebApplication/ClientApp/npm install` needs to be run again manually by other users (who did not add the new package).
 
 ### Manually run linter
 * For JavaScript code: `npm run lint`
 * For CSS: `npm run lint-css`
-
-### Suppress pre-commit hook
-Use `--no-verify` command line option for git.
