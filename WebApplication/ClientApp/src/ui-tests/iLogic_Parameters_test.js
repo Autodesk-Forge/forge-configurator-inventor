@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /////////////////////////////////////////////////////////////////////
 // Copyright (c) Autodesk, Inc. All rights reserved
 // Written by Forge Design Automation team for Inventor
@@ -17,8 +18,9 @@
 /////////////////////////////////////////////////////////////////////
 
 /* eslint-disable no-undef */
-
 const assert = require('assert');
+const { write } = require('fs');
+const { debug } = require('console');
 
 const parametersElement = '.parameters';
 
@@ -31,9 +33,9 @@ const iLogicReadOnlyParameterList = ['ReadOnly', 'Diameter [mm]'];
 // compare two Arrays and return true or false
 function compareArrays(array1, array2)
 {
-
   if (array1.length != array2.length)
   {
+    debug("Error: different number of parameters!");
     return false;
   }
 
@@ -41,7 +43,10 @@ function compareArrays(array1, array2)
   for (let index = 0; index < array1.length; ++index)
   {
     if(array1[index] !== array2[index])
+    {
+      debug("Error: parameters are not the same!");
       return false;
+    }
   }
 
   return true;
