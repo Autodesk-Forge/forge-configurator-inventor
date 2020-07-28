@@ -66,8 +66,8 @@ export class Parameter extends Component {
         if (this.props.parameter.units === "Boolean")
             return (
                 <div className="parameter checkbox">
-                    <div>
-                        <Tooltip {...tooltipProps} className="paramTooltip" anchorPoint="top-center" content={paramTooltipRenderer}>
+                    <Tooltip {...tooltipProps} className="paramTooltip" anchorPoint="top-center" content={paramTooltipRenderer}>
+                        <div style={{"display": "flex"}}>
                             <div className={changedOnUpdateClassName}>
                                 <Checkbox
                                     disabled={this.props.parameter.readonly}
@@ -81,48 +81,44 @@ export class Parameter extends Component {
                             <div className="parameter checkboxtext">
                                 {this.props.parameter.label}
                             </div>
-                        </Tooltip>
-                    </div>
+                        </div>
+                    </Tooltip>
                 </div>
             );
         else if (this.props.parameter.allowedValues != null && this.props.parameter.allowedValues.length > 0)
             return (
                 <div className="parameter">
                     {this.props.parameter.label}
-                    <div>
-                        <Tooltip {...tooltipProps} className="paramTooltip" anchorPoint="top-center" content={paramTooltipRenderer}>
-                            <Dropdown className={changedOnUpdateClassName}
-                                variant="box"
-                                disabled={this.props.parameter.readonly}
-                                error={false}
-                                required=""
-                                multiple={false}
-                                onBlur={null}
-                                onChange={this.onComboChange}
-                                options={this.props.parameter.allowedValues}
-                                value={this.props.parameter.value}
-                            />
-                        </Tooltip>
-                    </div>
+                    <Tooltip {...tooltipProps} className="paramTooltip" anchorPoint="top-center" content={paramTooltipRenderer}>
+                        <Dropdown className={changedOnUpdateClassName}
+                            variant="box"
+                            disabled={this.props.parameter.readonly}
+                            error={false}
+                            required=""
+                            multiple={false}
+                            onBlur={null}
+                            onChange={this.onComboChange}
+                            options={this.props.parameter.allowedValues}
+                            value={this.props.parameter.value}
+                        />
+                    </Tooltip>
                 </div>
             );
         else
             return (
             <div className="parameter">
                 {this.props.parameter.label}
-                <div>
-                    <Tooltip {...tooltipProps} className="paramTooltip" anchorPoint="top-center" content={paramTooltipRenderer}>
-                        <Input className={changedOnUpdateClassName}
-                            disabled={this.props.parameter.readonly}
-                            onBlur={null}
-                            onChange={this.onEditChange}
-                            onMouseEnter={null}
-                            onMouseLeave={null}
-                            variant="box"
-                            value={this.props.parameter.value}
-                        />
-                    </Tooltip>
-                </div>
+                <Tooltip {...tooltipProps} className="paramTooltip" anchorPoint="top-center" content={paramTooltipRenderer}>
+                    <Input className={changedOnUpdateClassName}
+                        disabled={this.props.parameter.readonly}
+                        onBlur={null}
+                        onChange={this.onEditChange}
+                        onMouseEnter={null}
+                        onMouseLeave={null}
+                        variant="box"
+                        value={this.props.parameter.value}
+                    />
+                </Tooltip>
             </div>
         );
     }
