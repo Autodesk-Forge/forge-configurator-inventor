@@ -13,7 +13,7 @@ const paramTooltipRenderer = () => {
     return (<div>
         <div style={{"font-weight": "bold"}}>Parameter has changed.</div>
         <Spacer  spacing="s"/>
-        <div>The Inventor Server has updated the parameter. Your initial input is overridden.</div>
+        <div>Inventor Server updated the parameter. Your initial input was overridden.</div>
     </div>);
 };
 
