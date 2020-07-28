@@ -1,3 +1,7 @@
+/**
+ * @jest-environment ./src/test/custom-test-env.js
+ */
+
 /////////////////////////////////////////////////////////////////////
 // Copyright (c) Autodesk, Inc. All rights reserved
 // Written by Forge Design Automation team for Inventor
@@ -17,7 +21,7 @@
 /////////////////////////////////////////////////////////////////////
 
 import React from 'react';
-import Enzyme, { shallow } from 'enzyme';
+import Enzyme, { shallow, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import { UploadPackage } from './uploadPackage';
 
@@ -30,7 +34,7 @@ const rootasm = 'root.asm';
 const props = {
     uploadPackageDlgVisible: true,
     projectAlreadyExists: false,
-    package: { file: { name: filename }, root: rootasm }
+    package: { file: { name: filename }, assemblies: [ rootasm ], root: '' }
 };
 
 const showUploadPackageMockFn = jest.fn();
@@ -48,11 +52,26 @@ describe('Upload package dialog', () => {
   });
 
   it('Shows the stored package and root path', () => {
-    const wrapper = shallow(<UploadPackage { ...props } />);
-    const fileinput = wrapper.find('#package_file');
+    const propsRootSpecified = { ...props, package: { ...props.package, root: rootasm } };
+    const wrapper = mount(<UploadPackage { ...propsRootSpecified } />);
+    const fileinput = wrapper.find('#package_file').at(0);
     expect(fileinput.prop("value")).toEqual(filename);
-    const rootinput = wrapper.find('#package_root');
-    expect(rootinput.prop("value")).toEqual(rootasm);
+    const rootinput = wrapper.find('#package_root').at(0);
+    expect(rootinput.prop("value")).toEqual({label: rootasm, value: rootasm});
+  });
+
+  it('Shows the stored package and NO root path selected', () => {
+    const wrapper = mount(<UploadPackage { ...props } />);
+    const fileinput = wrapper.find('#package_file').at(0);
+    expect(fileinput.prop("value")).toEqual(filename);
+    const rootinput = wrapper.find('#package_root').at(0);
+    expect(rootinput.prop("value")).toEqual(null);
+  });
+
+  it('Upload button is disabled when no root available', () => {
+    const wrapper = shallow(<UploadPackage { ...props }/>);
+    const button = wrapper.find("#upload_button");
+    expect(button.prop('disabled')).toBeTruthy();
   });
 
   it('Upload button calls the upload handler', () => {
@@ -61,7 +80,6 @@ describe('Upload package dialog', () => {
     button.simulate('click');
     expect(uploadPackageMockFn).toHaveBeenCalled();
   });
-
 
   it('Cancel button closes the dialog', () => {
     const wrapper = shallow(<UploadPackage { ...props } showUploadPackage={showUploadPackageMockFn} showUploadProgress={uploadPackageMockFn} />);
@@ -82,20 +100,21 @@ describe('Upload package dialog', () => {
     expect(editPackageRootMockFn).toHaveBeenCalledTimes(0);
   });
 
-  it('Calls appropriate reducer on file edit thru hidden file-type label', () => {
+  it('Calls appropriate reducer on file edit thru hidden file-type label', async () => {
     const wrapper = shallow(<UploadPackage { ...props } editPackageFile={editPackageFileMockFn} editPackageRoot={editPackageRootMockFn} />);
     const input = wrapper.find("#packageFileInput");
     const newFile = { name: 'newFile'};
-    input.simulate('change', { target: { files: [ newFile ] }} );
-    expect(editPackageFileMockFn).toHaveBeenCalledWith(newFile);
+    await input.simulate('change', { target: { files: [ newFile ] }} );
+
+    expect(editPackageFileMockFn).toHaveBeenCalledWith(newFile, null);
     expect(editPackageRootMockFn).toHaveBeenCalledTimes(0);
   });
 
-  it('Calls appropriate reducer on root edit', () => {
+  it('Calls appropriate reducer on root change', () => {
     const wrapper = shallow(<UploadPackage { ...props } editPackageFile={editPackageFileMockFn} editPackageRoot={editPackageRootMockFn} />);
     const input = wrapper.find("#package_root");
     const newRootAsm = 'newRoot';
-    input.simulate('change', { target: { value: newRootAsm }} );
+    input.simulate('change', { value: newRootAsm }, { action: 'select-option' } );
     expect(editPackageFileMockFn).toHaveBeenCalledTimes(0);
     expect(editPackageRootMockFn).toHaveBeenCalledWith(newRootAsm);
   });
