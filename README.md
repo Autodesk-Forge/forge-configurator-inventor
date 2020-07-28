@@ -24,15 +24,14 @@ See [high level diagram](architecture.png)
 1. Note the Client ID and Secret generated.
 1. Clone repository
 1. Specify [forge credentials](#specify-forge-credentials).
-1. Copy AppBundles\ExtractParametersPlugin\InventorBinFolder.props.template file to AppBundles\ExtractParametersPlugin\InventorBinFolder.props
-1. Replace PATH_TO_YOUR_INVENTOR_BIN string in the AppBundles\ExtractParametersPlugin\InventorBinFolder.props with your actual Inventor's bin folder
+1. Copy `AppBundles\InventorBinFolder.props.template` to `AppBundles\InventorBinFolder.props`
+1. Replace the `PATH_TO_YOUR_INVENTOR_BIN` string in the `AppBundles\InventorBinFolder.props` file with your actual Inventor bin folder path, for example: `C:\Program Files\Autodesk\Inventor 2021\Bin`
 1. Specify if access should be limited in `WebApplication\appsettings.json`. Set `Enabled` to `true` or `false`, and populate the `Domains` and `Addresses` fields with comma delimited lists such as `["autodesk.com", "company.com"]` and `["person@company2.com", "person@company3.com"]`.
 
 ## Build
 * Building the projects also installs required packages (this can take several minutes).
 ### App Bundles
 * Open the `forge-configurator-inventor.sln` file with Visual Studio 2019 and build the solution.
-* You may need to copy `C:\Program Files\Autodesk\Inventor 2021\Bin\Public Assemblies\Autodesk.Inventor.Interop.dll` to `<repository_root>\packages\autodesk` if you have compiler errors.
 ### Web Application
 * From a command prompt, go to the `WebApplication` directory, and run `dotnet build`.
 
