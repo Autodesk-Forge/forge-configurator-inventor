@@ -71,3 +71,21 @@
     display: flex;
     padding: 16px;
 }
+
+div.changedOnUpdate,
+div.changedOnUpdate-input-wrapper {
+    border-bottom-color: red;
+}
+
+.checkbox .changedOnUpdate {
+    border-bottom: solid 1px red;
+    height: 17px;
+}
+
+.paramTooltip {
+    width: 100%;
+}
+
+.paramTooltip__flyout-container {
+    color: white;
+}
