@@ -13,6 +13,7 @@ See [high level diagram](architecture.png)
     * [Debugger for Chrome](https://marketplace.visualstudio.com/items?itemName=msjsdiag.debugger-for-chrome) (for debugging client side code)
     * [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
     * [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+    * [psioniq File Header](https://marketplace.visualstudio.com/items?itemName=psioniq.psi-header#configuration) (to insert copyright header)
 ### App Bundles
 1. Autodesk Inventor 2021
 1. Visual Studio 2019
