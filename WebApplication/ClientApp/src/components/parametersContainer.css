@@ -37,7 +37,7 @@
 
 .parametersSeparator {
     margin-top: 8px;
-    margin-bottom: 0px;
+    margin-bottom: 0;
     width: calc(100% - 16px);
 }
 
@@ -46,7 +46,7 @@
     font-size: 12px;
     font-family: ArtifaktElement, sans-serif;
     font-weight: 300;
-    color:#3c3c3c;
+    color: #3c3c3c;
     line-height: 18px;
 }
 
