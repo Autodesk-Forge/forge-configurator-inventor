@@ -164,6 +164,8 @@ export class UploadPackage extends Component {
         if (this.props.package.root?.length > 0)
             selectedItem = data.find(element => element.value == this.props.package.root);// { value: this.props.package.root, label: this.props.package.root};
 
+        const hasUpload = (this.props.package.root?.length > 0 || this.props.package.file?.name.endsWith('.zip') === false);
+
         return (
             <React.Fragment>
             <Modal
@@ -236,7 +238,7 @@ export class UploadPackage extends Component {
                             onClick={() => {
                                 this.props.uploadPackage();
                             }}
-                            disabled={!this.props.package.root}
+                            disabled={!hasUpload}
                         />
                         <div style={{width: '14px'}}/>
                         <Button
