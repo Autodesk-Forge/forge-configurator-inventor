@@ -17,29 +17,37 @@
 /////////////////////////////////////////////////////////////////////
 
 /* eslint-disable no-undef */
-
 const assert = require('assert');
+const { debug } = require('console');
 
 const parametersElement = '.parameters';
+
 const elements = '//div[@class="parameter" or @class="parameter checkbox"]';
 const iLogicParameterList = ['LENGTH', 'WIDTH', 'HEIGHT', 'CHUTE', 'LEGS (MIN:12 | MAX:8 | STEP:2)', 'ROLLERS (MIN:3 | MAX:11 | STEP:2)'];
+
+const readOnlyElements = '//div[(@class = "parameter" or @class = "parameter checkbox") and .//input[@disabled]]';
+const iLogicReadOnlyParameterList = ['ReadOnly', 'Diameter [mm]'];
 
 // compare two Arrays and return true or false
 function compareArrays(array1, array2)
 {
-    if (array1.length != array2.length)
-    {
-        return false;
-    }
+  if (array1.length != array2.length)
+  {
+    debug("Error: different number of parameters!");
+    return false;
+  }
 
-    // compare if All iLogic parameters are the same as Model Tab has
-    for (let index = 0; index < array1.length; ++index)
+  // compare if All iLogic parameters have the same order
+  for (let index = 0; index < array1.length; ++index)
+  {
+    if(array1[index] !== array2[index])
     {
-        if(array2.indexOf(array1[index], 0) === -1)
-            return false;
+      debug("Error: parameters are not the same!");
+      return false;
     }
+  }
 
-    return true;
+  return true;
 }
 
 Before((I) => {
@@ -48,17 +56,43 @@ Before((I) => {
 
 Feature('iLogic Parameters');
 
-// validate that all parameters in iLogic form is displayed in the List of Parameters
+// validate that all parameters in iLogic form are displayed in the List of Parameters
 Scenario('should check parameters in iLogic Form with list of parameters in Model Tab', async (I) => {
 
-    // select Conveyor project in the Project Switcher
-    I.selectProject('Conveyor');
-    I.waitForElement(parametersElement, 10);
+  // select Conveyor project in the Project Switcher
+  I.selectProject('Conveyor');
+  I.waitForElement(parametersElement, 20);
 
-    // get list of paramater from Model tab
-    const modelTabParamList = await I.grabTextFrom(elements);
+  // get list of parameter from Model tab
+  const modelTabParamList = await I.grabTextFrom(elements);
 
-    // comapre lists and validate
-    const result = compareArrays(iLogicParameterList, modelTabParamList);
-    assert.equal(result, true);
+  // compare all parameters and validate
+  const result = compareArrays(iLogicParameterList, modelTabParamList);
+  assert.equal(result, true, "There is incorrect number of parameters or parameter names");
+});
+
+// validate that all Read only parameters in iLogic form are displayed in the List of Parameters
+Scenario('should check parameters in iLogic Form with list of Read Only parameters in Model Tab', async (I) => {
+
+  I.signIn();
+
+  I.uploadIPTFile('src/ui-tests/dataset/EndCap.ipt');
+
+  // select EndCap project in the Project Switcher
+  I.selectProject('EndCap');
+  I.waitForElement(parametersElement, 20);
+
+  // get list of read Only inputs from Model tab
+  const modelTabReadOnlyParamList = await I.grabTextFrom(readOnlyElements);
+
+  // compare Read Only labels and validate
+  const readOnlyResult = compareArrays(iLogicReadOnlyParameterList, modelTabReadOnlyParamList);
+  assert.equal(readOnlyResult, true);
+
+});
+
+Scenario('Delete the project', (I) => {
+
+  I.signIn();
+  I.deleteProject('EndCap');
 });
