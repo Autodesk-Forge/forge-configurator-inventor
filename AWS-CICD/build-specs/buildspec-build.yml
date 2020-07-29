@@ -6,7 +6,7 @@ phases:
       - aws s3 cp s3://sdra-build/buildExtras.zip ./
       - expand-archive -path .\buildExtras.zip -destinationpath ./
       - copy AppBundles\InventorBinFolder.props.template AppBundles\InventorBinFolder.props
-      - (Get-Content AppBundles\InventorBinFolder.props).replace('PATH_TO_YOUR_INVENTOR_BIN', 'buildExtras\packages\Autodesk') | Set-Content AppBundles\InventorBinFolder.props
+      - (Get-Content AppBundles\InventorBinFolder.props).replace('PATH_TO_YOUR_INVENTOR_BIN', $(pwd).path + '\buildExtras\packages\Autodesk') | Set-Content AppBundles\InventorBinFolder.props
   build:
     commands:
       - $slnDir=$PWD.ToString()
