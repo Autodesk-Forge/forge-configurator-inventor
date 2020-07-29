@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /////////////////////////////////////////////////////////////////////
 // Copyright (c) Autodesk, Inc. All rights reserved
 // Written by Forge Design Automation team for Inventor
@@ -19,7 +18,6 @@
 
 /* eslint-disable no-undef */
 const assert = require('assert');
-const { write } = require('fs');
 const { debug } = require('console');
 
 const parametersElement = '.parameters';
