@@ -74,11 +74,11 @@
 
 div.changedOnUpdate,
 div.changedOnUpdate-input-wrapper {
-    border-bottom-color: red;
+    border-bottom-color: #FAA21B;
 }
 
 .checkbox .changedOnUpdate {
-    border-bottom: solid 1px red;
+    border-bottom: solid 1px #FAA21B;
     height: 17px;
 }
 
