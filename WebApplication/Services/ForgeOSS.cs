@@ -32,7 +32,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Polly;
-using Polly.Retry;
 using WebApplication.Utilities;
 
 namespace WebApplication.Services

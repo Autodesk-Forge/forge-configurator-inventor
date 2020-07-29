@@ -16,8 +16,6 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using System;
-
 namespace EmptyPlugin
 {
     class Program
