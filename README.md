@@ -19,10 +19,10 @@ See [high level diagram](architecture.png)
 1. Visual Studio 2019
 
 ## Setup
-1. Create a forge app at https://forge.autodesk.com/, and select the Design Automation V3 API
-1. Put https://localhost:5001 as callback URL.
-1. Note the Client ID and Secret generated.
 1. Clone repository
+1. Create a forge app at https://forge.autodesk.com/, and select the Design Automation API
+1. Enter https://localhost:5001 as the callback URL.
+1. Note the Client ID and Secret generated.
 1. Specify [forge credentials](#specify-forge-credentials).
 1. Copy `AppBundles\InventorBinFolder.props.template` to `AppBundles\InventorBinFolder.props`
 1. Replace the `PATH_TO_YOUR_INVENTOR_BIN` string in the `AppBundles\InventorBinFolder.props` file with your actual Inventor bin folder path, for example: `C:\Program Files\Autodesk\Inventor 2021\Bin`
@@ -30,21 +30,20 @@ See [high level diagram](architecture.png)
 
 ## Build
 * Building the projects also installs required packages (this can take several minutes).
-### App Bundles
+### Web Application and App Bundles
 * Open the `forge-configurator-inventor.sln` file with Visual Studio 2019 and build the solution.
-### Web Application
+### Web Application Alone
 * From a command prompt, go to the `WebApplication` directory, and run `dotnet build`.
 
 ## Run The Web Application Without Debugging
-
-1. From a command prompt, go to the `WebApplication` directory, and run `dotnet run`
-1. Open https://localhost:5001
-
 ### Clear and load initial data during app launch time
-
  - Create initial data: from the `WebApplication` directory, run `dotnet run initialize=true`
  - Clear data: from the `WebApplication` directory, run `dotnet run clear=true`
  - Clear and then load initial data: from the `WebApplication` directory, run `dotnet run initialize=true clear=true`
+### Run after initial data is created
+ - From a command prompt, go to the `WebApplication` directory, and run `dotnet run`
+### Open site
+ - Navigate to https://localhost:5001
 
 ## Debug The Web Application With VS Code
 
