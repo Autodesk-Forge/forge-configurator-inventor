@@ -78,6 +78,13 @@ namespace UpdateParametersPlugin
                     string paramName = pair.Key;
                     InventorParameter paramData = pair.Value;
 
+                    // don't try to change readonly properties
+                    if (paramData.ReadOnly.GetValueOrDefault(false))
+                    {
+                        LogTrace($"Skipping readonly '{paramName}'");
+                        continue;
+                    }
+
                     try
                     {
                         var userParameter = parameters[paramName];

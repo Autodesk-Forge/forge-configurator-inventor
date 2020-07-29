@@ -150,7 +150,7 @@ describe('fetchParameters', () => {
 
                 // check correct conversion. Note the exact object comparison, because it checks
                 // optional 'readonly', 'label' and 'allowedValues' fields
-                expect(result).toEqual({ name: 'JawOffset', value: '10 mm', units: 'mm', readonly: false, label: 'JawOffset', allowedValues: [] });
+                expect(result).toEqual({ name: 'JawOffset', value: '10 mm', units: 'mm', readonly: false, label: 'JawOffset', allowedValues: [], original: simpleParam.JawOffset });
             });
 
             it('should load complex parameter', async () => {
@@ -197,15 +197,6 @@ describe('fetchParameters', () => {
 
             it('correctly convert parameters', () => {
 
-                const internalParameters = [
-                    {
-                        name: 'WrenchSz',
-                        value: 'Small',
-                        units: 'Text',
-                        allowedValues: ['Large', 'Medium', 'Small']
-                    }
-                ];
-
                 const invParameters = {
                     WrenchSz: {
                         value: '"Small"',
@@ -213,6 +204,17 @@ describe('fetchParameters', () => {
                         values: ['"Large"', '"Medium"', '"Small"']
                     }
                 };
+
+                const internalParameters = [
+                    {
+                        name: 'WrenchSz',
+                        value: 'Small',
+                        units: 'Text',
+                        allowedValues: ['Large', 'Medium', 'Small'],
+                        original: invParameters.WrenchSz
+                    }
+                ];
+
 
                 const formatted = formatParameters(internalParameters);
                 expect(formatted).toMatchObject(invParameters);
@@ -260,9 +262,9 @@ describe('fetchParameters', () => {
 
         it('check updateModelWithParameters success path', async () => {
             await store.dispatch(updateModelWithParameters(projectId, []));
-            const parameters = { "a1": { "value": "7", "values": [], "unit": "mm" } };
-            const adaptedParams = [ { "name": "a1", "value": "7", "allowedValues": [], "units": "mm", "readonly": false, "label": "a1" } ];
-            const projectData = { "data": "someData" };
+            const parameters = { a1: { value: "7", values: [], unit: "mm" } };
+            const adaptedParams = [ { name: "a1", value: "7", allowedValues: [], units: "mm", readonly: false, label: "a1", original: parameters.a1 } ];
+            const projectData = { data: "someData" };
             const updatedState = {
                 parameters: parameters,
                 ...projectData

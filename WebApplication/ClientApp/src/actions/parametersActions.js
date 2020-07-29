@@ -94,7 +94,8 @@ function adaptParameters(rawParameters) {
             allowedValues: (param.values) ? param.values.map( item => unquote(item)) : [],
             units: param.unit,
             label: param.label || key,
-            readonly: !! param.readonly
+            readonly: !! param.readonly,
+            original: param
         };
     });
 }
@@ -127,21 +128,16 @@ export function formatParameters(clientParameters) {
         return out;
     };
 
-    const invFormatedParameters = clientParameters.reduce( (obj, param) => {
+    const invFormattedParameters = clientParameters.reduce( (obj, param) => {
         const quoteValues = param.allowedValues != null && param.allowedValues.length > 0;
-        const values = quoteValues ? param.allowedValues.map(item => quote(item)) : [];
         const value = quoteValues ? quote(param.value) : param.value;
 
-        obj[param.name] = {
-            value: value,
-            unit: param.units ? param.units : null,
-            values: values
-        };
+        obj[param.name] = { ...param.original, value: value };
 
         return obj;
     }, {});
 
-    return invFormatedParameters;
+    return invFormattedParameters;
 }
 
 export const updateModelWithParameters = (projectId, data) => async (dispatch) => {
