@@ -20,7 +20,7 @@ See [high level diagram](architecture.png)
 
 ## Setup
 1. Clone repository
-1. Create a forge app at https://forge.autodesk.com/, and select the Design Automation API
+1. Create a forge app at https://forge.autodesk.com/, and select the `Design Automation API` and `Misc API` APIs
 1. Enter https://localhost:5001 as the callback URL.
 1. Note the Client ID and Secret generated.
 1. Specify [forge credentials](#specify-forge-credentials).
