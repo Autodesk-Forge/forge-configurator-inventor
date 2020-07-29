@@ -16,8 +16,6 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using System.Collections.Generic;
-using Autodesk.Forge.DesignAutomation.Model;
 using WebApplication.Definitions;
 
 namespace WebApplication.Processing
@@ -27,8 +25,6 @@ namespace WebApplication.Processing
     /// </summary>
     public class ExtractParameters : ForgeAppBase
     {
-        
-
         public override string Id => nameof(ExtractParameters);
         public override string Description => "Extract Parameters and Save Inventor document";
 

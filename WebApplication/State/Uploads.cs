@@ -16,18 +16,15 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using WebApplication.Definitions;
 
 namespace WebApplication.State
 {
     public class Uploads
     {
-        private Dictionary<string, string> _uploadFilenames;
-        private Dictionary<string, ProjectInfo> _uploadProjects;
+        private readonly Dictionary<string, string> _uploadFilenames;
+        private readonly Dictionary<string, ProjectInfo> _uploadProjects;
 
         public Uploads()
         {
