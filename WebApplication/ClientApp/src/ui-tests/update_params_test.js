@@ -42,10 +42,10 @@ Scenario('Updating parameters for conveyor model', (I) => {
     I.waitForVisible(locators.xpButtonUpdate);
     I.click(locators.xpButtonUpdate);
 
-    // wait for progress bar shows and disappearse
+    // wait for progress bar shows and disappeared
     I.waitForVisible(updatingProjectProgress, 10);
     I.waitForInvisible(updatingProjectProgress, 120);
 
-    // check that stripe disappered
+    // check that stripe disappeared
     I.waitForInvisible(locators.xpStripeElement, 5);
 });
