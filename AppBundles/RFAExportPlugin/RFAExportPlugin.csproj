@@ -14,8 +14,6 @@
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <PackagePath>..\..\packages</PackagePath>
-    <PackagePath Condition="Exists('..\packages')">..\packages</PackagePath>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
