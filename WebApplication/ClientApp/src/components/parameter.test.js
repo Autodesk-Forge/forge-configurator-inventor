@@ -142,6 +142,17 @@ describe('components', () => {
         expect(editCheckBoxMock).toHaveBeenCalledWith("1", {"name": "checkbox", "value": "True"});
       });
 
+      it('has the correct class only when changed during server update', () => {
+        const changedOnUpdateParam = { ...editboxParam, changedOnUpdate: true};
+        const wrapper = shallow(<Parameter parameter={changedOnUpdateParam} />);
+        const wrapperComponent = wrapper.find('Input');
+        expect(wrapperComponent.hasClass('changedOnUpdate')).toBeTruthy();
+
+        const secondWrapper = shallow(<Parameter parameter={editboxParam} />);
+        const secondWrapperComponent = secondWrapper.find('Input');
+        expect(secondWrapperComponent.hasClass('changedOnUpdate')).toBeFalsy();
+      });
+
       describe('readonly flag', () => {
 
         /** Create read-only parameter */
