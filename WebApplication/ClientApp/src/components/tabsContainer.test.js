@@ -1,3 +1,7 @@
+/**
+ * @jest-environment ./src/test/custom-test-env.js
+ */
+
 /////////////////////////////////////////////////////////////////////
 // Copyright (c) Autodesk, Inc. All rights reserved
 // Written by Forge Design Automation team for Inventor

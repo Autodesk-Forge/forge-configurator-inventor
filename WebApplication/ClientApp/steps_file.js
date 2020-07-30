@@ -34,7 +34,7 @@ const buttonSubmit = '#btnSubmit';
 
 // Upload
 const uploadPackageButton = '//button[@title="Upload package"]';
-const uploadPackageRoot = '//input[@id="package_root"]';
+const uploadPackageRoot = '//div[@id="package_root"]';
 const uploadFileElement = '//input[@id="packageFileInput"]';
 const uploadButton = '//button[@id="upload_button"]';
 const uploadConfirmationDialog = '//p[text()="Upload Finished"]';
@@ -151,7 +151,9 @@ module.exports = function() {
 
       // select file to upload
       this.attachFile(uploadFileElement, projectZipFile);
-      this.fillField(uploadPackageRoot, projectAssemblyLocation);
+      this.click(uploadPackageRoot); // click on combo
+      this.fillField(uploadPackageRoot, projectAssemblyLocation); // filter to assembly
+      this.pressKey('Enter'); // confirm selection
 
       // upload the zip to server
       this.click(uploadButton);

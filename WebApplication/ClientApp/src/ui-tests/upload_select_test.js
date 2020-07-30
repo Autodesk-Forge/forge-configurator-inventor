@@ -1,7 +1,3 @@
-/**
- * @jest-environment ./src/test/custom-test-env.js
- */
-
 /////////////////////////////////////////////////////////////////////
 // Copyright (c) Autodesk, Inc. All rights reserved
 // Written by Forge Design Automation team for Inventor
@@ -20,27 +16,23 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-import React from 'react';
-import Enzyme, { shallow } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-import { App } from './App';
+/* eslint-disable no-console */
+/* eslint-disable no-undef */
 
-Enzyme.configure({ adapter: new Adapter() });
+Before((I) => {
+   I.amOnPage('/');
+});
 
-describe('components', () => {
-  describe('App', () => {
-    it('Test that app will fetch info about showing changed parameters ', () => {
-        const fetchShowParametersChanged = jest.fn();
-        const detectToken = jest.fn();
+Feature('Select Upload Assembly');
 
-        const props = {
-          fetchShowParametersChanged,
-          detectToken
-        };
+Scenario('upload workflow 2nd assembly', async (I) => {
+   await I.signIn();
 
-        shallow(<App {...props}/>);
-        expect(detectToken).toHaveBeenCalled();
-        expect(fetchShowParametersChanged).toHaveBeenCalled();
-    });
-  });
+   I.uploadProject('src/ui-tests/dataset/SimpleBox2asm.zip', 'Assembly2.iam');
+});
+
+Scenario('delete workflow', async (I) => {
+   await I.signIn();
+
+   I.deleteProject('SimpleBox2asm');
 });
