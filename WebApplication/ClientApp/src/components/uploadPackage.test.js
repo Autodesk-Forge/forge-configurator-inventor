@@ -25,6 +25,30 @@ import Enzyme, { shallow, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import { UploadPackage } from './uploadPackage';
 
+// prepare mock for unzipit module
+jest.mock('unzipit');
+import { unzip, setOptions } from 'unzipit';
+
+const file1ipt = '1.ipt';
+const file2iam = '2.iam';
+const file3iam = '3.iam';
+
+setOptions.mockImplementation(() => {});
+unzip.mockImplementation((file) =>
+{
+  const files = [ { name: file1ipt}, { name: file2iam} ];
+  if (file.name === 'packageWithMoreAssemblies.zip') {
+    files.push({ name: file3iam });
+  }
+
+  const entries = {};
+  files.forEach(item => {
+    entries[item.name] = item;
+  });
+
+  return { entries: entries };
+});
+
 Enzyme.configure({ adapter: new Adapter() });
 
 const filename = 'a:\\b\\c.zip';
@@ -107,6 +131,28 @@ describe('Upload package dialog', () => {
     await input.simulate('change', { target: { files: [ newFile ] }} );
 
     expect(editPackageFileMockFn).toHaveBeenCalledWith(newFile, null);
+    expect(editPackageRootMockFn).toHaveBeenCalledTimes(0);
+  });
+
+  it('Auto select assembly when zip contains only one assembly', async () => {
+    const wrapper = shallow(<UploadPackage { ...props } editPackageFile={editPackageFileMockFn} editPackageRoot={editPackageRootMockFn} />);
+    const input = wrapper.find("#packageFileInput");
+    const newFile = { name: 'packageWithOneAssembly.zip'};
+    await input.simulate('change', { target: { files: [ newFile ] }} );
+    await Promise.resolve(); // waits until all is done
+
+    expect(editPackageFileMockFn).toHaveBeenCalledWith(newFile, [file2iam]);
+    expect(editPackageRootMockFn).toHaveBeenCalledWith(file2iam);
+  });
+
+  it('Do not select assembly when zip contains more assemblies', async () => {
+    const wrapper = shallow(<UploadPackage { ...props } editPackageFile={editPackageFileMockFn} editPackageRoot={editPackageRootMockFn} />);
+    const input = wrapper.find("#packageFileInput");
+    const newFile = { name: 'packageWithMoreAssemblies.zip'};
+    await input.simulate('change', { target: { files: [ newFile ] }} );
+    await Promise.resolve(); // waits until all is done
+
+    expect(editPackageFileMockFn).toHaveBeenCalledWith(newFile, [file2iam,file3iam]);
     expect(editPackageRootMockFn).toHaveBeenCalledTimes(0);
   });
 
