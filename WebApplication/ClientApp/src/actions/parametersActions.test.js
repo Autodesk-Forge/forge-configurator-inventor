@@ -323,5 +323,9 @@ describe('fetchParameters', () => {
             expect(compareParamaters({ value: "12000 cm", units: "mm"}, { value: "12000 km", units: "mm"})).toBeFalsy();
         });
 
+        it('handles undefined parameters', () => {
+            expect(compareParamaters(first, undefined)).toBeFalsy();
+            expect(compareParamaters(first, null)).toBeFalsy();
+        });
     });
 });
