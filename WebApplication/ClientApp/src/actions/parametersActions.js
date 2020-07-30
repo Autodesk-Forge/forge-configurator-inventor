@@ -191,3 +191,31 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
         dispatch(addError('JobManager: Error : ' + error));
     }
 };
+
+const stripUnits = (parameter) => {
+    if(!parameter.value.endsWith(parameter.units)) {
+        return parameter.value.trim();
+    }
+
+    const stripped = parameter.value.slice(0, parameter.value.length - parameter.units.length - 1);
+    return stripped.trim();
+};
+
+// Compares the two parameter values and return true if they represent the same value
+export const compareParamaters = (firstParameter, secondParameter) => {
+    if(!firstParameter || !secondParameter) {
+        return false;
+    }
+
+    if(firstParameter.value === secondParameter.value) {
+        return true;
+    }
+
+    if(firstParameter.units !== secondParameter.units) {
+        // no units conversions
+        return false;
+    }
+
+    // if not matched easily, try to strip out the units from both and recompare
+    return (stripUnits(firstParameter) === stripUnits(secondParameter));
+};
