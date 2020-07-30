@@ -28,9 +28,9 @@ import Tooltip from '@hig/tooltip';
 import Spacer from "@hig/spacer";
 
 const paramTooltipRenderer = () => {
-    return (<div>
-        <div style={{"fontWeight": "bold"}}>Parameter has changed.</div>
-        <Spacer spacing="s"/>
+    return (<div className="tooltipContent">
+        <div style={{"font-weight": "bold"}}>Parameter has changed.</div>
+        <Spacer  spacing="s"/>
         <div>Inventor Server updated the parameter. Your initial input was overridden.</div>
     </div>);
 };
