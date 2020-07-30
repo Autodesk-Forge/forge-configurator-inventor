@@ -79,7 +79,7 @@ namespace WebApplication.Processing
         /// <summary>
         /// Update project state with the parameters (or take it from cache).
         /// </summary>
-        public async Task<ProjectStateDTO> DoSmartUpdateAsync(InventorParameters parameters, string projectId)
+        public async Task<ProjectStateDTO> DoSmartUpdateAsync(InventorParameters parameters, string projectId, bool bForceUpdate = false)
         {
             var hash = Crypto.GenerateObjectHashString(parameters);
             //_logger.LogInformation(JsonSerializer.Serialize(parameters));
@@ -91,13 +91,13 @@ namespace WebApplication.Processing
             var localNames = project.LocalNameProvider(hash);
 
             // check if the data cached already
-            if (Directory.Exists(localNames.SvfDir))
+            if (Directory.Exists(localNames.SvfDir) && !bForceUpdate)
             {
                 _logger.LogInformation("Found cached data.");
             }
             else
             {
-                var resultingHash = await UpdateAsync(project, storage, parameters, hash);
+                var resultingHash = await UpdateAsync(project, storage, parameters, hash, bForceUpdate);
                 if (! hash.Equals(resultingHash, StringComparison.Ordinal))
                 {
                     _logger.LogInformation($"Update returned different parameters. Hash is {resultingHash}.");
@@ -174,12 +174,12 @@ namespace WebApplication.Processing
         /// Generate project data for the given parameters and cache results locally.
         /// </summary>
         /// <returns>Resulting parameters hash</returns>
-        private async Task<string> UpdateAsync(Project project, ProjectStorage storage, InventorParameters parameters, string hash)
+        private async Task<string> UpdateAsync(Project project, ProjectStorage storage, InventorParameters parameters, string hash, bool bForceUpdate = false)
         {
             _logger.LogInformation("Update the project");
             var bucket = await _userResolver.GetBucketAsync();
 
-            var isUpdateExists = await IsGenerated(project, bucket, hash);
+            var isUpdateExists = bForceUpdate ? false : await IsGenerated(project, bucket, hash);
             if (isUpdateExists)
             {
                 _logger.LogInformation("Detected existing outputs at OSS");
