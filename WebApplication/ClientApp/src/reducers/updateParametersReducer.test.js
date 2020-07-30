@@ -84,6 +84,32 @@ describe('updateParameters reducer', () => {
         expect(returnedState).toMatchObject(expectedState);
     });
 
+    it('does not mark readonly parameter as modified by server job', () => {
+        const parameterSet = [
+            {
+                name: "ABC",
+                value: 123,
+                readonly: true
+            }
+        ];
+        const initialState = {};
+        initialState[projectId] = parameterSet;
+
+        const newParameterSet = [
+            {
+                name: "ABC",
+                value: 345,
+                readonly: true
+            }
+        ];
+
+        const expectedState = {};
+        expectedState[projectId] = newParameterSet;
+
+        const returnedState = updateParametersReducer(initialState, updateParameters(projectId, newParameterSet));
+        expect(returnedState).toMatchObject(expectedState);
+    });
+
     it('handles edit a single parameter - sets value and nullifies changedOnUpdate attribute', () => {
         const initialState = {};
         initialState[projectId] = parameterSet;

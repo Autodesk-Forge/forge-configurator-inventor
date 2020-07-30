@@ -33,7 +33,7 @@ export default function(state = initialState, action) {
             if(prevState) {
                 // compare the new values to previous ones and mark those that have changed during the update
                 // no need to clear the changedOnUpdate if it was there as it is not part of the newly returned data
-                paramSet = action.parameters.map( (param) => compareParamaters(param, prevState.find((elem) => elem.name == param.name)) ? param : { ...param, changedOnUpdate: true } );
+                paramSet = action.parameters.map( (param) => param?.readonly === true || compareParamaters(param, prevState.find((elem) => elem.name == param.name)) ? param : { ...param, changedOnUpdate: true } );
             }
             const newState = { ...state };
             newState[action.projectId] = paramSet;
