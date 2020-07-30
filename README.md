@@ -44,13 +44,15 @@ See [high level diagram](architecture.png)
  - From a command prompt, go to the `WebApplication` directory, and run `dotnet run`
 ### Open site
  - Navigate to https://localhost:5001
+     * You may need to refresh the browser after it launches if you see the error `This site can't be reached`
+    * If you see the error `Your Connection is not private`, click `Advanced` and then `Proceed to localhost (unsafe)`. This is due a development certificate being used.
 
 ## Debug The Web Application With VS Code
 
 1. Open the repository root folder in VS Code
 1. In the Run tab, select the `Server/Client` configuration and click the "Start Debugging" (arrow) button
-    * You may need to refresh the browser after it launches if you see the error `This site can't be reached`
-    * If you see the error `Your Connection is not private`, click `Advanced` and then `Proceed to localhost (unsafe)`. This is due a development certificate being used.
+    * Some browser errors are normal, see [open site](#open-site)
+    * Disregard C# errors related to AppBundles in VS Code
 
 ## Run/Debug Tests
 ### Backend
@@ -62,11 +64,12 @@ See [high level diagram](architecture.png)
 1. From the command line, in either the root or `WebApplication.Tests` directory run `dotnet test`
 ### Frontend
 1. In Visual Studio Code, on the Run tab, select the `Debug Jest All` configuration and click the "Start Debugging" (arrow) button
+    * Note that once you run the tests they will only run again if they changed since the last time
 1. Alternatively, using the command line go to WebApplication/ClientApp and execute `npm test`
 ### UI Tests
 * For UI tests we are using `CodeCeptJs` framework. All tests are stored in `ClientApp/src/ui-tests/` and we filter all files end with `*_test.js`. 
 * Set environment variables `SDRA_USERNAME` and `SDRA_PASSWORD` for `Sign-in` workflow. We are using Autodesk Account credentials for `Sign-in`.
-    * Also you can create `.env` file in this location `WebApplication/ClientApp` to define the environment variables - for more details follow this link https://www.npmjs.com/package/dotenv
+    * Also you can create a `.env` file in the `WebApplication/ClientApp` directory to define the environment variables - for more details follow this link: https://www.npmjs.com/package/dotenv
 * Note that the server needs to be running for these tests
 
 1. From the `WebApplication/ClientApp` directory:
@@ -149,3 +152,9 @@ We are using npm.
 ### Manually run linter
 * For JavaScript code: `npm run lint`
 * For CSS: `npm run lint-css`
+
+### Deploy
+* For an advanced example of CI/CD on AWS, see [AWS-CICD](AWS-CICD/README.md)
+* For a simple method of deploying to Azure, see [Publish a Web app to Azure App Service using Visual Studio](https://docs.microsoft.com/en-us/visualstudio/deployment/quickstart-deploy-to-azure?view=vs-2019)
+    * First change `WebApplication.Program.cs` by removing the `UseKestrel()` statement
+    * You will need to change the callback in your forge app to match the URL you deploy to.
