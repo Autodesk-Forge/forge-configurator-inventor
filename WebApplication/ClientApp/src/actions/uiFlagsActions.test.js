@@ -94,7 +94,7 @@ describe('uiFlagsActions', () => {
     });
 
     it('check editPackageFile action', () => {
-        store.dispatch(uiFlagsActions.editPackageFile("file"));
+        store.dispatch(uiFlagsActions.editPackageFile("file","assemblies"));
         expect(store.getActions()).toMatchSnapshot();
     });
 

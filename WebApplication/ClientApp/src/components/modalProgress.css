@@ -18,7 +18,7 @@
 
 .modalContent {
     display: flex;
-    padding: 12px 0px 24px 0px;
+    padding: 12px 0 24px 0;
 }
 
 .modalLink {
@@ -76,7 +76,7 @@
     margin: auto;
 }
 
-#customHeader .customHeaderContent .title .doneIcon svg path{
+#customHeader .customHeaderContent .title .doneIcon svg path {
     fill: #87b340;
 }
 

@@ -19,6 +19,7 @@ Array [
 exports[`uiFlagsActions check editPackageFile action 1`] = `
 Array [
   Object {
+    "assemblies": "assemblies",
     "file": "file",
     "type": "PACKAGE_FILE_EDITED",
   },

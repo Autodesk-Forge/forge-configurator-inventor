@@ -132,10 +132,11 @@ export const showUploadPackage = (visible) => {
     };
 };
 
-export const editPackageFile = (file) => {
+export const editPackageFile = (file, assemblies) => {
     return {
         type: actionTypes.PACKAGE_FILE_EDITED,
-        file
+        file,
+        assemblies
     };
 };
 

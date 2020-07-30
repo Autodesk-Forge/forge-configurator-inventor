@@ -91,7 +91,7 @@ describe('uiFlags reducer', () => {
          const newState = uiFlagsReducer(initialState, editPackageFile(mypackage));
 
          expect(newState.package.file).toEqual(mypackage);
-         expect(newState.package.root).toEqual(packageroot);
+         expect(newState.package.root).toEqual(''); // root is set only by PACKAGE_ROOT_EDITED
       });
 
       it('Sets the package root without overriding the file', () => {

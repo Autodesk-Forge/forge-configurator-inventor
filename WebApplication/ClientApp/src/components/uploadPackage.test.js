@@ -1,3 +1,7 @@
+/**
+ * @jest-environment ./src/test/custom-test-env.js
+ */
+
 /////////////////////////////////////////////////////////////////////
 // Copyright (c) Autodesk, Inc. All rights reserved
 // Written by Forge Design Automation team for Inventor
@@ -17,9 +21,33 @@
 /////////////////////////////////////////////////////////////////////
 
 import React from 'react';
-import Enzyme, { shallow } from 'enzyme';
+import Enzyme, { shallow, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import { UploadPackage } from './uploadPackage';
+
+// prepare mock for unzipit module
+jest.mock('unzipit');
+import { unzip, setOptions } from 'unzipit';
+
+const file1ipt = '1.ipt';
+const file2iam = '2.iam';
+const file3iam = '3.iam';
+
+setOptions.mockImplementation(() => {});
+unzip.mockImplementation((file) =>
+{
+  const files = [ { name: file1ipt}, { name: file2iam} ];
+  if (file.name === 'packageWithMoreAssemblies.zip') {
+    files.push({ name: file3iam });
+  }
+
+  const entries = {};
+  files.forEach(item => {
+    entries[item.name] = item;
+  });
+
+  return { entries: entries };
+});
 
 Enzyme.configure({ adapter: new Adapter() });
 
@@ -30,7 +58,7 @@ const rootasm = 'root.asm';
 const props = {
     uploadPackageDlgVisible: true,
     projectAlreadyExists: false,
-    package: { file: { name: filename }, root: rootasm }
+    package: { file: { name: filename }, assemblies: [ rootasm ], root: '' }
 };
 
 const showUploadPackageMockFn = jest.fn();
@@ -48,11 +76,26 @@ describe('Upload package dialog', () => {
   });
 
   it('Shows the stored package and root path', () => {
-    const wrapper = shallow(<UploadPackage { ...props } />);
-    const fileinput = wrapper.find('#package_file');
+    const propsRootSpecified = { ...props, package: { ...props.package, root: rootasm } };
+    const wrapper = mount(<UploadPackage { ...propsRootSpecified } />);
+    const fileinput = wrapper.find('#package_file').at(0);
     expect(fileinput.prop("value")).toEqual(filename);
-    const rootinput = wrapper.find('#package_root');
-    expect(rootinput.prop("value")).toEqual(rootasm);
+    const rootinput = wrapper.find('#package_root').at(0);
+    expect(rootinput.prop("value")).toEqual({label: rootasm, value: rootasm});
+  });
+
+  it('Shows the stored package and NO root path selected', () => {
+    const wrapper = mount(<UploadPackage { ...props } />);
+    const fileinput = wrapper.find('#package_file').at(0);
+    expect(fileinput.prop("value")).toEqual(filename);
+    const rootinput = wrapper.find('#package_root').at(0);
+    expect(rootinput.prop("value")).toEqual(null);
+  });
+
+  it('Upload button is disabled when no root available', () => {
+    const wrapper = shallow(<UploadPackage { ...props }/>);
+    const button = wrapper.find("#upload_button");
+    expect(button.prop('disabled')).toBeTruthy();
   });
 
   it('Upload button calls the upload handler', () => {
@@ -61,7 +104,6 @@ describe('Upload package dialog', () => {
     button.simulate('click');
     expect(uploadPackageMockFn).toHaveBeenCalled();
   });
-
 
   it('Cancel button closes the dialog', () => {
     const wrapper = shallow(<UploadPackage { ...props } showUploadPackage={showUploadPackageMockFn} showUploadProgress={uploadPackageMockFn} />);
@@ -82,20 +124,43 @@ describe('Upload package dialog', () => {
     expect(editPackageRootMockFn).toHaveBeenCalledTimes(0);
   });
 
-  it('Calls appropriate reducer on file edit thru hidden file-type label', () => {
+  it('Calls appropriate reducer on file edit thru hidden file-type label', async () => {
     const wrapper = shallow(<UploadPackage { ...props } editPackageFile={editPackageFileMockFn} editPackageRoot={editPackageRootMockFn} />);
     const input = wrapper.find("#packageFileInput");
     const newFile = { name: 'newFile'};
-    input.simulate('change', { target: { files: [ newFile ] }} );
-    expect(editPackageFileMockFn).toHaveBeenCalledWith(newFile);
+    await input.simulate('change', { target: { files: [ newFile ] }} );
+
+    expect(editPackageFileMockFn).toHaveBeenCalledWith(newFile, null);
     expect(editPackageRootMockFn).toHaveBeenCalledTimes(0);
   });
 
-  it('Calls appropriate reducer on root edit', () => {
+  it('Auto select assembly when zip contains only one assembly', async () => {
+    const wrapper = shallow(<UploadPackage { ...props } editPackageFile={editPackageFileMockFn} editPackageRoot={editPackageRootMockFn} />);
+    const input = wrapper.find("#packageFileInput");
+    const newFile = { name: 'packageWithOneAssembly.zip'};
+    await input.simulate('change', { target: { files: [ newFile ] }} );
+    await Promise.resolve(); // waits until all is done
+
+    expect(editPackageFileMockFn).toHaveBeenCalledWith(newFile, [file2iam]);
+    expect(editPackageRootMockFn).toHaveBeenCalledWith(file2iam);
+  });
+
+  it('Do not select assembly when zip contains more assemblies', async () => {
+    const wrapper = shallow(<UploadPackage { ...props } editPackageFile={editPackageFileMockFn} editPackageRoot={editPackageRootMockFn} />);
+    const input = wrapper.find("#packageFileInput");
+    const newFile = { name: 'packageWithMoreAssemblies.zip'};
+    await input.simulate('change', { target: { files: [ newFile ] }} );
+    await Promise.resolve(); // waits until all is done
+
+    expect(editPackageFileMockFn).toHaveBeenCalledWith(newFile, [file2iam,file3iam]);
+    expect(editPackageRootMockFn).toHaveBeenCalledTimes(0);
+  });
+
+  it('Calls appropriate reducer on root change', () => {
     const wrapper = shallow(<UploadPackage { ...props } editPackageFile={editPackageFileMockFn} editPackageRoot={editPackageRootMockFn} />);
     const input = wrapper.find("#package_root");
     const newRootAsm = 'newRoot';
-    input.simulate('change', { target: { value: newRootAsm }} );
+    input.simulate('change', { value: newRootAsm }, { action: 'select-option' } );
     expect(editPackageFileMockFn).toHaveBeenCalledTimes(0);
     expect(editPackageRootMockFn).toHaveBeenCalledWith(newRootAsm);
   });
