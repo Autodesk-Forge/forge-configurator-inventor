@@ -16,6 +16,7 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -56,8 +57,8 @@ namespace WebApplication.Controllers
             _localCache = localCache;
         }
 
-        [HttpGet]
-        public async Task<string> Get()
+        [HttpGet("Refresh")]
+        public async Task<string> Refresh()
         {
             string returnValue = "";
             List<ObjectDetails> ossFiles = await _forgeOSS.GetBucketObjectsAsync(_bucket.BucketKey, "cache/");
@@ -73,8 +74,14 @@ namespace WebApplication.Controllers
                     string paramsFile = Path.Combine(_localCache.LocalRootName, "params.json");
                     await _bucket.DownloadFileAsync(file.ObjectKey, paramsFile);
                     InventorParameters inventorParameters = Json.DeserializeFile<InventorParameters>(paramsFile);
-                    await _projectWork.DoSmartUpdateAsync(inventorParameters, project, true);
-                    returnValue += "Project " + project + " (" + hash + ") was updated\n";
+                    try
+                    {
+                        await _projectWork.DoSmartUpdateAsync(inventorParameters, project, true);
+                        returnValue += "Project " + project + " (" + hash + ") was updated\n";
+                    } catch(Exception e)
+                    {
+                        returnValue += "Project " + project + " (" + hash + ") update failed\nException: " + e.Message + "\n";
+                    }
                 }
             }
 
@@ -82,9 +89,24 @@ namespace WebApplication.Controllers
         }
 
         [HttpGet("Adopt")]
-        public async Task<string> AdoptDefaultOnly()
+        public async Task<string> AdoptDefaultOnly(bool RemoveCached)
         {
             string returnValue = "";
+            if (RemoveCached)
+            {
+                List<ObjectDetails> ossFiles = await _forgeOSS.GetBucketObjectsAsync(_bucket.BucketKey, "cache/");
+                foreach (ObjectDetails file in ossFiles)
+                {
+                    returnValue += "Removing cache file " + file.ObjectKey + "\n";
+                    try
+                    {
+                        await _forgeOSS.DeleteAsync(_bucket.BucketKey, file.ObjectKey);
+                    } catch(Exception e)
+                    {
+                        returnValue += "Removing cache file " + file.ObjectKey + " failed\nException:" + e.Message + "\n";
+                    }
+                }
+            }
             foreach (DefaultProjectConfiguration defaultProjectConfig in _defaultProjectsConfiguration.Projects)
             {
                 returnValue += "Project " + defaultProjectConfig.Name + " is being adopted\n";
@@ -93,9 +115,15 @@ namespace WebApplication.Controllers
 
                 string signedUrl = await _bucket.CreateSignedUrlAsync(project.OSSSourceModel, ObjectAccess.ReadWrite);
 
-                await _projectWork.AdoptAsync(defaultProjectConfig, signedUrl);
-
-                returnValue += "Project " + defaultProjectConfig.Name + " was adopted\n";
+                try
+                {
+                    await _projectWork.AdoptAsync(defaultProjectConfig, signedUrl);
+                    returnValue += "Project " + defaultProjectConfig.Name + " was adopted\n";
+                }
+                catch(Exception e)
+                {
+                    returnValue += "Project " + defaultProjectConfig.Name + " was not adopted\nException:" + e.Message + "\n";
+                }
             }
 
             return returnValue;
