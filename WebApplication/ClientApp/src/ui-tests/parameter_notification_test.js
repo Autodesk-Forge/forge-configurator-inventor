@@ -47,14 +47,14 @@ Scenario('should check parameter notification', async (I) => {
     I.setParamValue("NumberOfBolts", "5");
 
     // Click on Update button
-    I.waitForVisible(locators.xpButtonUpdate);
+    I.waitForVisible(locators.xpButtonUpdate, 10);
     I.click(locators.xpButtonUpdate);
 
     // wait for progress bar shows and disappears
     I.waitForVisible(updatingProjectProgress, 10);
     I.waitForInvisible(updatingProjectProgress, 120);
 
-    // check if have correct number of changeOnUpdate inputs
+    // check if there is correct number of changeOnUpdate inputs
     I.seeNumberOfElements(updatedElements, 1);
 
     // check if tooltip is displayed
