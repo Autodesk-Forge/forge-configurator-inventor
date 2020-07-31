@@ -21,6 +21,7 @@ using System.Linq;
 using Autodesk.iLogic.Core.UiBuilderStorage;
 using Autodesk.iLogic.UiBuilderCore.Data;
 using Autodesk.iLogic.UiBuilderCore.Storage;
+using iLogic;
 using Inventor;
 using Newtonsoft.Json;
 using Shared;
@@ -115,6 +116,18 @@ namespace ExtractParametersPlugin
                 var json = JsonConvert.SerializeObject(iPropertySpec);
                 Trace.WriteLine(json);
 
+                CadPropertiesInRule props = new CadPropertiesInRule(_document, new StylesInEnglishHandler());
+                var value = props.get_Expression(iPropertySpec.PropertySetName, iPropertySpec.PropertyName);
+
+                var parameter = new InventorParameter
+                {
+                    Label = iPropertySpec.Name.Trim(),
+                    ReadOnly = iPropertySpec.ReadOnly,
+                    Value = value
+                };
+
+                _collectedParameters.Add_iProperty(iPropertySpec.PropertySetName, iPropertySpec.PropertyName, parameter);
+/*
                 var propertySetName = iPropertySpec.PropertySetName;
                 if (_document.PropertySets.PropertySetExists(propertySetName, out dynamic propertySet))
                 {
@@ -140,6 +153,7 @@ namespace ExtractParametersPlugin
                 {
                     Trace.TraceError($"Cannot find '{propertySetName}' property set.");
                 }
+                */
             }
 
             private void ProcessParameter(ParameterControlSpec spec)
