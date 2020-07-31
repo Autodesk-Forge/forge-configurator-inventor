@@ -34,7 +34,7 @@
 #uploadPackageModal .browseButton {
     display: flex;
     flex-flow: row;
-    align-items: flex-end;    
+    align-items: flex-end;
 }
 
 #uploadPackageModal .browseButton label {

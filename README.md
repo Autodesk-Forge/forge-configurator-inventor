@@ -19,40 +19,40 @@ See [high level diagram](architecture.png)
 1. Visual Studio 2019
 
 ## Setup
-1. Create a forge app at https://forge.autodesk.com/, and select the Design Automation V3 API
-1. Put https://localhost:5001 as callback URL.
-1. Note the Client ID and Secret generated.
 1. Clone repository
+1. Create a forge app at https://forge.autodesk.com/, and select the `Design Automation API` and `Misc API` APIs
+1. Enter https://localhost:5001 as the callback URL.
+1. Note the Client ID and Secret generated.
 1. Specify [forge credentials](#specify-forge-credentials).
-1. Copy `AppBundles\ExtractParametersPlugin\InventorBinFolder.props.template` file to `AppBundles\ExtractParametersPlugin\InventorBinFolder.props`.
-1. Replace `PATH_TO_YOUR_INVENTOR_BIN` string in the `AppBundles\ExtractParametersPlugin\InventorBinFolder.props` with your actual Inventor's bin folder
+1. Copy `AppBundles\InventorBinFolder.props.template` to `AppBundles\InventorBinFolder.props`
+1. Replace the `PATH_TO_YOUR_INVENTOR_BIN` string in the `AppBundles\InventorBinFolder.props` file with your actual Inventor bin folder path, for example: `C:\Program Files\Autodesk\Inventor 2021\Bin`
 1. Specify if access should be limited in `WebApplication\appsettings.json`. Set `Enabled` to `true` or `false`, and populate the `Domains` and `Addresses` fields with comma delimited lists such as `["autodesk.com", "company.com"]` and `["person@company2.com", "person@company3.com"]`.
 
 ## Build
 * Building the projects also installs required packages (this can take several minutes).
-### App Bundles
+### Web Application and App Bundles
 * Open the `forge-configurator-inventor.sln` file with Visual Studio 2019 and build the solution.
-* You may need to copy `C:\Program Files\Autodesk\Inventor 2021\Bin\Public Assemblies\Autodesk.Inventor.Interop.dll` to `<repository_root>\packages\autodesk` if you have compiler errors.
-### Web Application
+### Web Application Alone
 * From a command prompt, go to the `WebApplication` directory, and run `dotnet build`.
 
 ## Run The Web Application Without Debugging
-
-1. From a command prompt, go to the `WebApplication` directory, and run `dotnet run`
-1. Open https://localhost:5001
-
 ### Clear and load initial data during app launch time
-
  - Create initial data: from the `WebApplication` directory, run `dotnet run initialize=true`
  - Clear data: from the `WebApplication` directory, run `dotnet run clear=true`
  - Clear and then load initial data: from the `WebApplication` directory, run `dotnet run initialize=true clear=true`
+### Run after initial data is created
+ - From a command prompt, go to the `WebApplication` directory, and run `dotnet run`
+### Open site
+ - Navigate to https://localhost:5001
+     * You may need to refresh the browser after it launches if you see the error `This site can't be reached`
+    * If you see the error `Your Connection is not private`, click `Advanced` and then `Proceed to localhost (unsafe)`. This is due a development certificate being used.
 
 ## Debug The Web Application With VS Code
 
 1. Open the repository root folder in VS Code
 1. In the Run tab, select the `Server/Client` configuration and click the "Start Debugging" (arrow) button
-    * You may need to refresh the browser after it launches if you see the error `This site can't be reached`
-    * If you see the error `Your Connection is not private`, click `Advanced` and then `Proceed to localhost (unsafe)`. This is due a development certificate being used.
+    * Some browser errors are normal, see [open site](#open-site)
+    * Disregard C# errors related to AppBundles in VS Code
 
 ## Run/Debug Tests
 ### Backend
@@ -64,11 +64,12 @@ See [high level diagram](architecture.png)
 1. From the command line, in either the root or `WebApplication.Tests` directory run `dotnet test`
 ### Frontend
 1. In Visual Studio Code, on the Run tab, select the `Debug Jest All` configuration and click the "Start Debugging" (arrow) button
+    * Note that once you run the tests they will only run again if they changed since the last time
 1. Alternatively, using the command line go to WebApplication/ClientApp and execute `npm test`
 ### UI Tests
 * For UI tests we are using `CodeCeptJs` framework. All tests are stored in `ClientApp/src/ui-tests/` and we filter all files end with `*_test.js`. 
 * Set environment variables `SDRA_USERNAME` and `SDRA_PASSWORD` for `Sign-in` workflow. We are using Autodesk Account credentials for `Sign-in`.
-    * Also you can create `.env` file in this location `WebApplication/ClientApp` to define the environment variables - for more details follow this link https://www.npmjs.com/package/dotenv
+    * Also you can create a `.env` file in the `WebApplication/ClientApp` directory to define the environment variables - for more details follow this link: https://www.npmjs.com/package/dotenv
 * Note that the server needs to be running for these tests
 
 1. From the `WebApplication/ClientApp` directory:
@@ -151,3 +152,9 @@ We are using npm.
 ### Manually run linter
 * For JavaScript code: `npm run lint`
 * For CSS: `npm run lint-css`
+
+### Deploy
+* For an advanced example of CI/CD on AWS, see [AWS-CICD](AWS-CICD/README.md)
+* For a simple method of deploying to Azure, see [Publish a Web app to Azure App Service using Visual Studio](https://docs.microsoft.com/en-us/visualstudio/deployment/quickstart-deploy-to-azure?view=vs-2019)
+    * First change `WebApplication.Program.cs` by removing the `UseKestrel()` statement
+    * You will need to change the callback in your forge app to match the URL you deploy to.
