@@ -54,5 +54,21 @@ namespace Shared
     /// </summary>
     public class InventorParameters : Dictionary<string, InventorParameter>
     {
+        private const string Separator = "%%%%";
+        private static readonly string iPropertyPrefix = $"{Separator}iProperty{Separator}";
+
+        public static string Make_iPropertyKey(string propertySetName, string propertyName)
+        {
+            return $"{iPropertyPrefix}{propertySetName}{Separator}{propertyName}";
+        }
+
+        public void Add_iProperty(string propertySetName, string propertyName, InventorParameter parameter)
+        {
+            if (propertySetName == null) throw new ArgumentNullException(nameof(propertySetName));
+            if (propertyName == null) throw new ArgumentNullException(nameof(propertyName));
+
+            string key = Make_iPropertyKey(propertySetName, propertyName);
+            Add(key, parameter);
+        }
     }
 }

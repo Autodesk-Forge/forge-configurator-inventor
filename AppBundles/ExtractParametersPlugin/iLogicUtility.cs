@@ -16,11 +16,13 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
+using System.Diagnostics;
 using System.Linq;
 using Autodesk.iLogic.Core.UiBuilderStorage;
 using Autodesk.iLogic.UiBuilderCore.Data;
 using Autodesk.iLogic.UiBuilderCore.Storage;
 using Inventor;
+using Newtonsoft.Json;
 using Shared;
 
 namespace ExtractParametersPlugin
@@ -41,19 +43,22 @@ namespace ExtractParametersPlugin
         private class FormExtractor
         {
             private readonly FormSpecification _formSpec;
-            private readonly InventorParameters _allowedParameters;
+            private readonly InventorParameters _knownParameters;
+            private readonly Document _document;
             private readonly InventorParameters _collectedParameters = new InventorParameters();
 
-            private FormExtractor(FormSpecification formSpec, InventorParameters allowedParameters)
+            private FormExtractor(FormSpecification formSpec, InventorParameters knownParameters, Document document)
             {
                 _formSpec = formSpec;
-                _allowedParameters = allowedParameters;
+                _knownParameters = knownParameters;
+                _document = document;
             }
 
-            public static iLogicForm Get(UiStorage storage, string formName, InventorParameters allowedParameters)
+            public static iLogicForm Get(UiStorage storage, string formName, InventorParameters allowedParameters,
+                Document document)
             {
                 FormSpecification formSpec = storage.LoadFormSpecification(formName);
-                var extractor = new FormExtractor(formSpec, allowedParameters);
+                var extractor = new FormExtractor(formSpec, allowedParameters, document);
                 return extractor.Run();
             }
 
@@ -87,6 +92,10 @@ namespace ExtractParametersPlugin
                         ProcessParameter(parameterControlSpec);
                         break;
 
+                    case iPropertyControlSpec iPropertySpec:
+                        Process_iProperty(iPropertySpec);
+                        break;
+
                     case UiElementContainerSpec subContainer:
                         switch (subContainer)
                         {
@@ -101,11 +110,43 @@ namespace ExtractParametersPlugin
                 }
             }
 
+            private void Process_iProperty(iPropertyControlSpec iPropertySpec)
+            {
+                var json = JsonConvert.SerializeObject(iPropertySpec);
+                Trace.WriteLine(json);
+
+                var propertySetName = iPropertySpec.PropertySetName;
+                if (_document.PropertySets.PropertySetExists(propertySetName, out dynamic propertySet))
+                {
+                    var propertyName = iPropertySpec.PropertyName;
+
+                    dynamic property = propertySet.Item(propertyName);
+                    if (property == null)
+                    {
+                        Trace.TraceError($"Cannot find '{propertyName}' property.");
+                        return;
+                    }
+
+                    var parameter = new InventorParameter
+                                    {
+                                        Label = iPropertySpec.Name.Trim(),
+                                        ReadOnly = iPropertySpec.ReadOnly,
+                                        Value = property.Value
+                                    };
+
+                    _collectedParameters.Add_iProperty(propertySetName, propertyName, parameter);
+                }
+                else
+                {
+                    Trace.TraceError($"Cannot find '{propertySetName}' property set.");
+                }
+            }
+
             private void ProcessParameter(ParameterControlSpec spec)
             {
-                if (_allowedParameters.TryGetValue(spec.ParameterName, out var knownParameter))
+                if (_knownParameters.TryGetValue(spec.ParameterName, out var knownParameter))
                 {
-                    var result = new InventorParameter
+                    var parameter = new InventorParameter
                                     {
                                         Label = spec.Name.Trim(),
                                         Unit = knownParameter.Unit,
@@ -114,22 +155,28 @@ namespace ExtractParametersPlugin
                                         Values = knownParameter.Values
                                     };
 
-                    _collectedParameters.Add(spec.ParameterName, result);
+                    _collectedParameters.Add(spec.ParameterName, parameter);
+                }
+                else
+                {
+                    Trace.TraceError($"Processing unknown {spec.ParameterName} parameter");
                 }
             }
         }
 
         #endregion
 
-        private readonly InventorParameters _allowedParameters;
+        private readonly Document _document;
+        private readonly InventorParameters _knownParameters;
         private readonly UiStorage _storage;
 
         /// <summary>Constructor.</summary>
         /// <param name="document">Inventor document.</param>
-        /// <param name="allowedParameters">Map with Inventor parameters, which are allowed to be extracted.</param>
-        public iLogicFormsReader(Document document, InventorParameters allowedParameters)
+        /// <param name="knownParameters">Map with Inventor parameters, which are allowed to be extracted.</param>
+        public iLogicFormsReader(Document document, InventorParameters knownParameters)
         {
-            _allowedParameters = allowedParameters;
+            _document = document;
+            _knownParameters = knownParameters;
             _storage = UiStorageFactory.GetDocumentStorage(document);
         }
 
@@ -142,7 +189,7 @@ namespace ExtractParametersPlugin
 
         private iLogicForm GetGroupsAndParameters(string formName)
         {
-            return FormExtractor.Get(_storage, formName, _allowedParameters);
+            return FormExtractor.Get(_storage, formName, _knownParameters, _document);
         }
     }
 }

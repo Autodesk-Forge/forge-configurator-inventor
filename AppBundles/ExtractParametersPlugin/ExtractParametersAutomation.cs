@@ -76,6 +76,7 @@ namespace ExtractParametersPlugin
                     foreach (var form in forms)
                     {
                         LogTrace($" - {form.Name}");
+                        LogTrace($"{JsonConvert.SerializeObject(form.Parameters)}");
                     }
 
                     // Choose set of parameters to use with the following algorithm:
