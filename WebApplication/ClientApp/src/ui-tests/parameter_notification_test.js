@@ -22,8 +22,8 @@ const locators = require('./elements_definition.js');
 const parametersElement = '.parameters';
 const updatedElements = '//div[(@class = "parameter" or @class = "parameter checkbox")] //input[contains(@class , "changedOnUpdate")]';
 const updatingProjectProgress = '//p[text()="Updating Project"]';
-const tooltipNumberOfBolts = '//div[contains(@class,"paramTooltip__flyout-container")][ancestor::div[contains(@class , "parameter") and contains(text(),"NumberOfBolts")]]';
-const parameterNumberOfBolts = '//div[contains(@class , "parameter") and contains(text(),"NumberOfBolts")]';
+const tooltipTestNotify = '//div[contains(@class,"paramTooltip__flyout-container")][ancestor::div[contains(@class , "parameter") and contains(text(),"TestNotify")]]';
+const parameterTestNotify = '//div[contains(@class , "parameter") and contains(text(),"TestNotify")]';
 
 
 Before((I) => {
@@ -58,10 +58,10 @@ Scenario('should check parameter notification', async (I) => {
     I.seeNumberOfElements(updatedElements, 1);
 
     // check if tooltip is displayed
-    I.moveCursorTo(parameterNumberOfBolts);
-    I.waitForVisible(tooltipNumberOfBolts, 5);
-    const text = await I.grabTextFrom(tooltipNumberOfBolts);
-    I.seeTextEquals("Parameter has changed.\nInventor Server updated the parameter. Your initial input was overridden.", tooltipNumberOfBolts);
+    I.moveCursorTo(parameterTestNotify);
+    I.waitForVisible(tooltipTestNotify, 5);
+
+    I.seeTextEquals("Parameter has changed.\nInventor Server updated the parameter. Your initial input was overridden.", tooltipTestNotify);
   });
 
   Scenario('Delete the project', (I) => {
