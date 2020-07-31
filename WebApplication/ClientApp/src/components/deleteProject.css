@@ -32,7 +32,5 @@
 
 .deleteProjectListContainer {
     height: 116px;
-    overflow-y: auto;    
+    overflow-y: auto;
 }
-
-

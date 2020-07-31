@@ -25,13 +25,13 @@
 }
 
 #project-list .actionButtonContainer.hidden {
-    padding: 0px;
+    padding: 0;
 }
 
 #project-list .actionButtonContainer {
     display: flex;
     flex-flow: row;
-    padding: 20px 0px 10px 0px;
+    padding: 20px 0 10px 0;
     margin-left: 76px;
     vertical-align: middle;
 }
@@ -47,5 +47,5 @@
     height: 40px;
     width: 1px;
     border-left: gainsboro 1px solid;
-    margin: 0px 12px 0px 12px;
+    margin: 0 12px 0 12px;
 }

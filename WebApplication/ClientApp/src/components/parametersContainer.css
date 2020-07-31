@@ -37,7 +37,7 @@
 
 .parametersSeparator {
     margin-top: 8px;
-    margin-bottom: 0px;
+    margin-bottom: 0;
     width: calc(100% - 16px);
 }
 
@@ -46,7 +46,7 @@
     font-size: 12px;
     font-family: ArtifaktElement, sans-serif;
     font-weight: 300;
-    color:#3c3c3c;
+    color: #3c3c3c;
     line-height: 18px;
 }
 
@@ -74,11 +74,11 @@
 
 div.changedOnUpdate,
 div.changedOnUpdate-input-wrapper {
-    border-bottom-color: red;
+    border-bottom-color: #FAA21B;
 }
 
 .checkbox .changedOnUpdate {
-    border-bottom: solid 1px red;
+    border-bottom: solid 1px #FAA21B;
     height: 17px;
 }
 
@@ -88,4 +88,8 @@ div.changedOnUpdate-input-wrapper {
 
 .paramTooltip__flyout-container {
     color: white;
+}
+
+.tooltipContent {
+    margin: 8px;
 }

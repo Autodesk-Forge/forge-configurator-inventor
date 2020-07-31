@@ -33,7 +33,7 @@ export const initialState = {
    showUploadPackage: false,
    uploadProgressShowing: false,
    uploadProgressStatus: null,
-   package: { file: null, root: ''},
+   package: { file: null, root: '', assemblies: null },
    uploadFailedShowing: false,
    activeTabIndex: 0,
    projectAlreadyExists: false,
@@ -142,9 +142,9 @@ export default function(state = initialState, action) {
       case uploadPackagesActionTypes.HIDE_UPLOAD_FAILED:
          return { ...state, uploadFailedShowing: false };
       case uiFlagsActionTypes.PACKAGE_FILE_EDITED:
-         return { ...state, package: { file: action.file, root: state.package.root } };
+         return { ...state, package: { file: action.file, assemblies: action.assemblies, root: '' } };
       case uiFlagsActionTypes.PACKAGE_ROOT_EDITED:
-         return { ...state, package: { file: state.package.file, root: action.file } };
+         return { ...state, package: { file: state.package.file, assemblies: state.package.assemblies, root: action.file } };
       case uiFlagsActionTypes.UPDATE_ACTIVE_TAB_INDEX:
          return { ...state, activeTabIndex: action.index};
       case uiFlagsActionTypes.PROJECT_EXISTS:

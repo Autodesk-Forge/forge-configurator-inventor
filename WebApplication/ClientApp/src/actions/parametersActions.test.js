@@ -16,7 +16,7 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-import { fetchParameters, formatParameters, updateModelWithParameters } from './parametersActions';
+import { fetchParameters, formatParameters, updateModelWithParameters, compareParamaters } from './parametersActions';
 import parameterActionTypes from './parametersActions';
 import notificationTypes from '../actions/notificationActions';
 
@@ -290,6 +290,42 @@ describe('fetchParameters', () => {
             // there are two SET_REPORT_URL actions in the list. The first one come from job start and is called with null to clear old data...
             expect(actions.some(a => (a.type === uiFlagsActionTypes.SET_REPORT_URL && a.url === errorReportLink))).toEqual(true);
             expect(actions.some(a => a.type === uiFlagsActionTypes.SHOW_UPDATE_FAILED)).toEqual(true);
+        });
+    });
+
+    describe('parameter comparison', () => {
+        const first = {
+            value: "12000 mm",
+            units: "mm"
+        }
+
+        it('makes exact match', () => {
+            expect(compareParamaters(first, first)).toBeTruthy();
+        });
+
+        it('makes match if units ommited', () => {
+            expect(compareParamaters(first, { value: "12000", units: "mm"})).toBeTruthy();
+        });
+
+        it('does not make match if units differ in both value and units', () => {
+            expect(compareParamaters(first, { value: "12000 in", units: "in"})).toBeFalsy();
+        });
+
+        it('does not make match if units differ in value only', () => {
+            expect(compareParamaters(first, { value: "12000 in", units: "mm"})).toBeFalsy();
+        });
+
+        it('does not make match if units differ and not present in value', () => {
+            expect(compareParamaters(first, { value: "12000", units: "in"})).toBeFalsy();
+        });
+
+        it('does not make match if units same in units attribute, but are different than what is in both values', () => {
+            expect(compareParamaters({ value: "12000 cm", units: "mm"}, { value: "12000 km", units: "mm"})).toBeFalsy();
+        });
+
+        it('handles undefined parameters', () => {
+            expect(compareParamaters(first, undefined)).toBeFalsy();
+            expect(compareParamaters(first, null)).toBeFalsy();
         });
     });
 });
