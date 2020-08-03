@@ -34,6 +34,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Autodesk.iLogic.Core">
+      <HintPath>$(InventorBinFolder)\Autodesk.iLogic.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Autodesk.Inventor.Interop">
       <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>True</EmbedInteropTypes>

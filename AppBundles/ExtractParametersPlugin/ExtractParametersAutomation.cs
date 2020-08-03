@@ -60,9 +60,6 @@ namespace ExtractParametersPlugin
                             return;
                     }
 
-                    // extract user parameters
-                    InventorParameters allParams = ExtractParameters(parameters);
-
                     // save current state
                     LogTrace("Updating");
                     doc.Update2();
@@ -70,7 +67,7 @@ namespace ExtractParametersPlugin
                     doc.Save2(SaveDependents: true);
 
                     // detect iLogic forms
-                    iLogicFormsReader reader = new iLogicFormsReader(doc, allParams);
+                    iLogicFormsReader reader = new iLogicFormsReader(doc);
                     iLogicForm[] forms = reader.Extract();
                     LogTrace($"Found {forms.Length} iLogic forms");
                     foreach (var form in forms)
@@ -94,7 +91,7 @@ namespace ExtractParametersPlugin
                     else
                     {
                         LogTrace("No non-empty iLogic forms found. Using all user parameters.");
-                        resultingParameters = ExtractParameters(parameters.UserParameters);
+                        resultingParameters = ExtractParameters((Parameters)parameters.UserParameters);
                     }
 
                     // generate resulting JSON. Note it's not formatted (to have consistent hash)
@@ -111,7 +108,7 @@ namespace ExtractParametersPlugin
             }
         }
 
-        public InventorParameters ExtractParameters(dynamic userParameters)
+        public InventorParameters ExtractParameters(Parameters parameters)
         {
             /* The resulting json will be like this:
               { 
@@ -128,19 +125,13 @@ namespace ExtractParametersPlugin
             */
             try
             {
-                var parameters = new InventorParameters();
-                foreach (dynamic param in userParameters)
+                var result = new InventorParameters();
+                foreach (Parameter param in parameters)
                 {
-                    var parameter = new InventorParameter
-                    {
-                        Unit = param.Units,
-                        Value = param.Expression,
-                        Values = param.ExpressionList?.GetExpressionList() ?? new string[0]
-                    };
-                    parameters.Add(param.Name, parameter);
+                    result.Add(param.Name, iLogicFormsReader.Convert(param));
                 }
 
-                return parameters;
+                return result;
             }
             catch (Exception e)
             {

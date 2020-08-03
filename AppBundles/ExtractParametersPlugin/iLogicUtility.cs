@@ -23,7 +23,6 @@ using Autodesk.iLogic.UiBuilderCore.Data;
 using Autodesk.iLogic.UiBuilderCore.Storage;
 using iLogic;
 using Inventor;
-using Newtonsoft.Json;
 using Shared;
 
 namespace ExtractParametersPlugin
@@ -44,22 +43,38 @@ namespace ExtractParametersPlugin
         private class FormExtractor
         {
             private readonly FormSpecification _formSpec;
-            private readonly InventorParameters _knownParameters;
             private readonly Document _document;
             private readonly InventorParameters _collectedParameters = new InventorParameters();
 
-            private FormExtractor(FormSpecification formSpec, InventorParameters knownParameters, Document document)
+            private CadPropertiesInRule iPropertyHandler
+            {
+                get
+                {
+                    if (_ruleWorker == null)
+                    {
+                        _ruleWorker = new CadPropertiesInRule(_document, new StylesInEnglishHandler());
+                    }
+                    return _ruleWorker;
+                }
+            }
+            private CadPropertiesInRule _ruleWorker;
+
+            /// <summary>
+            /// Constructor.
+            /// </summary>
+            /// <param name="document"></param>
+            /// <param name="formSpec"></param>
+            private FormExtractor(Document document, FormSpecification formSpec)
             {
                 _formSpec = formSpec;
-                _knownParameters = knownParameters;
                 _document = document;
             }
 
-            public static iLogicForm Get(UiStorage storage, string formName, InventorParameters allowedParameters,
-                Document document)
+
+            public static iLogicForm Get(Document document, UiStorage storage, string formName)
             {
                 FormSpecification formSpec = storage.LoadFormSpecification(formName);
-                var extractor = new FormExtractor(formSpec, allowedParameters, document);
+                var extractor = new FormExtractor(document, formSpec);
                 return extractor.Run();
             }
 
@@ -113,84 +128,45 @@ namespace ExtractParametersPlugin
 
             private void Process_iProperty(iPropertyControlSpec iPropertySpec)
             {
-                var json = JsonConvert.SerializeObject(iPropertySpec);
-                Trace.WriteLine(json);
-
-                CadPropertiesInRule props = new CadPropertiesInRule(_document, new StylesInEnglishHandler());
-                var value = props.get_Expression(iPropertySpec.PropertySetName, iPropertySpec.PropertyName);
+                // Trace.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(iPropertySpec));
 
                 var parameter = new InventorParameter
-                {
-                    Label = iPropertySpec.Name.Trim(),
-                    ReadOnly = iPropertySpec.ReadOnly,
-                    Value = value
-                };
+                                {
+                                    Label = iPropertySpec.Name.Trim(),
+                                    ReadOnly = iPropertySpec.ReadOnly,
+                                    Value = iPropertyHandler.get_Expression(iPropertySpec.PropertySetName, iPropertySpec.PropertyName)
+                                };
 
                 _collectedParameters.Add_iProperty(iPropertySpec.PropertySetName, iPropertySpec.PropertyName, parameter);
-/*
-                var propertySetName = iPropertySpec.PropertySetName;
-                if (_document.PropertySets.PropertySetExists(propertySetName, out dynamic propertySet))
-                {
-                    var propertyName = iPropertySpec.PropertyName;
-
-                    dynamic property = propertySet.Item(propertyName);
-                    if (property == null)
-                    {
-                        Trace.TraceError($"Cannot find '{propertyName}' property.");
-                        return;
-                    }
-
-                    var parameter = new InventorParameter
-                                    {
-                                        Label = iPropertySpec.Name.Trim(),
-                                        ReadOnly = iPropertySpec.ReadOnly,
-                                        Value = property.Value
-                                    };
-
-                    _collectedParameters.Add_iProperty(propertySetName, propertyName, parameter);
-                }
-                else
-                {
-                    Trace.TraceError($"Cannot find '{propertySetName}' property set.");
-                }
-                */
             }
 
             private void ProcessParameter(ParameterControlSpec spec)
             {
-                if (_knownParameters.TryGetValue(spec.ParameterName, out var knownParameter))
-                {
-                    var parameter = new InventorParameter
-                                    {
-                                        Label = spec.Name.Trim(),
-                                        Unit = knownParameter.Unit,
-                                        ReadOnly = spec.ReadOnly,
-                                        Value = knownParameter.Value,
-                                        Values = knownParameter.Values
-                                    };
-
-                    _collectedParameters.Add(spec.ParameterName, parameter);
-                }
-                else
+                Parameter param = CadDocUtil.DocGetParam(_document, spec.ParameterName);
+                if (param == null)
                 {
                     Trace.TraceError($"Processing unknown {spec.ParameterName} parameter");
+                    return;
                 }
+
+                InventorParameter parameter = Convert(param);
+                parameter.Label = spec.Name.Trim();
+                parameter.ReadOnly = spec.ReadOnly;
+
+                _collectedParameters.Add(spec.ParameterName, parameter);
             }
         }
 
         #endregion
 
         private readonly Document _document;
-        private readonly InventorParameters _knownParameters;
         private readonly UiStorage _storage;
 
         /// <summary>Constructor.</summary>
         /// <param name="document">Inventor document.</param>
-        /// <param name="knownParameters">Map with Inventor parameters, which are allowed to be extracted.</param>
-        public iLogicFormsReader(Document document, InventorParameters knownParameters)
+        public iLogicFormsReader(Document document)
         {
             _document = document;
-            _knownParameters = knownParameters;
             _storage = UiStorageFactory.GetDocumentStorage(document);
         }
 
@@ -203,7 +179,18 @@ namespace ExtractParametersPlugin
 
         private iLogicForm GetGroupsAndParameters(string formName)
         {
-            return FormExtractor.Get(_storage, formName, _knownParameters, _document);
+            return FormExtractor.Get(_document, _storage, formName);
+        }
+
+        public static InventorParameter Convert(Parameter parameter)
+        {
+            dynamic param = parameter; // to avoid failures on methods like get_Units()
+            return new InventorParameter
+            {
+                Unit = param.Units,
+                Value = param.Expression,
+                Values = param.ExpressionList?.GetExpressionList() ?? new string[0]
+            };
         }
     }
 }
