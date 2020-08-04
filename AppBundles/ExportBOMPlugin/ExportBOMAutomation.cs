@@ -27,13 +27,15 @@ using Newtonsoft.Json;
 
 namespace ExportBOMPlugin
 {
-    public class ExtractedRow
+    public class Column
     {
-        public string RowNumber { get; set; }
-        public string PartNumber { get; set; }
-        public int Quantity { get; set; }
-        public string Description { get; set; }
-        public string Material { get; set; }
+        public string Label { get; set; }
+        public bool? Numeric { get; set; }
+    }
+    public class ExtractedBOM
+    {
+        public Column[] Columns { get; set; }
+        public object[][] Data { get; set; }
     }
 
     // heavily based on https://github.com/akenson/da-update-bom
@@ -75,8 +77,8 @@ namespace ExportBOMPlugin
 
                     case DocumentTypeEnum.kAssemblyDocumentObject:
 
-                        List<ExtractedRow> rows = ProcessAssembly((AssemblyDocument)doc);
-                        bomJson = JsonConvert.SerializeObject(rows, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.None });
+                        ExtractedBOM extractedBOM = ProcessAssembly((AssemblyDocument)doc);
+                        bomJson = JsonConvert.SerializeObject(extractedBOM, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.None });
                         break;
 
                     // complain about non-supported document types
@@ -92,11 +94,22 @@ namespace ExportBOMPlugin
             }
         }
 
-        private List<ExtractedRow> ProcessAssembly(AssemblyDocument doc)
+        private ExtractedBOM ProcessAssembly(AssemblyDocument doc)
         {
             using (new HeartBeat())
             {
-                var rows = new List<ExtractedRow>();
+                var extractedBOM = new ExtractedBOM
+                                    {
+                                        Columns = new[]
+                                        {
+                                            new Column { Label = "Row Number" },
+                                            new Column { Label = "Part Number" },
+                                            new Column { Label = "Quantity", Numeric = true },
+                                            new Column { Label = "Description" },
+                                            new Column { Label = "Material" }
+                                        }
+                                    };
+                var rows = new List<object[]>();
 
                 AssemblyComponentDefinition assemblyComponentDef = doc.ComponentDefinition;
                 BOM bom = assemblyComponentDef.BOM;
@@ -105,11 +118,11 @@ namespace ExportBOMPlugin
 
                 GetBomRowProperties(structureView.BOMRows, rows);
 
-                return rows;
+                return extractedBOM;
             }
         }
 
-        private void GetBomRowProperties(BOMRowsEnumerator bomRowsEnumerator, List<ExtractedRow> rows)
+        private void GetBomRowProperties(BOMRowsEnumerator bomRowsEnumerator, List<object[]> rows)
         {
             foreach (BOMRow row in bomRowsEnumerator)
             {
@@ -121,16 +134,15 @@ namespace ExportBOMPlugin
                 Property description = trackingSet["Description"];
                 Property material = trackingSet["Material"];
 
-                var extracted = new ExtractedRow
-                                    {
-                                        RowNumber = row.ItemNumber,
-                                        PartNumber = partNum.Value,
-                                        Quantity = row.ItemQuantity,
-                                        Description = description.Value,
-                                        Material = material.Value
-                                    };
+                object[] data = { // order is important. a place to improve
+                    row.ItemNumber,
+                    partNum.Value,
+                    row.ItemQuantity,
+                    description.Value,
+                    material.Value
+                };
 
-                rows.Add(extracted);
+                rows.Add(data);
 
                 // iterate through child rows
                 if (row.ChildRows != null)
