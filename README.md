@@ -43,7 +43,8 @@ See [high level diagram](architecture.png)
 ### Run after initial data is created
  - From a command prompt, go to the `WebApplication` directory, and run `dotnet run`
 ### Open site
- - Navigate to https://localhost:5001
+ - In Google Chrome navigate to https://localhost:5001
+    * Other browsers may not be fully supported at this time
      * You may need to refresh the browser after it launches if you see the error `This site can't be reached`
     * If you see the error `Your Connection is not private`, click `Advanced` and then `Proceed to localhost (unsafe)`. This is due a development certificate being used.
 
