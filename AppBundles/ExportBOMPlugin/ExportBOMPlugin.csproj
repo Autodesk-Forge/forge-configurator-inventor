@@ -49,7 +49,7 @@
     </Compile>
     <Compile Include="PluginServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SampleAutomation.cs" />
+    <Compile Include="ExportBOMAutomation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ExportBOMPlugin.X.manifest" />

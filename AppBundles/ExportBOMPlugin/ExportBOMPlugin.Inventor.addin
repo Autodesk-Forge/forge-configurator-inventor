@@ -3,6 +3,6 @@
   <ClassId>{282d00a7-b2b5-488e-8a76-7c22280794a6}</ClassId>
   <ClientId>{282d00a7-b2b5-488e-8a76-7c22280794a6}</ClientId>
   <DisplayName>ExportBOMPlugin</DisplayName>
-  <Description>a ExportBOMPlugin</Description>
+  <Description>Export BOM functionality</Description>
   <Assembly>ExportBOMPlugin.dll</Assembly>
 </Addin>

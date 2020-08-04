@@ -38,7 +38,7 @@ namespace ExportBOMPlugin
 
             // Initialize AddIn members.
             _inventorServer = addInSiteObject.InventorServer;
-            Automation = new SampleAutomation(_inventorServer);
+            Automation = new ExportBOMAutomation(_inventorServer);
         }
 
         public void Deactivate()
