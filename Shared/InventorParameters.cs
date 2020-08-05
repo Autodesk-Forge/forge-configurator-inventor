@@ -36,6 +36,9 @@ namespace Shared
         [JsonProperty("value")]
         public string Value { get; set; }
 
+        [JsonProperty("nominalvalue")]
+        public string NominalValue { get; set; }
+
         [JsonProperty("unit")]
         public string Unit { get; set; }
 
