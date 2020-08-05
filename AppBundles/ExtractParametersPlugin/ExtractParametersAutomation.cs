@@ -130,15 +130,23 @@ namespace ExtractParametersPlugin
                 var parameters = new InventorParameters();
                 foreach (dynamic param in userParameters)
                 {
-                    var unitType = doc.UnitsOfMeasure.GetTypeFromString(param.Units);
-                    var value = doc.UnitsOfMeasure.GetValueFromExpression(param.Expression, unitType);
-                    var nominalValue = doc.UnitsOfMeasure.GetPreciseStringFromValue(value, unitType);
+                    var nominalValue = param.Expression;
+                    try
+                    {
+                        var unitType = doc.UnitsOfMeasure.GetTypeFromString(param.Units);
+                        var value = doc.UnitsOfMeasure.GetValueFromExpression(param.Expression, unitType);
+                        nominalValue = doc.UnitsOfMeasure.GetPreciseStringFromValue(value, unitType);
+                    }
+                    // not all unitTypes seem to be convertible (e.g. kTextUnits). In that case, we'll go on with param.Value assigned before.
+                    catch (Exception e)
+                    { 
+                        LogError("Can't get nominalValue for " + param.Name + ": " + e.Message);
+                    }
 
                     var parameter = new InventorParameter
                     {
                         Unit = param.Units,
-                        Value = param.Expression,
-                        NominalValue = nominalValue,
+                        Value = nominalValue,
                         Values = param.ExpressionList?.GetExpressionList() ?? new string[0]
                     };
                     parameters.Add(param.Name, parameter);
