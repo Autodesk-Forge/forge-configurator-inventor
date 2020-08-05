@@ -24,7 +24,7 @@ namespace WebApplication.Processing
 {
     /// <summary>
     /// Preprocess incoming project:
-    /// - generate thumbnail and SVF
+    /// - generate thumbnail, BOM and SVF
     /// - extract parameters
     /// </summary>
     public class AdoptProject : AggregatedDefinition
@@ -36,6 +36,7 @@ namespace WebApplication.Processing
             base(publisher,
                     new CreateSVF(publisher),
                     new CreateThumbnail(publisher),
+                    new CreateBOM(publisher),
                     new ExtractParameters(publisher))
         {}
 

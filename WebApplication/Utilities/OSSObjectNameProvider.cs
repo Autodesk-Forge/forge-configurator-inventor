@@ -48,6 +48,11 @@ namespace WebApplication.Utilities
         /// JSON file with parameters.
         /// </summary>
         public const string Parameters = "parameters.json";
+
+        /// <summary>
+        /// JSON file with BOM data.
+        /// </summary>
+        public const string BOM = "bom.json";
     }
 
     /// <summary>
@@ -159,6 +164,11 @@ namespace WebApplication.Utilities
         public string Parameters => ToFullName(LocalName.Parameters);
 
         public string Rfa => ToFullName("result.rfa");
+
+        /// <summary>
+        /// Filename for JSON with BOM data.
+        /// </summary>
+        public string Bom => ToFullName(LocalName.BOM);
     }
 
     /// <summary>

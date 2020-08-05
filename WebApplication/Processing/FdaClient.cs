@@ -16,9 +16,7 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WebApplication.Definitions;
 
@@ -27,42 +25,37 @@ namespace WebApplication.Processing
     public class FdaClient
     {
         private readonly TransferData _transferData;
-        private readonly CreateSVF _svfWork;
         private readonly CreateSAT _satWork;
         private readonly CreateRFA _rfaWork;
-        private readonly CreateThumbnail _thumbnailWork;
-        private readonly ExtractParameters _parametersWork;
         private readonly AdoptProject _adoptWork;
         private readonly UpdateProject _updateProjectWork;
         private readonly AppBundleZipPaths _paths;
-        private readonly UpdateParameters _updateParametersWork;
-        private readonly ILogger<FdaClient> _logger;
+        private readonly Publisher _publisher;
 
-        public FdaClient(Publisher publisher, IOptions<AppBundleZipPaths> appBundleZipPathsOptionsAccessor, ILogger<FdaClient> logger)
+        public FdaClient(Publisher publisher, IOptions<AppBundleZipPaths> appBundleZipPathsOptionsAccessor)
         {
             _transferData = new TransferData(publisher);
-            _svfWork = new CreateSVF(publisher);
             _satWork = new CreateSAT(publisher);
             _rfaWork = new CreateRFA(publisher);
-            _thumbnailWork = new CreateThumbnail(publisher);
-            _parametersWork = new ExtractParameters(publisher);
             _adoptWork = new AdoptProject(publisher);
-            _updateParametersWork = new UpdateParameters(publisher);
             _updateProjectWork = new UpdateProject(publisher);
             _paths = appBundleZipPathsOptionsAccessor.Value;
-            _logger = logger;
+            _publisher = publisher;
         }
 
         public async Task InitializeAsync()
         {
             // create bundles and activities
+            await new CreateSVF(_publisher).InitializeAsync(_paths.CreateSVF);
+            await new CreateThumbnail(_publisher).InitializeAsync(_paths.CreateThumbnail);
+            await new ExtractParameters(_publisher).InitializeAsync(_paths.ExtractParameters);
+            await new UpdateParameters(_publisher).InitializeAsync(_paths.UpdateParameters);
+            await new CreateBOM(_publisher).InitializeAsync(_paths.CreateBOM);
+
             await _transferData.InitializeAsync(_paths.EmptyExe);
-            await _svfWork.InitializeAsync(_paths.CreateSVF);
             await _satWork.InitializeAsync(_paths.CreateSAT);
             await _rfaWork.InitializeAsync(_paths.CreateRFA);
-            await _thumbnailWork.InitializeAsync(_paths.CreateThumbnail);
-            await _parametersWork.InitializeAsync(_paths.ExtractParameters);
-            await _updateParametersWork.InitializeAsync(_paths.UpdateParameters);
+
             await _adoptWork.InitializeAsync(null /* does not matter */);
             await _updateProjectWork.InitializeAsync(null /* does not matter */);
         }
@@ -70,13 +63,16 @@ namespace WebApplication.Processing
         public async Task CleanUpAsync()
         {
             // delete bundles and activities
+            await new CreateSVF(_publisher).CleanUpAsync();
+            await new CreateThumbnail(_publisher).CleanUpAsync();
+            await new ExtractParameters(_publisher).CleanUpAsync();
+            await new UpdateParameters(_publisher).CleanUpAsync();
+            await new CreateBOM(_publisher).CleanUpAsync();
+
             await _transferData.CleanUpAsync();
-            await _svfWork.CleanUpAsync();
             await _satWork.CleanUpAsync();
             await _rfaWork.CleanUpAsync();
-            await _thumbnailWork.CleanUpAsync();
-            await _parametersWork.CleanUpAsync();
-            await _updateParametersWork.CleanUpAsync();
+
             await _adoptWork.CleanUpAsync();
             await _updateProjectWork.CleanUpAsync();
         }

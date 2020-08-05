@@ -76,6 +76,11 @@ namespace WebApplication.Utilities
         /// </summary>
         public string Parameters => ToFullName(LocalName.Parameters);
 
+        /// <summary>
+        /// Filename for JSON with BOM.
+        /// </summary>
+        public string BOM => ToFullName(LocalName.BOM);
+
         public LocalNameProvider(string projectDir, string hash) : base(Path.Combine(projectDir, hash))
         {
         }

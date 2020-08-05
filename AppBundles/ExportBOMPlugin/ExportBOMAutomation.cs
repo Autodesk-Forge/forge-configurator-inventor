@@ -58,11 +58,6 @@ namespace ExportBOMPlugin
 
         public void Run(Document doc)
         {
-            LogTrace($"Run called with {doc.DisplayName}");
-        }
-
-        public void RunWithArguments(Document doc, NameValueMap map)
-        {
             LogTrace("Processing " + doc.FullFileName);
 
             try
@@ -92,6 +87,12 @@ namespace ExportBOMPlugin
             {
                 LogError("Processing failed. " + e.ToString());
             }
+
+        }
+
+        public void RunWithArguments(Document doc, NameValueMap map)
+        {
+            LogError("RunWithArguments is not functional");
         }
 
         private ExtractedBOM ProcessAssembly(AssemblyDocument doc)
@@ -107,7 +108,7 @@ namespace ExportBOMPlugin
                                             new Column { Label = "Quantity", Numeric = true },
                                             new Column { Label = "Description" },
                                             new Column { Label = "Material" }
-                                        }
+                                        },
                                     };
                 var rows = new List<object[]>();
 
@@ -117,6 +118,8 @@ namespace ExportBOMPlugin
                 BOMView structureView = bomViews["Structured"];
 
                 GetBomRowProperties(structureView.BOMRows, rows);
+
+                extractedBOM.Data = rows.ToArray();
 
                 return extractedBOM;
             }
