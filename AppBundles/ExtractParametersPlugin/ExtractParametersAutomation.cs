@@ -137,7 +137,7 @@ namespace ExtractParametersPlugin
                         var value = doc.UnitsOfMeasure.GetValueFromExpression(param.Expression, unitType);
                         nominalValue = doc.UnitsOfMeasure.GetPreciseStringFromValue(value, unitType);
                     }
-                    // not all unitTypes seem to be convertible (e.g. kTextUnits). In that case, we'll go on with param.Value assigned before.
+                    // not all unitTypes seem to be convertible (e.g. kTextUnits). In that case, we'll go on with param.Expression assigned before.
                     catch (Exception e)
                     { 
                         LogError("Can't get nominalValue for " + param.Name + ": " + e.Message);
