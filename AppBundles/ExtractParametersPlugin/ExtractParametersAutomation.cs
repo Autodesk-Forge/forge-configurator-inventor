@@ -61,7 +61,7 @@ namespace ExtractParametersPlugin
                     }
 
                     // extract user parameters
-                    InventorParameters allParams = ExtractParameters(parameters);
+                    InventorParameters allParams = ExtractParameters(doc, parameters);
 
                     // save current state
                     LogTrace("Updating");
@@ -93,7 +93,7 @@ namespace ExtractParametersPlugin
                     else
                     {
                         LogTrace("No non-empty iLogic forms found. Using all user parameters.");
-                        resultingParameters = ExtractParameters(parameters.UserParameters);
+                        resultingParameters = ExtractParameters(doc, parameters.UserParameters);
                     }
 
                     // generate resulting JSON. Note it's not formatted (to have consistent hash)
@@ -110,7 +110,7 @@ namespace ExtractParametersPlugin
             }
         }
 
-        public InventorParameters ExtractParameters(dynamic userParameters)
+        public InventorParameters ExtractParameters(Document doc, dynamic userParameters)
         {
             /* The resulting json will be like this:
               { 
@@ -130,10 +130,23 @@ namespace ExtractParametersPlugin
                 var parameters = new InventorParameters();
                 foreach (dynamic param in userParameters)
                 {
+                    var nominalValue = param.Expression;
+                    try
+                    {
+                        var unitType = doc.UnitsOfMeasure.GetTypeFromString(param.Units);
+                        var value = doc.UnitsOfMeasure.GetValueFromExpression(param.Expression, unitType);
+                        nominalValue = doc.UnitsOfMeasure.GetPreciseStringFromValue(value, unitType);
+                    }
+                    // not all unitTypes seem to be convertible (e.g. kTextUnits). In that case, we'll go on with param.Expression assigned before.
+                    catch (Exception e)
+                    { 
+                        LogError("Can't get nominalValue for " + param.Name + ": " + e.Message);
+                    }
+
                     var parameter = new InventorParameter
                     {
                         Unit = param.Units,
-                        Value = param.Expression,
+                        Value = nominalValue,
                         Values = param.ExpressionList?.GetExpressionList() ?? new string[0]
                     };
                     parameters.Add(param.Name, parameter);
