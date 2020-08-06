@@ -24,6 +24,7 @@ using System.Runtime.InteropServices;
 using Inventor;
 using Autodesk.Forge.DesignAutomation.Inventor.Utils;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace ExportBOMPlugin
 {
@@ -49,6 +50,15 @@ namespace ExportBOMPlugin
         private const string OutputJsonName = "bom.json";
         private const string TrackingProperties = "Design Tracking Properties";
 
+        private static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings
+                                                                                    {
+                                                                                        NullValueHandling = NullValueHandling.Ignore,
+                                                                                        Formatting = Formatting.None,
+                                                                                        ContractResolver = new DefaultContractResolver
+                                                                                        {
+                                                                                            NamingStrategy = new CamelCaseNamingStrategy()
+                                                                                        }
+                                                                                    };
         private readonly InventorServer inventorApplication;
 
         public ExportBOMAutomation(InventorServer inventorApp)
@@ -73,7 +83,7 @@ namespace ExportBOMPlugin
                     case DocumentTypeEnum.kAssemblyDocumentObject:
 
                         ExtractedBOM extractedBOM = ProcessAssembly((AssemblyDocument)doc);
-                        bomJson = JsonConvert.SerializeObject(extractedBOM, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.None });
+                        bomJson = JsonConvert.SerializeObject(extractedBOM, SerializerSettings);
                         break;
 
                     // complain about non-supported document types
