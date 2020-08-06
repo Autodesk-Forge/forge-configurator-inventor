@@ -35,7 +35,7 @@ namespace WebApplication.Utilities
         /// <summary>
         /// Generate full local name for the filename.
         /// </summary>
-        protected string ToFullName(string fileName)
+        public string ToFullName(string fileName)
         {
             return Path.Combine(BaseDir, fileName);
         }

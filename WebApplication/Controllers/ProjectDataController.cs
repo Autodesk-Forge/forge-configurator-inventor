@@ -20,7 +20,6 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Shared;
 using WebApplication.State;
 using WebApplication.Utilities;
 
@@ -42,43 +41,51 @@ namespace WebApplication.Controllers
         }
 
         [HttpGet("parameters/{projectName}")]
-        public async Task<InventorParameters> GetParameters(string projectName)
+        public async Task<ActionResult> GetParameters(string projectName)
         {
-            var projectStorage = await _userResolver.GetProjectStorageAsync(projectName);
-
-            var localNames = projectStorage.GetLocalNames();
-            var paramsFile = localNames.Parameters;
-            if (! System.IO.File.Exists(paramsFile)) // TODO: unify it someday, not high priority
-            {
-                _logger.LogInformation($"Restoring missing parameters file for '{projectName}'");
-
-                Directory.CreateDirectory(localNames.BaseDir);
-
-                var bucket = await _userResolver.GetBucketAsync(tryToCreate: false);
-                await bucket.DownloadFileAsync(projectStorage.GetOssNames().Parameters, paramsFile);
-            }
-
-            return Json.DeserializeFile<InventorParameters>(paramsFile);
+            return await SendLocalFileContent(projectName, LocalName.Parameters);
         }
 
         [HttpGet("bom/{projectName}")]
         public async Task<ActionResult> GetBOM(string projectName)
         {
+            return await SendLocalFileContent(projectName, LocalName.BOM);
+        }
+
+        /// <summary>
+        /// Send local file for the project.
+        /// </summary>
+        private async Task<ActionResult> SendLocalFileContent(string projectName, string fileName, string contentType = "application/json")
+        {
+            string localFile = await EnsureLocalFile(projectName, fileName);
+            return new PhysicalFileResult(localFile, contentType);
+        }
+
+        /// <summary>
+        /// Ensure that the file exists in local cache for a project.
+        /// </summary>
+        /// <param name="projectName">The project name.</param>
+        /// <param name="fileName">Short file name.</param>
+        /// <param name="hash">Parameters hash (default is used if not provided).</param>
+        /// <returns>Full path to the existing local file.</returns>
+        private async Task<string> EnsureLocalFile(string projectName, string fileName, string hash = null)
+        {
             var projectStorage = await _userResolver.GetProjectStorageAsync(projectName);
 
-            var localNames = projectStorage.GetLocalNames();
-            var bomFile = localNames.BOM;
-            if (! System.IO.File.Exists(bomFile)) // TODO: unify it someday, not high priority
+            var localNames = projectStorage.GetLocalNames(hash);
+            var fullLocalName = localNames.ToFullName(fileName);
+
+            if (! System.IO.File.Exists(fullLocalName))
             {
-                _logger.LogInformation($"Restoring missing BOM file for '{projectName}'");
+                _logger.LogInformation($"Restoring missing '{fullLocalName}' for '{projectName}'");
 
                 Directory.CreateDirectory(localNames.BaseDir);
 
                 var bucket = await _userResolver.GetBucketAsync(tryToCreate: false);
-                await bucket.DownloadFileAsync(projectStorage.GetOssNames().Bom, bomFile);
+                await bucket.DownloadFileAsync(projectStorage.GetOssNames(hash).ToFullName(fullLocalName), fullLocalName);
             }
 
-            return new PhysicalFileResult(bomFile, "application/json");
+            return fullLocalName;
         }
     }
 }

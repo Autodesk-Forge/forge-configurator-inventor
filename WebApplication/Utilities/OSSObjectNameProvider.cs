@@ -131,7 +131,7 @@ namespace WebApplication.Utilities
         /// <summary>
         /// Generate full OSS name for the filename.
         /// </summary>
-        protected string ToFullName(string fileName)
+        public string ToFullName(string fileName)
         {
             return ONC.Join(_namePrefix, fileName);
         }
