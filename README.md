@@ -20,13 +20,13 @@ See [high level diagram](architecture.png)
 
 ## Setup
 1. Clone repository
-1. Create a forge app at https://forge.autodesk.com/, and select the `Design Automation API` and `Misc API` APIs
+1. Create a forge app at https://forge.autodesk.com/, and select the `Design Automation API` and `Data Management API` APIs
 1. Enter https://localhost:5001 as the callback URL.
 1. Note the Client ID and Secret generated.
 1. Specify [forge credentials](#specify-forge-credentials).
 1. Copy `AppBundles\InventorBinFolder.props.template` to `AppBundles\InventorBinFolder.props`
 1. Replace the `PATH_TO_YOUR_INVENTOR_BIN` string in the `AppBundles\InventorBinFolder.props` file with your actual Inventor bin folder path, for example: `C:\Program Files\Autodesk\Inventor 2021\Bin`
-1. Specify if access should be limited in `WebApplication\appsettings.json`. Set `Enabled` to `true` or `false`, and populate the `Domains` and `Addresses` fields with comma delimited lists such as `["autodesk.com", "company.com"]` and `["person@company2.com", "person@company3.com"]`.
+1. *(Optional) Specify if access should be limited in `WebApplication\appsettings.json`. Set `Enabled` to `true` or `false`, and populate the `Domains` and `Addresses` fields with comma delimited lists such as `["autodesk.com", "company.com"]` and `["person@company2.com", "person@company3.com"]`*.
 
 ## Build
 * Building the projects also installs required packages (this can take several minutes).
