@@ -29,6 +29,11 @@ namespace WebApplication.Definitions
         public string Svf { get; set; }
 
         /// <summary>
+        /// URL to BOM JSON.
+        /// </summary>
+        public string BomJsonUrl { get; set; }
+
+        /// <summary>
         /// URL to download current model
         /// </summary>
         public string ModelDownloadUrl { get; set; }

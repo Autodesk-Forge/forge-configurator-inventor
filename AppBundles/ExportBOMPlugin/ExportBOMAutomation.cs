@@ -33,6 +33,7 @@ namespace ExportBOMPlugin
         public string Label { get; set; }
         public bool? Numeric { get; set; }
     }
+
     public class ExtractedBOM
     {
         public Column[] Columns { get; set; }
@@ -59,6 +60,9 @@ namespace ExportBOMPlugin
                                                                                             NamingStrategy = new CamelCaseNamingStrategy()
                                                                                         }
                                                                                     };
+
+        private static readonly ExtractedBOM EmptyBOM = new ExtractedBOM { Columns = new Column[0], Data = new object[0][] };
+
         private readonly InventorServer inventorApplication;
 
         public ExportBOMAutomation(InventorServer inventorApp)
@@ -72,7 +76,8 @@ namespace ExportBOMPlugin
 
             try
             {
-                string bomJson = "[]"; // empty JSON array
+                ExtractedBOM extractedBOM = EmptyBOM;
+
                 switch (doc.DocumentType)
                 {
                     case DocumentTypeEnum.kPartDocumentObject:
@@ -83,8 +88,7 @@ namespace ExportBOMPlugin
 
                         try
                         {
-                            ExtractedBOM extractedBOM = ProcessAssembly((AssemblyDocument)doc);
-                            bomJson = JsonConvert.SerializeObject(extractedBOM, SerializerSettings);
+                            extractedBOM = ProcessAssembly((AssemblyDocument)doc);
                         }
                         catch (Exception e)
                         {
@@ -97,6 +101,8 @@ namespace ExportBOMPlugin
                         throw new ArgumentOutOfRangeException(nameof(doc), "Unsupported document type");
                 }
 
+                // save as JSON
+                string bomJson = JsonConvert.SerializeObject(extractedBOM, SerializerSettings);
                 System.IO.File.WriteAllText(OutputJsonName, bomJson);
             }
             catch (Exception e)
