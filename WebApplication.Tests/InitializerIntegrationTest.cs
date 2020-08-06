@@ -93,11 +93,12 @@ namespace WebApplication.Tests
                 ExtractParameters = "../../../../WebApplication/AppBundles/ExtractParametersPlugin.bundle.zip",
                 UpdateParameters = "../../../../WebApplication/AppBundles/UpdateParametersPlugin.bundle.zip",
                 CreateSAT = "../../../../WebApplication/AppBundles/SatExportPlugin.bundle.zip",
-                CreateRFA = "../../../../WebApplication/AppBundles/RFAExportPlugin.bundle.zip"
+                CreateRFA = "../../../../WebApplication/AppBundles/RFAExportPlugin.bundle.zip",
+                CreateBOM = "../../../../WebApplication/AppBundles/ExportBOMPlugin.bundle.zip"
             };
             IOptions<AppBundleZipPaths> appBundleZipPathsOptions = Options.Create(appBundleZipPathsConfiguration);
 
-            var fdaClient = new FdaClient(publisher, appBundleZipPathsOptions, new NullLogger<FdaClient>());
+            var fdaClient = new FdaClient(publisher, appBundleZipPathsOptions);
             var defaultProjectsConfiguration = new DefaultProjectsConfiguration
             {
                 Projects = new [] { new DefaultProjectConfiguration { Url = testZippedIamUrl, TopLevelAssembly = testIamPathInZip, Name = "Basic" } }

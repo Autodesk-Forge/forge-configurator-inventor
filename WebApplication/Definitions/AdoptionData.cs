@@ -40,6 +40,7 @@ namespace WebApplication.Definitions
         public string OutputIPTModelUrl { get; set; }
         public string SatUrl { get; internal set; }
         public string RfaUrl { get; internal set; }
+        public string BomUrl { get; set; }
     }
 
     /// <summary>

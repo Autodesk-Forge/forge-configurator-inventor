@@ -45,6 +45,7 @@ namespace WebApplication.Processing
         public readonly string OutputModelIPT = $"{Guid.NewGuid():N}.ipt";
         public readonly string OutputSAT = $"{Guid.NewGuid():N}.sat";
         public readonly string OutputRFA = $"{Guid.NewGuid():N}.rfa";
+        public readonly string BomJson = $"{Guid.NewGuid():N}.bom.json";
 
         /// <summary>
         /// Constructor.
@@ -68,18 +69,20 @@ namespace WebApplication.Processing
                                             bucket.CreateSignedUrlAsync(SVF, ObjectAccess.Write), 
                                             bucket.CreateSignedUrlAsync(Parameters, ObjectAccess.Write),
                                             bucket.CreateSignedUrlAsync(OutputModelIAM, ObjectAccess.Write),
-                                            bucket.CreateSignedUrlAsync(OutputModelIPT, ObjectAccess.Write));
+                                            bucket.CreateSignedUrlAsync(OutputModelIPT, ObjectAccess.Write),
+                                            bucket.CreateSignedUrlAsync(BomJson, ObjectAccess.Write));
 
             return new AdoptionData
-            {
-                InputDocUrl       = docUrl,
-                ThumbnailUrl      = urls[0],
-                SvfUrl            = urls[1],
-                ParametersJsonUrl = urls[2],
-                OutputIAMModelUrl    = urls[3],
-                OutputIPTModelUrl = urls[4],
-                TLA               = tlaFilename
-            };
+                    {
+                        InputDocUrl         = docUrl,
+                        ThumbnailUrl        = urls[0],
+                        SvfUrl              = urls[1],
+                        ParametersJsonUrl   = urls[2],
+                        OutputIAMModelUrl   = urls[3],
+                        OutputIPTModelUrl   = urls[4],
+                        BomUrl              = urls[5],
+                        TLA                 = tlaFilename
+                    };
         }
 
         /// <summary>
@@ -97,21 +100,24 @@ namespace WebApplication.Processing
                                             bucket.CreateSignedUrlAsync(OutputModelIPT, ObjectAccess.Write),
                                             bucket.CreateSignedUrlAsync(SVF, ObjectAccess.Write),
                                             bucket.CreateSignedUrlAsync(Parameters, ObjectAccess.Write),
-                                            bucket.CreateSignedUrlAsync(InputParams, ObjectAccess.ReadWrite));
+                                            bucket.CreateSignedUrlAsync(InputParams, ObjectAccess.ReadWrite),
+                                            bucket.CreateSignedUrlAsync(BomJson, ObjectAccess.Write)
+                                            );
 
             await using var jsonStream = Json.ToStream(parameters);
             await bucket.UploadObjectAsync(InputParams, jsonStream);
 
             return new UpdateData
-            {
-                InputDocUrl       = docUrl,
-                OutputIAMModelUrl    = urls[0],
-                OutputIPTModelUrl = urls[1],
-                SvfUrl            = urls[2],
-                ParametersJsonUrl = urls[3],
-                InputParamsUrl    = urls[4],
-                TLA               = tlaFilename
-            };
+                    {
+                        InputDocUrl         = docUrl,
+                        OutputIAMModelUrl   = urls[0],
+                        OutputIPTModelUrl   = urls[1],
+                        SvfUrl              = urls[2],
+                        ParametersJsonUrl   = urls[3],
+                        InputParamsUrl      = urls[4],
+                        BomUrl              = urls[5],
+                        TLA                 = tlaFilename
+                    };
         }
 
         /// <summary>
@@ -131,6 +137,7 @@ namespace WebApplication.Processing
             // move data to expected places
             await Task.WhenAll(bucket.RenameObjectAsync(Thumbnail, project.OssAttributes.Thumbnail),
                                 bucket.RenameObjectAsync(SVF, ossNames.ModelView),
+                                bucket.RenameObjectAsync(BomJson, ossNames.Bom),
                                 bucket.RenameObjectAsync(Parameters, ossNames.Parameters),
                                 bucket.RenameObjectAsync(attributes.IsAssembly ? OutputModelIAM : OutputModelIPT, ossNames.GetCurrentModel(attributes.IsAssembly)),
                                 bucket.UploadObjectAsync(project.OssAttributes.Metadata, Json.ToStream(attributes, writeIndented: true)));
@@ -193,6 +200,7 @@ namespace WebApplication.Processing
 
             // move data to expected places
             await Task.WhenAll(bucket.RenameObjectAsync(SVF, ossNames.ModelView),
+                                bucket.RenameObjectAsync(BomJson, ossNames.Bom),
                                 bucket.RenameObjectAsync(Parameters, ossNames.Parameters),
                                 bucket.RenameObjectAsync(isAssembly ? OutputModelIAM : OutputModelIPT, ossNames.GetCurrentModel(isAssembly)),
                                 bucket.DeleteObjectAsync(InputParams));

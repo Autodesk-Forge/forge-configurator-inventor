@@ -16,26 +16,18 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
+using WebApplication.Definitions;
+
 namespace WebApplication.Processing
 {
-    /// <summary>
-    /// Update project:
-    /// - generate SVF
-    /// - extract parameters and BOM
-    /// - save current model
-    /// </summary>
-    public class UpdateProject : AggregatedDefinition
+    public class CreateBOM : ForgeAppBase
     {
-        public UpdateProject(Publisher publisher) :
-            base(publisher,
-                new UpdateParameters(publisher),
-                new CreateSVF(publisher),
-                new CreateBOM(publisher),
-                new ExtractParameters(publisher))
-        {
-        }
+        public override string Id => nameof(CreateBOM);
+        public override string Description => "Generate BOM for Inventor document";
 
-        public override string Id => nameof(UpdateProject);
-        public override string Description => "Update parameters";
+        protected override string OutputUrl(ProcessingArgs projectData) => projectData.BomUrl;
+        protected override string OutputName => "bom.json";
+
+        public CreateBOM(Publisher publisher) : base(publisher) {}
     }
 }
