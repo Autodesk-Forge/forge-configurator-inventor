@@ -26,20 +26,22 @@ using WebApplication.Utilities;
 
 namespace WebApplication.Controllers
 {
+    /// <summary>
+    /// The controller serves data for default project state. (IOW - no parameter hash is used)
+    /// </summary>
     [ApiController]
-    [Route("parameters")]
-    public class ParametersController : ControllerBase
+    public class ProjectDataController : ControllerBase
     {
         private readonly UserResolver _userResolver;
-        private readonly ILogger<ParametersController> _logger;
+        private readonly ILogger<ProjectDataController> _logger;
 
-        public ParametersController(UserResolver userResolver, ILogger<ParametersController> logger)
+        public ProjectDataController(UserResolver userResolver, ILogger<ProjectDataController> logger)
         {
             _userResolver = userResolver;
             _logger = logger;
         }
 
-        [HttpGet("{projectName}")]
+        [HttpGet("parameters/{projectName}")]
         public async Task<InventorParameters> GetParameters(string projectName)
         {
             var projectStorage = await _userResolver.GetProjectStorageAsync(projectName);
@@ -57,6 +59,26 @@ namespace WebApplication.Controllers
             }
 
             return Json.DeserializeFile<InventorParameters>(paramsFile);
+        }
+
+        [HttpGet("bom/{projectName}")]
+        public async Task<ActionResult> GetBOM(string projectName)
+        {
+            var projectStorage = await _userResolver.GetProjectStorageAsync(projectName);
+
+            var localNames = projectStorage.GetLocalNames();
+            var bomFile = localNames.BOM;
+            if (! System.IO.File.Exists(bomFile)) // TODO: unify it someday, not high priority
+            {
+                _logger.LogInformation($"Restoring missing BOM file for '{projectName}'");
+
+                Directory.CreateDirectory(localNames.BaseDir);
+
+                var bucket = await _userResolver.GetBucketAsync(tryToCreate: false);
+                await bucket.DownloadFileAsync(projectStorage.GetOssNames().Bom, bomFile);
+            }
+
+            return new PhysicalFileResult(bomFile, "application/json");
         }
     }
 }
