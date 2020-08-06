@@ -72,18 +72,24 @@ namespace ExportBOMPlugin
 
             try
             {
-                string bomJson;
+                string bomJson = "[]"; // empty JSON array
                 switch (doc.DocumentType)
                 {
                     case DocumentTypeEnum.kPartDocumentObject:
                         LogTrace("No BOM for Part documents.");
-                        bomJson = "[]"; // empty JSON array
                         break;
 
                     case DocumentTypeEnum.kAssemblyDocumentObject:
 
-                        ExtractedBOM extractedBOM = ProcessAssembly((AssemblyDocument)doc);
-                        bomJson = JsonConvert.SerializeObject(extractedBOM, SerializerSettings);
+                        try
+                        {
+                            ExtractedBOM extractedBOM = ProcessAssembly((AssemblyDocument)doc);
+                            bomJson = JsonConvert.SerializeObject(extractedBOM, SerializerSettings);
+                        }
+                        catch (Exception e)
+                        {
+                            LogError("Failed to extract BOM. " + e.ToString());
+                        }
                         break;
 
                     // complain about non-supported document types
