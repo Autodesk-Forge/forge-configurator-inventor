@@ -26,9 +26,12 @@ const bomTable = '//div[@class="BaseTable__body"]';
 //const parametersElement = '.parameters';
 const bomRows = '//div[@class="BaseTable__row"]';
 
-let csvRow = new Array();
-csvRow.push('IAM/IPT,Model'); //data from CSV
-csvRow.push('RFA,Model');
+const csvRow = {...
+    [
+        'IAM/IPT,Model',
+        'RFA,Model'
+    ]
+};
 
 Before((I) => {
     I.amOnPage('/');
@@ -48,12 +51,20 @@ Scenario('should check BOM data after change', async (I) => {
 
     const data = await I.grabTextFrom(bomRows);
     I.say('***********************************');
-    I.say(csvRow);
+    I.say(csvRow[0]);
+    I.say(csvRow[1]);
 
     for(let i=0; i< data.length; ++i)
     {
         const htmlRow = data[i].replace('\n', ',');
         assert.equal(csvRow[i], htmlRow, 'Error: BOM row is not identical with CSV!');
+
+        // check number of ...
+        if(i == 6)
+        {
+            const quantity = htmlRow.split(',')[2];
+            assert.equal(quantity, '4', 'Error: Unexpected BOM quantity!');
+        }
     }
 
     /*
@@ -74,6 +85,13 @@ Scenario('should check BOM data after change', async (I) => {
    {
        const htmlRow = data[i].replace('\n', ',');
        assert.equal(csvRow[i], htmlRow, 'Error: BOM row is not identical with CSV!');
+       
+       // check number of ...
+       if(i == 6)
+       {
+           const quantity = htmlRow.split(',')[2];
+           assert.equal(quantity, '6', 'Error: Unexpected BOM quantity!');
+       }
    }
 
   });
