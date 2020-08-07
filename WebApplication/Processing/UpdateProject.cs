@@ -21,7 +21,7 @@ namespace WebApplication.Processing
     /// <summary>
     /// Update project:
     /// - generate SVF
-    /// - extract parameters
+    /// - extract parameters and BOM
     /// - save current model
     /// </summary>
     public class UpdateProject : AggregatedDefinition
@@ -30,6 +30,7 @@ namespace WebApplication.Processing
             base(publisher,
                 new UpdateParameters(publisher),
                 new CreateSVF(publisher),
+                new CreateBOM(publisher),
                 new ExtractParameters(publisher))
         {
         }

@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////
+﻿/////////////////////////////////////////////////////////////////////
 // Copyright (c) Autodesk, Inc. All rights reserved
 // Written by Forge Design Automation team for Inventor
 //
@@ -16,31 +16,18 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-namespace WebApplication.Definitions
+using WebApplication.Definitions;
+
+namespace WebApplication.Processing
 {
-    /// <summary>
-    /// Common pieces for project-related DTOs
-    /// </summary>
-    public class ProjectDTOBase
+    public class CreateBOM : ForgeAppBase
     {
-        /// <summary>
-        /// URL to SVF directory.
-        /// </summary>
-        public string Svf { get; set; }
+        public override string Id => nameof(CreateBOM);
+        public override string Description => "Generate BOM for Inventor document";
 
-        /// <summary>
-        /// URL to BOM JSON.
-        /// </summary>
-        public string BomJsonUrl { get; set; }
+        protected override string OutputUrl(ProcessingArgs projectData) => projectData.BomUrl;
+        protected override string OutputName => "bom.json";
 
-        /// <summary>
-        /// URL to download current model
-        /// </summary>
-        public string ModelDownloadUrl { get; set; }
-
-        /// <summary>
-        /// Parameters hash
-        /// </summary>
-        public string Hash { get; set; }
+        public CreateBOM(Publisher publisher) : base(publisher) {}
     }
 }

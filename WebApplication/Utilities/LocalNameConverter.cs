@@ -35,7 +35,7 @@ namespace WebApplication.Utilities
         /// <summary>
         /// Generate full local name for the filename.
         /// </summary>
-        protected string ToFullName(string fileName)
+        public string ToFullName(string fileName)
         {
             return Path.Combine(BaseDir, fileName);
         }
@@ -75,6 +75,11 @@ namespace WebApplication.Utilities
         /// Filename for JSON with Inventor document parameters.
         /// </summary>
         public string Parameters => ToFullName(LocalName.Parameters);
+
+        /// <summary>
+        /// Filename for JSON with BOM.
+        /// </summary>
+        public string BOM => ToFullName(LocalName.BOM);
 
         public LocalNameProvider(string projectDir, string hash) : base(Path.Combine(projectDir, hash))
         {

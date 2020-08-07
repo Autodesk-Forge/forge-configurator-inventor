@@ -23,6 +23,7 @@ import parametersReducer, * as params from './parametersReducer';
 import updateParametersReducer, * as updateParams from './updateParametersReducer';
 import uiFlagsReducer, * as uiFlags from './uiFlagsReducer';
 import profileReducer from './profileReducer';
+import bomReducer, * as bom from './bomReducer';
 
 export const mainReducer = combineReducers({
     projectList: projectListReducer,
@@ -30,7 +31,8 @@ export const mainReducer = combineReducers({
     parameters: parametersReducer,
     updateParameters: updateParametersReducer,
     uiFlags: uiFlagsReducer,
-    profile: profileReducer
+    profile: profileReducer,
+    bom: bomReducer
 });
 
 export const getActiveProject = function(state) {
@@ -140,4 +142,8 @@ export const deleteProjectDlgVisible = function(state) {
 
 export const checkedProjects = function(state) {
     return uiFlags.checkedProjects(state.uiFlags);
+};
+
+export const getBom = function(projectId, state) {
+    return bom.getBom(projectId, state.bom);
 };

@@ -247,7 +247,8 @@ namespace WebApplication.Processing
             await Task.WhenAll(
                 bucket.CopyAsync(ossFrom.Parameters, ossTo.Parameters),
                 bucket.CopyAsync(ossFrom.GetCurrentModel(isAssembly), ossTo.GetCurrentModel(isAssembly)),
-                bucket.CopyAsync(ossFrom.ModelView, ossTo.ModelView));
+                bucket.CopyAsync(ossFrom.ModelView, ossTo.ModelView),
+                bucket.CopyAsync(ossFrom.Bom, ossTo.Bom));
 
             _logger.LogInformation($"Cache the project locally ({hashTo})");
         }

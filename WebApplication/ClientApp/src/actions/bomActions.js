@@ -16,31 +16,33 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-namespace WebApplication.Definitions
-{
-    /// <summary>
-    /// Common pieces for project-related DTOs
-    /// </summary>
-    public class ProjectDTOBase
-    {
-        /// <summary>
-        /// URL to SVF directory.
-        /// </summary>
-        public string Svf { get; set; }
+import repo from '../Repository';
+import { addError, addLog } from './notificationActions';
 
-        /// <summary>
-        /// URL to BOM JSON.
-        /// </summary>
-        public string BomJsonUrl { get; set; }
+const actionTypes = {
+    BOM_UPDATED: 'BOM_UPDATED'
+};
 
-        /// <summary>
-        /// URL to download current model
-        /// </summary>
-        public string ModelDownloadUrl { get; set; }
+export default actionTypes;
 
-        /// <summary>
-        /// Parameters hash
-        /// </summary>
-        public string Hash { get; set; }
+export const updateBom = (projectId, bomData) => {
+    return {
+        type: actionTypes.BOM_UPDATED,
+        projectId,
+        bomData
+    };
+};
+
+export const fetchBom = (projectId) => async (dispatch) => {
+    if (!projectId)
+        return;
+
+    dispatch(addLog('get bom invoked'));
+    try {
+        const bomData = await repo.loadBom(projectId);
+        dispatch(addLog('bom received'));
+        dispatch(updateBom(projectId, bomData));
+    } catch (error) {
+        dispatch(addError('Failed to get bom for ' + projectId + '. (' + error + ')'));
     }
-}
+};

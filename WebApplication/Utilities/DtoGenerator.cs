@@ -47,12 +47,14 @@ namespace WebApplication.Utilities
                                                                     action: "Model",
                                                                     values: new { projectName = project.Name, hash });
 
+            var localNames = project.LocalNameProvider(hash);
             return new TProjectDTOBase
                     {
-                        Svf = _localCache.ToDataUrl(project.LocalNameProvider(hash).SvfDir),
+                        Svf = _localCache.ToDataUrl(localNames.SvfDir),
+                        BomJsonUrl = _localCache.ToDataUrl(localNames.BOM),
                         ModelDownloadUrl = modelDownloadUrl,
                         Hash = hash
-            };
+                    };
         }
 
         /// <summary>

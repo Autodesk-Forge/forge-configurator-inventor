@@ -16,31 +16,23 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-namespace WebApplication.Definitions
-{
-    /// <summary>
-    /// Common pieces for project-related DTOs
-    /// </summary>
-    public class ProjectDTOBase
-    {
-        /// <summary>
-        /// URL to SVF directory.
-        /// </summary>
-        public string Svf { get; set; }
+import bomActionTypes from "../actions/bomActions";
 
-        /// <summary>
-        /// URL to BOM JSON.
-        /// </summary>
-        public string BomJsonUrl { get; set; }
+export const initialState = {};
 
-        /// <summary>
-        /// URL to download current model
-        /// </summary>
-        public string ModelDownloadUrl { get; set; }
+export const getBom = function(projectId, state) {
+    return state[projectId];
+};
 
-        /// <summary>
-        /// Parameters hash
-        /// </summary>
-        public string Hash { get; set; }
+export default function(state = initialState, action) {
+
+    switch(action.type) {
+        case bomActionTypes.BOM_UPDATED: {
+            const newState = { ...state };
+            newState[action.projectId] = action.bomData;
+            return newState;
+        }
+        default:
+            return state;
     }
 }
