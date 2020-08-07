@@ -56,7 +56,7 @@ Scenario('should check if all Tabs are loaded after click', async (I) => {
     I.click( locators.bomTab);
 
     // check that BOM tab has correct content
-    I.see("The page is not yet implemented\nPlease switch to the Model tab", {xpath: "//*[@id='bom']"});
+    I.waitForVisible( locators.BomContainer, 10);
 
     // click on Drawing tab
     I.click( locators.drawingTab);

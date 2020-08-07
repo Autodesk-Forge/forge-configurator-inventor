@@ -93,6 +93,12 @@ class Repository {
     }
 
     hasAccessToken() { return !! this._accessToken; }
+
+    /** Get BOM data */
+    async loadBom(projectName) {
+        const response = await axios.get("/bom/" + projectName);
+        return response.data;
+    }
 }
 
 /** Singleton with repo */

@@ -37,6 +37,7 @@ module.exports = {
      xpStripeElement : '//p[contains(text(),"The model is out-of-date.")]',
      PrametersList : '.parameters',
      ParametersContainer : '.parametersContainer',
+     BomContainer : '.bomContainer',
      xpPopUpLog : '//div[contains(h3, "Navigation Action")]',
      xpViewerCanvas : '//*[@id="ForgeViewer"] //canvas',
      projectsTab : locate('li').find('p').withText('Projects'),

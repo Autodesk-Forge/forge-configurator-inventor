@@ -33,3 +33,17 @@ html, body {
     flex-flow: column;
     height: 100%;
 }
+
+/* whole page scroll bars */
+::-webkit-scrollbar-thumb:hover {
+    background-color: #80808080; /* color:#808080 80 opacity 50%*/
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background-color: #80808032; /* color:#808080 32 opacity 20%*/
+}
+
+::-webkit-scrollbar {
+    width: 5px;
+}

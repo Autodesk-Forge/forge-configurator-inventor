@@ -23,6 +23,7 @@ import ProjectList from './projectList';
 import ForgeView from './forgeView';
 import ParametersContainer from './parametersContainer';
 import PageNYI from './pageNYI';
+import Bom from './bom';
 import Downloads from './downloads';
 import './tabs.css';
 import { activeTabIndex } from '../reducers/mainReducer';
@@ -63,7 +64,7 @@ export class TabsContainer extends Component {
               </Tab>
               <Tab label="BOM">
                 <div id="bom" className="tabContent fullheight">
-                  <PageNYI/>
+                  <Bom/>
                 </div>
               </Tab>
               <Tab label="Drawing">
