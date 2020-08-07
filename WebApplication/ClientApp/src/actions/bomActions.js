@@ -33,16 +33,15 @@ export const updateBom = (projectId, bomData) => {
     };
 };
 
-export const fetchBom = (projectId) => async (dispatch) => {
-    if (!projectId)
-        return;
+export const fetchBom = (project) => async (dispatch) => {
+    if (! project.id) return;
 
     dispatch(addLog('get bom invoked'));
     try {
-        const bomData = await repo.loadBom(projectId);
+        const bomData = await repo.loadBom(project.bomJsonUrl);
         dispatch(addLog('bom received'));
-        dispatch(updateBom(projectId, bomData));
+        dispatch(updateBom(project.id, bomData));
     } catch (error) {
-        dispatch(addError('Failed to get bom for ' + projectId + '. (' + error + ')'));
+        dispatch(addError('Failed to get bom for ' + project.id + '. (' + error + ')'));
     }
 };
