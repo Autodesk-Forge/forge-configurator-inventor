@@ -41,6 +41,7 @@ function getMaxColumnTextWidth(strings) {
     maxWidth = width>maxWidth ? width : maxWidth;
   });
 
+  // round to 10times number, like 81.5 -> 90, 87.1 -> 90, etc
   const roundTo = 10;
   const rounded = (maxWidth % roundTo==0) ? maxWidth : maxWidth-maxWidth%roundTo + roundTo;
   // console.log('width of "'+ JSON.stringify(strings) +'" is: ' + rounded);
@@ -61,7 +62,7 @@ export class Bom extends Component {
   }
 
   render() {
-    let columns = [{ key: 'leftAlignColumn', minWidth: 79}];
+    let columns = [{ key: 'leftAlignColumn', width: 79, minWidth: 79}];
     let data = [];
     if(this.props.bomData) {
       const columnWidths = [];
@@ -91,7 +92,7 @@ export class Bom extends Component {
           resizable: true
         }
       )));
-      columns.push({ key: 'rightAlignColumn', minWidth: 93});
+      columns.push({ key: 'rightAlignColumn', width: 93, minWidth: 93});
 
       // prepare data
       data = this.props.bomData.data.map( (value, rowIndex) => {
@@ -110,7 +111,7 @@ export class Bom extends Component {
 
     return (
       <div className="fullheight">
-        <Container className="tabContainer">
+        <Container className="bomContainer">
         <AutoResizer>
           {({ width, height }) => {
               return <BaseTable
