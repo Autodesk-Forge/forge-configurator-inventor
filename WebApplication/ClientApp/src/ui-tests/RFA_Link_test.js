@@ -27,13 +27,14 @@ const progressDialog = locate('div').withAttr({ role: 'dialog' });
 const rowForRFA = locate('div').withAttr({role: 'gridcell'});
 const divDownloads = locate('div').withAttr({ id: 'downloads' });
 const titleDataFileForWrench = locate('p').withText('Wrench').inside(progressDialog);
-const titleDataFileFroConveyor = locate('p').withText('Conveyor').inside(progressDialog);
 const linkRFA = locate('a').withText('RFA').inside(rowForRFA);
 //const clickHere = locate('section').find('a').withText('Click here');
 
 Feature('Downloads RFA');
 
-Scenario('should check downloads tab with RFA link for Conveyor', async (I) => {
+Scenario('should check downloads tab with RFA link for model', async (I) => {
+
+    I.selectProject("Wrench");
 
     //check Download Tab
     I.see('Downloads', locators.downloadsTab);
@@ -52,7 +53,9 @@ Scenario('should check downloads tab with RFA link for Conveyor', async (I) => {
 
     // check if Progress download window is displayed with correct data
     I.waitForElement(progressDialog, 30);
-    I.seeElement(titleDataFileFroConveyor);
+
+    const titleDataFileForModel = locate('p').withText('Wrench').inside(progressDialog);
+    I.seeElement(titleDataFileForModel);
 
     // wait for a link to download a file
     //I.waitForElement(clickHere, 50);
