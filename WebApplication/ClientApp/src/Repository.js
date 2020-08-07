@@ -95,8 +95,8 @@ class Repository {
     hasAccessToken() { return !! this._accessToken; }
 
     /** Get BOM data */
-    async loadBom(projectName) {
-        const response = await axios.get("/bom/" + projectName);
+    async loadBom(bomUrl) {
+        const response = await axios.get(bomUrl);
         return response.data;
     }
 }

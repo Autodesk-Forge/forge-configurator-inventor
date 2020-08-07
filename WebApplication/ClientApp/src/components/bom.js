@@ -51,13 +51,13 @@ function getMaxColumnTextWidth(strings) {
 export class Bom extends Component {
 
   componentDidMount() {
-    this.props.fetchBom(this.props.activeProject.id);
+    this.props.fetchBom(this.props.activeProject);
   }
 
   componentDidUpdate(prevProps) {
       // refresh bom data when BOM tab was clicked before projects initialized
-      if (this.props.activeProject.id !== prevProps.activeProject.id) {
-          this.props.fetchBom(this.props.activeProject.id);
+      if (this.props.activeProject !== prevProps.activeProject) {
+          this.props.fetchBom(this.props.activeProject);
       }
   }
 
