@@ -38,6 +38,7 @@ module.exports = {
      PrametersList : '.parameters',
      ParametersContainer : '.parametersContainer',
      BomContainer : '.bomContainer',
+     DrawingContainer : '.drawingContainer',
      xpPopUpLog : '//div[contains(h3, "Navigation Action")]',
      xpViewerCanvas : '//*[@id="ForgeViewer"] //canvas',
      projectsTab : locate('li').find('p').withText('Projects'),
