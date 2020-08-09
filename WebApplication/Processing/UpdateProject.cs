@@ -31,7 +31,8 @@ namespace WebApplication.Processing
                 new UpdateParameters(publisher),
                 new CreateSVF(publisher),
                 new CreateBOM(publisher),
-                new ExtractParameters(publisher))
+                new ExtractParameters(publisher),
+                new ExportDrawing(publisher))
         {
         }
 

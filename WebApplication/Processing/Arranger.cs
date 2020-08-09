@@ -20,6 +20,8 @@ using System;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Autodesk.Forge.Client;
+using Microsoft.AspNetCore.Http;
 using Shared;
 using WebApplication.Definitions;
 using WebApplication.Services;
@@ -46,6 +48,7 @@ namespace WebApplication.Processing
         public readonly string OutputSAT = $"{Guid.NewGuid():N}.sat";
         public readonly string OutputRFA = $"{Guid.NewGuid():N}.rfa";
         public readonly string BomJson = $"{Guid.NewGuid():N}.bom.json";
+        public readonly string DrawingVieawbles = $"{Guid.NewGuid():N}.drawing.pdf";
 
         /// <summary>
         /// Constructor.
@@ -70,7 +73,8 @@ namespace WebApplication.Processing
                                             bucket.CreateSignedUrlAsync(Parameters, ObjectAccess.Write),
                                             bucket.CreateSignedUrlAsync(OutputModelIAM, ObjectAccess.Write),
                                             bucket.CreateSignedUrlAsync(OutputModelIPT, ObjectAccess.Write),
-                                            bucket.CreateSignedUrlAsync(BomJson, ObjectAccess.Write));
+                                            bucket.CreateSignedUrlAsync(BomJson, ObjectAccess.Write),
+                                            bucket.CreateSignedUrlAsync(DrawingVieawbles, ObjectAccess.Write));
 
             return new AdoptionData
                     {
@@ -81,6 +85,7 @@ namespace WebApplication.Processing
                         OutputIAMModelUrl   = urls[3],
                         OutputIPTModelUrl   = urls[4],
                         BomUrl              = urls[5],
+                        DrawingViewablesUrl = urls[6],
                         TLA                 = tlaFilename
                     };
         }
@@ -101,7 +106,8 @@ namespace WebApplication.Processing
                                             bucket.CreateSignedUrlAsync(SVF, ObjectAccess.Write),
                                             bucket.CreateSignedUrlAsync(Parameters, ObjectAccess.Write),
                                             bucket.CreateSignedUrlAsync(InputParams, ObjectAccess.ReadWrite),
-                                            bucket.CreateSignedUrlAsync(BomJson, ObjectAccess.Write)
+                                            bucket.CreateSignedUrlAsync(BomJson, ObjectAccess.Write),
+                                            bucket.CreateSignedUrlAsync(DrawingVieawbles, ObjectAccess.Write)
                                             );
 
             await using var jsonStream = Json.ToStream(parameters);
@@ -116,6 +122,7 @@ namespace WebApplication.Processing
                         ParametersJsonUrl   = urls[3],
                         InputParamsUrl      = urls[4],
                         BomUrl              = urls[5],
+                        DrawingViewablesUrl = urls[6],
                         TLA                 = tlaFilename
                     };
         }
@@ -134,10 +141,23 @@ namespace WebApplication.Processing
 
             var bucket = await _userResolver.GetBucketAsync();
 
+            Func<Task> renameDrawingViewablesAction = async () =>
+            {
+                try
+                {
+                    await bucket.RenameObjectAsync(DrawingVieawbles, ossNames.DrawingViewables);
+                }
+                catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
+                {
+                    // drawing export is optional based on drawing existence
+                }
+            };
+
             // move data to expected places
             await Task.WhenAll(bucket.RenameObjectAsync(Thumbnail, project.OssAttributes.Thumbnail),
                                 bucket.RenameObjectAsync(SVF, ossNames.ModelView),
                                 bucket.RenameObjectAsync(BomJson, ossNames.Bom),
+                                renameDrawingViewablesAction(),
                                 bucket.RenameObjectAsync(Parameters, ossNames.Parameters),
                                 bucket.RenameObjectAsync(attributes.IsAssembly ? OutputModelIAM : OutputModelIPT, ossNames.GetCurrentModel(attributes.IsAssembly)),
                                 bucket.UploadObjectAsync(project.OssAttributes.Metadata, Json.ToStream(attributes, writeIndented: true)));
@@ -198,9 +218,22 @@ namespace WebApplication.Processing
 
             var bucket = await _userResolver.GetBucketAsync();
 
+            Func<Task> renameDrawingViewablesAction = async () =>
+            {
+                try
+                {
+                    await bucket.RenameObjectAsync(DrawingVieawbles, ossNames.DrawingViewables);
+                }
+                catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
+                {
+                    // drawing export is optional based on drawing existence
+                }
+            };
+
             // move data to expected places
             await Task.WhenAll(bucket.RenameObjectAsync(SVF, ossNames.ModelView),
                                 bucket.RenameObjectAsync(BomJson, ossNames.Bom),
+                                renameDrawingViewablesAction(),
                                 bucket.RenameObjectAsync(Parameters, ossNames.Parameters),
                                 bucket.RenameObjectAsync(isAssembly ? OutputModelIAM : OutputModelIPT, ossNames.GetCurrentModel(isAssembly)),
                                 bucket.DeleteObjectAsync(InputParams));
