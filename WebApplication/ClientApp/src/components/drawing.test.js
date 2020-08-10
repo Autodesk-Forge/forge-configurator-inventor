@@ -16,32 +16,23 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-import repo from '../Repository';
-import { addError, addLog } from './notificationActions';
+import React from 'react';
+import Enzyme, { shallow } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+import {Drawing} from './drawing';
 
-const actionTypes = {
-    BOM_UPDATED: 'BOM_UPDATED'
-};
+Enzyme.configure({ adapter: new Adapter() });
 
-export default actionTypes;
+describe('Drawings', () => {
+  it('Page has expected text when no drawings available', () => {
+      const props = {
+        activeProject: { drawing: null }
+      };
 
-export const updateBom = (projectId, bomData) => {
-    return {
-        type: actionTypes.BOM_UPDATED,
-        projectId,
-        bomData
-    };
-};
-
-export const fetchBom = (project) => async (dispatch) => {
-    if (! project.id) return;
-
-    dispatch(addLog('get bom invoked'));
-    try {
-        const bomData = await repo.loadBom(project.bomJsonUrl);
-        dispatch(addLog('bom received'));
-        dispatch(updateBom(project.id, bomData));
-    } catch (error) {
-        dispatch(addError('Failed to get bom for ' + project.id + '. (' + error + ')'));
-    }
-};
+      const wrapper = shallow(<Drawing {...props}/>);
+      const wrapperComponent = wrapper.find('.drawingEmptyText');
+      expect(wrapperComponent.length).toEqual(1);
+      const children = wrapperComponent.prop('children');
+      expect(children).toEqual("You don't have any drawings in package.");
+    });
+});

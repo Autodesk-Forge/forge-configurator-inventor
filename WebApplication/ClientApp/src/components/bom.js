@@ -24,40 +24,22 @@ import { getActiveProject, getBom } from '../reducers/mainReducer';
 import { fetchBom } from '../actions/bomActions';
 import BaseTable, { AutoResizer, Column } from 'react-base-table';
 import styled from 'styled-components';
+import {getMaxColumnTextWidth} from './bomUtils';
 
 const Container = styled.div`
   height: 100vh;
 `;
 
-// compute text width from canvas
-function getMaxColumnTextWidth(strings) {
-  const font = "13px ArtifaktElement, sans-serif";
-  const canvas = document.createElement("canvas");
-  const context2d = canvas.getContext("2d");
-  context2d.font = font;
-  let maxWidth = 0;
-  strings.forEach(element => {
-    const width = context2d.measureText(element).width;
-    maxWidth = width>maxWidth ? width : maxWidth;
-  });
-
-  // round to 10times number, like 81.5 -> 90, 87.1 -> 90, etc
-  const roundTo = 10;
-  const rounded = (maxWidth % roundTo==0) ? maxWidth : maxWidth-maxWidth%roundTo + roundTo;
-  // console.log('width of "'+ JSON.stringify(strings) +'" is: ' + rounded);
-  return rounded;
-}
-
 export class Bom extends Component {
 
   componentDidMount() {
-    this.props.fetchBom(this.props.activeProject.id);
+    this.props.fetchBom(this.props.activeProject);
   }
 
   componentDidUpdate(prevProps) {
       // refresh bom data when BOM tab was clicked before projects initialized
-      if (this.props.activeProject.id !== prevProps.activeProject.id) {
-          this.props.fetchBom(this.props.activeProject.id);
+      if (this.props.activeProject !== prevProps.activeProject) {
+          this.props.fetchBom(this.props.activeProject);
       }
   }
 

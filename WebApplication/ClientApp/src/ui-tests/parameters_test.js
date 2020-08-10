@@ -39,22 +39,16 @@ Scenario('should check if Parameter panel has Reset and Update button', async (I
 //ensure that Stripe panel is not disabled!!!
 Scenario('should check if Stripe panel is displayed and hidden', async (I) => {
 
-    // click on Model tab
-    I.clickToModelTab();
+    I.selectProject('Wrench');
 
-    // check that Model tab has a parameter - Length
-    I.waitForElement(locators.xpFirstInputOnModelTab, 20);
-
-    // change the Length parameter
-    I.clearField(locators.xpFirstInput);
-    I.fillField(locators.xpFirstInput, "12500 mm");
+    // Set the model parameter to see strip
+    I.setParamValue("JawOffset", "11 mm");
 
     // check if the Stripe element is displayed
     I.seeElement(locators.xpStripeElement);
 
-    // change the Length parameter
-    I.clearField(locators.xpFirstInput);
-    I.fillField(locators.xpFirstInput, "12000 mm");
+    // Set the model parameter back to original value
+    I.setParamValue("JawOffset", "10 mm");
 
     // check if the Stripe element was hidden
     I.waitForInvisible(locators.xpStripeElement, 5);

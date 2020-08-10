@@ -16,32 +16,23 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-import repo from '../Repository';
-import { addError, addLog } from './notificationActions';
-
-const actionTypes = {
-    BOM_UPDATED: 'BOM_UPDATED'
-};
-
-export default actionTypes;
-
-export const updateBom = (projectId, bomData) => {
-    return {
-        type: actionTypes.BOM_UPDATED,
-        projectId,
-        bomData
-    };
-};
-
-export const fetchBom = (project) => async (dispatch) => {
-    if (! project.id) return;
-
-    dispatch(addLog('get bom invoked'));
-    try {
-        const bomData = await repo.loadBom(project.bomJsonUrl);
-        dispatch(addLog('bom received'));
-        dispatch(updateBom(project.id, bomData));
-    } catch (error) {
-        dispatch(addError('Failed to get bom for ' + project.id + '. (' + error + ')'));
-    }
-};
+// compute text width from canvas
+// don't want to test string width calc:
+/* istanbul ignore next */
+export function getMaxColumnTextWidth(strings) {
+    const font = "13px ArtifaktElement, sans-serif";
+    const canvas = document.createElement("canvas");
+    const context2d = canvas.getContext("2d");
+    context2d.font = font;
+    let maxWidth = 0;
+    strings.forEach(element => {
+      const width = context2d.measureText(element).width;
+      maxWidth = width>maxWidth ? width : maxWidth;
+    });
+  
+    // round to 10times number, like 81.5 -> 90, 87.1 -> 90, etc
+    const roundTo = 10;
+    const rounded = (maxWidth % roundTo==0) ? maxWidth : maxWidth-maxWidth%roundTo + roundTo;
+    // console.log('width of "'+ JSON.stringify(strings) +'" is: ' + rounded);
+    return rounded;
+  }

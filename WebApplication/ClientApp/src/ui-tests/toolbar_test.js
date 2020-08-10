@@ -39,9 +39,6 @@ Scenario('should check Project switcher is loaded', async (I) => {
     // check content of PROJECTS menu
     I.see("PROJECTS", locators.xpProjectList);
 
-    // check name of the first project
-    I.see("Conveyor", locators.xpProjectConveyor);
-
     // check name of the second project
     I.see("Wheel", locators.xpProjectWheel);
 
@@ -51,19 +48,6 @@ Scenario('should check Project switcher is loaded', async (I) => {
 });
 
 Scenario('should check Project switcher is correctly changed', async (I) => {
-
-    // wait until project combo is displayed
-    I.waitForElement( locators.xpComboProjects, 10);
-    I.click( locators.xpComboProjects);
-
-    // wait until project list is displayed
-    I.waitForElement( locators.xpProjectList, 10);
-
-    // emulate click to trigger project loading
-    I.click( locators.xpProjectConveyor);
-
-    // check the current project name
-    I.see("Conveyor", currentProjectName);
 
     // click to show popup menu with list of projects
     I.selectProject('Wrench');

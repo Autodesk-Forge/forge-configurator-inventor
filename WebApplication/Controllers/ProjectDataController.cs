@@ -82,7 +82,7 @@ namespace WebApplication.Controllers
                 Directory.CreateDirectory(localNames.BaseDir);
 
                 var bucket = await _userResolver.GetBucketAsync(tryToCreate: false);
-                await bucket.DownloadFileAsync(projectStorage.GetOssNames(hash).ToFullName(fullLocalName), fullLocalName);
+                await bucket.DownloadFileAsync(projectStorage.GetOssNames(hash).ToFullName(fileName), fullLocalName);
             }
 
             return fullLocalName;

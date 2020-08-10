@@ -17,14 +17,32 @@
 /////////////////////////////////////////////////////////////////////
 
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { getActiveProject } from '../reducers/mainReducer';
+import './drawing.css';
 
-/* istanbul ignore file */
+export class Drawing extends Component {
 
-/** Shared component for "Not Yet Implemented" pages */
-export default class PageNYI extends Component {
-    render() {
-        return (<div style={{ textAlign: 'center', paddingTop: '30px', color: '#777' }}>
-            <h3>The page is not yet implemented<br />Please switch to the Model tab</h3>
-        </div>);
-    }
+  render() {
+    const hasDrawing = this.props.activeProject?.drawing!=null;
+    const containerClass = !hasDrawing ? "drawingContainer empty" : "drawingContainer";
+
+    return (
+      <div className="fullheight">
+        <div className={containerClass}>
+        {!hasDrawing &&
+          <div className="drawingEmptyText">You don&apos;t have any drawings in package.</div>
+        }
+        </div>
+      </div>
+    );
+  }
 }
+
+/* istanbul ignore next */
+export default connect(function (store) {
+  const activeProject = getActiveProject(store);
+  return {
+    activeProject: activeProject
+  };
+})(Drawing);
