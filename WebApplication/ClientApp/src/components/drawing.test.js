@@ -25,7 +25,6 @@ Enzyme.configure({ adapter: new Adapter() });
 
 describe('Drawings', () => {
   it('Page has expected text when no drawings available', () => {
-      const fnMock = jest.fn();
       const props = {
         activeProject: { drawing: null }
       };
