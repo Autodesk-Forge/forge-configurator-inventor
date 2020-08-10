@@ -20,18 +20,32 @@
 /* eslint-disable no-undef */
 const locators = require('./elements_definition.js');
 const assert = require('assert');
-//const { debug } = require('console');
 
 const bomTable = '//div[@class="BaseTable__body"]';
-//const parametersElement = '.parameters';
+const parametersElement = '.parameters';
 const bomRows = '//div[@class="BaseTable__row"]';
 
-const csvRow = {...
-    [
-        'IAM/IPT,Model',
-        'RFA,Model'
-    ]
-};
+const baseRows =  [
+    ['1', 'Wrench_Bar_Complete', '1', 'WRENCH BAR', 'Copper'],
+    ['2', 'DS51F1496-03', '1', 'FRAME', 'Gray Iron'],
+    ['3', 'DS51F1496-04', '1', 'JAW', 'Steel'],
+    ['5', 'DS51F1496-08', '1', 'BACK SPRING', 'Steel'],
+    ['7', 'DS51F1496-05', '1', 'PIN - HARDENED GROUND PRODUCTION DOWEL', 'Steel, Mild'],
+    ['8', 'DS51F1496-02', '1', 'NUT NO. 11220', 'Steel, High Strength Low Alloy'],
+    ['11', 'DS51F1496-06', '1', 'FRONT SPRING', 'Steel'],
+    ['12', 'DS51F1496-07', '2', 'CLEVIS PINS AND COTTER PINS - CLEVIS PIN', 'Steel, Mild']
+];
+
+const updatedRows =  [
+    ['1', 'Wrench_Bar_Complete', '1', 'WRENCH BAR', 'Stainless Steel'],
+    ['2', 'DS51F1496-03', '1', 'FRAME', 'Gray Iron'],
+    ['3', 'DS51F1496-04', '1', 'JAW', 'Steel'],
+    ['5', 'DS51F1496-08', '1', 'BACK SPRING', 'Steel'],
+    ['7', 'DS51F1496-05', '1', 'PIN - HARDENED GROUND PRODUCTION DOWEL', 'Steel, Mild'],
+    ['8', 'DS51F1496-02', '1', 'NUT NO. 11220', 'Steel, High Strength Low Alloy'],
+    ['11', 'DS51F1496-06', '1', 'FRONT SPRING', 'Steel'],
+    ['12', 'DS51F1496-07', '2', 'CLEVIS PINS AND COTTER PINS - CLEVIS PIN', 'Steel, Mild']
+];
 
 Before((I) => {
     I.amOnPage('/');
@@ -43,55 +57,50 @@ Feature('Bom Data Validation');
 Scenario('should check BOM data after change', async (I) => {
 
     // select project in the Project Switcher
-    I.selectProject('Conveyor');
+    I.selectProject('Wrench');
 
     // click to BOM tab
-    I.click(locators.downloadsTab); //temporary use downloads
+    I.click(locators.bomTab);
     I.waitForVisible(bomTable, 5);
 
-    const data = await I.grabTextFrom(bomRows);
-    I.say('***********************************');
-    I.say(csvRow[0]);
-    I.say(csvRow[1]);
+    const htmlData = await I.grabTextFrom(bomRows);
 
-    for(let i=0; i< data.length; ++i)
+    assert.equal(htmlData.length , baseRows.length, 'Error: Different number of BOM rows!')
+
+    for(let i = 0; i < htmlData.length; ++i)
     {
-        const htmlRow = data[i].replace('\n', ',');
-        assert.equal(csvRow[i], htmlRow, 'Error: BOM row is not identical with CSV!');
-
-        // check number of ...
-        if(i == 6)
-        {
-            const quantity = htmlRow.split(',')[2];
-            assert.equal(quantity, '4', 'Error: Unexpected BOM quantity!');
-        }
+        //I.say(JSON.stringify(htmlData[i].toString()));
+        const baseRow = baseRows[i].join('\n');
+        I.say(baseRow);
+        const rowNumber = i + 1;
+        assert.equal(htmlData[i], baseRow, 'Error: BOM row ' + rowNumber + ' is not identical with base data!');
     }
 
-    /*
-    // change paramter
+    // change parameters
+    I.click(locators.modelTab);
     I.waitForElement(parametersElement, 20);
-    I.setParamValue("LEGS (MIN:12 | MAX:8 | STEP:2)", "6");
+    I.setParamValue("PartMaterial", "Stainless Steel");
 
     // Click on Update button
     I.waitForVisible(locators.xpButtonUpdate, 10);
     I.click(locators.xpButtonUpdate);
 
     // wait for progress bar shows and disappears
+    const updatingProjectProgress = '//p[text()="Updating Project"]';
     I.waitForVisible(updatingProjectProgress, 10);
     I.waitForInvisible(updatingProjectProgress, 120);
-    */
 
-   for(let i=0; i< data.length; ++i)
-   {
-       const htmlRow = data[i].replace('\n', ',');
-       assert.equal(csvRow[i], htmlRow, 'Error: BOM row is not identical with CSV!');
-       
-       // check number of ...
-       if(i == 6)
-       {
-           const quantity = htmlRow.split(',')[2];
-           assert.equal(quantity, '6', 'Error: Unexpected BOM quantity!');
-       }
-   }
+    // click to BOM tab
+    I.click(locators.bomTab);
+    I.waitForVisible(bomTable, 5);
+
+    const htmlUpdatedData = await I.grabTextFrom(bomRows);
+
+    for(let i = 0; i < htmlUpdatedData.length; ++i)
+    {
+        const updatedRow = updatedRows[i].join('\n');
+        const rowNumber = i + 1;
+        assert.equal(htmlUpdatedData[i], updatedRow, 'Error: BOM row ' + rowNumber + ' is not identical with base data after update!');
+    }
 
   });
