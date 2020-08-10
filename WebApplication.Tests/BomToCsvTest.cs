@@ -94,13 +94,31 @@ namespace WebApplication.Tests
         [Fact]
         public void EncodedHeaderAndRows()
         {
-            throw new NotImplementedException();
+            var bom = new ExtractedBOM
+            {
+                Columns = new [] { new Column { Label = "a,a" }, new Column { Label = "b,b" }},
+                Data = new []
+                {
+                    new object[]{ "foo,foo", "bar,bar" }
+                }
+            };
+
+            string[] lines = BomToCsvLines(bom);
+            Assert.Equal(new[] { "a,,a,b,,b", "foo,,foo,bar,,bar" }, lines);
         }
 
         [Fact]
-        public void DifferentNumberOfColumnAndDataTest()
+        public void DifferentNumberOfColumnAndData()
         {
-            throw new NotImplementedException();
+            var bom = new ExtractedBOM
+            {
+                Columns = new [] { new Column { Label = "a" }, new Column { Label = "b" }},
+                Data = new []
+                {
+                    new object[]{ "foo" }
+                }
+            };
+            Assert.Throws<ApplicationException>(() => bom.ToCSV());
         }
 
         [Fact]

@@ -7,8 +7,6 @@ namespace WebApplication.Utilities
 {
     public static class ExtractedBomEx
     {
-        private static readonly object[][] EmptyData = new object[0][];
-
         /// <summary>
         /// Convert BOM to CSV representation.
         /// </summary>
@@ -17,13 +15,20 @@ namespace WebApplication.Utilities
         {
             if (! bom.HasColumns()) throw new ApplicationException("Invalid BOM: header is expected.");
 
+            var columnsLength = bom.Columns.Length;
+
             var builder = new StringBuilder(32 * 1024);
-            builder.AppendJoin(",", bom.Columns.Select(c => Encode(c.Label)));
+            builder.AppendJoin(",", bom.Columns.Select(column => Encode(column.Label)));
             builder.AppendLine();
 
-            foreach (object[] row in bom.Data ?? EmptyData)
+            for (var i = 0; i < bom.Data?.Length; i++)
             {
-                builder.AppendJoin(",", row.Select(v => Encode(v.ToString())));
+                object[] row = bom.Data[i];
+                if (row.Length != columnsLength)
+                    throw new ApplicationException(
+                        $"Invalid BOM: row {i} has different number of columns than header.");
+
+                builder.AppendJoin(",", row.Select(value => Encode(value.ToString())));
                 builder.AppendLine();
             }
 
@@ -42,7 +47,7 @@ namespace WebApplication.Utilities
 
         private static string Encode(string value)
         {
-            return value; // not yet implemented
+            return value.Replace(",", ",,"); // TODO: ensure it's correct encoding
         }
     }
 }
