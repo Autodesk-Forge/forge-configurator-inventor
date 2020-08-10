@@ -25,6 +25,7 @@ using Inventor;
 using Autodesk.Forge.DesignAutomation.Inventor.Utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Shared;
 
 namespace ExportBOMPlugin
 {
@@ -49,7 +50,7 @@ namespace ExportBOMPlugin
                                                                                         }
                                                                                     };
 
-        private static readonly ExtractedBOM EmptyBOM = new ExtractedBOM { Columns = new Column[0], Data = new object[0][] };
+        private static readonly ExtractedBOM EmptyBOM = new ExtractedBOM { Columns = new Shared.Column[0], Data = new object[0][] };
 
         private readonly InventorServer inventorApplication;
 
@@ -113,11 +114,11 @@ namespace ExportBOMPlugin
                                     {
                                         Columns = new[]
                                         {
-                                            new Column { Label = "Row Number" },
-                                            new Column { Label = "Part Number" },
-                                            new Column { Label = "Quantity", Numeric = true },
-                                            new Column { Label = "Description" },
-                                            new Column { Label = "Material" }
+                                            new Shared.Column { Label = "Row Number" },
+                                            new Shared.Column { Label = "Part Number" },
+                                            new Shared.Column { Label = "Quantity", Numeric = true },
+                                            new Shared.Column { Label = "Description" },
+                                            new Shared.Column { Label = "Material" }
                                         },
                                     };
                 var rows = new List<object[]>();

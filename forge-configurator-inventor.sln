@@ -25,6 +25,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RFAExportPlugin", "AppBundl
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{4AB64238-3EE2-415C-8602-40C809B9DBCA}"
 	ProjectSection(SolutionItems) = preProject
+		Shared\ExtractedBOM.cs = Shared\ExtractedBOM.cs
 		Shared\InventorParameters.cs = Shared\InventorParameters.cs
 		Shared\SharedAssemblyInfo.cs = Shared\SharedAssemblyInfo.cs
 	EndProjectSection

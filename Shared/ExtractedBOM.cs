@@ -1,4 +1,4 @@
-﻿namespace ExportBOMPlugin
+﻿namespace Shared
 {
     public class Column
     {
