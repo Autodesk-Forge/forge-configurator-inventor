@@ -35,7 +35,7 @@ Scenario('Updating parameters for model', (I) => {
     I.setParamValue('JawOffset', '20 mm');
 
     // check that stripe appeared
-    I.waitForVisible(locators.xpStripeElement);
+    I.waitForVisible(locators.xpStripeElement, 10);
 
     // Click on Update button
     I.waitForVisible(locators.xpButtonUpdate);
