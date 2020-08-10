@@ -28,6 +28,7 @@ exports.config = {
       show: false,
       browser: 'chromium',
       chromium: {args: chromiumArgs},
+      waitForTimeout: 5000,
       MyHelper: {
         require: './src/ui-tests/helpers/playwright'
       }
