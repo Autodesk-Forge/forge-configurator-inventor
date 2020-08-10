@@ -27,16 +27,15 @@ Feature('Update params');
 
 const updatingProjectProgress = '//p[text()="Updating Project"]';
 
-Scenario('Updating parameters for conveyor model', (I) => {
+Scenario('Updating parameters for model', (I) => {
 
-    // click on Model tab
-    I.clickToModelTab();
+    I.selectProject("Wrench");
 
     // enter new parameter value
-    I.setParamValue('LEGS (MIN:12 | MAX:8 | STEP:2)', '6 ul');
+    I.setParamValue('JawOffset', '20 mm');
 
     // check that stripe appeared
-    I.waitForVisible(locators.xpStripeElement);
+    I.waitForVisible(locators.xpStripeElement, 10);
 
     // Click on Update button
     I.waitForVisible(locators.xpButtonUpdate);
@@ -48,4 +47,6 @@ Scenario('Updating parameters for conveyor model', (I) => {
 
     // check that stripe disappeared
     I.waitForInvisible(locators.xpStripeElement, 5);
+
+    // TODO: check for updated parameters values
 });

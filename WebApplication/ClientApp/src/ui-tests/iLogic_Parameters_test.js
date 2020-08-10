@@ -23,7 +23,7 @@ const { debug } = require('console');
 const parametersElement = '.parameters';
 
 const elements = '//div[@class="parameter" or @class="parameter checkbox"]';
-const iLogicParameterList = ['LENGTH', 'WIDTH', 'HEIGHT', 'CHUTE', 'LEGS (MIN:12 | MAX:8 | STEP:2)', 'ROLLERS (MIN:3 | MAX:11 | STEP:2)'];
+const iLogicParameterList = ['WheelSize', 'NumberOfSpokes', 'Slot', 'WheelFinish', 'BrakeMaterial', 'CaliperFinish', 'TotalPrice'];
 
 const readOnlyElements = '//div[(@class = "parameter" or @class = "parameter checkbox") and .//input[@disabled]]';
 const iLogicReadOnlyParameterList = ['ReadOnly', 'Diameter [mm]'];
@@ -59,8 +59,8 @@ Feature('iLogic Parameters');
 // validate that all parameters in iLogic form are displayed in the List of Parameters
 Scenario('should check parameters in iLogic Form with list of parameters in Model Tab', async (I) => {
 
-  // select Conveyor project in the Project Switcher
-  I.selectProject('Conveyor');
+  // select Wheel project in the Project Switcher
+  I.selectProject('Wheel');
   I.waitForElement(parametersElement, 20);
 
   // get list of parameter from Model tab
