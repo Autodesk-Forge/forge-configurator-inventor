@@ -17,9 +17,11 @@
 /////////////////////////////////////////////////////////////////////
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Shared;
 using WebApplication.State;
 using WebApplication.Utilities;
 
@@ -57,9 +59,12 @@ namespace WebApplication.Controllers
         }
 
         [HttpGet("{projectName}/{hash}/bom/{token?}")]
-        public async Task<JsonResult> BOM(string projectName, string hash, string token = null)
+        public async Task<ActionResult> BOM(string projectName, string hash, string token = null)
         {
             string localFileName = await _userResolver.EnsureLocalFile(projectName, LocalName.BOM, hash);
+            var bom = Json.DeserializeFile<ExtractedBOM>(localFileName);
+            string csv = bom.ToCSV();
+            return Content(csv, "text/csv");
         }
 
         private async Task<RedirectResult> RedirectToOssObject(string projectName, string hash, Func<OSSObjectNameProvider, bool, string> nameExtractor)
