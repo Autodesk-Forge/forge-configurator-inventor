@@ -39,12 +39,12 @@ namespace WebApplication.Controllers
         }
 
         [HttpGet("{projectName}/{hash}/model/{token?}")]
-        public Task<RedirectResult> Model(string projectName, string hash, string token=null)
+        public Task<RedirectResult> Model(string projectName, string hash, string token = null)
         {
             if (token != null)
                 _userResolver.Token = token;
 
-            return RedirectToOssObject(projectName, hash, (ossNames, isAssembly ) => ossNames.GetCurrentModel(isAssembly));
+            return RedirectToOssObject(projectName, hash, (ossNames, isAssembly) => ossNames.GetCurrentModel(isAssembly));
         }
 
         [HttpGet("{projectName}/{hash}/rfa/{token?}")]
@@ -54,6 +54,12 @@ namespace WebApplication.Controllers
                 _userResolver.Token = token;
 
             return RedirectToOssObject(projectName, hash, (ossNames, _)=> ossNames.Rfa);
+        }
+
+        [HttpGet("{projectName}/{hash}/bom/{token?}")]
+        public async Task<JsonResult> BOM(string projectName, string hash, string token = null)
+        {
+            string localFileName = await _userResolver.EnsureLocalFile(projectName, LocalName.BOM, hash);
         }
 
         private async Task<RedirectResult> RedirectToOssObject(string projectName, string hash, Func<OSSObjectNameProvider, bool, string> nameExtractor)
