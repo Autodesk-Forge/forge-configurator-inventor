@@ -20,11 +20,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { getActiveProject } from '../reducers/mainReducer';
 import './drawing.css';
+import ForgePdfView from './forgePdfView';
 
 export class Drawing extends Component {
 
   render() {
-    const hasDrawing = this.props.activeProject?.drawing!=null;
+    const hasDrawing = true; // this.props.activeProject?.drawing!=null;
     const containerClass = !hasDrawing ? "drawingContainer empty" : "drawingContainer";
 
     return (
@@ -32,6 +33,9 @@ export class Drawing extends Component {
         <div className={containerClass}>
         {!hasDrawing &&
           <div className="drawingEmptyText">You don&apos;t have any drawings in package.</div>
+        }
+        {hasDrawing &&
+          <ForgePdfView/>
         }
         </div>
       </div>
