@@ -162,6 +162,52 @@ namespace WebApplication.Processing
             await _arranger.MoveRfaAsync(project, hash);
         }
 
+
+        /// <summary>
+        /// Generate Drawing zip with folder structure (or take it from cache).
+        /// </summary>
+        public async Task GenerateDrawingAsync(string projectName, string hash)
+        {
+            _logger.LogInformation($"Generating Drawing for hash {hash}");
+
+            ProjectStorage storage = await _userResolver.GetProjectStorageAsync(projectName);
+            Project project = storage.Project;
+
+            //// *********************************************
+            //// temporary fail *********************************************
+            //_logger.LogError($"Failed to generate SAT file");
+            //throw new FdaProcessingException($"Failed to generate SAT file", "https://localhost:5000/#");
+            //// *********************************************
+
+
+            var ossNameProvider = project.OssNameProvider(hash);
+
+            var bucket = await _userResolver.GetBucketAsync();
+            // check if Drawing file is already generated
+            try
+            {
+                // TODO: this might be ineffective as some "get details" API call
+                await bucket.CreateSignedUrlAsync(ossNameProvider.Drawing);
+                return;
+            }
+            catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
+            {
+                // the file does not exist, so just swallow
+            }
+
+            // OK, nothing in cache - generate it now
+            var inputDocUrl = await bucket.CreateSignedUrlAsync(ossNameProvider.GetCurrentModel(storage.IsAssembly));
+            ProcessingArgs drawingData = await _arranger.ForDrawingAsync(inputDocUrl);
+            ProcessingResult result = await _fdaClient.GenerateDrawing(drawingData);
+            if (!result.Success)
+            {
+                _logger.LogError($"{result.ErrorMessage} for project {project.Name} and hash {hash}");
+                throw new FdaProcessingException($"{result.ErrorMessage} for project {project.Name} and hash {hash}", result.ReportUrl);
+            }
+
+            await _arranger.MoveDrawingAsync(project, hash);
+        }
+
         public async Task FileTransferAsync(string source, string target)
         {
             ProcessingResult result = await _fdaClient.TransferAsync(source, target);

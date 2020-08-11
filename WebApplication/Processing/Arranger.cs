@@ -46,6 +46,7 @@ namespace WebApplication.Processing
         public readonly string OutputSAT = $"{Guid.NewGuid():N}.sat";
         public readonly string OutputRFA = $"{Guid.NewGuid():N}.rfa";
         public readonly string BomJson = $"{Guid.NewGuid():N}.bom.json";
+        public readonly string OutputDrawing = $"{Guid.NewGuid():N}.drawing.zip";
 
         /// <summary>
         /// Constructor.
@@ -157,6 +158,14 @@ namespace WebApplication.Processing
                                 bucket.DeleteObjectAsync(OutputSAT));
         }
 
+        internal async Task MoveDrawingAsync(Project project, string hash)
+        {
+            var bucket = await _userResolver.GetBucketAsync();
+
+            var ossNames = project.OssNameProvider(hash);
+            await Task.WhenAll(bucket.RenameObjectAsync(OutputDrawing, ossNames.Drawing));
+        }
+
         internal async Task<ProcessingArgs> ForSatAsync(string inputDocUrl, string topLevelAssembly)
         {
             var bucket = await _userResolver.GetBucketAsync();
@@ -170,6 +179,19 @@ namespace WebApplication.Processing
                 InputDocUrl = inputDocUrl,
                 TLA = topLevelAssembly,
                 SatUrl = satUrl
+            };
+        }
+
+        internal async Task<ProcessingArgs> ForDrawingAsync(string inputDocUrl)
+        {
+            var bucket = await _userResolver.GetBucketAsync();
+
+            var url = await bucket.CreateSignedUrlAsync(OutputDrawing, ObjectAccess.ReadWrite);
+
+            return new ProcessingArgs
+            {
+                InputDocUrl = inputDocUrl,
+                DrawingUrl = url
             };
         }
 

@@ -29,7 +29,6 @@ export const actionTypes = {
     SHOW_RFA_FAILED: 'SHOW_RFA_FAILED',
     SET_REPORT_URL: 'SET_REPORT_URL',
     SHOW_RFA_PROGRESS: 'SHOW_RFA_PROGRESS',
-    HIDE_RFA_PROGRESS: 'HIDE_RFA_PROGRESS',
     SET_RFA_LINK: 'SET_RFA_LINK',
     SHOW_UPLOAD_PACKAGE: 'SHOW_UPLOAD_PACKAGE',
     PACKAGE_FILE_EDITED: 'PACKAGE_FILE_EDITED',
@@ -39,7 +38,10 @@ export const actionTypes = {
     SHOW_DELETE_PROJECT: 'SHOW_DELETE_PROJECT',
     SET_PROJECT_CHECKED: 'SET_PROJECT_CHECKED',
     SET_CHECKED_PROJECTS: 'SET_CHECKED_PROJECTS',
-    CLEAR_CHECKED_PROJECTS: 'CLEAR_CHECKED_PROJECTS'
+    CLEAR_CHECKED_PROJECTS: 'CLEAR_CHECKED_PROJECTS',
+    SHOW_DRW_PROGRESS: 'SHOW_DRW_PROGRESS',
+    SET_DRW_LINK: 'SET_DRW_LINK',
+    SHOW_DRW_FAILED: 'SHOW_DRW_FAILED'
 };
 
 export default actionTypes;
@@ -104,6 +106,13 @@ export const showRfaFailed = (visible) => {
     };
 };
 
+export const showDrawingFailed = (visible) => {
+    return {
+        type: actionTypes.SHOW_DRW_FAILED,
+        visible
+    };
+};
+
 export const setReportUrlLink = (url) => {
     return {
         type: actionTypes.SET_REPORT_URL,
@@ -118,9 +127,23 @@ export const showRFAModalProgress = (visible) => {
     };
 };
 
+export const showDrawingModalProgress = (visible) => {
+    return {
+        type: actionTypes.SHOW_DRW_PROGRESS,
+        visible
+    };
+};
+
 export const setRFALink = (url) => {
     return {
         type: actionTypes.SET_RFA_LINK,
+        url
+    };
+};
+
+export const setDrawingLink = (url) => {
+    return {
+        type: actionTypes.SET_DRW_LINK,
         url
     };
 };

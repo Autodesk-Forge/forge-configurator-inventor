@@ -92,6 +92,10 @@ export const downloadRfaFailedShowing = function(state) {
     return uiFlags.downloadRfaFailedShowing(state.uiFlags);
 };
 
+export const downloadDrawingFailedShowing = function(state) {
+    return uiFlags.downloadDrawingFailedShowing(state.uiFlags);
+};
+
 export const reportUrl = function(state) {
     return uiFlags.reportUrl(state.uiFlags);
 };
@@ -100,8 +104,16 @@ export const rfaProgressShowing = function(state) {
     return uiFlags.rfaProgressShowing(state.uiFlags);
 };
 
+export const drawingProgressShowing = function(state) {
+    return uiFlags.drawingProgressShowing(state.uiFlags);
+};
+
 export const rfaDownloadUrl = function(state) {
     return uiFlags.rfaDownloadUrl(state.uiFlags);
+};
+
+export const drawingDownloadUrl = function(state) {
+    return uiFlags.drawingDownloadUrl(state.uiFlags);
 };
 
 export const uploadPackageDlgVisible = function(state) {

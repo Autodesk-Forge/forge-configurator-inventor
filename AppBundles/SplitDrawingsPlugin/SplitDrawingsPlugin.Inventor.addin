@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Addin Type="Plugin">
+  <ClassId>{0E3E48F4-F7EA-4633-9A95-B3A0D1DC84EC}</ClassId>
+  <ClientId>{0E3E48F4-F7EA-4633-9A95-B3A0D1DC84EC}</ClientId>
+  <DisplayName>SplitDrawingsPlugin</DisplayName>
+  <Description>Split Drawings functionality</Description>
+  <Assembly>SplitDrawingsPlugin.dll</Assembly>
+</Addin>

@@ -110,5 +110,17 @@ namespace WebApplication.Processing
 
             return rfaResult;
         }
+
+        internal async Task<ProcessingResult> GenerateDrawing(ProcessingArgs data)
+        {
+            ProcessingResult result = new ProcessingResult { Success = false };//await _drawingWork.ProcessAsync(data);
+            if (!result.Success)
+            {
+                result.ErrorMessage = "Failed to generate drawing file";
+                return result;
+            }
+
+            return result;
+        }
     }
 }

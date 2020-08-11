@@ -27,9 +27,12 @@ export const initialState = {
    updateFailedShowing: false,
    loginFailedShowing: false,
    downloadRfaFailedShowing: false,
+   downloadDrawingFailedShowing: false,
    reportUrl: null,
    rfaProgressShowing: null,
+   drawingProgressShowing: null,
    rfaDownloadUrl: null,
+   drawingDownloadUrl: null,
    showUploadPackage: false,
    uploadProgressShowing: false,
    uploadProgressStatus: null,
@@ -57,6 +60,10 @@ export const downloadRfaFailedShowing = function(state) {
    return state.downloadRfaFailedShowing;
 };
 
+export const downloadDrawingFailedShowing = function(state) {
+   return state.downloadDrawingFailedShowing;
+};
+
 export const reportUrl = function(state) {
    return state.reportUrl;
 };
@@ -65,8 +72,16 @@ export const rfaProgressShowing = function(state) {
    return state.rfaProgressShowing;
 };
 
+export const drawingProgressShowing = function(state) {
+   return state.drawingProgressShowing;
+};
+
 export const rfaDownloadUrl = function(state) {
    return state.rfaDownloadUrl;
+};
+
+export const drawingDownloadUrl = function(state) {
+   return state.drawingDownloadUrl;
 };
 
 export const uploadPackageDlgVisible = function(state) {
@@ -171,6 +186,12 @@ export default function(state = initialState, action) {
          return { ...state, checkedProjects: action.projects};
       case uiFlagsActionTypes.CLEAR_CHECKED_PROJECTS:
          return { ...state, checkedProjects: []};
+      case uiFlagsActionTypes.SHOW_DRW_FAILED:
+         return { ...state, downloadDrawingFailedShowing: action.visible};
+      case uiFlagsActionTypes.SHOW_DRW_PROGRESS:
+         return { ...state, drawingProgressShowing: action.visible, drawingDownloadUrl: null};
+      case uiFlagsActionTypes.SET_DRW_LINK:
+         return { ...state, drawingDownloadUrl: action.url};
       default:
          return state;
   }

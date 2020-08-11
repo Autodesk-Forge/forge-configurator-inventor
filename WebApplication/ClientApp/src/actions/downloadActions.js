@@ -19,6 +19,7 @@
 import { addError, addLog } from './notificationActions';
 import { Jobs } from '../JobManager';
 import { showRFAModalProgress, showRfaFailed, setRFALink, setReportUrlLink } from './uiFlagsActions';
+import { showDrawingModalProgress, showDrawingFailed, setDrawingLink } from './uiFlagsActions';
 
 export const getRFADownloadLink = (projectId, temporaryUrl) => async (dispatch) => {
     dispatch(addLog('getRFADownloadLink invoked'));
@@ -54,5 +55,42 @@ export const getRFADownloadLink = (projectId, temporaryUrl) => async (dispatch) 
         );
     } catch (error) {
         dispatch(addError('JobManager.doRFAJob: Error : ' + error));
+    }
+};
+
+export const getDrawingDownloadLink = (projectId, temporaryUrl) => async (dispatch) => {
+    dispatch(addLog('getDrawingDownloadLink invoked'));
+
+    const jobManager = Jobs();
+
+    // show progress
+    dispatch(showDrawingModalProgress(true));
+
+    // launch signalR to prepare up-to-date drawing here and wait for result
+    try {
+        await jobManager.doDrawingJob(projectId, temporaryUrl,
+            // start job
+            () => {
+                dispatch(addLog('JobManager.doDrawingJob: HubConnection started for project : ' + projectId));
+                dispatch(setReportUrlLink(null)); // cleanup url link
+            },
+            // onComplete
+            (drawingUrl) => {
+                dispatch(addLog('JobManager.doDrawingJob: Received onComplete'));
+                // set RFA link, it will show link in UI
+                dispatch(setDrawingLink(drawingUrl));
+            },
+            // onError
+            (jobId, reportUrl) => {
+                dispatch(addLog('JobManager: Received onError with jobId: ' + jobId + ' and reportUrl: ' + reportUrl));
+                // hide progress modal dialog
+                dispatch(showDrawingModalProgress(false));
+                // show error modal dialog
+                dispatch(setReportUrlLink(reportUrl));
+                dispatch(showDrawingFailed(true));
+            }
+        );
+    } catch (error) {
+        dispatch(addError('JobManager.doDrawingJob: Error : ' + error));
     }
 };

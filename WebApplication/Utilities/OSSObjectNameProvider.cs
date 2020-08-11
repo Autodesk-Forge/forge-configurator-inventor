@@ -169,6 +169,8 @@ namespace WebApplication.Utilities
         /// Filename for JSON with BOM data.
         /// </summary>
         public string Bom => ToFullName(LocalName.BOM);
+
+        public string Drawing => ToFullName("Drawing.zip");
     }
 
     /// <summary>

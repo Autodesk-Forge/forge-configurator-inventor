@@ -21,8 +21,10 @@ import { connect } from 'react-redux';
 import BaseTable, { AutoResizer, Column } from 'react-base-table';
 import 'react-base-table/styles.css';
 import { getActiveProject, rfaProgressShowing, rfaDownloadUrl, downloadRfaFailedShowing, reportUrl } from '../reducers/mainReducer';
-import { getRFADownloadLink } from '../actions/downloadActions';
+import { drawingProgressShowing, drawingDownloadUrl, downloadDrawingFailedShowing } from '../reducers/mainReducer';
+import { getRFADownloadLink, getDrawingDownloadLink } from '../actions/downloadActions';
 import { showRFAModalProgress, showRfaFailed } from '../actions/uiFlagsActions';
+import { showDrawingModalProgress, showDrawingFailed } from '../actions/uiFlagsActions';
 import ModalProgressRfa from './modalProgressRfa';
 import ModalFail from './modalFail';
 
@@ -64,12 +66,20 @@ export const downloadColumns = [
 
 export class Downloads extends Component {
 
-    onProgressCloseClick() {
+    onRfaProgressCloseClick() {
         this.props.showRFAModalProgress(false);
     }
 
     onRfaFailedCloseClick() {
         this.props.showRfaFailed(false);
+    }
+
+    onDrawingProgressCloseClick() {
+        this.props.showDrawingModalProgress(false);
+    }
+
+    onDrawingFailedCloseClick() {
+        this.props.showDrawingFailed(false);
     }
 
     render() {
@@ -86,6 +96,9 @@ export class Downloads extends Component {
 
         const rfaDownloadLink =
         <a href="" onClick={(e) => { e.preventDefault(); }}>RFA</a>;
+
+        const drawingDownloadLink =
+        <a href="" onClick={(e) => { e.preventDefault(); }}>Drawings</a>;
 
         const data = downloadUrl != null ? [
             {
@@ -111,6 +124,21 @@ export class Downloads extends Component {
             }
         ] : [];
 
+        const hasDrawingUrl = true; // connect to some property if has drawing or not
+        if (hasDrawingUrl) {
+            data.push(
+                {
+                    id: 'drawings',
+                    icon: 'products-and-services-24.svg',
+                    type: 'IDW',
+                    env: 'Model',
+                    link: drawingDownloadLink,
+                    clickHandler: async () => {
+                        this.props.getDrawingDownloadLink(this.props.activeProject.id, this.props.activeProject.hash);
+                    }
+                });
+        }
+
         return (
         <React.Fragment>
             <AutoResizer>
@@ -134,9 +162,9 @@ export class Downloads extends Component {
                     title="Preparing RFA"
                     label={this.props.activeProject.id}
                     icon='/Archive.svg'
-                    onClose={() => this.onProgressCloseClick()}
+                    onClose={() => this.onRfaProgressCloseClick()}
                     url={this.props.rfaDownloadUrl}
-                    onUrlClick={() => this.onProgressCloseClick()}
+                    onUrlClick={() => this.onRfaProgressCloseClick()}
                     />}
                 {this.props.rfaFailedShowing && <ModalFail
                     open={true}
@@ -144,6 +172,23 @@ export class Downloads extends Component {
                     contentName="Project:"
                     label={this.props.activeProject.id}
                     onClose={() => this.onRfaFailedCloseClick()}
+                    url={this.props.reportUrl}/>}
+
+                {this.props.drawingProgressShowing && <ModalProgressRfa
+                    open={true}
+                    title="Preparing Drawings"
+                    label={this.props.activeProject.id}
+                    icon='/Archive.svg'
+                    onClose={() => this.onDrawingProgressCloseClick()}
+                    url={this.props.drawingDownloadUrl}
+                    onUrlClick={() => this.onDrawingProgressCloseClick()}
+                    />}
+                {this.props.drawingFailedShowing && <ModalFail
+                    open={true}
+                    title="Preparing Drawings Failed"
+                    contentName="Project:"
+                    label={this.props.activeProject.id}
+                    onClose={() => this.onDrawingFailedCloseClick()}
                     url={this.props.reportUrl}/>}
         </React.Fragment>
         );
@@ -158,6 +203,9 @@ export default connect(function(store) {
         rfaProgressShowing: rfaProgressShowing(store),
         rfaFailedShowing: downloadRfaFailedShowing(store),
         rfaDownloadUrl: rfaDownloadUrl(store),
-        reportUrl: reportUrl(store)
+        reportUrl: reportUrl(store),
+        drawingProgressShowing: drawingProgressShowing(store),
+        drawingFailedShowing: downloadDrawingFailedShowing(store),
+        drawingDownloadUrl: drawingDownloadUrl(store),
     };
-}, { Downloads, getRFADownloadLink, showRFAModalProgress, showRfaFailed })(Downloads);
+}, { Downloads, getRFADownloadLink, showRFAModalProgress, showRfaFailed, getDrawingDownloadLink, showDrawingModalProgress, showDrawingFailed })(Downloads);

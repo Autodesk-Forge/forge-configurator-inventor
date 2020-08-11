@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ApplicationPackage SchemaVersion="1.0" Version="1.0" ProductCode="{0E3E48F4-F7EA-4633-9A95-B3A0D1DC84EC}" Name="SplitDrawingsPlugin" Description="SplitDrawings Plugin" Author="Inventor IO Dev">
+    <CompanyDetails Name="Autodesk, Inc" Phone="415.555.5555" Url="www.autodesk.com" Email="noreply@autodesk.com" />
+    <Components>
+        <!-- For Inventor Engine, "Platform" attribute must be "Inventor" -->
+        <RuntimeRequirements  OS="Win64" Platform="Inventor" />
+        <!-- For Inventor Plug-in, the "Module" attribute must point to the .addin manifest file. -->
+        <ComponentEntry LoadOnAutoCADStartup="False" LoadOnCommandInvocation="False"
+            AppDescription="SplitDrawingsPlugin App Package."
+            ModuleName="./Contents/SplitDrawingsPlugin.Inventor.addin" AppName="SplitDrawingsPlugin"/>
+    </Components>
+    <EnvironmentVariables>
+    </EnvironmentVariables>
+</ApplicationPackage>
