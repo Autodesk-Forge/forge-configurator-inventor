@@ -16,37 +16,23 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-/* eslint-disable no-undef */
-const locators = require('./elements_definition.js');
+import React from 'react';
+import Enzyme, { shallow } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+import {Drawing} from './drawing';
 
-Before((I) => {
-    I.amOnPage('/');
-});
+Enzyme.configure({ adapter: new Adapter() });
 
-Feature('Update params');
+describe('Drawings', () => {
+  it('Page has expected text when no drawings available', () => {
+      const props = {
+        activeProject: { drawing: null }
+      };
 
-const updatingProjectProgress = '//p[text()="Updating Project"]';
-
-Scenario('Updating parameters for model', (I) => {
-
-    I.selectProject("Wrench");
-
-    // enter new parameter value
-    I.setParamValue('JawOffset', '20 mm');
-
-    // check that stripe appeared
-    I.waitForVisible(locators.xpStripeElement, 10);
-
-    // Click on Update button
-    I.waitForVisible(locators.xpButtonUpdate);
-    I.click(locators.xpButtonUpdate);
-
-    // wait for progress bar shows and disappeared
-    I.waitForVisible(updatingProjectProgress, 10);
-    I.waitForInvisible(updatingProjectProgress, 120);
-
-    // check that stripe disappeared
-    I.waitForInvisible(locators.xpStripeElement, 5);
-
-    // TODO: check for updated parameters values
+      const wrapper = shallow(<Drawing {...props}/>);
+      const wrapperComponent = wrapper.find('.drawingEmptyText');
+      expect(wrapperComponent.length).toEqual(1);
+      const children = wrapperComponent.prop('children');
+      expect(children).toEqual("You don't have any drawings in package.");
+    });
 });

@@ -22,12 +22,12 @@ import Tabs, { Tab } from "@hig/tabs";
 import ProjectList from './projectList';
 import ForgeView from './forgeView';
 import ParametersContainer from './parametersContainer';
-import PageNYI from './pageNYI';
 import Bom from './bom';
 import Downloads from './downloads';
 import './tabs.css';
 import { activeTabIndex } from '../reducers/mainReducer';
 import { updateActiveTabIndex } from '../actions/uiFlagsActions';
+import Drawing from './drawing';
 
 export class TabsContainer extends Component {
 
@@ -69,7 +69,7 @@ export class TabsContainer extends Component {
               </Tab>
               <Tab label="Drawing">
                 <div id="drawing" className="tabContent fullheight">
-                  <PageNYI/>
+                  <Drawing/>
                 </div>
               </Tab>
               <Tab label="Downloads">

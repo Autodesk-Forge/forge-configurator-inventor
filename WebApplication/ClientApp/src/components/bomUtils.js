@@ -16,37 +16,23 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-/* eslint-disable no-undef */
-const locators = require('./elements_definition.js');
-
-Before((I) => {
-    I.amOnPage('/');
-});
-
-Feature('Update params');
-
-const updatingProjectProgress = '//p[text()="Updating Project"]';
-
-Scenario('Updating parameters for model', (I) => {
-
-    I.selectProject("Wrench");
-
-    // enter new parameter value
-    I.setParamValue('JawOffset', '20 mm');
-
-    // check that stripe appeared
-    I.waitForVisible(locators.xpStripeElement, 10);
-
-    // Click on Update button
-    I.waitForVisible(locators.xpButtonUpdate);
-    I.click(locators.xpButtonUpdate);
-
-    // wait for progress bar shows and disappeared
-    I.waitForVisible(updatingProjectProgress, 10);
-    I.waitForInvisible(updatingProjectProgress, 120);
-
-    // check that stripe disappeared
-    I.waitForInvisible(locators.xpStripeElement, 5);
-
-    // TODO: check for updated parameters values
-});
+// compute text width from canvas
+// don't want to test string width calc:
+/* istanbul ignore next */
+export function getMaxColumnTextWidth(strings) {
+    const font = "13px ArtifaktElement, sans-serif";
+    const canvas = document.createElement("canvas");
+    const context2d = canvas.getContext("2d");
+    context2d.font = font;
+    let maxWidth = 0;
+    strings.forEach(element => {
+      const width = context2d.measureText(element).width;
+      maxWidth = width>maxWidth ? width : maxWidth;
+    });
+  
+    // round to 10times number, like 81.5 -> 90, 87.1 -> 90, etc
+    const roundTo = 10;
+    const rounded = (maxWidth % roundTo==0) ? maxWidth : maxWidth-maxWidth%roundTo + roundTo;
+    // console.log('width of "'+ JSON.stringify(strings) +'" is: ' + rounded);
+    return rounded;
+  }
