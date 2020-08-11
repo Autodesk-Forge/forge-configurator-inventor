@@ -44,36 +44,39 @@ namespace ExportDrawingAsPdfPlugin
 
         public void RunWithArguments(Document doc, NameValueMap map)
         {
-            var dir = System.IO.Directory.GetCurrentDirectory();
-            if (doc == null)
+            using (new HeartBeat())
             {
-                ActivateDefaultProject(dir);
-                doc = inventorApplication.Documents.Open(map.Item["_1"]);
-            }
-            var fullFileName = doc.FullFileName;
-            var path = System.IO.Path.GetFullPath(fullFileName);
-            var fileName = System.IO.Path.GetFileNameWithoutExtension(fullFileName);
-            var drawing = inventorApplication.DesignProjectManager.ResolveFile(path, fileName + ".idw");
-            LogTrace("Looking for drawing: " + fileName + ".idw " +  "inside: " + path + " with result: " + drawing);
-            if (drawing == null)
-            {
-                drawing = inventorApplication.DesignProjectManager.ResolveFile(path, fileName + ".dwg");
-                LogTrace("Looking for drawing: " + fileName + ".dwg " + "inside: " + path + " with result: " + drawing);
-            }
+                var dir = System.IO.Directory.GetCurrentDirectory();
+                if (doc == null)
+                {
+                    ActivateDefaultProject(dir);
+                    doc = inventorApplication.Documents.Open(map.Item["_1"]);
+                }
+                var fullFileName = doc.FullFileName;
+                var path = System.IO.Path.GetFullPath(fullFileName);
+                var fileName = System.IO.Path.GetFileNameWithoutExtension(fullFileName);
+                var drawing = inventorApplication.DesignProjectManager.ResolveFile(path, fileName + ".idw");
+                LogTrace("Looking for drawing: " + fileName + ".idw " + "inside: " + path + " with result: " + drawing);
+                if (drawing == null)
+                {
+                    drawing = inventorApplication.DesignProjectManager.ResolveFile(path, fileName + ".dwg");
+                    LogTrace("Looking for drawing: " + fileName + ".dwg " + "inside: " + path + " with result: " + drawing);
+                }
 
-            if (drawing != null)
-            {
-                LogTrace("Found drawing to export at: " + drawing);
-                var drawingDocument = inventorApplication.Documents.Open(drawing);
-                LogTrace("Drawing opened");
-                drawingDocument.Update2(true);
-                LogTrace("Drawing updated");
-                drawingDocument.Save2(true);
-                LogTrace("Drawing saved");
-                var pdfPath = System.IO.Path.Combine(dir, "Drawing.pdf");
-                LogTrace("Exporting drawing to: " + pdfPath);
-                drawingDocument.SaveAs(pdfPath, true);
-                LogTrace("Drawing exported");
+                if (drawing != null)
+                {
+                    LogTrace("Found drawing to export at: " + drawing);
+                    var drawingDocument = inventorApplication.Documents.Open(drawing);
+                    LogTrace("Drawing opened");
+                    drawingDocument.Update2(true);
+                    LogTrace("Drawing updated");
+                    drawingDocument.Save2(true);
+                    LogTrace("Drawing saved");
+                    var pdfPath = System.IO.Path.Combine(dir, "Drawing.pdf");
+                    LogTrace("Exporting drawing to: " + pdfPath);
+                    drawingDocument.SaveAs(pdfPath, true);
+                    LogTrace("Drawing exported");
+                }
             }
         }
 

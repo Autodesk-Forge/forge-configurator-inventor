@@ -22,7 +22,7 @@ using WebApplication.Definitions;
 namespace WebApplication.Processing
 {
     /// <summary>
-    /// SVF generator from Inventor document.
+    /// Export drawing from Inventor document.
     /// </summary>
     public class ExportDrawing : ForgeAppBase
     {

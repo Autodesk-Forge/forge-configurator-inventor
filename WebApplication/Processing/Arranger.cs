@@ -48,7 +48,7 @@ namespace WebApplication.Processing
         public readonly string OutputSAT = $"{Guid.NewGuid():N}.sat";
         public readonly string OutputRFA = $"{Guid.NewGuid():N}.rfa";
         public readonly string BomJson = $"{Guid.NewGuid():N}.bom.json";
-        public readonly string DrawingVieawbles = $"{Guid.NewGuid():N}.drawing.pdf";
+        public readonly string DrawingViewables = $"{Guid.NewGuid():N}.drawing.pdf";
 
         /// <summary>
         /// Constructor.
@@ -74,7 +74,7 @@ namespace WebApplication.Processing
                                             bucket.CreateSignedUrlAsync(OutputModelIAM, ObjectAccess.Write),
                                             bucket.CreateSignedUrlAsync(OutputModelIPT, ObjectAccess.Write),
                                             bucket.CreateSignedUrlAsync(BomJson, ObjectAccess.Write),
-                                            bucket.CreateSignedUrlAsync(DrawingVieawbles, ObjectAccess.Write));
+                                            bucket.CreateSignedUrlAsync(DrawingViewables, ObjectAccess.Write));
 
             return new AdoptionData
                     {
@@ -107,7 +107,7 @@ namespace WebApplication.Processing
                                             bucket.CreateSignedUrlAsync(Parameters, ObjectAccess.Write),
                                             bucket.CreateSignedUrlAsync(InputParams, ObjectAccess.ReadWrite),
                                             bucket.CreateSignedUrlAsync(BomJson, ObjectAccess.Write),
-                                            bucket.CreateSignedUrlAsync(DrawingVieawbles, ObjectAccess.Write)
+                                            bucket.CreateSignedUrlAsync(DrawingViewables, ObjectAccess.Write)
                                             );
 
             await using var jsonStream = Json.ToStream(parameters);
@@ -141,23 +141,11 @@ namespace WebApplication.Processing
 
             var bucket = await _userResolver.GetBucketAsync();
 
-            Func<Task> renameDrawingViewablesAction = async () =>
-            {
-                try
-                {
-                    await bucket.RenameObjectAsync(DrawingVieawbles, ossNames.DrawingViewables);
-                }
-                catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
-                {
-                    // drawing export is optional based on drawing existence
-                }
-            };
-
             // move data to expected places
             await Task.WhenAll(bucket.RenameObjectAsync(Thumbnail, project.OssAttributes.Thumbnail),
                                 bucket.RenameObjectAsync(SVF, ossNames.ModelView),
                                 bucket.RenameObjectAsync(BomJson, ossNames.Bom),
-                                renameDrawingViewablesAction(),
+                                bucket.RenameObjectAsync(DrawingViewables, ossNames.DrawingViewables, true),
                                 bucket.RenameObjectAsync(Parameters, ossNames.Parameters),
                                 bucket.RenameObjectAsync(attributes.IsAssembly ? OutputModelIAM : OutputModelIPT, ossNames.GetCurrentModel(attributes.IsAssembly)),
                                 bucket.UploadObjectAsync(project.OssAttributes.Metadata, Json.ToStream(attributes, writeIndented: true)));
@@ -218,22 +206,10 @@ namespace WebApplication.Processing
 
             var bucket = await _userResolver.GetBucketAsync();
 
-            Func<Task> renameDrawingViewablesAction = async () =>
-            {
-                try
-                {
-                    await bucket.RenameObjectAsync(DrawingVieawbles, ossNames.DrawingViewables);
-                }
-                catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
-                {
-                    // drawing export is optional based on drawing existence
-                }
-            };
-
             // move data to expected places
             await Task.WhenAll(bucket.RenameObjectAsync(SVF, ossNames.ModelView),
                                 bucket.RenameObjectAsync(BomJson, ossNames.Bom),
-                                renameDrawingViewablesAction(),
+                                bucket.RenameObjectAsync(DrawingViewables, ossNames.DrawingViewables, true),
                                 bucket.RenameObjectAsync(Parameters, ossNames.Parameters),
                                 bucket.RenameObjectAsync(isAssembly ? OutputModelIAM : OutputModelIPT, ossNames.GetCurrentModel(isAssembly)),
                                 bucket.DeleteObjectAsync(InputParams));
