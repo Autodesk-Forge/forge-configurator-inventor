@@ -56,7 +56,7 @@ Feature('Bom Data Validation');
 // this test checks that BOM data are correct. There are two validations
 // first validation is before update
 // second validation is after a parameter change - PartMaterial parameter
-Scenario('should check BOM data after change', async (I) => {
+xScenario('should check BOM data after change', async (I) => {
 
     // select project in the Project Switcher
     I.selectProject('Wrench');
@@ -93,10 +93,9 @@ Scenario('should check BOM data after change', async (I) => {
     I.waitForVisible(locators.xpButtonUpdate, 10);
     I.click(locators.xpButtonUpdate);
 
-    // wait for progress bar shows and disappears
-    const updatingProjectProgress = '//p[text()="Updating Project"]';
-    I.waitForVisible(updatingProjectProgress, 10);
-    I.waitForInvisible(updatingProjectProgress, 120);
+    // wait for update stripe shows and disappears
+    I.waitForVisible(locators.xpStripeElement, 10);
+    I.waitForInvisible(locators.xpStripeElement, 120);
 
     // click to BOM tab
     I.click(locators.bomTab);
