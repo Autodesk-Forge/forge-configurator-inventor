@@ -63,7 +63,7 @@ namespace WebApplication.Controllers
         /// </summary>
         private async Task<ActionResult> SendLocalFileContent(string projectName, string fileName, string hash = null, string contentType = "application/json")
         {
-            string localFile = await EnsureLocalFile(projectName, fileName);
+            string localFile = await EnsureLocalFile(projectName, fileName, hash);
             return new PhysicalFileResult(localFile, contentType);
         }
 
