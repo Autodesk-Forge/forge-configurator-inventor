@@ -55,14 +55,14 @@ describe('load BOM', () => {
     });
 
     it('updates the bom state after fetch BOM', async () => {
-        const projectId = 'projectA';
-        await store.dispatch(fetchBom(projectId));
-        expect(loadBomMock).toBeCalledWith(projectId);
+        const project = { id: 'projectA', bomJsonUrl: 'bomUrl'};
+        await store.dispatch(fetchBom(project));
+        expect(loadBomMock).toBeCalledWith('bomUrl');
 
         // check expected store actions
         const actions = store.getActions();
         const updateAction = actions.find(a => a.type === actionTypes.BOM_UPDATED);
-        expect(updateAction.projectId).toEqual(projectId);
+        expect(updateAction.projectId).toEqual(project.id);
         expect(updateAction.bomData).toEqual(newBOM);
     });
 });
