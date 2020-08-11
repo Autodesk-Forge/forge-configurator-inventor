@@ -52,10 +52,16 @@ namespace WebApplication.Controllers
             return await SendLocalFileContent(projectName, LocalName.BOM);
         }
 
+        [HttpGet("bom/{projectName}/{hash}")]
+        public async Task<ActionResult> GetBOM(string projectName, string hash)
+        {
+            return await SendLocalFileContent(projectName, LocalName.BOM, hash);
+        }
+
         /// <summary>
         /// Send local file for the project.
         /// </summary>
-        private async Task<ActionResult> SendLocalFileContent(string projectName, string fileName, string contentType = "application/json")
+        private async Task<ActionResult> SendLocalFileContent(string projectName, string fileName, string hash = null, string contentType = "application/json")
         {
             string localFile = await EnsureLocalFile(projectName, fileName);
             return new PhysicalFileResult(localFile, contentType);
@@ -82,7 +88,7 @@ namespace WebApplication.Controllers
                 Directory.CreateDirectory(localNames.BaseDir);
 
                 var bucket = await _userResolver.GetBucketAsync(tryToCreate: false);
-                await bucket.DownloadFileAsync(projectStorage.GetOssNames(hash).ToFullName(fullLocalName), fullLocalName);
+                await bucket.DownloadFileAsync(projectStorage.GetOssNames(hash).ToFullName(fileName), fullLocalName);
             }
 
             return fullLocalName;
