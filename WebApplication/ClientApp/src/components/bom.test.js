@@ -78,7 +78,7 @@ describe('BOM component', () => {
 
     it('Fetches bom on first render', () => {
         shallow(<Bom { ...props } />);
-        expect(fetchBomMock).toHaveBeenCalledWith(activeProject.id);
+        expect(fetchBomMock).toHaveBeenCalledWith(activeProject);
     });
 
     it('Fetched bom on project change', () => {
@@ -90,8 +90,9 @@ describe('BOM component', () => {
         const wrapper = shallow(<Bom {...localProps} />);
         fetchBomMock.mockClear();
 
-        const updatedProps = Object.assign(localProps, { activeProject: { id: '1' } });
+        const newActiveProject = { id: '1' };
+        const updatedProps = Object.assign(localProps, { activeProject: newActiveProject });
         wrapper.setProps(updatedProps);
-        expect(fetchBomMock).toHaveBeenCalledWith('1');
+        expect(fetchBomMock).toHaveBeenCalledWith(newActiveProject);
     });
 });
