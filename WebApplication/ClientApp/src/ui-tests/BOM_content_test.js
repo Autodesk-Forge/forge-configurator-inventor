@@ -53,7 +53,9 @@ Before((I) => {
 
 Feature('Bom Data Validation');
 
-// validate that Parameter notification is displayed
+// this test checks that BOM data are correct. There are two validations
+// first validation is before update
+// second validation is after a parameter change - PartMaterial parameter
 Scenario('should check BOM data after change', async (I) => {
 
     // select project in the Project Switcher
@@ -65,21 +67,27 @@ Scenario('should check BOM data after change', async (I) => {
 
     const htmlData = await I.grabTextFrom(bomRows);
 
-    assert.equal(htmlData.length , baseRows.length, 'Error: Different number of BOM rows!')
+    assert.equal(htmlData.length , baseRows.length, 'Error: Different number of BOM rows!');
 
-    for(let i = 0; i < htmlData.length; ++i)
+    for(let i = 0; i < htmlData.length; ++i) // first validation
     {
-        //I.say(JSON.stringify(htmlData[i].toString()));
         const baseRow = baseRows[i].join('\n');
         I.say(baseRow);
         const rowNumber = i + 1;
         assert.equal(htmlData[i], baseRow, 'Error: BOM row ' + rowNumber + ' is not identical with base data!');
     }
 
-    // change parameters
+    // change parameter - select an item from a listbox
+    const partMaterialParameter = '//div[@class="parameter"][text()="PartMaterial"]//input';
+    const listbox = '//div[@role="listbox" and .//div[contains(.,"Stainless Steel")]]';
+    const optionStainlessSteel = '//div[@role="option" and .//span[contains(.,"Stainless Steel")]]';
     I.click(locators.modelTab);
     I.waitForElement(parametersElement, 20);
-    I.setParamValue("PartMaterial", "Stainless Steel");
+    I.waitForVisible(partMaterialParameter,10);
+    I.clearField(partMaterialParameter);
+    I.click(partMaterialParameter);
+    I.waitForVisible(listbox, 3);
+    I.click(optionStainlessSteel);
 
     // Click on Update button
     I.waitForVisible(locators.xpButtonUpdate, 10);
@@ -94,13 +102,15 @@ Scenario('should check BOM data after change', async (I) => {
     I.click(locators.bomTab);
     I.waitForVisible(bomTable, 5);
 
-    const htmlUpdatedData = await I.grabTextFrom(bomRows);
+    const updatedHtmlData = await I.grabTextFrom(bomRows);
 
-    for(let i = 0; i < htmlUpdatedData.length; ++i)
+    assert.equal(updatedHtmlData.length , updatedRows.length, 'Error: Different number of BOM rows after update!');
+
+    for(let i = 0; i < updatedHtmlData.length; ++i) // second validation
     {
         const updatedRow = updatedRows[i].join('\n');
         const rowNumber = i + 1;
-        assert.equal(htmlUpdatedData[i], updatedRow, 'Error: BOM row ' + rowNumber + ' is not identical with base data after update!');
+        assert.equal(updatedHtmlData[i], updatedRow, 'Error: BOM row ' + rowNumber + ' is not identical with base data after update!');
     }
 
   });
