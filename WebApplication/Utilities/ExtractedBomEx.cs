@@ -47,7 +47,18 @@ namespace WebApplication.Utilities
 
         private static string Encode(string value)
         {
-            return value.Replace(",", ",,"); // TODO: ensure it's correct encoding
+            // - Fields with embedded commas or double-quote characters must be quoted
+            if (value.Contains(","))
+            {
+                return "\"" +
+                       // - Each of the embedded double-quote characters must be represented by a pair of double-quote characters
+                       value.Replace("\"", "\"\"") +
+                       "\"";
+            }
+            else
+            {
+                return value;
+            }
         }
     }
 }

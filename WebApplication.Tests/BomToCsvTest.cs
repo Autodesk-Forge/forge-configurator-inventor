@@ -96,16 +96,21 @@ namespace WebApplication.Tests
         {
             var bom = new ExtractedBOM
             {
-                Columns = new [] { new Column { Label = "a,a" }, new Column { Label = "b,b" }},
+                Columns = new [] { new Column { Label = "a,a" }, new Column { Label = "b,\"b" }, new Column { Label = "c\"c" }},
                 Data = new []
                 {
-                    new object[]{ "foo,foo", "bar,bar" }
+                    new object[]{ "foo\",\"foo", "bar,bar", "\"baz\"" }
                 }
             };
 
             string[] lines = BomToCsvLines(bom);
-            Assert.Equal(new[] { "a,,a,b,,b", "foo,,foo,bar,,bar" }, lines);
-        }
+            Assert.Equal(new[]
+                        {
+                            "\"a,a\",\"b,\"\"b\",c\"c",
+                            "\"foo\"\",\"\"foo\",\"bar,bar\",\"baz\""
+                        }, 
+                        lines);
+                    }
 
         [Fact]
         public void DifferentNumberOfColumnAndData()
@@ -140,8 +145,9 @@ namespace WebApplication.Tests
 
         private static string[] BomToCsvLines(ExtractedBOM bom)
         {
-            string[] lines = bom.ToCSV().Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-            return lines;
+            return bom
+                    .ToCSV()
+                    .Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
         }
     }
 }
