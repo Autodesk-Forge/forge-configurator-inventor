@@ -18,6 +18,7 @@
 
 using System;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -43,8 +44,7 @@ namespace WebApplication.Controllers
         [HttpGet("{projectName}/{hash}/model/{token?}")]
         public Task<RedirectResult> Model(string projectName, string hash, string token = null)
         {
-            if (token != null)
-                _userResolver.Token = token;
+            EnsureToken(token);
 
             return RedirectToOssObject(projectName, hash, (ossNames, isAssembly) => ossNames.GetCurrentModel(isAssembly));
         }
@@ -52,8 +52,7 @@ namespace WebApplication.Controllers
         [HttpGet("{projectName}/{hash}/rfa/{token?}")]
         public Task<RedirectResult> RFA(string projectName, string hash, string token = null)
         {
-            if (token != null)
-                _userResolver.Token = token;
+            EnsureToken(token);
 
             return RedirectToOssObject(projectName, hash, (ossNames, _)=> ossNames.Rfa);
         }
@@ -61,10 +60,15 @@ namespace WebApplication.Controllers
         [HttpGet("{projectName}/{hash}/bom/{token?}")]
         public async Task<ActionResult> BOM(string projectName, string hash, string token = null)
         {
+            EnsureToken(token);
+
             string localFileName = await _userResolver.EnsureLocalFile(projectName, LocalName.BOM, hash);
             var bom = Json.DeserializeFile<ExtractedBOM>(localFileName);
             string csv = bom.ToCSV();
-            return Content(csv, "text/csv");
+
+            // BOM size is small, so ignore potential performance improvements with direct stream writing
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(csv));
+            return File(stream, "text/csv", "bom.csv");
         }
 
         private async Task<RedirectResult> RedirectToOssObject(string projectName, string hash, Func<OSSObjectNameProvider, bool, string> nameExtractor)
@@ -81,6 +85,15 @@ namespace WebApplication.Controllers
 
             // TODO: FIX: file will be downloaded as `cache-Wrench-3CEEF3FDD5135E1F5EF39BF000B62D673B5438FE-xxxxxx.zip`
             return Redirect(url);
+        }
+
+        /// <summary>
+        /// (if provided) use token for user resolver.
+        /// </summary>
+        private void EnsureToken(string token)
+        {
+            if (token != null)
+                _userResolver.Token = token;
         }
     }
 }

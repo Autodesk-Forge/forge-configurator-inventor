@@ -129,7 +129,7 @@ export class Downloads extends Component {
                 let downloadHyperlink;
                 const bomJsx = <a href={bomDownloadUrl} onClick={(e) => { e.stopPropagation(); }} ref = {(h) => {
                     downloadHyperlink = h;
-                }}>BOM CSV</a>;
+                }}>BOM</a>;
 
                 // register the row
                 data.push({
