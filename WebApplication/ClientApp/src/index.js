@@ -67,6 +67,28 @@ observeStore(store, logSelector, logToConsole);
 // const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
 const rootElement = document.getElementById('root');
 
+// try to check external 'Script error.' to avoid hangs when running
+// PR checks/deploying build
+if (window != null) {
+    window.addEventListener('error', function(event) {
+        if (event.filename?.length > 0) {
+            // it is some internal error, lets handle it default way
+            // eslint-disable-next-line no-console
+            console.log('internal error');
+            return false;
+        } else if (event.message === "Script error.") {
+            // eslint-disable-next-line no-console
+            console.log('external script error');
+            return true;
+        }
+
+        return false;
+    });
+} else {
+    // eslint-disable-next-line no-console
+    console.log('no window -> no external script error handling');
+}
+
 ReactDOM.render(
 <Provider store={store}>
   <App />
