@@ -72,7 +72,7 @@ function getDownloadUrls(project) {
 
     return {
         modelDownloadUrl: modelDownloadUrl ? modelDownloadUrl + suffix : modelDownloadUrl,
-        bomDownloadUrl: modelDownloadUrl ? bomDownloadUrl + suffix : modelDownloadUrl
+        bomDownloadUrl: bomDownloadUrl ? bomDownloadUrl + suffix : bomDownloadUrl
     };
 }
 
@@ -91,7 +91,7 @@ export class Downloads extends Component {
         // array with rows data
         const data = [];
 
-        if (this.props.activeProject) {
+        if (this.props.activeProject?.id) {
 
             const { modelDownloadUrl, bomDownloadUrl } = getDownloadUrls(this.props.activeProject);
             if (modelDownloadUrl) {
