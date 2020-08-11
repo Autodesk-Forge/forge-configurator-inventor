@@ -25,7 +25,7 @@ import ForgePdfView from './forgePdfView';
 export class Drawing extends Component {
 
   render() {
-    const hasDrawing = true; // this.props.activeProject?.drawing!=null;
+    const hasDrawing = this.props.activeProject?.drawing!=null;
     const containerClass = !hasDrawing ? "drawingContainer empty" : "drawingContainer";
 
     return (
