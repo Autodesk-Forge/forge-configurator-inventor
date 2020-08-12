@@ -162,6 +162,43 @@ namespace WebApplication.Processing
             await _arranger.MoveRfaAsync(project, hash);
         }
 
+        public async Task<string> ExportDrawingViewablesAsync(string projectName, string hash)
+        {
+            _logger.LogInformation($"Generating drawing viewables for hash {hash}");
+
+            ProjectStorage storage = await _userResolver.GetProjectStorageAsync(projectName);
+            Project project = storage.Project;
+
+            var ossNameProvider = project.OssNameProvider(hash);
+
+            var bucket = await _userResolver.GetBucketAsync();
+            // check if Drawing viewables file is already generated
+            try
+            {
+                var url = await bucket.CreateSignedUrlAsync(ossNameProvider.DrawingViewables);
+                return url;
+            }
+            catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
+            {
+                // the file does not exist, so just swallow
+            }
+
+            // OK, nothing in cache - generate it now
+            var inputDocUrl = await bucket.CreateSignedUrlAsync(ossNameProvider.GetCurrentModel(storage.IsAssembly));
+            ProcessingArgs drawingData = await _arranger.ForDrawingViewablesAsync(inputDocUrl, storage.Metadata.TLA);
+
+            ProcessingResult result = await _fdaClient.ExportDrawingAsync(drawingData);
+            if (!result.Success)
+            {
+                _logger.LogError($"{result.ErrorMessage} for project {project.Name} and hash {hash}");
+                throw new FdaProcessingException($"{result.ErrorMessage} for project {project.Name} and hash {hash}", result.ReportUrl);
+            }
+
+            await _arranger.MoveDrawingViewablesAsync(project, hash);
+
+            return await bucket.CreateSignedUrlAsync(ossNameProvider.DrawingViewables);
+        }
+
         public async Task FileTransferAsync(string source, string target)
         {
             ProcessingResult result = await _fdaClient.TransferAsync(source, target);

@@ -42,12 +42,11 @@ namespace WebApplication.Job
 
             Logger.LogInformation($"ProcessJob (ExportDrawing) {Id} for project {ProjectId} started.");
 
-            //await ProjectWork.ExportDrawingAsync(ProjectId, _hash);
-            Thread.Sleep(1000);
+            var url = await ProjectWork.ExportDrawingViewablesAsync(ProjectId, _hash);
 
             Logger.LogInformation($"ProcessJob (ExportDrawing) {Id} for project {ProjectId} completed.");
 
-            await resultSender.SendSuccessAsync("./SampleDrawingPdf.pdf");
+            await resultSender.SendSuccessAsync(url);
         }
     }
 }

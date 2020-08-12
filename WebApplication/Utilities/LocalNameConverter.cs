@@ -81,6 +81,8 @@ namespace WebApplication.Utilities
         /// </summary>
         public string BOM => ToFullName(LocalName.BOM);
 
+        public string DrawingViewables => ToFullName(LocalName.DrawingViewables);
+
         public LocalNameProvider(string projectDir, string hash) : base(Path.Combine(projectDir, hash))
         {
         }
