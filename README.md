@@ -40,6 +40,7 @@ See [high level diagram](architecture.png)
  - Create initial data: from the `WebApplication` directory, run `dotnet run initialize=true`
  - Clear data: from the `WebApplication` directory, run `dotnet run clear=true`
  - Clear and then load initial data: from the `WebApplication` directory, run `dotnet run initialize=true clear=true`
+ - When the app finishes the initialization process it remains running and expects client calls. You can leave it running and follow by opening the site from the browser or stop it and move to the the Debugging section of this document
 ### Run after initial data is created
  - From a command prompt, go to the `WebApplication` directory, and run `dotnet run`
 ### Open site
@@ -49,6 +50,7 @@ See [high level diagram](architecture.png)
 
 ## Debug The Web Application With VS Code
 
+1. Make sure that application is fully initialized, before you start debugging session. Please see the 'Clear and load initial data during app launch time' section of this document.
 1. Open the repository root folder in VS Code
 1. In the Run tab, select the `Server/Client` configuration and click the "Start Debugging" (arrow) button
     * Some browser errors are normal, see [open site](#open-site)
