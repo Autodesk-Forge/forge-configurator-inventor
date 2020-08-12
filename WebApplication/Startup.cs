@@ -152,7 +152,7 @@ namespace WebApplication
             localCache.Serve(app);
 
             app.UseSpaStaticFiles();
-            app.UseMiddleware<TokenHandler>();
+            app.UseMiddleware<HeaderTokenHandler>();
 
             app.UseRouting();
 

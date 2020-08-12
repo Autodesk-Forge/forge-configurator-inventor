@@ -23,6 +23,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Shared;
+using WebApplication.Middleware;
 using WebApplication.State;
 using WebApplication.Utilities;
 
@@ -30,6 +31,7 @@ namespace WebApplication.Controllers
 {
     [ApiController]
     [Route("download")]
+    [MiddlewareFilter(typeof(RouteTokenPipeline))]
     public class DownloadController : ControllerBase
     {
         private readonly ILogger<DownloadController> _logger;
@@ -44,24 +46,18 @@ namespace WebApplication.Controllers
         [HttpGet("{projectName}/{hash}/model/{token?}")]
         public Task<RedirectResult> Model(string projectName, string hash, string token = null)
         {
-            EnsureToken(token);
-
             return RedirectToOssObject(projectName, hash, (ossNames, isAssembly) => ossNames.GetCurrentModel(isAssembly));
         }
 
         [HttpGet("{projectName}/{hash}/rfa/{token?}")]
         public Task<RedirectResult> RFA(string projectName, string hash, string token = null)
         {
-            EnsureToken(token);
-
             return RedirectToOssObject(projectName, hash, (ossNames, _)=> ossNames.Rfa);
         }
 
         [HttpGet("{projectName}/{hash}/bom/{token?}")]
         public async Task<ActionResult> BOM(string projectName, string hash, string token = null)
         {
-            EnsureToken(token);
-
             string localFileName = await _userResolver.EnsureLocalFile(projectName, LocalName.BOM, hash);
             var bom = Json.DeserializeFile<ExtractedBOM>(localFileName);
             string csv = bom.ToCSV();
@@ -83,17 +79,7 @@ namespace WebApplication.Controllers
             var bucket = await _userResolver.GetBucketAsync();
             var url = await bucket.CreateSignedUrlAsync(ossObjectName);
 
-            // TODO: FIX: file will be downloaded as `cache-Wrench-3CEEF3FDD5135E1F5EF39BF000B62D673B5438FE-xxxxxx.zip`
             return Redirect(url);
-        }
-
-        /// <summary>
-        /// (if provided) use token for user resolver.
-        /// </summary>
-        private void EnsureToken(string token)
-        {
-            if (token != null)
-                _userResolver.Token = token;
         }
     }
 }
