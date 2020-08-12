@@ -25,7 +25,9 @@ Enzyme.configure({ adapter: new Adapter() });
 
 const props = {
     activeProject: {
-        modelDownloadUrl: 'a/b/c/'
+        id: 'foo',
+        modelDownloadUrl: 'a/b/c/',
+        bomDownloadUrl: 'd/e/f/'
     }
 };
 
@@ -84,8 +86,8 @@ describe('Downloads components', () => {
     const bt = as.renderProp('children')( {width: 100, height: 200} );
     const icons = bt.find('Icon');
     const hyperlinks = bt.find('a');
-    expect(icons.length).toEqual(2);
-    expect(hyperlinks.length).toEqual(2);
+    expect(icons.length).toEqual(3);
+    expect(hyperlinks.length).toEqual(3);
   });
 
   it('Base table renders NO links and icons when projects are empty', () => {
