@@ -150,9 +150,9 @@ namespace WebApplication.Controllers
             await RunJobAsync(job);
         }
 
-        public async Task CreateDrawingJob(string projectId, string hash, string token)
+        public async Task CreateDrawingDownloadJob(string projectId, string hash, string token)
         {
-            _logger.LogInformation($"invoked CreateDrawingJob, connectionId : {Context.ConnectionId}");
+            _logger.LogInformation($"invoked CreateDrawingDownloadJob, connectionId : {Context.ConnectionId}");
 
             _userResolver.Token = token;
 

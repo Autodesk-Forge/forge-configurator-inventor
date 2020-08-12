@@ -18,9 +18,8 @@
 
 import { addError, addLog } from './notificationActions';
 import { Jobs } from '../JobManager';
-import { showRFAModalProgress, showRfaFailed, setRFALink, setReportUrlLink } from './uiFlagsActions';
-import { showDrawingDownloadModalProgress, showDrawingDownloadFailed, setDrawingDownloadLink } from './uiFlagsActions';
 import { showRFAModalProgress, showRfaFailed, setRFALink, setReportUrlLink, setHasDrawing } from './uiFlagsActions';
+import { showDrawingDownloadModalProgress, showDrawingDownloadFailed, setDrawingDownloadLink } from './uiFlagsActions';
 import { showDrawingExportProgress, setDrawingPdfUrl } from './uiFlagsActions';
 
 export const getRFADownloadLink = (projectId, temporaryUrl) => async (dispatch) => {
@@ -66,34 +65,34 @@ export const getDrawingDownloadLink = (projectId, temporaryUrl) => async (dispat
     const jobManager = Jobs();
 
     // show progress
-    dispatch(showDrawingModalProgress(true));
+    dispatch(showDrawingDownloadModalProgress(true));
 
     // launch signalR to prepare up-to-date drawing here and wait for result
     try {
-        await jobManager.doDrawingJob(projectId, temporaryUrl,
+        await jobManager.doDrawingDownloadJob(projectId, temporaryUrl,
             // start job
             () => {
-                dispatch(addLog('JobManager.doDrawingJob: HubConnection started for project : ' + projectId));
+                dispatch(addLog('JobManager.doDrawingDownloadJob: HubConnection started for project : ' + projectId));
                 dispatch(setReportUrlLink(null)); // cleanup url link
             },
             // onComplete
             (drawingUrl) => {
-                dispatch(addLog('JobManager.doDrawingJob: Received onComplete'));
+                dispatch(addLog('JobManager.doDrawingDownloadJob: Received onComplete'));
                 // set RFA link, it will show link in UI
-                dispatch(setDrawingLink(drawingUrl));
+                dispatch(setDrawingDownloadLink(drawingUrl));
             },
             // onError
             (jobId, reportUrl) => {
                 dispatch(addLog('JobManager: Received onError with jobId: ' + jobId + ' and reportUrl: ' + reportUrl));
                 // hide progress modal dialog
-                dispatch(showDrawingModalProgress(false));
+                dispatch(showDrawingDownloadModalProgress(false));
                 // show error modal dialog
                 dispatch(setReportUrlLink(reportUrl));
-                dispatch(showDrawingFailed(true));
+                dispatch(showDrawingDownloadFailed(true));
             }
         );
     } catch (error) {
-        dispatch(addError('JobManager.doDrawingJob: Error : ' + error));
+        dispatch(addError('JobManager.doDrawingDownloadJob: Error : ' + error));
     }
 };
 

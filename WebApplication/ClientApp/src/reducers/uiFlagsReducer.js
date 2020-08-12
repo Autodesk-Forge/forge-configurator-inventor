@@ -30,7 +30,7 @@ export const initialState = {
    downloadDrawingFailedShowing: false,
    reportUrl: null,
    rfaProgressShowing: null,
-   drawingProgressShowing: null,
+   drawingDownloadProgressShowing: null,
    rfaDownloadUrl: null,
    drawingDownloadUrl: null,
    showUploadPackage: false,
@@ -75,8 +75,8 @@ export const rfaProgressShowing = function(state) {
    return state.rfaProgressShowing;
 };
 
-export const drawingProgressShowing = function(state) {
-   return state.drawingProgressShowing;
+export const drawingDownloadProgressShowing = function(state) {
+   return state.drawingDownloadProgressShowing;
 };
 
 export const rfaDownloadUrl = function(state) {
@@ -201,6 +201,12 @@ export default function(state = initialState, action) {
          return { ...state, checkedProjects: action.projects};
       case uiFlagsActionTypes.CLEAR_CHECKED_PROJECTS:
          return { ...state, checkedProjects: []};
+      case uiFlagsActionTypes.SHOW_DRAWING_DOWNLOAD_FAILED:
+         return { ...state, downloadDrawingFailedShowing: action.visible};
+      case uiFlagsActionTypes.SHOW_DRAWING_DOWNLOAD_PROGRESS:
+         return { ...state, drawingDownloadProgressShowing: action.visible};
+      case uiFlagsActionTypes.SET_DRAWING_DOWNLOAD_LINK:
+         return { ...state, drawingDownloadUrl: action.url};
       case uiFlagsActionTypes.SET_HAS_DRAWING:
          return { ...state, hasDrawing: action.hasDrawing};
       case uiFlagsActionTypes.SHOW_DRAWING_PROGRESS:

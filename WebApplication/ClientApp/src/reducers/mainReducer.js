@@ -104,8 +104,8 @@ export const rfaProgressShowing = function(state) {
     return uiFlags.rfaProgressShowing(state.uiFlags);
 };
 
-export const drawingProgressShowing = function(state) {
-    return uiFlags.drawingProgressShowing(state.uiFlags);
+export const drawingDownloadProgressShowing = function(state) {
+    return uiFlags.drawingDownloadProgressShowing(state.uiFlags);
 };
 
 export const rfaDownloadUrl = function(state) {

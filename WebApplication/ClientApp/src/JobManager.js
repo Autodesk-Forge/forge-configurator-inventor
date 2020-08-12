@@ -110,6 +110,34 @@ class JobManager {
         await connection.invoke('CreateAdoptJob', packageId, repo.getAccessToken());
     }
 
+    async doDrawingDownloadJob(projectId, hash, onStart, onComplete, onError) {
+        const connection = await this.startConnection();
+
+        if (onStart)
+            onStart();
+
+        connection.on("onComplete", (drawingUrl) => {
+            // stop connection
+            connection.stop();
+
+            if (onComplete) {
+                if (repo.getAccessToken()) {
+                    drawingUrl += "/" + repo.getAccessToken();
+                }
+                onComplete(drawingUrl);
+            }
+        });
+
+        connection.on("onError", (jobId, reportUrl) => {
+            connection.stop();
+
+            if (onError)
+                onError(jobId, reportUrl);
+        });
+
+        await connection.invoke('CreateDrawingDownloadJob', projectId, hash, repo.getAccessToken());
+    }
+
     async doDrawingExportJob(projectId, hash, onStart, onComplete, onError) {
         const connection = await this.startConnection();
 
