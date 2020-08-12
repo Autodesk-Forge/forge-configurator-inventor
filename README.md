@@ -40,7 +40,7 @@ See [high level diagram](architecture.png)
  - Create initial data: from the `WebApplication` directory, run `dotnet run initialize=true`
  - Clear data: from the `WebApplication` directory, run `dotnet run clear=true`
  - Clear and then load initial data: from the `WebApplication` directory, run `dotnet run initialize=true clear=true`
- - When the app finishes the initialization process it remains running and expects client calls. You can leave it running and follow by [opening the site](open-site) or stop it and move to the the [Debugging section](#Debug-The-Web-Application-With-VS-Code)
+ - When the app finishes the initialization process it remains running and expects client calls. You can leave it running and follow by [opening the site](#open-site) or stop it and move to the the [Debugging section](#Debug-The-Web-Application-With-VS-Code)
 ### Run after initial data is created
  - From a command prompt, go to the `WebApplication` directory, and run `dotnet run`
 ### Open site
