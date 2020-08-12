@@ -62,6 +62,20 @@ export const downloadColumns = [
     }
 ];
 
+// add token to download URLs if necessary
+function getDownloadUrls(project) {
+
+    const { modelDownloadUrl, bomDownloadUrl } = project;
+
+    const token = repo.getAccessToken();
+    const suffix = token ? "/" + token : "";
+
+    return {
+        modelDownloadUrl: modelDownloadUrl ? modelDownloadUrl + suffix : modelDownloadUrl,
+        bomDownloadUrl: bomDownloadUrl ? bomDownloadUrl + suffix : bomDownloadUrl
+    };
+}
+
 export class Downloads extends Component {
 
     onProgressCloseClick() {
@@ -73,43 +87,61 @@ export class Downloads extends Component {
     }
 
     render() {
-        let iamDownloadHyperlink = null;
-        const access_token = repo.getAccessToken();
-        let downloadUrl = this.props.activeProject.modelDownloadUrl;
 
-        if (downloadUrl != null && access_token != null) {
-            downloadUrl += "/" + access_token;
-        }
-        const iamDownloadLink = <a href={downloadUrl} onClick={(e) => { e.stopPropagation(); }} ref = {(h) => {
-            iamDownloadHyperlink = h;
-        }}>IAM/IPT</a>;
+        // array with rows data
+        const data = [];
 
-        const rfaDownloadLink =
-        <a href="" onClick={(e) => { e.preventDefault(); }}>RFA</a>;
+        if (this.props.activeProject?.id) {
 
-        const data = downloadUrl != null ? [
-            {
-                id: 'updatedIam',
-                icon: 'products-and-services-24.svg',
-                type: 'IAM',
-                env: 'Model',
-                link: iamDownloadLink,
-                clickHandler: () => {
-                    iamDownloadHyperlink.click();
-                    //console.log('IAM');
-                }
-            },
-            {
+            const { modelDownloadUrl, bomDownloadUrl } = getDownloadUrls(this.props.activeProject);
+            if (modelDownloadUrl) {
+
+                let downloadHyperlink;
+                const modelJsx = <a href={modelDownloadUrl} onClick={(e) => { e.stopPropagation(); }} ref = {(h) => {
+                    downloadHyperlink = h;
+                }}>IAM/IPT</a>;
+
+                // register the row
+                data.push({
+                    id: 'updatedIam',
+                    icon: 'products-and-services-24.svg',
+                    type: 'IAM',
+                    env: 'Model',
+                    link: modelJsx,
+                    clickHandler: () => downloadHyperlink.click()
+                });
+            }
+
+            const rfaJsx = <a href="" onClick={(e) => { e.preventDefault(); }}>RFA</a>;
+            data.push({
                 id: 'rfa',
                 icon: 'products-and-services-24.svg',
                 type: 'RFA',
                 env: 'Model',
-                link: rfaDownloadLink,
+                link: rfaJsx,
                 clickHandler: async () => {
                     this.props.getRFADownloadLink(this.props.activeProject.id, this.props.activeProject.hash);
                 }
+            });
+
+            if (bomDownloadUrl) {
+
+                let downloadHyperlink;
+                const bomJsx = <a href={bomDownloadUrl} onClick={(e) => { e.stopPropagation(); }} ref = {(h) => {
+                    downloadHyperlink = h;
+                }}>BOM</a>;
+
+                // register the row
+                data.push({
+                    id: 'bom',
+                    icon: 'products-and-services-24.svg',
+                    type: 'BOM',
+                    env: 'Model',
+                    link: bomJsx,
+                    clickHandler: () => downloadHyperlink.click()
+                });
             }
-        ] : [];
+        }
 
         return (
         <React.Fragment>

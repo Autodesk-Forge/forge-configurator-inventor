@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////
+﻿/////////////////////////////////////////////////////////////////////
 // Copyright (c) Autodesk, Inc. All rights reserved
 // Written by Forge Design Automation team for Inventor
 //
@@ -16,24 +16,32 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-/* eslint-disable no-undef */
-const locators = require('./elements_definition.js');
+// Data types from this file are shared between .NET 4.7+ and netcore projects,
+// so we need to have different attributes for Newtonsoft and netcore Json libraries.
 
-Before((I) => {
-    I.amOnPage('/');
-});
+#if NETCOREAPP
+using JsonProperty = System.Text.Json.Serialization.JsonPropertyNameAttribute;
+#else
+using JsonProperty = Newtonsoft.Json.JsonPropertyAttribute;
+#endif
 
-Feature('Downloads');
+namespace Shared
+{
+    public class Column
+    {
+        [JsonProperty("label")]
+        public string Label { get; set; }
 
-Scenario('should check switch to downloads tab shows the downloads links', async (I) => {
-    I.see('Downloads', locators.downloadsTab);
-    I.click(locators.downloadsTab);
-    I.waitForElement('.BaseTable');
-    I.seeNumberOfElements('.BaseTable__row', 3);
-    // all expected download types are available
-    I.see('IAM', '.BaseTable__row-cell a');
-    I.see('RFA', '.BaseTable__row-cell a');
-    I.see('BOM', '.BaseTable__row-cell a');
-    // check icons
-    I.seeNumberOfElements({ css: '[src="products-and-services-24.svg"]'}, 3);
-});
+        [JsonProperty("numeric")]
+        public bool? Numeric { get; set; }
+    }
+
+    public class ExtractedBOM
+    {
+        [JsonProperty("columns")]
+        public Column[] Columns { get; set; }
+
+        [JsonProperty("data")]
+        public object[][] Data { get; set; }
+    }
+}

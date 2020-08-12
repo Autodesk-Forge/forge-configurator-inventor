@@ -47,16 +47,20 @@ namespace WebApplication.Utilities
                                                                     action: "Model",
                                                                     values: new { projectName = project.Name, hash });
 
-            var localNames = project.LocalNameProvider(hash);
+            var bomDownloadUrl = _linkGenerator?.GetPathByAction(controller: "Download",
+                                                                    action: "BOM",
+                                                                    values: new { projectName = project.Name, hash });
 
-            var bomDownloadUrl = _linkGenerator?.GetPathByAction(controller: "ProjectData",
+            var bomJsonUrl = _linkGenerator?.GetPathByAction(controller: "ProjectData",
                                                                     action: "GetBOM",
                                                                     values: new { projectName = project.Name, hash });
 
+            var localNames = project.LocalNameProvider(hash);
             return new TProjectDTOBase
                     {
                         Svf = _localCache.ToDataUrl(localNames.SvfDir),
-                        BomJsonUrl = bomDownloadUrl,
+                        BomDownloadUrl = bomDownloadUrl,
+                        BomJsonUrl = bomJsonUrl,
                         ModelDownloadUrl = modelDownloadUrl,
                         Hash = hash
                     };

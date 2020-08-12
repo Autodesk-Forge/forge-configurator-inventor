@@ -34,6 +34,11 @@ namespace WebApplication.Definitions
         public string BomJsonUrl { get; set; }
 
         /// <summary>
+        /// URL to download BOM CSV.
+        /// </summary>
+        public string BomDownloadUrl { get; set; }
+
+        /// <summary>
         /// URL to download current model
         /// </summary>
         public string ModelDownloadUrl { get; set; }
