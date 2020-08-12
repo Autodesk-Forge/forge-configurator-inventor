@@ -32,6 +32,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{4AB642
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExportBOMPlugin", "AppBundles\ExportBOMPlugin\ExportBOMPlugin.csproj", "{44631F33-F8E1-44DC-90E7-4CBEA85DB2F6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExportDrawingAsPdfPlugin", "Appbundles\ExportDrawingAsPdfPlugin\ExportDrawingAsPdfPlugin.csproj", "{96BECCEC-D943-46C7-ACD7-E8A5C6F0650D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,6 +80,10 @@ Global
 		{44631F33-F8E1-44DC-90E7-4CBEA85DB2F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44631F33-F8E1-44DC-90E7-4CBEA85DB2F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{44631F33-F8E1-44DC-90E7-4CBEA85DB2F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96BECCEC-D943-46C7-ACD7-E8A5C6F0650D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96BECCEC-D943-46C7-ACD7-E8A5C6F0650D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96BECCEC-D943-46C7-ACD7-E8A5C6F0650D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96BECCEC-D943-46C7-ACD7-E8A5C6F0650D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -91,6 +97,7 @@ Global
 		{E9F0C353-8314-4EFE-8757-02E7D817729C} = {BE4037E8-BD5B-4F31-8F23-1FC907D31CEC}
 		{23CECA7F-2FB1-4783-BEAB-3549885D89D7} = {BE4037E8-BD5B-4F31-8F23-1FC907D31CEC}
 		{44631F33-F8E1-44DC-90E7-4CBEA85DB2F6} = {BE4037E8-BD5B-4F31-8F23-1FC907D31CEC}
+		{96BECCEC-D943-46C7-ACD7-E8A5C6F0650D} = {BE4037E8-BD5B-4F31-8F23-1FC907D31CEC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CFF460A7-ACD6-4D4D-BC60-953D66925F4E}

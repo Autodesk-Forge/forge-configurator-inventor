@@ -30,6 +30,7 @@ namespace WebApplication.Definitions
         public string CreateSAT { get; set; }
         public string CreateRFA { get; set; }
         public string CreateBOM { get; set; }
+        public string ExportDrawing { get; set; }
     }
 
     public class DefaultProjectsConfiguration

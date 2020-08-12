@@ -26,7 +26,8 @@ Enzyme.configure({ adapter: new Adapter() });
 describe('Drawings', () => {
   it('Page has expected text when no drawings available', () => {
       const props = {
-        activeProject: { drawing: null }
+        activeProject: { id: "1" },
+        hasDrawing: false
       };
 
       const wrapper = shallow(<Drawing {...props}/>);

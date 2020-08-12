@@ -37,7 +37,8 @@ namespace WebApplication.Processing
                     new CreateSVF(publisher),
                     new CreateThumbnail(publisher),
                     new CreateBOM(publisher),
-                    new ExtractParameters(publisher))
+                    new ExtractParameters(publisher),
+                    new ExportDrawing(publisher))
         {}
 
         public override string Id => nameof(AdoptProject);

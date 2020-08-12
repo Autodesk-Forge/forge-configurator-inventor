@@ -94,7 +94,8 @@ namespace WebApplication.Tests
                 UpdateParameters = "../../../../WebApplication/AppBundles/UpdateParametersPlugin.bundle.zip",
                 CreateSAT = "../../../../WebApplication/AppBundles/SatExportPlugin.bundle.zip",
                 CreateRFA = "../../../../WebApplication/AppBundles/RFAExportPlugin.bundle.zip",
-                CreateBOM = "../../../../WebApplication/AppBundles/ExportBOMPlugin.bundle.zip"
+                CreateBOM = "../../../../WebApplication/AppBundles/ExportBOMPlugin.bundle.zip",
+                ExportDrawing = "../../../../WebApplication/AppBundles/ExportDrawingAsPdfPlugin.bundle.zip"
             };
             IOptions<AppBundleZipPaths> appBundleZipPathsOptions = Options.Create(appBundleZipPathsConfiguration);
 
