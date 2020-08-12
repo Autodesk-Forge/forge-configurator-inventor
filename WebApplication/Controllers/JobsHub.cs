@@ -176,6 +176,13 @@ namespace WebApplication.Controllers
             await RunJobAsync(job);
         }
 
+        public async Task CreateExportDrawingJob(string projectId, string hash, string token)
+        {
+            // create job and run it
+            var job = new ExportDrawingJobItem(_logger, projectId, hash, _projectWork, _linkGenerator);
+            await RunJobAsync(job);
+        }
+
         public async Task RunJobAsync(JobItemBase job)
         {
             try

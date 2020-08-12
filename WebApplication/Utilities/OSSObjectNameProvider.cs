@@ -53,6 +53,11 @@ namespace WebApplication.Utilities
         /// JSON file with BOM data.
         /// </summary>
         public const string BOM = "bom.json";
+        
+        /// <summary>
+        /// Drawing in format ForgeView can load and show
+        /// </summary>
+        public const string DrawingViewables = "drawing.pdf";
     }
 
     /// <summary>
@@ -171,6 +176,8 @@ namespace WebApplication.Utilities
         public string Bom => ToFullName(LocalName.BOM);
 
         public string Drawing => ToFullName("Drawing.zip");
+
+        public string DrawingViewables => ToFullName(LocalName.DrawingViewables);
     }
 
     /// <summary>

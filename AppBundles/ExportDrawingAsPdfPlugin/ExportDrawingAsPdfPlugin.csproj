@@ -1,20 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <Import Project="..\InventorBinFolder.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{44631F33-F8E1-44DC-90E7-4CBEA85DB2F6}</ProjectGuid>
+    <ProjectGuid>{96BECCEC-D943-46C7-ACD7-E8A5C6F0650D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ExportBOMPlugin</RootNamespace>
-    <AssemblyName>ExportBOMPlugin</AssemblyName>
+    <RootNamespace>ExportDrawingAsPdfPlugin</RootNamespace>
+    <AssemblyName>ExportDrawingAsPdfPlugin</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <PackagePath>..\..\packages</PackagePath>
+    <PackagePath Condition="Exists('..\packages')">..\packages</PackagePath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,37 +35,31 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="autodesk.inventor.interop">
+    <Reference Include="autodesk.inventor.interop, Version=23.0.0.0, Culture=neutral, PublicKeyToken=d84147f8b4276564, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>True</EmbedInteropTypes>
-      <HintPath>$(InventorBinFolder)\Public Assemblies\autodesk.inventor.interop.dll</HintPath>
+      <HintPath>$(PackagePath)\autodesk\autodesk.inventor.interop.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\Shared\ExtractedBOM.cs">
-      <Link>ExtractedBOM.cs</Link>
-    </Compile>
     <Compile Include="..\..\Shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="PluginServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ExportBOMAutomation.cs" />
+    <Compile Include="Automation.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ExportBOMPlugin.X.manifest" />
+    <None Include="ExportDrawingAsPdfPlugin.X.manifest" />
     <Content Include="PackageContents.xml" />
-    <Content Include="ExportBOMPlugin.Inventor.addin">
+    <Content Include="ExportDrawingAsPdfPlugin.Inventor.addin">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json">
-      <Version>11.0.2</Version>
-    </PackageReference>
     <PackageReference Include="Autodesk.Forge.DesignAutomation.Inventor.Utils">
       <Version>1.0.0-beta3</Version>
     </PackageReference>
@@ -81,7 +76,7 @@
     </ItemGroup>
     <Copy SourceFiles="$(ProjectDir)PackageContents.xml" DestinationFolder="$(TargetDir)..\Bundle\$(MSBuildProjectName).bundle" />
     <Copy SourceFiles="@(PluginBundle)" DestinationFolder="$(TargetDir)..\Bundle\$(MSBuildProjectName).bundle\Contents\" />
-    <MakeDir Directories="$(SolutionDir)Output" />
+    <MakeDir Directories="$(SolutionDir)WebApplication\AppBundles" />
     <ZipDirectory SourceDirectory="$(TargetDir)..\Bundle" DestinationFile="$(SolutionDir)WebApplication\AppBundles\$(MSBuildProjectName).bundle.zip" Overwrite="true" />
   </Target>
 </Project>

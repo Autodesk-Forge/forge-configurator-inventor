@@ -30,7 +30,9 @@
     border-color: #D9D9D9;
 }
 
-.tabContent#model {
+.tabContent#model,
+.tabContent#drawing
+{
     border-style: none;
 }
 

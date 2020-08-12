@@ -64,6 +64,20 @@ export const downloadColumns = [
     }
 ];
 
+// add token to download URLs if necessary
+function getDownloadUrls(project) {
+
+    const { modelDownloadUrl, bomDownloadUrl } = project;
+
+    const token = repo.getAccessToken();
+    const suffix = token ? "/" + token : "";
+
+    return {
+        modelDownloadUrl: modelDownloadUrl ? modelDownloadUrl + suffix : modelDownloadUrl,
+        bomDownloadUrl: bomDownloadUrl ? bomDownloadUrl + suffix : bomDownloadUrl
+    };
+}
+
 export class Downloads extends Component {
 
     onRfaProgressCloseClick() {
@@ -83,56 +97,71 @@ export class Downloads extends Component {
     }
 
     render() {
-        let iamDownloadHyperlink = null;
-        const access_token = repo.getAccessToken();
-        let downloadUrl = this.props.activeProject.modelDownloadUrl;
 
-        if (downloadUrl != null && access_token != null) {
-            downloadUrl += "/" + access_token;
-        }
-        const iamDownloadLink = <a href={downloadUrl} onClick={(e) => { e.stopPropagation(); }} ref = {(h) => {
-            iamDownloadHyperlink = h;
-        }}>IAM/IPT</a>;
+        // array with rows data
+        const data = [];
 
-        const rfaDownloadLink =
-        <a href="" onClick={(e) => { e.preventDefault(); }}>RFA</a>;
+        if (this.props.activeProject?.id) {
 
-        const drawingDownloadLink =
-        <a href="" onClick={(e) => { e.preventDefault(); }}>Drawings</a>;
+            const { modelDownloadUrl, bomDownloadUrl } = getDownloadUrls(this.props.activeProject);
+            if (modelDownloadUrl) {
 
-        const data = downloadUrl != null ? [
-            {
-                id: 'updatedIam',
-                icon: 'products-and-services-24.svg',
-                type: 'IAM',
-                env: 'Model',
-                link: iamDownloadLink,
-                clickHandler: () => {
-                    iamDownloadHyperlink.click();
-                    //console.log('IAM');
-                }
-            },
-            {
+                let downloadHyperlink;
+                const modelJsx = <a href={modelDownloadUrl} onClick={(e) => { e.stopPropagation(); }} ref = {(h) => {
+                    downloadHyperlink = h;
+                }}>IAM/IPT</a>;
+
+                // register the row
+                data.push({
+                    id: 'updatedIam',
+                    icon: 'products-and-services-24.svg',
+                    type: 'IAM',
+                    env: 'Model',
+                    link: modelJsx,
+                    clickHandler: () => downloadHyperlink.click()
+                });
+            }
+
+            const rfaJsx = <a href="" onClick={(e) => { e.preventDefault(); }}>RFA</a>;
+            data.push({
                 id: 'rfa',
                 icon: 'products-and-services-24.svg',
                 type: 'RFA',
                 env: 'Model',
-                link: rfaDownloadLink,
+                link: rfaJsx,
                 clickHandler: async () => {
                     this.props.getRFADownloadLink(this.props.activeProject.id, this.props.activeProject.hash);
                 }
+            });
+
+            if (bomDownloadUrl) {
+
+                let downloadHyperlink;
+                const bomJsx = <a href={bomDownloadUrl} onClick={(e) => { e.stopPropagation(); }} ref = {(h) => {
+                    downloadHyperlink = h;
+                }}>BOM</a>;
+
+                // register the row
+                data.push({
+                    id: 'bom',
+                    icon: 'products-and-services-24.svg',
+                    type: 'BOM',
+                    env: 'Model',
+                    link: bomJsx,
+                    clickHandler: () => downloadHyperlink.click()
+                });
             }
-        ] : [];
+        }
 
         const hasDrawingUrl = true; // connect to some property if has drawing or not
         if (hasDrawingUrl) {
             data.push(
                 {
-                    id: 'drawings',
+                    id: 'drawing',
                     icon: 'products-and-services-24.svg',
                     type: 'IDW',
                     env: 'Model',
-                    link: drawingDownloadLink,
+                    link: drawingJsx,
                     clickHandler: async () => {
                         this.props.getDrawingDownloadLink(this.props.activeProject.id, this.props.activeProject.hash);
                     }
@@ -174,7 +203,7 @@ export class Downloads extends Component {
                     onClose={() => this.onRfaFailedCloseClick()}
                     url={this.props.reportUrl}/>}
 
-                {this.props.drawingProgressShowing && <ModalProgressRfa
+                {this.props.drawingDownloadProgressShowing && <ModalProgressRfa
                     open={true}
                     title="Preparing Drawings"
                     label={this.props.activeProject.id}
@@ -183,7 +212,7 @@ export class Downloads extends Component {
                     url={this.props.drawingDownloadUrl}
                     onUrlClick={() => this.onDrawingProgressCloseClick()}
                     />}
-                {this.props.drawingFailedShowing && <ModalFail
+                {this.props.drawingDownloadFailedShowing && <ModalFail
                     open={true}
                     title="Preparing Drawings Failed"
                     contentName="Project:"
@@ -204,8 +233,8 @@ export default connect(function(store) {
         rfaFailedShowing: downloadRfaFailedShowing(store),
         rfaDownloadUrl: rfaDownloadUrl(store),
         reportUrl: reportUrl(store),
-        drawingProgressShowing: drawingProgressShowing(store),
-        drawingFailedShowing: downloadDrawingFailedShowing(store),
+        drawingDownloadProgressShowing: drawingProgressShowing(store),
+        drawingDownloadFailedShowing: downloadDrawingFailedShowing(store),
         drawingDownloadUrl: drawingDownloadUrl(store),
     };
 }, { Downloads, getRFADownloadLink, showRFAModalProgress, showRfaFailed, getDrawingDownloadLink, showDrawingModalProgress, showDrawingFailed })(Downloads);

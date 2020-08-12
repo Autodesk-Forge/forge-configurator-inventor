@@ -110,7 +110,7 @@ class JobManager {
         await connection.invoke('CreateAdoptJob', packageId, repo.getAccessToken());
     }
 
-    async doDrawingJob(projectId, hash, onStart, onComplete, onError) {
+    async doDrawingExportJob(projectId, hash, onStart, onComplete, onError) {
         const connection = await this.startConnection();
 
         if (onStart)
@@ -135,7 +135,7 @@ class JobManager {
                 onError(jobId, reportUrl);
         });
 
-        await connection.invoke('CreateDrawingJob', projectId, hash, repo.getAccessToken());
+        await connection.invoke('CreateExportDrawingJob', projectId, hash, repo.getAccessToken());
     }
 }
 

@@ -16,7 +16,6 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -52,40 +51,19 @@ namespace WebApplication.Controllers
             return await SendLocalFileContent(projectName, LocalName.BOM);
         }
 
-        /// <summary>
-        /// Send local file for the project.
-        /// </summary>
-        private async Task<ActionResult> SendLocalFileContent(string projectName, string fileName, string contentType = "application/json")
+        [HttpGet("bom/{projectName}/{hash}")]
+        public async Task<ActionResult> GetBOM(string projectName, string hash)
         {
-            string localFile = await EnsureLocalFile(projectName, fileName);
-            return new PhysicalFileResult(localFile, contentType);
+            return await SendLocalFileContent(projectName, LocalName.BOM, hash);
         }
 
         /// <summary>
-        /// Ensure that the file exists in local cache for a project.
+        /// Send local file for the project.
         /// </summary>
-        /// <param name="projectName">The project name.</param>
-        /// <param name="fileName">Short file name.</param>
-        /// <param name="hash">Parameters hash (default is used if not provided).</param>
-        /// <returns>Full path to the existing local file.</returns>
-        private async Task<string> EnsureLocalFile(string projectName, string fileName, string hash = null)
+        private async Task<ActionResult> SendLocalFileContent(string projectName, string fileName, string hash = null, string contentType = "application/json")
         {
-            var projectStorage = await _userResolver.GetProjectStorageAsync(projectName);
-
-            var localNames = projectStorage.GetLocalNames(hash);
-            var fullLocalName = localNames.ToFullName(fileName);
-
-            if (! System.IO.File.Exists(fullLocalName))
-            {
-                _logger.LogInformation($"Restoring missing '{fullLocalName}' for '{projectName}'");
-
-                Directory.CreateDirectory(localNames.BaseDir);
-
-                var bucket = await _userResolver.GetBucketAsync(tryToCreate: false);
-                await bucket.DownloadFileAsync(projectStorage.GetOssNames(hash).ToFullName(fileName), fullLocalName);
-            }
-
-            return fullLocalName;
+            string localFile = await _userResolver.EnsureLocalFile(projectName, fileName, hash);
+            return new PhysicalFileResult(localFile, contentType);
         }
     }
 }

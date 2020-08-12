@@ -129,7 +129,7 @@ namespace WebApplication.Processing
 
         protected virtual void AddOutputArgs(IDictionary<string, IArgument> args, ProcessingArgs data)
         {
-            args.Add(OutputParameterName, new XrefTreeArgument { Verb = Verb.Put, Url = OutputUrl(data) });
+            args.Add(OutputParameterName, new XrefTreeArgument { Verb = Verb.Put, Url = OutputUrl(data), Optional = IsOutputOptional });
         }
 
         protected virtual void AddInputArgs(IDictionary<string, IArgument> args, ProcessingArgs data)
@@ -219,5 +219,6 @@ namespace WebApplication.Processing
         protected virtual bool IsOutputZip => false;
 
         protected virtual bool HasOutput => true;
+        protected virtual bool IsOutputOptional => false;
     }
 }
