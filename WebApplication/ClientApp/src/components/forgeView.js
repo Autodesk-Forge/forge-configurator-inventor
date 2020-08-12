@@ -92,6 +92,14 @@ export class ForgeView extends Component {
         }
     }
 
+    componentWillUnmount() {
+        if (this.viewer) {
+            this.viewer.finish();
+            this.viewer = null;
+            Autodesk.Viewing.shutdown();
+        }
+    }
+
     getSvfUrl() {
         return this.props.activeProject.svf + `/bubble.json`;
     }
