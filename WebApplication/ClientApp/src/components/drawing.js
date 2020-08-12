@@ -20,18 +20,49 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { getActiveProject } from '../reducers/mainReducer';
 import './drawing.css';
+import ForgePdfView from './forgePdfView';
+import { fetchDrawing } from '../actions/downloadActions';
+import { hasDrawing, getDrawingPdfUrl } from '../reducers/mainReducer';
+import { drawingProgressShowing } from '../reducers/mainReducer';
+import ModalProgress from './modalProgress';
 
 export class Drawing extends Component {
 
+  componentDidMount() {
+    if (this.props.hasDrawing === null)
+      this.props.fetchDrawing(this.props.activeProject);
+  }
+
+  componentDidUpdate(prevProps) {
+      // refresh bom data when BOM tab was clicked before projects initialized
+      if (this.props.activeProject !== prevProps.activeProject) {
+          if (this.props.hasDrawing === null)
+            this.props.fetchDrawing(this.props.activeProject);
+      }
+  }
+
   render() {
-    const hasDrawing = this.props.activeProject?.drawing!=null;
-    const containerClass = !hasDrawing ? "drawingContainer empty" : "drawingContainer";
+    const initialized = this.props.hasDrawing !== null;
+    const hasDrawing = this.props.hasDrawing === true;
+    const empty = (initialized && !hasDrawing);
+    const containerClass = !initialized ? "drawingContainer init" : empty ? "drawingContainer empty" : "drawingContainer";
 
     return (
       <div className="fullheight">
         <div className={containerClass}>
-        {!hasDrawing &&
+        {initialized && !hasDrawing &&
           <div className="drawingEmptyText">You don&apos;t have any drawings in package.</div>
+        }
+        {initialized && hasDrawing &&
+          <ForgePdfView/>
+        }
+        {this.props.drawingProgressShowing &&
+        <ModalProgress
+            open={true}
+            title="Generating Drawing"
+            label={this.props.activeProject.id}
+            icon="/Assembly_icon.svg"
+            onClose={() => {}}/>
         }
         </div>
       </div>
@@ -43,6 +74,9 @@ export class Drawing extends Component {
 export default connect(function (store) {
   const activeProject = getActiveProject(store);
   return {
-    activeProject: activeProject
+    activeProject: activeProject,
+    drawingPdfUrl: getDrawingPdfUrl(store),
+    hasDrawing: hasDrawing(store),
+    drawingProgressShowing: drawingProgressShowing(store)
   };
-})(Drawing);
+}, { fetchDrawing })(Drawing);

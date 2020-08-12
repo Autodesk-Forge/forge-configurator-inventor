@@ -22,6 +22,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Autodesk.Forge.Client;
 using Autodesk.Forge.Model;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using WebApplication.Services;
 
@@ -139,9 +140,23 @@ namespace WebApplication.State
         /// </summary>
         /// <param name="oldName">Old object name.</param>
         /// <param name="newName">New object name.</param>
-        public async Task RenameObjectAsync(string oldName, string newName)
+        public async Task RenameObjectAsync(string oldName, string newName, bool ignoreNotExisting = true)
         {
-            await _forgeOSS.RenameObjectAsync(BucketKey, oldName, newName);
+            try
+            {
+                await _forgeOSS.RenameObjectAsync(BucketKey, oldName, newName);
+            }
+            catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
+            {
+                if(ignoreNotExisting)
+                {
+                    _logger.LogInformation($"Cannot rename object: {oldName} to ${newName} because object doesn't exists which was expected by using ignoreNotExisting = true");
+                } else
+                {
+                    throw;
+                }
+                
+            }
         }
 
         /// <summary>

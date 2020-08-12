@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Addin Type="Plugin">
+  <ClassId>{6ace2032-7f14-4d7d-b3f4-bfd2e1190014}</ClassId>
+  <ClientId>{6ace2032-7f14-4d7d-b3f4-bfd2e1190014}</ClientId>
+  <DisplayName>ExportDrawingAsPdfPlugin</DisplayName>
+  <Description>a ExportDrawingAsPdfPlugin</Description>
+  <Assembly>ExportDrawingAsPdfPlugin.dll</Assembly>
+</Addin>

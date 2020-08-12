@@ -39,7 +39,10 @@ export const actionTypes = {
     SHOW_DELETE_PROJECT: 'SHOW_DELETE_PROJECT',
     SET_PROJECT_CHECKED: 'SET_PROJECT_CHECKED',
     SET_CHECKED_PROJECTS: 'SET_CHECKED_PROJECTS',
-    CLEAR_CHECKED_PROJECTS: 'CLEAR_CHECKED_PROJECTS'
+    CLEAR_CHECKED_PROJECTS: 'CLEAR_CHECKED_PROJECTS',
+    SET_HAS_DRAWING: 'SET_HAS_DRAWING',
+    SHOW_DRAWING_PROGRESS: 'SHOW_DRAWING_PROGRESS',
+    SET_DRAWING_URL: 'SET_DRAWING_URL'
 };
 
 export default actionTypes;
@@ -186,5 +189,26 @@ export const setCheckedProjects = (projects) => {
 export const clearCheckedProjects = () => {
     return {
         type: actionTypes.CLEAR_CHECKED_PROJECTS
+    };
+};
+
+export const setHasDrawing = (hasDrawing) => {
+    return {
+        type: actionTypes.SET_HAS_DRAWING,
+        hasDrawing
+    };
+};
+
+export const showDrawingExportProgress = (visible) => {
+    return {
+        type: actionTypes.SHOW_DRAWING_PROGRESS,
+        visible
+    };
+};
+
+export const setDrawingPdfUrl = (url) => {
+    return {
+        type: actionTypes.SET_DRAWING_URL,
+        url
     };
 };
