@@ -42,6 +42,7 @@ namespace WebApplication
         private const string AppBundleZipPathsKey = "AppBundleZipPaths";
         private const string DefaultProjectsSectionKey = "DefaultProjects";
         private const string InviteOnlyModeKey = "InviteOnlyMode";
+        private const string ProcessingOptionsKey = "Processing";
 
         public Startup(IConfiguration configuration)
         {
@@ -75,13 +76,17 @@ namespace WebApplication
 
             // NOTE: eventually we might want to use `AddForgeService()`, but right now it might break existing stuff
             // https://github.com/Autodesk-Forge/forge-api-dotnet-core/blob/master/src/Autodesk.Forge.Core/ServiceCollectionExtensions.cs
-            services.Configure<ForgeConfiguration>(Configuration.GetSection(ForgeSectionKey));
+            services
+                .Configure<ForgeConfiguration>(Configuration.GetSection(ForgeSectionKey))
+                .Configure<AppBundleZipPaths>(Configuration.GetSection(AppBundleZipPathsKey))
+                .Configure<DefaultProjectsConfiguration>(Configuration.GetSection(DefaultProjectsSectionKey))
+                .Configure<InviteOnlyModeConfiguration>(Configuration.GetSection(InviteOnlyModeKey))
+                .Configure<ProcessingOptions>(Configuration.GetSection(ProcessingOptionsKey));
+
             services.AddSingleton<ResourceProvider>();
             services.AddSingleton<IPostProcessing, PostProcessing>();
             services.AddSingleton<IForgeOSS, ForgeOSS>();
-            services.Configure<AppBundleZipPaths>(Configuration.GetSection(AppBundleZipPathsKey));
             services.AddSingleton<FdaClient>();
-            services.Configure<DefaultProjectsConfiguration>(Configuration.GetSection(DefaultProjectsSectionKey));
             services.AddTransient<Initializer>();
             services.AddTransient<Arranger>();
             services.AddTransient<ProjectWork>();
@@ -100,7 +105,6 @@ namespace WebApplication
             services.AddScoped<UserResolver>(); // TODO: use interface
             services.AddSingleton<LocalCache>();
             services.AddSingleton<Uploads>();
-            services.Configure<InviteOnlyModeConfiguration>(Configuration.GetSection(InviteOnlyModeKey));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -82,7 +82,7 @@ namespace WebApplication.Tests
             
             var resourceProvider = new ResourceProvider(forgeConfigOptions, designAutomationClient, null, projectsBucketKey);
             var localCache = new LocalCache();
-            var postProcessing = new PostProcessing(httpClientFactory, new NullLogger<PostProcessing>(), localCache);
+            var postProcessing = new PostProcessing(httpClientFactory, new NullLogger<PostProcessing>(), localCache, Options.Create(new ProcessingOptions()));
             var publisher = new Publisher(designAutomationClient, new NullLogger<Publisher>(), resourceProvider, postProcessing);
 
             var appBundleZipPathsConfiguration = new AppBundleZipPaths

@@ -48,4 +48,36 @@ namespace WebApplication.Definitions
         public string[] Domains { get; set; }
         public string[] Addresses { get; set; }
     }
+
+    /// <summary>
+    /// Save work item processing reports.
+    /// </summary>
+    public enum SaveReport
+    {
+        /// <summary>
+        /// Don't save anything.
+        /// </summary>
+        Off,
+
+        /// <summary>
+        /// Save reports for failed processings.
+        /// </summary>
+        ErrorsOnly,
+
+        /// <summary>
+        /// Save everything.
+        /// </summary>
+        All
+    }
+
+    /// <summary>
+    /// FDA processing options.
+    /// </summary>
+    public class ProcessingOptions
+    {
+        /// <summary>
+        /// If reports should be saved.
+        /// </summary>
+        public SaveReport SaveReport { get; set; } = SaveReport.ErrorsOnly;
+    }
 }
