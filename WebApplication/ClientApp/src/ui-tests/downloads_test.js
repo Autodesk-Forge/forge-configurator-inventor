@@ -29,10 +29,11 @@ Scenario('should check switch to downloads tab shows the downloads links', async
     I.see('Downloads', locators.downloadsTab);
     I.click(locators.downloadsTab);
     I.waitForElement('.BaseTable');
-    I.seeNumberOfElements('.BaseTable__row', 2);
+    I.seeNumberOfElements('.BaseTable__row', 3);
     // all expected download types are available
     I.see('IAM', '.BaseTable__row-cell a');
     I.see('RFA', '.BaseTable__row-cell a');
+    I.see('BOM', '.BaseTable__row-cell a');
     // check icons
-    I.seeNumberOfElements({ css: '[src="products-and-services-24.svg"]'}, 2);
+    I.seeNumberOfElements({ css: '[src="products-and-services-24.svg"]'}, 3);
 });
