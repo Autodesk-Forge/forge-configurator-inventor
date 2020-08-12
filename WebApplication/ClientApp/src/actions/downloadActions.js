@@ -18,7 +18,8 @@
 
 import { addError, addLog } from './notificationActions';
 import { Jobs } from '../JobManager';
-import { showRFAModalProgress, showRfaFailed, setRFALink, setReportUrlLink } from './uiFlagsActions';
+import { showRFAModalProgress, showRfaFailed, setRFALink, setReportUrlLink, setHasDrawing } from './uiFlagsActions';
+import { showDrawingExportProgress, setDrawingPdfUrl } from './uiFlagsActions';
 
 export const getRFADownloadLink = (projectId, temporaryUrl) => async (dispatch) => {
     dispatch(addLog('getRFADownloadLink invoked'));
@@ -54,5 +55,45 @@ export const getRFADownloadLink = (projectId, temporaryUrl) => async (dispatch) 
         );
     } catch (error) {
         dispatch(addError('JobManager.doRFAJob: Error : ' + error));
+    }
+};
+
+export const fetchDrawing = (project) => async (dispatch) => {
+    if (! project.id) return;
+
+    dispatch(addLog('fetchDrawing invoked'));
+
+    const jobManager = Jobs();
+
+    // show progress
+    dispatch(showDrawingExportProgress(true));
+
+    // launch signalR to export drawing and wait for result
+    try {
+        await jobManager.doDrawingExportJob(project.id, project.hash,
+            // start job
+            () => {
+                dispatch(addLog('JobManager.doDrawingExportJob: HubConnection started for project : ' + project.id));
+                //dispatch(setReportUrlLink(null)); // cleanup url link
+            },
+            // onComplete
+            (drawingPdfUrl) => {
+                dispatch(addLog('JobManager.doDrawingExportJob: Received onComplete'));
+                // store drawings link
+                dispatch(setDrawingPdfUrl(drawingPdfUrl));
+                // hide progress modal dialog
+                dispatch(showDrawingExportProgress(false));
+                // cache that we already check if has drawing
+                dispatch(setHasDrawing(drawingPdfUrl != null));
+            },
+            // onError
+            (jobId, reportUrl) => {
+                dispatch(addLog('JobManager: Received onError with jobId: ' + jobId + ' and reportUrl: ' + reportUrl));
+                // hide progress modal dialog
+                dispatch(showDrawingExportProgress(false));
+            }
+        );
+    } catch (error) {
+        dispatch(addError('JobManager.doDrawingExportJob: Error : ' + error));
     }
 };

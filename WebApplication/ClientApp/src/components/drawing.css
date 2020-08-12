@@ -35,3 +35,13 @@
     text-align: center;
     line-height: 26px;
 }
+
+.drawingContainer.init {
+    display: table;
+    height: inherit
+}
+
+.progressCentered {
+    display: table-cell;
+    vertical-align: middle;
+}

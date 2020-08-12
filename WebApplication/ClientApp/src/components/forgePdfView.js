@@ -19,8 +19,7 @@
 import React, { Component } from 'react';
 import Script from 'react-load-script';
 import {connect} from 'react-redux';
-// import { getActiveProject } from '../reducers/mainReducer';
-import './forgeView.css';
+import { getDrawingPdfUrl } from '../reducers/mainReducer';
 import repo from '../Repository';
 
 let Autodesk = null;
@@ -57,19 +56,19 @@ export class ForgePdfView extends Component {
             return;
 
         // skip loading of svf when here is no active project drawingPdf
-        if (!this.props.activeProject.drawingPdf)
+        if (!this.props.drawingPdf)
             return;
 
         this.viewer.loadExtension('Autodesk.PDF');
 
-        this.viewer.loadModel( this.props.activeProject.drawingPdf , this.viewer);
+        this.viewer.loadModel( this.props.drawingPdf , this.viewer);
         //this.viewer.loadExtension("Autodesk.Viewing.MarkupsCore")
         //this.viewer.loadExtension("Autodesk.Viewing.MarkupsGui")
     }
 
     componentDidUpdate(prevProps) {
-        if (Autodesk && (this.props.activeProject.drawingPdf !== prevProps.activeProject.drawingPdf)) {
-            this.viewer.loadModel( this.props.activeProject.drawingPdf , this.viewer);
+        if (Autodesk && (this.props.drawingPdf !== prevProps.drawingPdf)) {
+            this.viewer.loadModel( this.props.drawingPdf , this.viewer);
         }
     }
 
@@ -87,8 +86,8 @@ export class ForgePdfView extends Component {
 }
 
 /* istanbul ignore next */
-export default connect(function (/*store*/){
+export default connect(function (store){
     return {
-      activeProject: { drawingPdf: 'https://localhost:5001/data/my.pdf' } // getActiveProject(store)
+        drawingPdf: getDrawingPdfUrl(store)
     };
   })(ForgePdfView);
