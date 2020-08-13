@@ -29,13 +29,15 @@ import ModalProgress from './modalProgress';
 export class Drawing extends Component {
 
   componentDidMount() {
-    if (this.props.hasDrawing === null)
+    const isAssembly = this.props.activeProject?.isAssembly;
+    if (isAssembly === true && this.props.hasDrawing === null)
       this.props.fetchDrawing(this.props.activeProject);
   }
 
   componentDidUpdate(prevProps) {
-      // refresh bom data when BOM tab was clicked before projects initialized
-      if (this.props.activeProject !== prevProps.activeProject) {
+    // refresh bom data when BOM tab was clicked before projects initialized
+    const isAssembly = this.props.activeProject?.isAssembly;
+    if (isAssembly === true && this.props.activeProject !== prevProps.activeProject) {
           if (this.props.hasDrawing === null)
             this.props.fetchDrawing(this.props.activeProject);
       }
@@ -43,17 +45,18 @@ export class Drawing extends Component {
 
   render() {
     const initialized = this.props.hasDrawing !== null;
-    const hasDrawing = this.props.hasDrawing === true;
-    const empty = (initialized && !hasDrawing);
-    const containerClass = !initialized ? "drawingContainer init" : empty ? "drawingContainer empty" : "drawingContainer";
+    const isAssembly = this.props.activeProject?.isAssembly;
+    const hasDrawing = this.props.hasDrawing === true && isAssembly === true;
+    const empty = (initialized && !hasDrawing) || isAssembly === false;
+    const containerClass = empty ? "drawingContainer empty" : "drawingContainer";
 
     return (
       <div className="fullheight">
         <div className={containerClass}>
-        {initialized && !hasDrawing &&
+        {empty &&
           <div className="drawingEmptyText">You don&apos;t have any drawings in package.</div>
         }
-        {initialized && hasDrawing &&
+        {!empty &&
           <ForgePdfView/>
         }
         {this.props.drawingProgressShowing &&
