@@ -22,7 +22,7 @@ import './parametersContainer.css';
 import Parameter from './parameter';
 import { getActiveProject, getParameters, getUpdateParameters, modalProgressShowing, updateFailedShowing, reportUrl } from '../reducers/mainReducer';
 import { fetchParameters, resetParameters, updateModelWithParameters } from '../actions/parametersActions';
-import { showModalProgress, showUpdateFailed } from '../actions/uiFlagsActions';
+import { showModalProgress, showUpdateFailed, invalidateDrawing } from '../actions/uiFlagsActions';
 import Button from '@hig/button';
 import ModalProgress from './modalProgress';
 import ModalFail from './modalFail';
@@ -41,6 +41,8 @@ export class ParametersContainer extends Component {
 
     updateClicked() {
         this.props.updateModelWithParameters(this.props.activeProject.id, this.props.projectUpdateParameters);
+        // mark drawing as not valid if any available
+        this.props.invalidateDrawing();
     }
 
     onProgressCloseClick() {
@@ -119,4 +121,4 @@ export default connect(function (store) {
         projectSourceParameters: getParameters(activeProject.id, store),
         projectUpdateParameters: getUpdateParameters(activeProject.id, store)
     };
-}, { fetchParameters, resetParameters, updateModelWithParameters, showModalProgress, showUpdateFailed })(ParametersContainer);
+}, { fetchParameters, resetParameters, updateModelWithParameters, showModalProgress, showUpdateFailed, invalidateDrawing })(ParametersContainer);

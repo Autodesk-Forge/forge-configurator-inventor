@@ -42,7 +42,8 @@ export const actionTypes = {
     CLEAR_CHECKED_PROJECTS: 'CLEAR_CHECKED_PROJECTS',
     SET_HAS_DRAWING: 'SET_HAS_DRAWING',
     SHOW_DRAWING_PROGRESS: 'SHOW_DRAWING_PROGRESS',
-    SET_DRAWING_URL: 'SET_DRAWING_URL'
+    SET_DRAWING_URL: 'SET_DRAWING_URL',
+    INVALIDATE_DRAWING: 'INVALIDATE_DRAWING'
 };
 
 export default actionTypes;
@@ -210,5 +211,11 @@ export const setDrawingPdfUrl = (url) => {
     return {
         type: actionTypes.SET_DRAWING_URL,
         url
+    };
+};
+
+export const invalidateDrawing = () => {
+    return {
+        type: actionTypes.INVALIDATE_DRAWING
     };
 };

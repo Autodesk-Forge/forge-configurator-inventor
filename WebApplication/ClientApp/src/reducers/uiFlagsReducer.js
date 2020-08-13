@@ -192,6 +192,8 @@ export default function(state = initialState, action) {
          return { ...state, drawingProgressShowing: action.visible};
       case uiFlagsActionTypes.SET_DRAWING_URL:
          return { ...state, drawingUrl: action.url };
+      case uiFlagsActionTypes.INVALIDATE_DRAWING:
+         return { ...state, hasDrawing: null, drawingUrl: null };
       default:
          return state;
   }

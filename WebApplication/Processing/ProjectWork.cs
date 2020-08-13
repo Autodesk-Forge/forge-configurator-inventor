@@ -162,7 +162,7 @@ namespace WebApplication.Processing
             await _arranger.MoveRfaAsync(project, hash);
         }
 
-        public async Task<string> ExportDrawingViewablesAsync(string projectName, string hash)
+        public async Task<bool> ExportDrawingViewablesAsync(string projectName, string hash)
         {
             _logger.LogInformation($"Generating drawing viewables for hash {hash}");
 
@@ -171,12 +171,23 @@ namespace WebApplication.Processing
 
             var ossNameProvider = project.OssNameProvider(hash);
 
+            bool generated = false;
+            ApiResponse<dynamic> ossObjectResponse = null;
             var bucket = await _userResolver.GetBucketAsync();
             // check if Drawing viewables file is already generated
             try
             {
-                var url = await bucket.CreateSignedUrlAsync(ossNameProvider.DrawingViewables);
-                return url;
+                ossObjectResponse = await bucket.GetObjectAsync(ossNameProvider.DrawingViewables);
+                if (ossObjectResponse != null)
+                {
+                    using (Stream objectStream = ossObjectResponse.Data)
+                    {
+                        // zero length means that there is nothing to generate, but processed and do not continue
+                        generated = objectStream.Length>0;
+                    }
+                }
+
+                return generated;
             }
             catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
             {
@@ -194,9 +205,20 @@ namespace WebApplication.Processing
                 throw new FdaProcessingException($"{result.ErrorMessage} for project {project.Name} and hash {hash}", result.ReportUrl);
             }
 
-            await _arranger.MoveDrawingViewablesAsync(project, hash);
+            // check if Drawing viewables file is generated
+            try
+            {
+                await bucket.CreateSignedUrlAsync(ossNameProvider.DrawingViewables);
+                generated = true;
+            }
+            catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
+            {
+                // the file does not exist after generating drawing, so just mark with zero length that we already processed it
+                await bucket.UploadObjectAsync(ossNameProvider.DrawingViewables, new MemoryStream(0));
+            }
 
-            return await bucket.CreateSignedUrlAsync(ossNameProvider.DrawingViewables);
+            await _arranger.MoveDrawingViewablesAsync(project, hash);
+            return generated;
         }
 
         public async Task FileTransferAsync(string source, string target)

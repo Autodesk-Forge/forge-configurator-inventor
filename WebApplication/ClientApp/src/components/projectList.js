@@ -22,7 +22,7 @@ import 'react-base-table/styles.css';
 import IconButton from '@hig/icon-button';
 import { Upload24, Trash24 } from '@hig/icons';
 import './projectList.css';
-import { showUploadPackage, updateActiveTabIndex, showDeleteProject, showModalProgress } from '../actions/uiFlagsActions';
+import { showUploadPackage, updateActiveTabIndex, showDeleteProject, showModalProgress, invalidateDrawing } from '../actions/uiFlagsActions';
 import { setUploadProgressHidden, hideUploadFailed } from '../actions/uploadPackageActions';
 import { updateActiveProject } from '../actions/projectListActions';
 import UploadPackage from './uploadPackage';
@@ -52,6 +52,8 @@ export class ProjectList extends Component {
   onProjectClick(projectId) {
     // set active project
     this.props.updateActiveProject(projectId);
+    // mark drawing as not valid if any available
+    this.props.invalidateDrawing();
     // switch to MODEL tab
     this.props.updateActiveTabIndex(1);
   }
@@ -152,4 +154,4 @@ export default connect(function (store) {
     reportUrl: reportUrl(store),
     modalProgressShowing: modalProgressShowing(store)
   };
-}, { showUploadPackage, updateActiveProject, updateActiveTabIndex, setUploadProgressHidden, hideUploadFailed, showDeleteProject, showModalProgress })(ProjectList);
+}, { showUploadPackage, updateActiveProject, updateActiveTabIndex, setUploadProgressHidden, hideUploadFailed, showDeleteProject, showModalProgress, invalidateDrawing })(ProjectList);
