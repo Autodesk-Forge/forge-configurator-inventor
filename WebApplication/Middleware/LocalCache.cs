@@ -68,7 +68,7 @@ namespace WebApplication.Middleware
                                    context.Request.Path.Value.EndsWith("bubble.json"),
                 appBuilder =>
                 {
-                    appBuilder.UseMiddleware<TokenHandler>();
+                    appBuilder.UseMiddleware<HeaderTokenHandler>();
                     appBuilder.UseMiddleware<SvfRestore>();
                 });
 
