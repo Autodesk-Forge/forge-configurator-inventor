@@ -22,6 +22,8 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using WebApplication.Definitions;
 using WebApplication.Middleware;
 
 namespace WebApplication.Processing
@@ -35,16 +37,19 @@ namespace WebApplication.Processing
     {
         private readonly IHttpClientFactory _clientFactory;
         private readonly ILogger<PostProcessing> _logger;
+        private readonly SaveReport _saveReport;
 
         /// <summary>
         /// Root dir for local cache.
         /// </summary>
         private readonly Lazy<string> _lazyReportDir;
 
-        public PostProcessing(IHttpClientFactory clientFactory, ILogger<PostProcessing> logger, LocalCache localCache)
+
+        public PostProcessing(IHttpClientFactory clientFactory, ILogger<PostProcessing> logger, LocalCache localCache, IOptions<ProcessingOptions> options)
         {
             _clientFactory = clientFactory;
             _logger = logger;
+            _saveReport = options.Value.SaveReport;
 
             _lazyReportDir = new Lazy<string>(() =>
             {
@@ -59,28 +64,28 @@ namespace WebApplication.Processing
 
         public async Task HandleStatus(WorkItemStatus wiStatus)
         {
+            if (_saveReport == SaveReport.Off) return;
+            if (_saveReport == SaveReport.ErrorsOnly && wiStatus.Status == Status.Success) return;
+
             // TODO: make it in background
-            if (wiStatus.Status != Status.Success)
+            var reportName = $"{DateTime.UtcNow:yyyy-MM-dd_HH-mm-ss}_{wiStatus.Id}.txt";
+            string reportFullname = Path.Combine(_lazyReportDir.Value, reportName);
+
+            _logger.LogInformation($"Saving {wiStatus.Id} report to {reportName}");
+            try
             {
-                var reportName = $"{DateTime.UtcNow:yyyy-MM-dd_HH-mm-ss}_{wiStatus.Id}.txt";
-                string reportFullname = Path.Combine(_lazyReportDir.Value, reportName);
+                // download report
+                var client = _clientFactory.CreateClient();
 
-                _logger.LogInformation($"Saving {wiStatus.Id} report to {reportName}");
-                try
-                {
-                    // download report
-                    var client = _clientFactory.CreateClient();
-
-                    await using var stream = await client.GetStreamAsync(wiStatus.ReportUrl);
-                    await using var fs = new FileStream(reportFullname, FileMode.CreateNew);
-                    await stream.CopyToAsync(fs);
-                }
-                catch (Exception e)
-                {
-                    // downloading report should not stop site functionality,
-                    // so write log error message and swallow the exception
-                    _logger.LogError(e, $"Failed to download report for {wiStatus.Id}");
-                }
+                await using var stream = await client.GetStreamAsync(wiStatus.ReportUrl);
+                await using var fs = new FileStream(reportFullname, FileMode.CreateNew);
+                await stream.CopyToAsync(fs);
+            }
+            catch (Exception e)
+            {
+                // downloading report should not stop site functionality,
+                // so write log error message and swallow the exception
+                _logger.LogError(e, $"Failed to download report for {wiStatus.Id}");
             }
         }
     }
