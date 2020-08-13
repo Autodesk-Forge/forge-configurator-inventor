@@ -19,6 +19,11 @@
 import React from 'react';
 import Enzyme, { shallow, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
+
+// prepare mock for Repository module
+jest.mock('../Repository');
+import mockedRepo from '../Repository';
+
 import { Downloads, downloadColumns } from './downloads';
 
 Enzyme.configure({ adapter: new Adapter() });
@@ -32,6 +37,11 @@ const props = {
 };
 
 describe('Downloads components', () => {
+
+  beforeEach(() => {
+    mockedRepo.getAccessToken.mockClear();
+  });
+
   it('Resizer reduces size', () => {
     const wrapper = shallow(<Downloads { ...props } />);
     const as = wrapper.find('AutoResizer');
@@ -115,4 +125,17 @@ describe('Downloads components', () => {
     expect(hyperlinks.length).toEqual(0);
   });
 
+  it('should inject token for download URLs', () => {
+
+    const fakeToken = '1234567890';
+    mockedRepo.getAccessToken.mockReturnValue(fakeToken);
+
+    const wrapper = shallow(<Downloads { ...props } />);
+    const as = wrapper.find('AutoResizer');
+    const bt = as.renderProp('children')( {width: 100, height: 200} );
+    const btdata = bt.prop('data');
+    const iam = btdata[0];
+    const iamlink = shallow(iam.link);
+    expect(iamlink.prop('href').endsWith(fakeToken)).toEqual(true);
+  });
 });
