@@ -80,15 +80,26 @@ describe('Downloads components', () => {
     expect(preventDefault).toHaveBeenCalled();
   });
 
-  it('Base table renders expected count of links and icons', () => {
-    const wrapper = mount(<Downloads { ...props } />);
-    const as = wrapper.find('AutoResizer');
-    const bt = as.renderProp('children')( {width: 100, height: 200} );
-    const icons = bt.find('Icon');
-    const hyperlinks = bt.find('a');
-    expect(icons.length).toEqual(3);
-    expect(hyperlinks.length).toEqual(3);
-  });
+  it.each([
+    [ {}, 0], // empty project info => no download links
+    [ { id: 'foo' }, 1], // no URLs => only RFA link if available (extreme case for code coverage)
+    [ props.activeProject, 2 ], // no `isAssembly` field. Assuming - no BOM is available (extreme case for code coverage)
+    [ { ...props.activeProject, isAssembly: false }, 2 ], // no BOM available for parts
+    [ { ...props.activeProject, isAssembly: true }, 3 ] // BOM download is expected
+  ])('Base table renders expected count of links and icons - %0 case',
+    (project, count) => {
+
+      const props = { activeProject: project };
+      const wrapper = mount(<Downloads { ...props } />);
+      const as = wrapper.find('AutoResizer');
+      const bt = as.renderProp('children')( {width: 100, height: 200} );
+
+      const icons = bt.find('Icon');
+      const hyperlinks = bt.find('a');
+
+      expect(icons.length).toEqual(count);
+      expect(hyperlinks.length).toEqual(count);
+    });
 
   it('Base table renders NO links and icons when projects are empty', () => {
     // simulate activeProject (getActiveProject) like we have in these two scenarios:
