@@ -67,6 +67,13 @@ namespace WebApplication.Controllers
             return File(stream, "text/csv", "bom.csv");
         }
 
+        [HttpGet("{projectName}/{hash}/{fileName}")]
+        public async Task<ActionResult> DrawingViewables(string projectName, string hash, string fileName)
+        {
+            string localFileName = await _userResolver.EnsureLocalFile(projectName, fileName, hash);
+            return new PhysicalFileResult(localFileName, "application/pdf");
+        }
+
         private async Task<RedirectResult> RedirectToOssObject(string projectName, string hash, Func<OSSObjectNameProvider, bool, string> nameExtractor)
         {
             ProjectStorage projectStorage = await _userResolver.GetProjectStorageAsync(projectName);

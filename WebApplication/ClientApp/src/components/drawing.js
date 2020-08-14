@@ -22,7 +22,7 @@ import { getActiveProject } from '../reducers/mainReducer';
 import './drawing.css';
 import ForgePdfView from './forgePdfView';
 import { fetchDrawing } from '../actions/downloadActions';
-import { hasDrawing, getDrawingPdfUrl } from '../reducers/mainReducer';
+import { getDrawingPdfUrl } from '../reducers/mainReducer';
 import { drawingProgressShowing } from '../reducers/mainReducer';
 import ModalProgress from './modalProgress';
 
@@ -30,7 +30,7 @@ export class Drawing extends Component {
 
   componentDidMount() {
     const isAssembly = this.props.activeProject?.isAssembly;
-    if (isAssembly === true && this.props.hasDrawing === null)
+    if (isAssembly === true && this.props.drawingPdf === null)
       this.props.fetchDrawing(this.props.activeProject);
   }
 
@@ -38,15 +38,15 @@ export class Drawing extends Component {
     // refresh bom data when Drawing tab was clicked before projects initialized
     const isAssembly = this.props.activeProject?.isAssembly;
     if (isAssembly === true && this.props.activeProject !== prevProps.activeProject) {
-          if (this.props.hasDrawing === null)
+          if (this.props.drawingPdf === null)
             this.props.fetchDrawing(this.props.activeProject);
       }
   }
 
   render() {
-    const initialized = this.props.hasDrawing !== null;
+    const initialized = this.props.drawingPdf !== null;
     const isAssembly = this.props.activeProject?.isAssembly;
-    const hasDrawing = this.props.hasDrawing === true && isAssembly === true;
+    const hasDrawing = this.props.drawingPdf?.length > 0 && isAssembly === true;
     const empty = (initialized && !hasDrawing) || isAssembly === false;
     const containerClass = empty ? "drawingContainer empty" : "drawingContainer";
 
@@ -79,7 +79,7 @@ export default connect(function (store) {
   return {
     activeProject: activeProject,
     drawingPdfUrl: getDrawingPdfUrl(store),
-    hasDrawing: hasDrawing(store),
+    drawingPdf: getDrawingPdfUrl(store),
     drawingProgressShowing: drawingProgressShowing(store)
   };
 }, { fetchDrawing })(Drawing);

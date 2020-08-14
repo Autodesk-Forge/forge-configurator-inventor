@@ -48,7 +48,7 @@ namespace WebApplication.Processing
         public readonly string OutputSAT = $"{Guid.NewGuid():N}.sat";
         public readonly string OutputRFA = $"{Guid.NewGuid():N}.rfa";
         public readonly string BomJson = $"{Guid.NewGuid():N}.bom.json";
-        public readonly string DrawingViewables = $"{Guid.NewGuid():N}.drawing.pdf";
+        public readonly string OutputDrawingViewables = $"{Guid.NewGuid():N}.drawing.pdf";
 
         /// <summary>
         /// Constructor.
@@ -73,8 +73,7 @@ namespace WebApplication.Processing
                                             bucket.CreateSignedUrlAsync(Parameters, ObjectAccess.Write),
                                             bucket.CreateSignedUrlAsync(OutputModelIAM, ObjectAccess.Write),
                                             bucket.CreateSignedUrlAsync(OutputModelIPT, ObjectAccess.Write),
-                                            bucket.CreateSignedUrlAsync(BomJson, ObjectAccess.Write),
-                                            bucket.CreateSignedUrlAsync(DrawingViewables, ObjectAccess.Write));
+                                            bucket.CreateSignedUrlAsync(BomJson, ObjectAccess.Write));
 
             return new AdoptionData
                     {
@@ -85,7 +84,6 @@ namespace WebApplication.Processing
                         OutputIAMModelUrl   = urls[3],
                         OutputIPTModelUrl   = urls[4],
                         BomUrl              = urls[5],
-                        DrawingViewablesUrl = urls[6],
                         TLA                 = tlaFilename
                     };
         }
@@ -106,8 +104,7 @@ namespace WebApplication.Processing
                                             bucket.CreateSignedUrlAsync(SVF, ObjectAccess.Write),
                                             bucket.CreateSignedUrlAsync(Parameters, ObjectAccess.Write),
                                             bucket.CreateSignedUrlAsync(InputParams, ObjectAccess.ReadWrite),
-                                            bucket.CreateSignedUrlAsync(BomJson, ObjectAccess.Write),
-                                            bucket.CreateSignedUrlAsync(DrawingViewables, ObjectAccess.Write)
+                                            bucket.CreateSignedUrlAsync(BomJson, ObjectAccess.Write)
                                             );
 
             await using var jsonStream = Json.ToStream(parameters);
@@ -122,7 +119,6 @@ namespace WebApplication.Processing
                         ParametersJsonUrl   = urls[3],
                         InputParamsUrl      = urls[4],
                         BomUrl              = urls[5],
-                        DrawingViewablesUrl = urls[6],
                         TLA                 = tlaFilename
                     };
         }
@@ -145,7 +141,6 @@ namespace WebApplication.Processing
             await Task.WhenAll(bucket.RenameObjectAsync(Thumbnail, project.OssAttributes.Thumbnail),
                                 bucket.RenameObjectAsync(SVF, ossNames.ModelView),
                                 bucket.RenameObjectAsync(BomJson, ossNames.Bom),
-                                bucket.RenameObjectAsync(DrawingViewables, ossNames.DrawingViewables, true),
                                 bucket.RenameObjectAsync(Parameters, ossNames.Parameters),
                                 bucket.RenameObjectAsync(attributes.IsAssembly ? OutputModelIAM : OutputModelIPT, ossNames.GetCurrentModel(attributes.IsAssembly)),
                                 bucket.UploadObjectAsync(project.OssAttributes.Metadata, Json.ToStream(attributes, writeIndented: true)));
@@ -163,6 +158,17 @@ namespace WebApplication.Processing
             var ossNames = project.OssNameProvider(hash);
             await Task.WhenAll(bucket.RenameObjectAsync(OutputRFA, ossNames.Rfa),
                                 bucket.DeleteObjectAsync(OutputSAT));
+        }
+
+        /// <summary>
+        /// Move temporary OSS files to the correct places.
+        /// </summary>
+        internal async Task MoveDrawingViewablesAsync(Project project, string hash)
+        {
+            var bucket = await _userResolver.GetBucketAsync();
+
+            var ossNames = project.OssNameProvider(hash);
+            await bucket.RenameObjectAsync(OutputDrawingViewables, ossNames.DrawingViewables, true);
         }
 
         internal async Task<ProcessingArgs> ForSatAsync(string inputDocUrl, string topLevelAssembly)
@@ -193,6 +199,19 @@ namespace WebApplication.Processing
             };
         }
 
+        internal async Task<ProcessingArgs> ForDrawingViewablesAsync(string inputDocUrl, string topLevelAssembly)
+        {
+            var bucket = await _userResolver.GetBucketAsync();
+            var drawingViewablesUrl = await bucket.CreateSignedUrlAsync(OutputDrawingViewables, ObjectAccess.Write);
+
+            return new ProcessingArgs
+            {
+                InputDocUrl = inputDocUrl,
+                DrawingViewablesUrl = drawingViewablesUrl,
+                TLA = topLevelAssembly
+            };
+        }
+
         /// <summary>
         /// Move viewables OSS objects to correct places.
         /// NOTE: it's expected that the data is generated already.
@@ -209,7 +228,6 @@ namespace WebApplication.Processing
             // move data to expected places
             await Task.WhenAll(bucket.RenameObjectAsync(SVF, ossNames.ModelView),
                                 bucket.RenameObjectAsync(BomJson, ossNames.Bom),
-                                bucket.RenameObjectAsync(DrawingViewables, ossNames.DrawingViewables, true),
                                 bucket.RenameObjectAsync(Parameters, ossNames.Parameters),
                                 bucket.RenameObjectAsync(isAssembly ? OutputModelIAM : OutputModelIPT, ossNames.GetCurrentModel(isAssembly)),
                                 bucket.DeleteObjectAsync(InputParams));

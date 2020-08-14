@@ -26,6 +26,7 @@ import { actionTypes as uiFlagsActionTypes } from './uiFlagsActions';
 const rfaLink = 'https://some.link';
 const tokenMock = 'theToken';
 const fullLink = `${rfaLink}/${tokenMock}`;
+const noTokenLink = `${rfaLink}`;
 const errorReportLink = 'https://error.link';
 const jobId = 'job1';
 
@@ -97,8 +98,6 @@ describe('downloadActions', () => {
         // check expected store actions
         const actions = store.getActions();
         const linkAction = actions.find(a => a.type === uiFlagsActionTypes.SET_DRAWING_URL);
-        expect(linkAction.url).toEqual(fullLink);
-        const hasDrawingAction = actions.find(a => a.type === uiFlagsActionTypes.SET_HAS_DRAWING);
-        expect(hasDrawingAction.hasDrawing).toBeTruthy();
+        expect(linkAction.url).toEqual(noTokenLink);
     });
 });
