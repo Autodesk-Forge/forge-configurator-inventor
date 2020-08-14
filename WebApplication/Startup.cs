@@ -46,6 +46,7 @@ namespace WebApplication
         private const string InviteOnlyModeKey = "InviteOnlyMode";
         private const string ProcessingOptionsKey = "Processing";
         private ILogger<Startup> _logger;
+        private Initializer _initializer;
 
         public Startup(IConfiguration configuration)
         {
@@ -114,6 +115,8 @@ namespace WebApplication
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Initializer initializer, ILogger<Startup> logger, LocalCache localCache, IOptions<ForgeConfiguration> forgeConfiguration, IHostApplicationLifetime lifetime)
         {
             _logger = logger;
+            _initializer = initializer;
+
             if(Configuration.GetValue<bool>("clear"))
             {
                 logger.LogInformation("-- Clean up --");
@@ -181,8 +184,7 @@ namespace WebApplication
         protected void OnShutdown()
         {
             _logger.LogInformation("APPLICATION IS GOING DOWN");
-            Console.WriteLine("APPLICATION IS SHUTTING DOWN");
-            Debug.WriteLine(">>Stopped");
+            _initializer.ClearAsync(true).Wait();
         }
     }
 }
