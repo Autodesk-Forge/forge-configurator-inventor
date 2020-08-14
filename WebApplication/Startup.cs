@@ -183,8 +183,9 @@ namespace WebApplication
         }
         protected void OnShutdown()
         {
-            _logger.LogInformation("APPLICATION IS GOING DOWN");
+            _logger.LogInformation("Application is shutting down. Deleting the testing data.");
             _initializer.ClearAsync(true).Wait();
+            _logger.LogInformation("Testing data deleted.");
         }
     }
 }
