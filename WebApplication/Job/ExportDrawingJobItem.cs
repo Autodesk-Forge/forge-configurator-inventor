@@ -46,7 +46,7 @@ namespace WebApplication.Job
 
             Logger.LogInformation($"ProcessJob (ExportDrawing) {Id} for project {ProjectId} completed.");
 
-            string url = null;
+            string url = "";
             if (generated)
             {
                 url = _linkGenerator.GetPathByAction(controller: "Download",

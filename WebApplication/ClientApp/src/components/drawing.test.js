@@ -27,7 +27,7 @@ describe('Drawings', () => {
   it('Page has expected text when no drawings available', () => {
       const props = {
         activeProject: { id: "1" },
-        hasDrawing: false
+        drawingPdf: ""
       };
 
       const wrapper = shallow(<Drawing {...props}/>);
@@ -53,7 +53,7 @@ describe('Drawings', () => {
       const fetchDrawingMock = jest.fn();
       const props = {
         activeProject: { id: "1", isAssembly: true },
-        hasDrawing: null, // initialize fetch
+        drawingPdf: null, // initialize fetch
         fetchDrawing: fetchDrawingMock
       };
 
@@ -66,7 +66,7 @@ describe('Drawings', () => {
       const fetchDrawingMock = jest.fn();
       const props = {
         activeProject: { id: "1", isAssembly: false },
-        hasDrawing: null, // initialize fetch
+        drawingPdf: null, // initialize fetch
         fetchDrawing: fetchDrawingMock
       };
 

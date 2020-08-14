@@ -40,8 +40,7 @@ export const initialState = {
    showDeleteProject: false,
    checkedProjects: [],
    drawingProgressShowing: false,
-   drawingUrl: null,
-   hasDrawing: null // null=not checked yet, true/false=result
+   drawingUrl: null
 };
 
 export const modalProgressShowing = function(state) {
@@ -106,10 +105,6 @@ export const deleteProjectDlgVisible = function(state) {
 
 export const checkedProjects = function(state) {
    return state.checkedProjects;
-};
-
-export const hasDrawing = function(state) {
-   return state.hasDrawing;
 };
 
 export const getDrawingPdfUrl = function(state) {
@@ -186,14 +181,12 @@ export default function(state = initialState, action) {
          return { ...state, checkedProjects: action.projects};
       case uiFlagsActionTypes.CLEAR_CHECKED_PROJECTS:
          return { ...state, checkedProjects: []};
-      case uiFlagsActionTypes.SET_HAS_DRAWING:
-         return { ...state, hasDrawing: action.hasDrawing};
       case uiFlagsActionTypes.SHOW_DRAWING_PROGRESS:
          return { ...state, drawingProgressShowing: action.visible};
       case uiFlagsActionTypes.SET_DRAWING_URL:
          return { ...state, drawingUrl: action.url };
       case uiFlagsActionTypes.INVALIDATE_DRAWING:
-         return { ...state, hasDrawing: null, drawingUrl: null };
+         return { ...state, drawingUrl: null };
       default:
          return state;
   }

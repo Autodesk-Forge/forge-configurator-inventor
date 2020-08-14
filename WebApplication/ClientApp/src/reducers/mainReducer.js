@@ -148,10 +148,6 @@ export const getBom = function(projectId, state) {
     return bom.getBom(projectId, state.bom);
 };
 
-export const hasDrawing = function(state) {
-    return uiFlags.hasDrawing(state.uiFlags);
-};
-
 export const getDrawingPdfUrl = function(state) {
     return uiFlags.getDrawingPdfUrl(state.uiFlags);
 };
