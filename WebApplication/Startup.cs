@@ -16,6 +16,8 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
+using System;
+using System.Diagnostics;
 using System.Net.Http;
 using Autodesk.Forge.Core;
 using Autodesk.Forge.DesignAutomation;
@@ -108,7 +110,7 @@ namespace WebApplication
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Initializer initializer, ILogger<Startup> logger, LocalCache localCache, IOptions<ForgeConfiguration> forgeConfiguration)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Initializer initializer, ILogger<Startup> logger, LocalCache localCache, IOptions<ForgeConfiguration> forgeConfiguration, IHostApplicationLifetime lifetime)
         {
             if(Configuration.GetValue<bool>("clear"))
             {
@@ -171,6 +173,13 @@ namespace WebApplication
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
+
+            lifetime.ApplicationStopping.Register(OnShutdown);
+        }
+        protected void OnShutdown()
+        {
+            Console.WriteLine("APPLICATION IS SHUTTING DOWN");
+            Debug.WriteLine(">>Stopped");
         }
     }
 }
