@@ -22,38 +22,41 @@ import { getActiveProject } from '../reducers/mainReducer';
 import './drawing.css';
 import ForgePdfView from './forgePdfView';
 import { fetchDrawing } from '../actions/downloadActions';
-import { hasDrawing, getDrawingPdfUrl } from '../reducers/mainReducer';
+import { getDrawingPdfUrl } from '../reducers/mainReducer';
 import { drawingProgressShowing } from '../reducers/mainReducer';
 import ModalProgress from './modalProgress';
 
 export class Drawing extends Component {
 
   componentDidMount() {
-    if (this.props.hasDrawing === null)
+    const isAssembly = this.props.activeProject?.isAssembly;
+    if (isAssembly === true && this.props.drawingPdf === null)
       this.props.fetchDrawing(this.props.activeProject);
   }
 
   componentDidUpdate(prevProps) {
-      // refresh bom data when BOM tab was clicked before projects initialized
-      if (this.props.activeProject !== prevProps.activeProject) {
-          if (this.props.hasDrawing === null)
+    // refresh bom data when Drawing tab was clicked before projects initialized
+    const isAssembly = this.props.activeProject?.isAssembly;
+    if (isAssembly === true && this.props.activeProject !== prevProps.activeProject) {
+          if (this.props.drawingPdf === null)
             this.props.fetchDrawing(this.props.activeProject);
       }
   }
 
   render() {
-    const initialized = this.props.hasDrawing !== null;
-    const hasDrawing = this.props.hasDrawing === true;
-    const empty = (initialized && !hasDrawing);
-    const containerClass = !initialized ? "drawingContainer init" : empty ? "drawingContainer empty" : "drawingContainer";
+    const initialized = this.props.drawingPdf !== null;
+    const isAssembly = this.props.activeProject?.isAssembly;
+    const hasDrawing = this.props.drawingPdf?.length > 0 && isAssembly === true;
+    const empty = (initialized && !hasDrawing) || isAssembly === false;
+    const containerClass = empty ? "drawingContainer empty" : "drawingContainer";
 
     return (
       <div className="fullheight">
         <div className={containerClass}>
-        {initialized && !hasDrawing &&
+        {empty &&
           <div className="drawingEmptyText">You don&apos;t have any drawings in package.</div>
         }
-        {initialized && hasDrawing &&
+        {!empty &&
           <ForgePdfView/>
         }
         {this.props.drawingProgressShowing &&
@@ -76,7 +79,7 @@ export default connect(function (store) {
   return {
     activeProject: activeProject,
     drawingPdfUrl: getDrawingPdfUrl(store),
-    hasDrawing: hasDrawing(store),
+    drawingPdf: getDrawingPdfUrl(store),
     drawingProgressShowing: drawingProgressShowing(store)
   };
 }, { fetchDrawing })(Drawing);

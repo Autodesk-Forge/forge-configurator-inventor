@@ -72,6 +72,14 @@ export class ForgePdfView extends Component {
         }
     }
 
+    componentWillUnmount() {
+        if (this.viewer) {
+            this.viewer.finish();
+            this.viewer = null;
+            Autodesk.Viewing.shutdown();
+        }
+    }
+
     render() {
         return (
             <div className="viewer" id="ForgePdfViewer">

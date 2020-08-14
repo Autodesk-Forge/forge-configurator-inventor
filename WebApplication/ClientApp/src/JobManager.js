@@ -149,9 +149,6 @@ class JobManager {
             connection.stop();
 
             if (onComplete) {
-                if (repo.getAccessToken()) {
-                    drawingUrl += "/" + repo.getAccessToken();
-                }
                 onComplete(drawingUrl);
             }
         });

@@ -27,6 +27,7 @@ namespace WebApplication.Processing
         private readonly TransferData _transferData;
         private readonly CreateSAT _satWork;
         private readonly CreateRFA _rfaWork;
+        private readonly ExportDrawing _exportDrawingWork;
         private readonly AdoptProject _adoptWork;
         private readonly UpdateProject _updateProjectWork;
         private readonly AppBundleZipPaths _paths;
@@ -37,6 +38,7 @@ namespace WebApplication.Processing
             _transferData = new TransferData(publisher);
             _satWork = new CreateSAT(publisher);
             _rfaWork = new CreateRFA(publisher);
+            _exportDrawingWork = new ExportDrawing(publisher);
             _adoptWork = new AdoptProject(publisher);
             _updateProjectWork = new UpdateProject(publisher);
             _paths = appBundleZipPathsOptionsAccessor.Value;
@@ -56,6 +58,7 @@ namespace WebApplication.Processing
             await _transferData.InitializeAsync(_paths.EmptyExe);
             await _satWork.InitializeAsync(_paths.CreateSAT);
             await _rfaWork.InitializeAsync(_paths.CreateRFA);
+            await _exportDrawingWork.InitializeAsync(_paths.ExportDrawing);
 
             await _adoptWork.InitializeAsync(null /* does not matter */);
             await _updateProjectWork.InitializeAsync(null /* does not matter */);
@@ -74,6 +77,7 @@ namespace WebApplication.Processing
             await _transferData.CleanUpAsync();
             await _satWork.CleanUpAsync();
             await _rfaWork.CleanUpAsync();
+            await _exportDrawingWork.CleanUpAsync();
 
             await _adoptWork.CleanUpAsync();
             await _updateProjectWork.CleanUpAsync();
@@ -123,6 +127,12 @@ namespace WebApplication.Processing
             }
 
             return result;
+        }
+
+        internal async Task<ProcessingResult> ExportDrawingAsync(ProcessingArgs drawingData)
+        {
+            return await _exportDrawingWork.ProcessAsync(drawingData);
+            
         }
     }
 }

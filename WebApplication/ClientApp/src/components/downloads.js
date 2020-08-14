@@ -101,9 +101,10 @@ export class Downloads extends Component {
         // array with rows data
         const data = [];
 
-        if (this.props.activeProject?.id) {
+        const project = this.props.activeProject;
+        if (project?.id) {
 
-            const { modelDownloadUrl, bomDownloadUrl } = getDownloadUrls(this.props.activeProject);
+            const { modelDownloadUrl, bomDownloadUrl } = getDownloadUrls(project);
             if (modelDownloadUrl) {
 
                 let downloadHyperlink;
@@ -130,11 +131,11 @@ export class Downloads extends Component {
                 env: 'Model',
                 link: rfaJsx,
                 clickHandler: async () => {
-                    this.props.getRFADownloadLink(this.props.activeProject.id, this.props.activeProject.hash);
+                    this.props.getRFADownloadLink(project.id, project.hash);
                 }
             });
 
-            if (bomDownloadUrl) {
+            if (bomDownloadUrl && project.isAssembly) {
 
                 let downloadHyperlink;
                 const bomJsx = <a href={bomDownloadUrl} onClick={(e) => { e.stopPropagation(); }} ref = {(h) => {
@@ -190,7 +191,7 @@ export class Downloads extends Component {
                 {this.props.rfaProgressShowing && <ModalProgressRfa
                     open={true}
                     title="Preparing RFA"
-                    label={this.props.activeProject.id}
+                    label={project.id}
                     icon='/Archive.svg'
                     onClose={() => this.onRfaProgressCloseClick()}
                     url={this.props.rfaDownloadUrl}
@@ -200,7 +201,7 @@ export class Downloads extends Component {
                     open={true}
                     title="Preparing RFA Failed"
                     contentName="Project:"
-                    label={this.props.activeProject.id}
+                    label={project.id}
                     onClose={() => this.onRfaFailedCloseClick()}
                     url={this.props.reportUrl}/>}
 

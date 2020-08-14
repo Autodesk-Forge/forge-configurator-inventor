@@ -82,6 +82,7 @@ describe('ProjectList components', () => {
     const setUploadProgressHiddenMock = jest.fn();
     const hideUploadFailedMock = jest.fn();
     const showModalProgressMock = jest.fn();
+    const invalidateDrawingMock = jest.fn();
 
     const projectId = '3';
     const propsWithProfile = { ...props, isLoggedIn: true, uploadPackageData: { file: { name: projectId}} };
@@ -96,6 +97,7 @@ describe('ProjectList components', () => {
       updateActiveTabIndex = {updateActiveTabIndexMock}
       hideUploadFailed = {hideUploadFailedMock}
       showModalProgress = {showModalProgressMock}
+      invalidateDrawing = {invalidateDrawingMock}
     />);
 
     beforeEach(() => {

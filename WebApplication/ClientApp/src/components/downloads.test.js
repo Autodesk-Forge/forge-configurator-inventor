@@ -19,6 +19,11 @@
 import React from 'react';
 import Enzyme, { shallow, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
+
+// prepare mock for Repository module
+jest.mock('../Repository');
+import mockedRepo from '../Repository';
+
 import { Downloads, downloadColumns } from './downloads';
 
 Enzyme.configure({ adapter: new Adapter() });
@@ -32,6 +37,11 @@ const props = {
 };
 
 describe('Downloads components', () => {
+
+  beforeEach(() => {
+    mockedRepo.getAccessToken.mockClear();
+  });
+
   it('Resizer reduces size', () => {
     const wrapper = shallow(<Downloads { ...props } />);
     const as = wrapper.find('AutoResizer');
@@ -80,15 +90,26 @@ describe('Downloads components', () => {
     expect(preventDefault).toHaveBeenCalled();
   });
 
-  it('Base table renders expected count of links and icons', () => {
-    const wrapper = mount(<Downloads { ...props } />);
-    const as = wrapper.find('AutoResizer');
-    const bt = as.renderProp('children')( {width: 100, height: 200} );
-    const icons = bt.find('Icon');
-    const hyperlinks = bt.find('a');
-    expect(icons.length).toEqual(3);
-    expect(hyperlinks.length).toEqual(3);
-  });
+  it.each([
+    [ {}, 0], // empty project info => no download links
+    [ { id: 'foo' }, 1], // no URLs => only RFA link if available (extreme case for code coverage)
+    [ props.activeProject, 2 ], // no `isAssembly` field. Assuming - no BOM is available (extreme case for code coverage)
+    [ { ...props.activeProject, isAssembly: false }, 2 ], // no BOM available for parts
+    [ { ...props.activeProject, isAssembly: true }, 3 ] // BOM download is expected
+  ])('Base table renders expected count of links and icons - %0 case',
+    (project, count) => {
+
+      const props = { activeProject: project };
+      const wrapper = mount(<Downloads { ...props } />);
+      const as = wrapper.find('AutoResizer');
+      const bt = as.renderProp('children')( {width: 100, height: 200} );
+
+      const icons = bt.find('Icon');
+      const hyperlinks = bt.find('a');
+
+      expect(icons.length).toEqual(count);
+      expect(hyperlinks.length).toEqual(count);
+    });
 
   it('Base table renders NO links and icons when projects are empty', () => {
     // simulate activeProject (getActiveProject) like we have in these two scenarios:
@@ -104,4 +125,17 @@ describe('Downloads components', () => {
     expect(hyperlinks.length).toEqual(0);
   });
 
+  it('should inject token for download URLs', () => {
+
+    const fakeToken = '1234567890';
+    mockedRepo.getAccessToken.mockReturnValue(fakeToken);
+
+    const wrapper = shallow(<Downloads { ...props } />);
+    const as = wrapper.find('AutoResizer');
+    const bt = as.renderProp('children')( {width: 100, height: 200} );
+    const btdata = bt.prop('data');
+    const iam = btdata[0];
+    const iamlink = shallow(iam.link);
+    expect(iamlink.prop('href').endsWith(fakeToken)).toEqual(true);
+  });
 });

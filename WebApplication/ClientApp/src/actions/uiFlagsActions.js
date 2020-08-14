@@ -42,9 +42,9 @@ export const actionTypes = {
     SHOW_DRAWING_DOWNLOAD_FAILED: 'SHOW_DRAWING_DOWNLOAD_FAILED',
     SHOW_DRAWING_DOWNLOAD_PROGRESS: 'SHOW_DRAWING_DOWNLOAD_PROGRESS',
     SET_DRAWING_DOWNLOAD_LINK: 'SET_DRAWING_DOWNLOAD_LINK',
-    SET_HAS_DRAWING: 'SET_HAS_DRAWING',
     SHOW_DRAWING_PROGRESS: 'SHOW_DRAWING_PROGRESS',
-    SET_DRAWING_URL: 'SET_DRAWING_URL'
+    SET_DRAWING_URL: 'SET_DRAWING_URL',
+    INVALIDATE_DRAWING: 'INVALIDATE_DRAWING'
 };
 
 export default actionTypes;
@@ -215,13 +215,6 @@ export const clearCheckedProjects = () => {
     };
 };
 
-export const setHasDrawing = (hasDrawing) => {
-    return {
-        type: actionTypes.SET_HAS_DRAWING,
-        hasDrawing
-    };
-};
-
 export const showDrawingExportProgress = (visible) => {
     return {
         type: actionTypes.SHOW_DRAWING_PROGRESS,
@@ -233,5 +226,11 @@ export const setDrawingPdfUrl = (url) => {
     return {
         type: actionTypes.SET_DRAWING_URL,
         url
+    };
+};
+
+export const invalidateDrawing = () => {
+    return {
+        type: actionTypes.INVALIDATE_DRAWING
     };
 };

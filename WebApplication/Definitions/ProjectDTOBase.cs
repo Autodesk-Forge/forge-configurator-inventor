@@ -47,5 +47,10 @@ namespace WebApplication.Definitions
         /// Parameters hash
         /// </summary>
         public string Hash { get; set; }
+
+        /// <summary>
+        /// IsAssembly
+        /// </summary>
+        public bool IsAssembly { get; set; }
     }
 }
