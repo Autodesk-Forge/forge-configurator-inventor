@@ -74,4 +74,24 @@ describe('Drawings', () => {
       expect(fetchDrawingMock).toHaveBeenCalledTimes(0);
     });
 
+    it('check fetching of drawing when active project changes and the new has no drawing url', () => {
+      const fetchDrawingMock = jest.fn();
+      const props = {
+        activeProject: { id: "1", isAssembly: true },
+        drawingPdf: 'a link',
+        fetchDrawing: fetchDrawingMock
+      };
+
+      const wrapper = shallow(<Drawing {...props}/>);
+      expect(fetchDrawingMock).toHaveBeenCalledTimes(0); // already had a link, should not fetch
+
+      const updateProps = {
+        activeProject: { id: "2", isAssembly: true },
+        drawingPdf: null,
+        fetchDrawing: fetchDrawingMock
+      };
+      wrapper.setProps(updateProps);
+      expect(fetchDrawingMock).toHaveBeenCalledTimes(1);
+      expect(fetchDrawingMock).toHaveBeenCalledWith(updateProps.activeProject);
+    });
 });

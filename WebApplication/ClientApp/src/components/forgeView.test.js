@@ -30,11 +30,14 @@ const viewerDocumentMock = {
 };
 
 const loadDocumentNodeMock = jest.fn();
+const viewerFinishMock = jest.fn();
+const adskViewingShutdownMock = jest.fn();
 
 class GuiViewer3DMock {
   addEventListener() {}
   loadDocumentNode() { loadDocumentNodeMock(); }
   start() {}
+  finish() { viewerFinishMock(); }
 }
 
 const AutodeskMock = {
@@ -47,7 +50,8 @@ const AutodeskMock = {
       load: (_, onLoadSuccess) => {
         onLoadSuccess(viewerDocumentMock);
       }
-    }
+    },
+    shutdown: adskViewingShutdownMock
   }
 };
 
@@ -56,6 +60,8 @@ describe('components', () => {
 
     beforeEach(() => {
       loadDocumentNodeMock.mockClear();
+      viewerFinishMock.mockClear();
+      adskViewingShutdownMock.mockClear();
     });
 
     it('load gets called when svf provided', () => {
@@ -94,6 +100,24 @@ describe('components', () => {
       script.simulate('load');
 
       expect(loadDocumentNodeMock).toHaveBeenCalledTimes(0);
+    });
+
+    it('unmounts correctly', () => {
+      const baseProps = { activeProject: { svf: 'aaa111' } };
+      const wrapper = shallow(<ForgeView { ...baseProps } />);
+
+      // preparation: must load the viewer first
+      const viewer = wrapper.find('.viewer');
+      expect(viewer).toHaveLength(1);
+      const script = viewer.find('Script');
+      expect(script).toHaveLength(1);
+      window.Autodesk = AutodeskMock;
+      script.simulate('load');
+
+      wrapper.unmount();
+
+      expect(viewerFinishMock).toHaveBeenCalled();
+      expect(adskViewingShutdownMock).toHaveBeenCalled();
     });
   });
 });
