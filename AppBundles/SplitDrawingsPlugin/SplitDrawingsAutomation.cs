@@ -75,13 +75,14 @@ namespace SplitDrawingsPlugin
 
             var modelFileName = System.IO.Path.Combine(dir, "model.zip");
             var drawingFileName = System.IO.Path.Combine(dir, "drawing.zip");
+            var zipRoot = rootDir + System.IO.Path.PathSeparator;
 
             using (var modelFS = new FileStream(modelFileName, FileMode.Create))
             using (var zip = new ZipArchive(modelFS, ZipArchiveMode.Create, true))
             {
                 foreach (var filePath in allExceptDrawingFiles)
                 {
-                    var pathInArchive = filePath.Substring(rootDir.Length+1);
+                    var pathInArchive = filePath.Substring(zipRoot.Length);
                     ZipArchiveEntry newEntry = zip.CreateEntry(pathInArchive);
                     using (var entryStream = newEntry.Open())
                     using (var fileStream = new FileStream(filePath, FileMode.Open))
@@ -100,7 +101,7 @@ namespace SplitDrawingsPlugin
             {
                 foreach (var filePath in drawings)
                 {
-                    var pathInArchive = filePath.Substring(rootDir.Length+1);
+                    var pathInArchive = filePath.Substring(zipRoot.Length);
                     ZipArchiveEntry newEntry = zip.CreateEntry(pathInArchive);
                     using (var entryStream = newEntry.Open())
                     using (var fileStream = new FileStream(filePath, FileMode.Open))

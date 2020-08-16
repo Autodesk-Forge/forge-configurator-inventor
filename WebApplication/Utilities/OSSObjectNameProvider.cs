@@ -175,7 +175,7 @@ namespace WebApplication.Utilities
         /// </summary>
         public string Bom => ToFullName(LocalName.BOM);
 
-        public string Drawing => ToFullName("Drawing.zip");
+        public string Drawing => ToFullName("drawing.zip");
 
         public string DrawingViewables => ToFullName(LocalName.DrawingViewables);
     }

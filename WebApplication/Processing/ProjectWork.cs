@@ -252,7 +252,9 @@ namespace WebApplication.Processing
 
             // OK, nothing in cache - generate it now
             var inputDocUrl = await bucket.CreateSignedUrlAsync(ossNameProvider.GetCurrentModel(storage.IsAssembly));
-            ProcessingArgs drawingData = await _arranger.ForDrawingAsync(inputDocUrl);
+            string inputDrawingUrl = await bucket.TryToCreateSignedUrlForReadAsync(project.OSSSourceDrawings);
+
+            ProcessingArgs drawingData = await _arranger.ForDrawingAsync(inputDocUrl, inputDrawingUrl, storage.Metadata.TLA);
             ProcessingResult result = await _fdaClient.GenerateDrawing(drawingData);
             if (!result.Success)
             {

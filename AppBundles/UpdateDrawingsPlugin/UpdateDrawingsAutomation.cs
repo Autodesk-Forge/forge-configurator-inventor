@@ -19,8 +19,14 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.IO.Compression;
 
 using Inventor;
+using Autodesk.Forge.DesignAutomation.Inventor.Utils;
+using System.Linq;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace UpdateDrawingsPlugin
 {
@@ -50,7 +56,78 @@ namespace UpdateDrawingsPlugin
 
         public void RunWithArguments(Document doc, NameValueMap map)
         {
-            LogError("RunWithArguments is not functional");
+            using (new HeartBeat())
+            {
+                var rootDir = System.IO.Directory.GetCurrentDirectory();
+                if (doc == null)
+                {
+                    ActivateDefaultProject(rootDir);
+                    //doc = inventorApplication.Documents.Open(map.Item["_1"]);
+                }
+
+                var drawingExtensions = new List<string> { ".idw", ".dwg" };
+                var oldVersion = @"OldVersions\";
+                string[] drawings = System.IO.Directory.GetFiles(rootDir, "*.*", System.IO.SearchOption.AllDirectories)
+                                    .Where(file => drawingExtensions.IndexOf(System.IO.Path.GetExtension(file)) >= 0 &&
+                                    !file.Contains(oldVersion)).ToArray();
+
+                foreach (var filePath in drawings)
+                {
+                    LogTrace($"Updating drawing {filePath}");
+                    var drawingDocument = inventorApplication.Documents.Open(filePath);
+                    LogTrace("Drawing opened");
+                    drawingDocument.Update2(true);
+                    LogTrace("Drawing updated");
+                    drawingDocument.Save2(true);
+                    LogTrace("Drawing saved");
+                }
+
+                // zip updated drawings
+                var drawingFileName = System.IO.Path.Combine(rootDir, "drawing.zip");
+                var zipRoot = System.IO.Path.Combine(rootDir, "unzippedDrawing") + System.IO.Path.PathSeparator;
+
+                using (var drawingFS = new FileStream(drawingFileName, FileMode.Create))
+                using (var zip = new ZipArchive(drawingFS, ZipArchiveMode.Create, true))
+                {
+                    foreach (var filePath in drawings)
+                    {
+                        var pathInArchive = filePath.Substring(zipRoot.Length);
+                        ZipArchiveEntry newEntry = zip.CreateEntry(pathInArchive);
+                        using (var entryStream = newEntry.Open())
+                        using (var fileStream = new FileStream(filePath, FileMode.Open))
+                        using (var fileMS = new MemoryStream())
+                        using (var writer = new BinaryWriter(entryStream, Encoding.UTF8))
+                        {
+                            fileStream.CopyTo(fileMS);
+                            writer.Write(fileMS.ToArray());
+                        }
+                    }
+                }
+                LogTrace($"Created drawing.zip, {drawings.Length} item(s).");
+            }
+        }
+
+        private void ActivateDefaultProject(string dir)
+        {
+            var defaultProjectName = "FDADefault";
+
+            var projectFullFileName = System.IO.Path.Combine(dir, defaultProjectName + ".ipj");
+
+            DesignProject project = null;
+            if (System.IO.File.Exists(projectFullFileName))
+            {
+                project = inventorApplication.DesignProjectManager.DesignProjects.AddExisting(projectFullFileName);
+                Trace.TraceInformation("Adding existing default project file: {0}", projectFullFileName);
+
+            }
+            else
+            {
+                project = inventorApplication.DesignProjectManager.DesignProjects.Add(MultiUserModeEnum.kSingleUserMode, defaultProjectName, dir);
+                Trace.TraceInformation("Creating default project file with name: {0} at {1}", defaultProjectName, dir);
+            }
+
+            Trace.TraceInformation("Activating default project {0}", project.FullFileName);
+            project.Activate(true);
         }
 
         #region Logging utilities

@@ -32,6 +32,7 @@ namespace WebApplication.Definitions
         public string CreateBOM { get; set; }
         public string ExportDrawing { get; set; }
         public string SplitDrawings { get; set; }
+        public string UpdateDrawings { get; set; }
     }
 
     public class DefaultProjectsConfiguration
