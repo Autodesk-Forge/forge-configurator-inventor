@@ -17,9 +17,13 @@
 /////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
 using System.Runtime.InteropServices;
-
+using System.Text;
 using Inventor;
 
 namespace SplitDrawingsPlugin
@@ -36,21 +40,79 @@ namespace SplitDrawingsPlugin
 
         public void Run(Document doc)
         {
-            LogTrace("Processing " + doc.FullFileName);
-
-            try
-            {
-            }
-            catch (Exception e)
-            {
-                LogError("Processing failed. " + e.ToString());
-            }
-
+            LogError("Run is not functional");
         }
 
         public void RunWithArguments(Document doc, NameValueMap map)
         {
-            LogError("RunWithArguments is not functional");
+            var dir = System.IO.Directory.GetCurrentDirectory();
+            var key = map.Item["_1"];
+
+            string rootDir = System.IO.Path.Combine(dir, key);
+
+            LogTrace("Processing directory: " + rootDir);
+
+            // search if there is some drawings
+            var drawingExtensions = new List<string> { ".idw", ".dwg" };
+            var skipExtensions = new List<string> { ".idw", ".dwg", ".lck", ".zip" };
+            string[] drawings = System.IO.Directory.GetFiles(rootDir, "*.*", System.IO.SearchOption.AllDirectories)
+                                .Where(file => drawingExtensions.IndexOf(System.IO.Path.GetExtension(file)) >= 0).ToArray();
+            string[] allExceptDrawingFiles = System.IO.Directory.GetFiles(rootDir, "*.*", System.IO.SearchOption.AllDirectories)
+                                .Where(file => skipExtensions.IndexOf(System.IO.Path.GetExtension(file)) == -1).ToArray();
+
+            if (drawings.Length == 0)
+            {
+                LogTrace("No drawings found.");
+                return;
+            }
+
+            LogTrace("drawings:");
+            foreach (var dr in drawings)
+                LogTrace(dr);
+            LogTrace("files:");
+            foreach (var f in allExceptDrawingFiles)
+                LogTrace(f);
+
+            var modelFileName = System.IO.Path.Combine(dir, "model.zip");
+            var drawingFileName = System.IO.Path.Combine(dir, "drawing.zip");
+
+            using (var modelFS = new FileStream(modelFileName, FileMode.Create))
+            using (var zip = new ZipArchive(modelFS, ZipArchiveMode.Create, true))
+            {
+                foreach (var filePath in allExceptDrawingFiles)
+                {
+                    var pathInArchive = filePath.Substring(rootDir.Length+1);
+                    ZipArchiveEntry newEntry = zip.CreateEntry(pathInArchive);
+                    using (var entryStream = newEntry.Open())
+                    using (var fileStream = new FileStream(filePath, FileMode.Open))
+                    using (var fileMS = new MemoryStream())
+                    using (var writer = new BinaryWriter(entryStream, Encoding.UTF8))
+                    {
+                        fileStream.CopyTo(fileMS);
+                        writer.Write(fileMS.ToArray());
+                    }
+                }
+            }
+            LogTrace($"Created model.zip, {allExceptDrawingFiles.Length} item(s).");
+
+            using (var drawingFS = new FileStream(drawingFileName, FileMode.Create))
+            using (var zip = new ZipArchive(drawingFS, ZipArchiveMode.Create, true))
+            {
+                foreach (var filePath in drawings)
+                {
+                    var pathInArchive = filePath.Substring(rootDir.Length+1);
+                    ZipArchiveEntry newEntry = zip.CreateEntry(pathInArchive);
+                    using (var entryStream = newEntry.Open())
+                    using (var fileStream = new FileStream(filePath, FileMode.Open))
+                    using (var fileMS = new MemoryStream())
+                    using (var writer = new BinaryWriter(entryStream, Encoding.UTF8))
+                    {
+                        fileStream.CopyTo(fileMS);
+                        writer.Write(fileMS.ToArray());
+                    }
+                }
+            }
+            LogTrace($"Created drawing.zip, {drawings.Length} item(s).");
         }
 
         #region Logging utilities

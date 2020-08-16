@@ -130,6 +130,7 @@ namespace WebApplication.Controllers
             foreach (var projectName in projectNameList)
             {
                 tasks.Add(bucket.DeleteObjectAsync(Project.ExactOssName(projectName)));
+                tasks.Add(bucket.DeleteObjectAsync(Project.ExactOssName(projectName, "Drawings")));
 
                 foreach (var searchMask in ONC.ProjectFileMasks(projectName))
                 {

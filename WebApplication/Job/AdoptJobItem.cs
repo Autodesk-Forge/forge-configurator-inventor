@@ -52,8 +52,10 @@ namespace WebApplication.Job
             var bucket = await _userResolver.GetBucketAsync(true);
             ProjectStorage projectStorage = await _userResolver.GetProjectStorageAsync(_projectInfo.Name);
 
-            string ossSourceModel = projectStorage.Project.OSSSourceModel;
-            await bucket.SmartUploadAsync(_fileName, ossSourceModel);
+            bool isAssembly = !string.IsNullOrEmpty(_projectInfo.TopLevelAssembly);
+            string uploadTo = await ProjectWork.GetUploadToAsync(isAssembly, _projectInfo.Name);
+
+            await bucket.SmartUploadAsync(_fileName, uploadTo);
 
             // cleanup before adoption
             File.Delete(_fileName);
@@ -62,8 +64,20 @@ namespace WebApplication.Job
             bool adopted = false;
             try
             {
-                string signedUrl = await bucket.CreateSignedUrlAsync(ossSourceModel);
-                await ProjectWork.AdoptAsync(_projectInfo, signedUrl);
+                string signedUploadedUrl = await bucket.CreateSignedUrlAsync(uploadTo);
+                string adoptFromSignedUrl = "";
+                if (isAssembly)
+                {
+                    string splittedModelSignedUrl = await ProjectWork.SplitAsync(_projectInfo, signedUploadedUrl);
+                    // use splitted upload url
+                    adoptFromSignedUrl = splittedModelSignedUrl;
+                } else
+                {   
+                    // use original upload url
+                    adoptFromSignedUrl = signedUploadedUrl;
+                }
+                
+                await ProjectWork.AdoptAsync(_projectInfo, adoptFromSignedUrl);
 
                 adopted = true;
             }
@@ -77,8 +91,8 @@ namespace WebApplication.Job
                 // on any failure during adoption we consider that project adoption failed and it's not usable
                 if (!adopted)
                 {
-                    Logger.LogInformation($"Adoption failed. Removing '{ossSourceModel}' OSS object.");
-                    await bucket.DeleteObjectAsync(ossSourceModel);
+                    Logger.LogInformation($"Adoption failed. Removing '{uploadTo}' OSS object.");
+                    await bucket.DeleteObjectAsync(uploadTo);
                 }
             }
 

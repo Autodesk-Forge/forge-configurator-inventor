@@ -30,23 +30,25 @@ export class Drawing extends Component {
 
   componentDidMount() {
     const isAssembly = this.props.activeProject?.isAssembly;
-    if (isAssembly === true && this.props.drawingPdf === null)
+    const hasDrawing = this.props.activeProject?.hasDrawing;
+    if (isAssembly === true && hasDrawing === true && this.props.drawingPdf === null)
       this.props.fetchDrawing(this.props.activeProject);
   }
 
   componentDidUpdate(prevProps) {
     // refresh bom data when Drawing tab was clicked before projects initialized
     const isAssembly = this.props.activeProject?.isAssembly;
-    if (isAssembly === true && this.props.activeProject !== prevProps.activeProject) {
+    const hasDrawing = this.props.activeProject?.hasDrawing;
+    if (isAssembly === true && hasDrawing === true && this.props.activeProject !== prevProps.activeProject) {
           if (this.props.drawingPdf === null)
             this.props.fetchDrawing(this.props.activeProject);
       }
   }
 
   render() {
-    const initialized = this.props.drawingPdf !== null;
+    const initialized = !this.props.activeProject?.hasDrawing || this.props.drawingPdf !== null;
     const isAssembly = this.props.activeProject?.isAssembly;
-    const hasDrawing = this.props.drawingPdf?.length > 0 && isAssembly === true;
+    const hasDrawing = this.props.activeProject?.hasDrawing;/* && this.props.drawingPdf?.length > 0 && isAssembly === true;*/
     const empty = (initialized && !hasDrawing) || isAssembly === false;
     const containerClass = empty ? "drawingContainer empty" : "drawingContainer";
 

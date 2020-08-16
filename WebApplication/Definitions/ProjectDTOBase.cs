@@ -52,5 +52,10 @@ namespace WebApplication.Definitions
         /// IsAssembly
         /// </summary>
         public bool IsAssembly { get; set; }
+        
+        /// <summary>
+        /// HasDrawing
+        /// </summary>
+        public bool HasDrawing { get; set; }
     }
 }

@@ -16,6 +16,7 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
+using Autodesk.Forge.DesignAutomation.Model;
 using System.Collections.Generic;
 using WebApplication.Definitions;
 
@@ -35,13 +36,63 @@ namespace WebApplication.Processing
         protected override bool IsOutputOptional => true;
 
         /// <summary>
+        /// Parameter name for input drawing.
+        /// </summary>
+        public const string InputDrawingParameterName = "InventorDrawing";
+
+        protected const string FolderToBeZippedDrawingName = "unzippedDrawing";
+
+        protected override void AddInputArgs(IDictionary<string, IArgument> args, ProcessingArgs data)
+        {
+            if (data.IsAssembly)
+            {
+                args.Add(InputDocParameterName, new XrefTreeArgument { PathInZip = data.TLA, LocalName = FolderToBeZippedName, Url = data.InputDocUrl });
+                if (data.InputDrawingUrl != null)
+                {
+                    args.Add(InputDrawingParameterName, new XrefTreeArgument { PathInZip = "someValue" /* ??? */, LocalName = FolderToBeZippedDrawingName, Url = data.InputDrawingUrl, Optional = true });
+                }
+            }
+        }
+
+        /// <summary>
         /// Command line for activity.
         /// </summary>
         public override List<string> ActivityCommandLine =>
             new List<string>
             {
-                $"$(engine.path)\\InventorCoreConsole.exe /al $(appbundles[{ActivityId}].path) \"$(args[{InputDocParameterName}].path)\""
+                $"$(engine.path)\\InventorCoreConsole.exe /al $(appbundles[{ActivityId}].path) \"$(args[{InputDocParameterName}].path)\" \"$(args[{InputDrawingParameterName}].path)\""
             };
+
+        public override Dictionary<string, Parameter> GetActivityParams()
+        {
+            var activityParams = new Dictionary<string, Parameter>
+            {
+                {
+                    InputDocParameterName,
+                    new Parameter
+                    {
+                        Verb = Verb.Get,
+                        Description = "IPT or IAM (in ZIP) file to process"
+                    }
+                },
+                {
+                    InputDrawingParameterName,
+                    new Parameter
+                    {
+                        Verb = Verb.Get,
+                        Description = "Drawings (in ZIP) file to process"
+                    }
+                }
+            };
+
+            if (HasOutput)
+            {
+                activityParams.Add(OutputParameterName,
+                    new Parameter { Verb = Verb.Put, LocalName = OutputName, Zip = IsOutputZip });
+            }
+
+            return activityParams;
+        }
 
         /// <summary>
         /// Constructor.
