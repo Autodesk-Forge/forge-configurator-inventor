@@ -154,7 +154,7 @@ export class Downloads extends Component {
             }
         }
 
-        const hasDrawingUrl = true; // connect to some property if has drawing or not
+        const hasDrawingUrl = project.hasDrawing;
         if (hasDrawingUrl) {
             const drawingJsx = <a href="" onClick={(e) => { e.preventDefault(); }}>Drawing</a>;
             data.push(

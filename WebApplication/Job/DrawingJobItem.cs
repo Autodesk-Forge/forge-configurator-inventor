@@ -46,9 +46,9 @@ namespace WebApplication.Job
 
             // TODO: this url can be generated right away... we can simply acknowledge that OSS file is ready,
             // without generating URL here
-            string drawingUrl = _linkGenerator.GetPathByAction(controller: "Download",
-                                                            action: "DRAWING",
-                                                            values: new {projectName = ProjectId, hash = _hash});
+            var drawingUrl = _linkGenerator.GetPathByAction(controller: "Download",
+                                                            action: "Drawings",
+                                                            values: new { projectName = ProjectId, fileName = "drawing.zip", hash = _hash });
 
             // send resulting URL to the client
             await resultSender.SendSuccessAsync(drawingUrl);
