@@ -20,6 +20,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
+// TODO: This endpoint might not be needed once we solve the proper
+// application shutdown, where we would eventually make the clean up
+// That is potential tech depth work
+
 namespace WebApplication.Controllers
 {
     [Route("[controller]")]
