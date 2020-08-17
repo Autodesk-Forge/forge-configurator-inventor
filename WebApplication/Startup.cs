@@ -16,8 +16,6 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Diagnostics;
 using System.Net.Http;
 using Autodesk.Forge.Core;
 using Autodesk.Forge.DesignAutomation;
