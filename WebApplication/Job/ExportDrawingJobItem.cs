@@ -42,12 +42,22 @@ namespace WebApplication.Job
 
             Logger.LogInformation($"ProcessJob (ExportDrawing) {Id} for project {ProjectId} started.");
 
-            //await ProjectWork.ExportDrawingAsync(ProjectId, _hash);
-            Thread.Sleep(1000);
+            bool generated = await ProjectWork.ExportDrawingViewablesAsync(ProjectId, _hash);
 
             Logger.LogInformation($"ProcessJob (ExportDrawing) {Id} for project {ProjectId} completed.");
 
-            await resultSender.SendSuccessAsync("./SampleDrawingPdf.pdf");
+            string url = "";
+            if (generated)
+            {
+                url = _linkGenerator.GetPathByAction(controller: "Download",
+                                                                action: "DrawingViewables",
+                                                                values: new { projectName = ProjectId, fileName = "drawing.pdf", hash = _hash });
+
+                // when local url starts with slash, it does not work, because it is doubled in url
+                url = url.IndexOf("/") == 0 ? url.Substring(1) : url;
+            }
+
+            await resultSender.SendSuccessAsync(url);
         }
     }
 }

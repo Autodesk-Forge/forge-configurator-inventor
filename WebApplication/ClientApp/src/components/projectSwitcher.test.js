@@ -60,10 +60,12 @@ describe('components', () => {
       const updateActiveProject = jest.fn();
       const updateActiveTabIndex = jest.fn();
       const fetchParameters = jest.fn();
+      const invalidateDrawing = jest.fn();
       const props = {
         updateActiveProject,
         updateActiveTabIndex,
         fetchParameters,
+        invalidateDrawing,
         addLog: () => {},
         ... baseProps
       };
@@ -84,11 +86,13 @@ describe('components', () => {
       const updateActiveTabIndex = jest.fn();
       const fetchProjects = jest.fn();
       const fetchParameters = jest.fn();
+      const invalidateDrawing = jest.fn();
       const props = {
         updateActiveProject,
         updateActiveTabIndex,
         fetchProjects,
         fetchParameters,
+        invalidateDrawing,
         addLog: () => {},
         ... baseProps
       };

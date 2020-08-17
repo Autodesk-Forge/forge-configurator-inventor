@@ -18,7 +18,7 @@
 
 import { addError, addLog } from './notificationActions';
 import { Jobs } from '../JobManager';
-import { showRFAModalProgress, showRfaFailed, setRFALink, setReportUrlLink, setHasDrawing } from './uiFlagsActions';
+import { showRFAModalProgress, showRfaFailed, setRFALink, setReportUrlLink } from './uiFlagsActions';
 import { showDrawingExportProgress, setDrawingPdfUrl } from './uiFlagsActions';
 
 export const getRFADownloadLink = (projectId, temporaryUrl) => async (dispatch) => {
@@ -83,8 +83,6 @@ export const fetchDrawing = (project) => async (dispatch) => {
                 dispatch(setDrawingPdfUrl(drawingPdfUrl));
                 // hide progress modal dialog
                 dispatch(showDrawingExportProgress(false));
-                // cache that we already check if has drawing
-                dispatch(setHasDrawing(drawingPdfUrl != null));
             },
             // onError
             (jobId, reportUrl) => {

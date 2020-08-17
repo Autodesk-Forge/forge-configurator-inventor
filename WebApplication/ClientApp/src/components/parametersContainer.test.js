@@ -98,10 +98,12 @@ describe('parameters container', () => {
 
     it('verify update button connected', () => {
         const fnMock = jest.fn();
+        const invalidateDrawingMock = jest.fn();
         const props = {
             activeProject: { id: projectId },
             fetchParameters: () => {},
             updateModelWithParameters: fnMock,
+            invalidateDrawing: invalidateDrawingMock,
             projectUpdateParameters: null
         };
 

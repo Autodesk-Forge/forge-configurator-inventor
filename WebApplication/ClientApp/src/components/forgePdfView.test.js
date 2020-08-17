@@ -25,11 +25,14 @@ Enzyme.configure({ adapter: new Adapter() });
 
 const loadModelMock = jest.fn();
 const loadExtensionMock = jest.fn();
+const viewerFinishMock = jest.fn();
+const adskViewingShutdownMock = jest.fn();
 
 class GuiViewer3DMock {
   loadExtension(extId) { loadExtensionMock(extId); }
   loadModel(model) { loadModelMock(model); }
   start() {}
+  finish() { viewerFinishMock(); }
 }
 
 const AutodeskMock = {
@@ -37,7 +40,8 @@ const AutodeskMock = {
     GuiViewer3D: GuiViewer3DMock,
     Initializer: (_, handleViewerInit) => {
       handleViewerInit();
-    }
+    },
+    shutdown: adskViewingShutdownMock
   }
 };
 
@@ -48,6 +52,9 @@ describe('components', () => {
 
     beforeEach(() => {
         loadModelMock.mockClear();
+        loadExtensionMock.mockClear();
+        viewerFinishMock.mockClear();
+        adskViewingShutdownMock.mockClear();
     });
 
     it('load gets called when pdf provided', () => {
@@ -85,6 +92,23 @@ describe('components', () => {
       script.simulate('load');
 
       expect(loadModelMock).toHaveBeenCalledTimes(0);
+    });
+
+    it('unmounts correctly', () => {
+        const wrapper = shallow(<ForgePdfView { ...baseProps } />);
+
+      // preparation: must load the viewer first
+         const viewer = wrapper.find('.viewer');
+        expect(viewer).toHaveLength(1);
+        const script = viewer.find('Script');
+        expect(script).toHaveLength(1);
+        window.Autodesk = AutodeskMock;
+        script.simulate('load');
+
+        wrapper.unmount();
+
+        expect(viewerFinishMock).toHaveBeenCalled();
+        expect(adskViewingShutdownMock).toHaveBeenCalled();
     });
   });
 });
