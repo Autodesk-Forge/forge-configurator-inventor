@@ -24,7 +24,7 @@ phases:
       - npm test -- --coverage
       - echo "**** Starting the server ****"
       - cd ..
-      - Start-Process -NoNewWindow dotnet -ArgumentList "run", "clear=true", "initialize=true"
+      - Start-Process -NoNewWindow dotnet -ArgumentList "run", "clear=true", "initialize=true", "allowCleanSelf=true"
       - echo "Waiting for server to initialize"
       - ..\AWS-CICD\build-specs\waitForServer.ps1
       - echo "**** running the UI tests ****"
