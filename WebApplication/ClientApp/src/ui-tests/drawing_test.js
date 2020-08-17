@@ -28,7 +28,7 @@ Feature('Drawing Validation');
 // this test checks that Drawing tab displays correct data
 // if an assembly has a drawing then the drawing should be displayed
 // If there is no drawing or only IPT - no content is displayed
-Scenario('should check that Assembly has any drawing and display it', async (I) => {
+Scenario('should check that Drawing tab shows drawing for an Assembly', async (I) => {
 
     // select project in the Project Switcher
     I.selectProject('Wheel');
@@ -39,6 +39,21 @@ Scenario('should check that Assembly has any drawing and display it', async (I) 
 
     // wait for drawing to be displayed
     I.waitForVisible('//div[@id="ForgePdfViewer"] //div[@class="viewcubeWrapper"]', 30);
+
+});
+
+Scenario('should check that Drawing tab shows drawing for an Assembly', async (I) => {
+
+    // select project in the Project Switcher
+    I.selectProject('Wrench');
+
+    // click on drawing tab
+    I.waitForVisible('//div[@id="ForgeViewer"] //div[@class="viewcube"]', 30);
+    I.click(locators.drawingTab);
+
+    // wait for no drawing page to be displayed
+    I.waitForVisible('.drawingEmptyText', 20);
+    I.see("You don't have any drawings in package.", '.drawingEmptyText');
 
 });
 
@@ -55,7 +70,7 @@ Scenario('should check that IPT do not display any data', async (I) => {
     I.waitForVisible('//div[@id="ForgeViewer"] //div[@class="viewcube"]', 30);
     I.click(locators.drawingTab);
 
-    // wait for drawing to be displayed
+    // wait for no drawing page to be displayed
     I.waitForVisible('.drawingEmptyText', 20);
     I.see("You don't have any drawings in package.", '.drawingEmptyText');
 
