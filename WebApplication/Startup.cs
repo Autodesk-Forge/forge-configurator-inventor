@@ -45,8 +45,6 @@ namespace WebApplication
         private const string DefaultProjectsSectionKey = "DefaultProjects";
         private const string InviteOnlyModeKey = "InviteOnlyMode";
         private const string ProcessingOptionsKey = "Processing";
-        private ILogger<Startup> _logger;
-        private Initializer _initializer;
 
         public Startup(IConfiguration configuration)
         {
@@ -112,11 +110,8 @@ namespace WebApplication
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Initializer initializer, ILogger<Startup> logger, LocalCache localCache, IOptions<ForgeConfiguration> forgeConfiguration, IHostApplicationLifetime lifetime)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Initializer initializer, ILogger<Startup> logger, LocalCache localCache, IOptions<ForgeConfiguration> forgeConfiguration)
         {
-            _logger = logger;
-            _initializer = initializer;
-
             if(Configuration.GetValue<bool>("clear"))
             {
                 logger.LogInformation("-- Clean up --");
@@ -178,14 +173,6 @@ namespace WebApplication
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
-
-            lifetime.ApplicationStopping.Register(OnShutdown);
-        }
-        protected void OnShutdown()
-        {
-            _logger.LogInformation("Application is shutting down. Deleting the testing data.");
-            _initializer.ClearAsync(true).Wait();
-            _logger.LogInformation("Testing data deleted.");
         }
     }
 }
