@@ -21,7 +21,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 
-import { stopReportingRuntimeErrors } from "react-error-overlay";
+// this does not work in the production build. See INVGEN-44561
+// import { stopReportingRuntimeErrors } from "react-error-overlay";
 
 import {Provider} from 'react-redux';
 import {createStore, applyMiddleware} from 'redux';
@@ -34,8 +35,8 @@ import "@hig/fonts/build/ArtifaktElement.css";
 const createStoreWithMiddleware = applyMiddleware(thunk)(createStore);
 const store = createStoreWithMiddleware(mainReducer);
 
-
-    stopReportingRuntimeErrors(); // disables error overlays
+// this does not work in the production build. See INVGEN-44561
+//    stopReportingRuntimeErrors(); // disables error overlays
 
 
 // based on https://github.com/reduxjs/redux/issues/303#issuecomment-125184409
