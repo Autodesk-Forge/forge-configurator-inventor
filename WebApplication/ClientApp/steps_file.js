@@ -221,6 +221,15 @@ module.exports = function() {
       this.waitForVisible(paramsInputWithName, 10);
       this.clearField(paramsInputWithName);
       this.fillField(paramsInputWithName, paramValue);
+    },
+    waitForForgeViewerToPreventItFromCrashing(timeout)
+    {
+      this.waitForElement('//div[@id="ForgeViewer"] //div[@class="viewcube"]', timeout);
+    },
+    goToDrawingTab()
+    {
+      this.waitForElement(locators.drawingTab, 5);
+      this.click(locators.drawingTab);
     }
   });
 };

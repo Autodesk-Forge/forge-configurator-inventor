@@ -217,6 +217,7 @@ namespace WebApplication.Processing
                 throw new FdaProcessingException($"{result.ErrorMessage} for project {project.Name} and hash {hash}", result.ReportUrl);
             }
 
+            // move to the right place
             await _arranger.MoveDrawingViewablesAsync(project, hash);
 
             // check if Drawing viewables file is generated
