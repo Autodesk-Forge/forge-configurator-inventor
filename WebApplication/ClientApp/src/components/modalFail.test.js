@@ -34,8 +34,10 @@ describe('modal update failed ', () => {
         const wrapperComponent = wrapper.find('.modalFailContent');
         const children = wrapperComponent.prop('children');
 
-        expect(children).toHaveLength(2);
+        expect(children).toHaveLength(3);
         expect(children[0].props.children.props.children[2]).toBe(props.label);
+        expect(children[1]).toBeUndefined(); // href to report
+        expect(children[2]).toBeUndefined(); // error message
     });
 
     it('should show message that props.label is missing', () => {
@@ -45,8 +47,10 @@ describe('modal update failed ', () => {
         const wrapperComponent = wrapper.find('.modalFailContent');
         const children = wrapperComponent.prop('children');
 
-        expect(children).toHaveLength(2);
+        expect(children).toHaveLength(3);
         expect(children[0].props.children.props.children[2]).toBe("Missing label.");
+        expect(children[1]).toBeUndefined(); // href to report
+        expect(children[2]).toBeUndefined(); // error message
     });
 
     it('should close when Ok button clicked', () => {
@@ -61,14 +65,16 @@ describe('modal update failed ', () => {
         expect(closeMockFn).toHaveBeenCalledTimes(1);
     });
 
-    it('should link to the reportUrl in the props', () => {
-        const props = { url: 'http://example.com' };
+    it.each([
+        'http://example.com',
+        'https://example.com'
+    ])('should link to the reportUrl in the props (%s)', (url) => {
+        const props = { url };
 
         const wrapper = shallow(<ModalFail {...props} />);
         const wrapperComponent = wrapper.find('.logContainer');
         const children = wrapperComponent.prop('children');
 
-        expect(children.props.link).toBe('Open log file');
-        expect(children.props.href).toBe(props.url);
+        expect(children.props).toMatchObject({ link: 'Open log file', href: url });
     });
 });

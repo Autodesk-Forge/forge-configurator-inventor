@@ -42,6 +42,13 @@ export class ModalFail extends Component {
                     }
                 }
             });
+
+        // TECHDEBT: originally the dialog expected report URL only, but in some _rare_ situations
+        // backend can send a message to show. Someday it should be rewritten, so backend passes
+        // error type as well. Now use a hack to detect error "type".
+        const reportUrlOrMessage = this.props.url;
+        const isUrl = reportUrlOrMessage?.startsWith("http");
+
         return (
             <Modal
                 open={this.props.open}
@@ -74,9 +81,17 @@ export class ModalFail extends Component {
                     <div>
                         <Typography><span className="assemblyText">{this.props.contentName}</span> {this.props.label ? this.props.label : "Missing label."}</Typography>
                     </div>
-                    {this.props.url &&
+                    {reportUrlOrMessage && isUrl &&
                         <div className="logContainer">
-                            <HyperLink link="Open log file" href={this.props.url} />
+                            <HyperLink link="Open log file" href={ reportUrlOrMessage } />
+                        </div>
+                    }
+                    {reportUrlOrMessage && ! isUrl &&
+                        <div>
+                            <Typography style={{ paddingTop: "7px", overflowY: "auto", "height": "90px" }}>
+                                Internal error. Try to repeat your last action and please report the following message: <br/>
+                                { reportUrlOrMessage }
+                            </Typography>
                         </div>
                     }
                 </div>
