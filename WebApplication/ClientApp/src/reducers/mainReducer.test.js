@@ -16,9 +16,9 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-import {parametersEditedMessageVisible} from './mainReducer';
-import * as uiFlagsTestStates from './uiFlagsTestStates';
-import * as uiFlags from './uiFlagsReducer';
+import * as reducer from './mainReducer';
+import { fullState as uiFlagsTestState } from './uiFlagsTestStates';
+import * as uiFlagsReducer from './uiFlagsReducer';
 
 const projectId = "1";
 
@@ -62,38 +62,87 @@ const projectList = {
 describe('main reducer', () => {
    it('Notification strip will not be shown if parameters are not changed', () => {
       const state = {
-         uiFlags: uiFlags.initialState,
+         uiFlags: uiFlagsReducer.initialState,
          projectList: projectList,
          parameters: originalParameters,
          updateParameters: originalParameters
       };
-      expect(parametersEditedMessageVisible(state)).toEqual(false);
-   },
+      expect(reducer.parametersEditedMessageVisible(state)).toEqual(false);
+   }),
    it('Will show parameters changed notification string when paramters are changed', () => {
       const state = {
-         uiFlags: uiFlags.initialState,
+         uiFlags: uiFlagsReducer.initialState,
          projectList: projectList,
          parameters: originalParameters,
          updateParameters: editedParameters
       };
-      expect(parametersEditedMessageVisible(state)).toEqual(true);
-   }),
-   it('Will not show changed parameters because user closed them', () => {
-      const state = {
-         uiFlags: uiFlagsTestStates.stateParametersEditedMessageClosed,
-         projectList: projectList,
-         parameters: originalParameters,
-         updateParameters: editedParameters
-      };
-      expect(parametersEditedMessageVisible(state)).toEqual(false);
-   }),
-   it('Will not show changed parameters because user closed them permanently', () => {
-      const state = {
-         uiFlags: uiFlagsTestStates.stateParametersEditedMessageRejected,
-         projectList: projectList,
-         parameters: originalParameters,
-         updateParameters: editedParameters
-      };
-      expect(parametersEditedMessageVisible(state)).toEqual(false);
-   }));
+      expect(reducer.parametersEditedMessageVisible(state)).toEqual(true);
+   });
+
+   describe('UI Flags getters', () => {
+      it('gets modalProgressShowing', () => {
+         expect(reducer.modalProgressShowing(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.modalProgressShowing);
+      }),
+      it('gets updateFailedShowing', () => {
+         expect(reducer.updateFailedShowing(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.updateFailedShowing);
+      }),
+      it('gets loginFailedShowing', () => {
+         expect(reducer.loginFailedShowing(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.loginFailedShowing);
+      }),
+      it('gets downloadRfaFailedShowing', () => {
+         expect(reducer.downloadRfaFailedShowing(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.downloadRfaFailedShowing);
+      }),
+      it('gets downloadDrawingFailedShowing', () => {
+         expect(reducer.downloadDrawingFailedShowing(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.downloadDrawingFailedShowing);
+      }),
+      it('gets reportUrl', () => {
+         expect(reducer.reportUrl(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.reportUrl);
+      }),
+      it('gets rfaProgressShowing', () => {
+         expect(reducer.rfaProgressShowing(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.rfaProgressShowing);
+      }),
+      it('gets drawingDownloadProgressShowing', () => {
+         expect(reducer.drawingDownloadProgressShowing(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.drawingDownloadProgressShowing);
+      }),
+      it('gets rfaDownloadUrl', () => {
+         expect(reducer.rfaDownloadUrl(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.rfaDownloadUrl);
+      }),
+      it('gets drawingDownloadUrl', () => {
+         expect(reducer.drawingDownloadUrl(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.drawingDownloadUrl);
+      }),
+      it('gets uploadPackageDlgVisible', () => {
+         expect(reducer.uploadPackageDlgVisible(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.showUploadPackage); /* method and flag name differ */
+      }),
+      it('gets uploadProgressShowing', () => {
+         expect(reducer.uploadProgressShowing(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.uploadProgressShowing);
+      }),
+      it('gets uploadProgressIsDone', () => {
+         expect(reducer.uploadProgressIsDone(uiFlagsTestState)).toEqual(true); /* uploadProgressStatus === "done" */ /* method and flag name differ */
+      }),
+      it('gets uploadPackageData', () => {
+         expect(reducer.uploadPackageData(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.package); /* method and flag name differ */
+      }),
+      it('gets uploadFailedShowing', () => {
+         expect(reducer.uploadFailedShowing(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.uploadFailedShowing);
+      }),
+      it('gets activeTabIndex', () => {
+         expect(reducer.activeTabIndex(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.activeTabIndex);
+      }),
+      it('gets projectAlreadyExists', () => {
+         expect(reducer.projectAlreadyExists(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.projectAlreadyExists);
+      }),
+      it('gets deleteProjectDlgVisible', () => {
+         expect(reducer.deleteProjectDlgVisible(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.showDeleteProject); /* method and flag name differ */
+      }),
+      it('gets checkedProjects', () => {
+         expect(reducer.checkedProjects(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.checkedProjects);
+      }),
+      it('gets getDrawingPdfUrl', () => {
+         expect(reducer.getDrawingPdfUrl(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.drawingUrl); /* method and flag name differ */
+      }),
+      it('gets drawingProgressShowing', () => {
+         expect(reducer.drawingProgressShowing(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.drawingProgressShowing);
+      });
+   });
+
 });

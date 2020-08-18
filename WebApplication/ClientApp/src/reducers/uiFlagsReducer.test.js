@@ -16,8 +16,7 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-import {closeParametersEditedMessage, rejectParametersEditedMessage, showUploadPackage, editPackageFile, editPackageRoot,
-   showDeleteProject, setProjectAlreadyExists, setProjectChecked, clearCheckedProjects, setCheckedProjects} from '../actions/uiFlagsActions';
+import * as uiFlagsActions from '../actions/uiFlagsActions';
 import uiFlagsReducer, * as uiFlags from './uiFlagsReducer';
 import { editParameter, resetParameters } from '../actions/parametersActions';
 import { stateParametersEditedMessageClosed, stateParametersEditedMessageNotRejected, stateParametersEditedMessageRejected } from './uiFlagsTestStates';
@@ -26,7 +25,7 @@ import { setUploadProgressVisible, setUploadProgressHidden, setUploadProgressDon
 
 describe('uiFlags reducer', () => {
    it('check dismiss', () => {
-      expect(uiFlagsReducer(uiFlags.initialState, closeParametersEditedMessage()).parametersEditedMessageClosed).toEqual(true);
+      expect(uiFlagsReducer(uiFlags.initialState, uiFlagsActions.closeParametersEditedMessage()).parametersEditedMessageClosed).toEqual(true);
       expect(uiFlagsReducer(stateParametersEditedMessageClosed, editParameter("","")).parametersEditedMessageClosed).toEqual(false);
       expect(uiFlagsReducer(stateParametersEditedMessageClosed, resetParameters("")).parametersEditedMessageClosed).toEqual(false);
    });
@@ -34,20 +33,20 @@ describe('uiFlags reducer', () => {
       expect(uiFlagsReducer(undefined, {}).parametersEditedMessageRejected).toEqual(false);
    }),
    it('Sets from not rejected to rejected', () => {
-      expect(uiFlagsReducer(stateParametersEditedMessageNotRejected, rejectParametersEditedMessage(false)).parametersEditedMessageRejected).toEqual(false);
+      expect(uiFlagsReducer(stateParametersEditedMessageNotRejected, uiFlagsActions.rejectParametersEditedMessage(false)).parametersEditedMessageRejected).toEqual(false);
    }),
    it('Sets from rejected to not rejected', () => {
-      expect(uiFlagsReducer(stateParametersEditedMessageRejected, rejectParametersEditedMessage(true)).parametersEditedMessageRejected).toEqual(true);
+      expect(uiFlagsReducer(stateParametersEditedMessageRejected, uiFlagsActions.rejectParametersEditedMessage(true)).parametersEditedMessageRejected).toEqual(true);
    });
 
    it('Sets the show delete project dlg', () => {
-      expect(uiFlagsReducer(uiFlags.initialState, showDeleteProject(true)).showDeleteProject).toEqual(true);
+      expect(uiFlagsReducer(uiFlags.initialState, uiFlagsActions.showDeleteProject(true)).showDeleteProject).toEqual(true);
    });
 
    describe('Upload package', () => {
       it('Sets the show package dlg', () => {
-         expect(uiFlagsReducer(uiFlags.initialState, showUploadPackage(true)).showUploadPackage).toEqual(true);
-         expect(uiFlagsReducer(uiFlags.initialState, showUploadPackage(false)).showUploadPackage).toEqual(false);
+         expect(uiFlagsReducer(uiFlags.initialState, uiFlagsActions.showUploadPackage(true)).showUploadPackage).toEqual(true);
+         expect(uiFlagsReducer(uiFlags.initialState, uiFlagsActions.showUploadPackage(false)).showUploadPackage).toEqual(false);
       });
 
       it('Sets the show / hide upload progress', () => {
@@ -73,8 +72,8 @@ describe('uiFlags reducer', () => {
       });
 
       it('Sets the project exists flag', () => {
-         expect(uiFlagsReducer(uiFlags.initialState, setProjectAlreadyExists(true)).projectAlreadyExists).toEqual(true);
-         expect(uiFlagsReducer(uiFlags.initialState, setProjectAlreadyExists(false)).projectAlreadyExists).toEqual(false);
+         expect(uiFlagsReducer(uiFlags.initialState, uiFlagsActions.setProjectAlreadyExists(true)).projectAlreadyExists).toEqual(true);
+         expect(uiFlagsReducer(uiFlags.initialState, uiFlagsActions.setProjectAlreadyExists(false)).projectAlreadyExists).toEqual(false);
       });
 
       it('Sets the package file without overriding the root', () => {
@@ -88,7 +87,7 @@ describe('uiFlags reducer', () => {
             }
          };
 
-         const newState = uiFlagsReducer(initialState, editPackageFile(mypackage));
+         const newState = uiFlagsReducer(initialState, uiFlagsActions.editPackageFile(mypackage));
 
          expect(newState.package.file).toEqual(mypackage);
          expect(newState.package.root).toEqual(''); // root is set only by PACKAGE_ROOT_EDITED
@@ -105,7 +104,7 @@ describe('uiFlags reducer', () => {
             }
          };
 
-         const newState = uiFlagsReducer(initialState, editPackageRoot(packageroot));
+         const newState = uiFlagsReducer(initialState, uiFlagsActions.editPackageRoot(packageroot));
 
          expect(newState.package.file).toEqual(mypackage);
          expect(newState.package.root).toEqual(packageroot);
@@ -119,33 +118,78 @@ describe('uiFlags reducer', () => {
       };
 
       it('clears all checked projects', () => {
-         expect(uiFlagsReducer(haveSomeCheckedState, clearCheckedProjects()).checkedProjects).toEqual([]);
+         expect(uiFlagsReducer(haveSomeCheckedState, uiFlagsActions.clearCheckedProjects()).checkedProjects).toEqual([]);
       });
 
       it('replaces checked projects with setCheckedProjects', () => {
          const newChecked = [ '3', '4', '5' ];
-         expect(uiFlagsReducer(haveSomeCheckedState, setCheckedProjects(newChecked)).checkedProjects).toEqual(newChecked);
+         expect(uiFlagsReducer(haveSomeCheckedState, uiFlagsActions.setCheckedProjects(newChecked)).checkedProjects).toEqual(newChecked);
       });
 
       it('adds a new project to checked projects if not there yet', () => {
          const projectId = '1';
-         expect(uiFlagsReducer(haveSomeCheckedState, setProjectChecked(projectId, true)).checkedProjects).toEqual(initialCheckedProjects.concat([projectId]));
+         expect(uiFlagsReducer(haveSomeCheckedState, uiFlagsActions.setProjectChecked(projectId, true)).checkedProjects).toEqual(initialCheckedProjects.concat([projectId]));
       });
 
       it('does not add a new project to checked projects if already present', () => {
          const projectId = '2';
-         expect(uiFlagsReducer(haveSomeCheckedState, setProjectChecked(projectId, true)).checkedProjects).toEqual(initialCheckedProjects);
+         expect(uiFlagsReducer(haveSomeCheckedState, uiFlagsActions.setProjectChecked(projectId, true)).checkedProjects).toEqual(initialCheckedProjects);
       });
 
       it('removes a project from checked projects if present', () => {
          const projectId = '2';
-         expect(uiFlagsReducer(haveSomeCheckedState, setProjectChecked(projectId, false)).checkedProjects).toEqual([ '4' ]);
+         expect(uiFlagsReducer(haveSomeCheckedState, uiFlagsActions.setProjectChecked(projectId, false)).checkedProjects).toEqual([ '4' ]);
       });
 
       it('does not alters checked projects if one unchecks a project that is not already there', () => {
          const projectId = '1';
-         expect(uiFlagsReducer(haveSomeCheckedState, setProjectChecked(projectId, false)).checkedProjects).toEqual(initialCheckedProjects);
+         expect(uiFlagsReducer(haveSomeCheckedState, uiFlagsActions.setProjectChecked(projectId, false)).checkedProjects).toEqual(initialCheckedProjects);
       });
+   });
 
+   describe('Simple setters', () => {
+      it('sets the modalProgressShowing', () => {
+         expect(uiFlagsReducer({}, uiFlagsActions.showModalProgress(true)).modalProgressShowing).toEqual(true);
+      }),
+      it('sets the updateFailedShowing', () => {
+         expect(uiFlagsReducer({}, uiFlagsActions.showUpdateFailed(true)).updateFailedShowing).toEqual(true);
+      }),
+      it('sets the loginFailedShowing', () => {
+         expect(uiFlagsReducer({}, uiFlagsActions.showLoginFailed(true)).loginFailedShowing).toEqual(true);
+      }),
+      it('sets the downloadRfaFailedShowing', () => {
+         expect(uiFlagsReducer({}, uiFlagsActions.showRfaFailed(true)).downloadRfaFailedShowing).toEqual(true);
+      }),
+      it('sets the reportUrl', () => {
+         expect(uiFlagsReducer({}, uiFlagsActions.setReportUrlLink('a link')).reportUrl).toEqual('a link');
+      }),
+      it('sets the rfaProgressShowing', () => {
+         expect(uiFlagsReducer({}, uiFlagsActions.showRFAModalProgress(true)).rfaProgressShowing).toEqual(true);
+         expect(uiFlagsReducer({}, uiFlagsActions.showRFAModalProgress(true)).rfaDownloadUrl).toEqual(null);
+      }),
+      it('sets the rfaDownloadUrl', () => {
+         expect(uiFlagsReducer({}, uiFlagsActions.setRFALink('rfa link')).rfaDownloadUrl).toEqual('rfa link');
+      }),
+      it('sets the activeTabIndex', () => {
+         expect(uiFlagsReducer({}, uiFlagsActions.updateActiveTabIndex(7)).activeTabIndex).toEqual(7);
+      }),
+      it('sets the downloadDrawingFailedShowing', () => {
+         expect(uiFlagsReducer({}, uiFlagsActions.showDrawingDownloadFailed(true)).downloadDrawingFailedShowing).toEqual(true);
+      }),
+      it('sets the drawingDownloadProgressShowing', () => {
+         expect(uiFlagsReducer({}, uiFlagsActions.showDrawingDownloadModalProgress(true)).drawingDownloadProgressShowing).toEqual(true);
+      }),
+      it('sets the drawingDownloadUrl', () => {
+         expect(uiFlagsReducer({}, uiFlagsActions.setDrawingDownloadLink('idw link')).drawingDownloadUrl).toEqual('idw link');
+      }),
+      it('sets the drawingProgressShowing', () => {
+         expect(uiFlagsReducer({}, uiFlagsActions.showDrawingExportProgress(true)).drawingProgressShowing).toEqual(true);
+      }),
+      it('sets the drawingUrl', () => {
+         expect(uiFlagsReducer({}, uiFlagsActions.setDrawingPdfUrl('pdf link')).drawingUrl).toEqual('pdf link');
+      }),
+      it('invalidates the drawingUrl', () => {
+         expect(uiFlagsReducer({}, uiFlagsActions.invalidateDrawing()).drawingUrl).toEqual(null);
+      })
    });
 });

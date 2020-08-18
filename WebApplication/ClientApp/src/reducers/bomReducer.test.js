@@ -50,7 +50,7 @@ describe('BOM reducer', () => {
     });
 
     it('returns the correct data' ,() => {
-        const mainState =  { bom: prefilledInitialState}
+        const mainState =  { bom: prefilledInitialState};
         expect(getBom('projectB', mainState)).toEqual(bomDataB);
     });
 });
