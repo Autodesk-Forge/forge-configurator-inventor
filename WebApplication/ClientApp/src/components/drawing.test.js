@@ -52,7 +52,7 @@ describe('Drawings', () => {
   it('check that fetching of drawing is called when package is assembly', () => {
       const fetchDrawingMock = jest.fn();
       const props = {
-        activeProject: { id: "1", isAssembly: true },
+        activeProject: { id: "1", isAssembly: true, hasDrawing: true },
         drawingPdf: null, // initialize fetch
         fetchDrawing: fetchDrawingMock
       };
@@ -77,7 +77,7 @@ describe('Drawings', () => {
     it('check fetching of drawing when active project changes and the new has no drawing url', () => {
       const fetchDrawingMock = jest.fn();
       const props = {
-        activeProject: { id: "1", isAssembly: true },
+        activeProject: { id: "1", isAssembly: true, hasDrawing: true },
         drawingPdf: 'a link',
         fetchDrawing: fetchDrawingMock
       };
@@ -86,7 +86,7 @@ describe('Drawings', () => {
       expect(fetchDrawingMock).toHaveBeenCalledTimes(0); // already had a link, should not fetch
 
       const updateProps = {
-        activeProject: { id: "2", isAssembly: true },
+        activeProject: { id: "2", isAssembly: true, hasDrawing: true },
         drawingPdf: null,
         fetchDrawing: fetchDrawingMock
       };
