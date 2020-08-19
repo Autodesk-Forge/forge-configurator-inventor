@@ -46,8 +46,8 @@ export class ModalFail extends Component {
             });
 
         // TECHDEBT: originally the dialog expected report URL only, but in some _rare_ situations
-        // backend can send a message to show. Someday it should be rewritten, so backend passes
-        // error type as well. Now use a hack to detect error "type".
+        // backend can send a message to show (see `JobsHub.RunJobAsync()` implementation).
+        // Someday it should be rewritten, so backend passes error type as well. Now use a hack to detect error "type".
         const reportUrlOrMessage = this.props.url;
         const isUrl = reportUrlOrMessage?.match(urlRegex);
 

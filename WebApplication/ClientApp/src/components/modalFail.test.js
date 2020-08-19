@@ -80,6 +80,7 @@ describe('modal update failed ', () => {
         expect(wrapper.find('.errorMessage').exists()).toEqual(false); // error message area is not visible
     });
 
+    // sometimes `url` field contains error message. See `ModalFail` implementation for more details
     it.each([
         'The quick brown fox jumps over the lazy dog',
         'httpppp' // should allow url-looking strings
