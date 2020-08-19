@@ -29,6 +29,8 @@ import {mainReducer} from './reducers/mainReducer';
 
 import "@hig/fonts/build/ArtifaktElement.css";
 
+/* eslint-disable no-undef */
+
 // We want to turn off on develop environment showing exception overlay
 // It is because ForgeViewer is causing our issue while removing it from DOM by throwing unhandled exceptions (by showing and immediate hiding ForgeViewer)
 // Even though these exception anyhow disturb our customers and workflows, since they are unhandeled, react decides to show them in overlay which is causing our PR check automations to fail
