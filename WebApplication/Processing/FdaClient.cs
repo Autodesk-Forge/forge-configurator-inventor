@@ -25,7 +25,6 @@ namespace WebApplication.Processing
     public class FdaClient
     {
         private readonly TransferData _transferData;
-        private readonly SplitDrawings _splitWork;
         private readonly CreateSAT _satWork;
         private readonly CreateRFA _rfaWork;
         private readonly ExportDrawing _exportDrawingWork;
@@ -38,7 +37,6 @@ namespace WebApplication.Processing
         public FdaClient(Publisher publisher, IOptions<AppBundleZipPaths> appBundleZipPathsOptionsAccessor)
         {
             _transferData = new TransferData(publisher);
-            _splitWork = new SplitDrawings(publisher);
             _satWork = new CreateSAT(publisher);
             _rfaWork = new CreateRFA(publisher);
             _exportDrawingWork = new ExportDrawing(publisher);
@@ -60,7 +58,6 @@ namespace WebApplication.Processing
             await new ExportDrawing(_publisher).InitializeAsync(_paths.ExportDrawing);
 
             await _transferData.InitializeAsync(_paths.EmptyExe);
-            await _splitWork.InitializeAsync(_paths.SplitDrawings);
             await _satWork.InitializeAsync(_paths.CreateSAT);
             await _rfaWork.InitializeAsync(_paths.CreateRFA);
             await _exportDrawingWork.InitializeAsync(_paths.ExportDrawing);
@@ -86,7 +83,6 @@ namespace WebApplication.Processing
             await _exportDrawingWork.CleanUpAsync();
             await _updateDrawingsWork.CleanUpAsync();
 
-            await _splitWork.CleanUpAsync();
             await _adoptWork.CleanUpAsync();
             await _updateProjectWork.CleanUpAsync();
         }
@@ -140,13 +136,6 @@ namespace WebApplication.Processing
         internal async Task<ProcessingResult> ExportDrawingAsync(ProcessingArgs drawingData)
         {
             return await _exportDrawingWork.ProcessAsync(drawingData);
-            
-        }
-
-        internal async Task<ProcessingResult> SplitAsync(ProcessingArgs drawingData)
-        {
-            return await _splitWork.ProcessAsync(drawingData);
-
         }
     }
 }

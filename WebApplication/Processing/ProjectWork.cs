@@ -52,30 +52,6 @@ namespace WebApplication.Processing
             _userResolver = userResolver;
         }
 
-        public async Task<string> SplitAsync(ProjectInfo projectInfo, string inputDocUrl)
-        {
-            _logger.LogInformation("Split drawings");
-
-            var projectStorage = await _userResolver.GetProjectStorageAsync(projectInfo.Name);
-            var splitData = await _arranger.ForSplitAsync(inputDocUrl, projectInfo.TopLevelAssembly);
-
-            ProcessingResult result = await _fdaClient.SplitAsync(splitData);
-            if (!result.Success)
-            {
-                _logger.LogError($"Failed to split '{projectInfo.Name}' project.");
-                throw new FdaProcessingException($"Failed to splt '{projectInfo.Name}' project.", result.ReportUrl);
-            }
-
-            var url = await _arranger.MoveAfterSplitAsync(projectStorage);
-            return url;
-        }
-
-        internal async Task<string> GetUploadToAsync(bool isAssembly, string projectName)
-        {
-            ProjectStorage projectStorage = await _userResolver.GetProjectStorageAsync(projectName);
-            return isAssembly ? _arranger.UploadedModel : projectStorage.Project.OSSSourceModel;
-        }
-
         /// <summary>
         /// Adapt the project.
         /// </summary>
@@ -186,29 +162,35 @@ namespace WebApplication.Processing
             _logger.LogInformation($"Generating drawing viewables for hash {hash}");
 
             ProjectStorage storage = await _userResolver.GetProjectStorageAsync(projectName);
+            Project project = storage.Project;
+            var ossNameProvider = project.OssNameProvider(hash);
 
             var bucket = await _userResolver.GetBucketAsync();
 
-            // check if drawing source exists, if not, nothing to do
-            var sourceDrawings = await bucket.TryToCreateSignedUrlForReadAsync(storage.Project.OSSSourceDrawings);
-            if (string.IsNullOrEmpty(sourceDrawings))
-                return false; // nothing generated (no drawings exists)
-
-            Project project = storage.Project;
-
-            var ossNameProvider = project.OssNameProvider(hash);
-
-            var drawingViewables = await bucket.TryToCreateSignedUrlForReadAsync(ossNameProvider.DrawingViewables);
-            bool generated = !string.IsNullOrEmpty(drawingViewables);
-
-            if (generated)
-                return true;
+            bool generated = false;
+            ApiResponse<dynamic> ossObjectResponse = null;
+            // check if Drawing viewables file is already generated	
+            try
+            {
+                ossObjectResponse = await bucket.GetObjectAsync(ossNameProvider.DrawingViewables);
+                if (ossObjectResponse != null)
+                {
+                    using (Stream objectStream = ossObjectResponse.Data)
+                    {
+                        // zero length means that there is nothing to generate, but processed and do not continue	
+                        generated = objectStream.Length > 0;
+                    }
+                }
+                return generated;
+            }
+            catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
+            {
+                // the file does not exist, so just swallow	
+            }
 
             // OK, nothing in cache - generate it now
             var inputDocUrl = await bucket.CreateSignedUrlAsync(ossNameProvider.GetCurrentModel(storage.IsAssembly));
-            string inputDrawingUrl = await bucket.TryToCreateSignedUrlForReadAsync(project.OSSSourceDrawings);
-
-            ProcessingArgs drawingData = await _arranger.ForDrawingViewablesAsync(inputDocUrl, inputDrawingUrl, storage.Metadata.TLA);
+            ProcessingArgs drawingData = await _arranger.ForDrawingViewablesAsync(inputDocUrl, storage.Metadata.TLA);
 
             ProcessingResult result = await _fdaClient.ExportDrawingAsync(drawingData);
             if (!result.Success)
@@ -217,13 +199,20 @@ namespace WebApplication.Processing
                 throw new FdaProcessingException($"{result.ErrorMessage} for project {project.Name} and hash {hash}", result.ReportUrl);
             }
 
-            // move to the right place
-            await _arranger.MoveDrawingViewablesAsync(project, hash);
-
             // check if Drawing viewables file is generated
-            var drawingViewablesUrl = await bucket.TryToCreateSignedUrlForReadAsync(ossNameProvider.DrawingViewables);
-            // return if generated
-            return !string.IsNullOrEmpty(drawingViewablesUrl);
+            try
+            {
+                await bucket.CreateSignedUrlAsync(ossNameProvider.DrawingViewables);
+                generated = true;
+            }
+            catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
+            {
+                // the file does not exist after generating drawing, so just mark with zero length that we already processed it
+                await bucket.UploadObjectAsync(ossNameProvider.DrawingViewables, new MemoryStream(0));
+            }
+
+            await _arranger.MoveDrawingViewablesAsync(project, hash);
+            return generated;
         }
 
         /// <summary>
@@ -266,17 +255,12 @@ namespace WebApplication.Processing
             await _arranger.MoveDrawingAsync(project, hash);
         }
 
-        public async Task<string> FileTransferAsync(string source, RetryPolicy policy, OssBucket bucket, string target)
+        public async Task FileTransferAsync(string source, string target)
         {
-            string uploadTo = string.IsNullOrEmpty(target) ? _arranger.UploadedModel : target;
-            string signedUrl = await policy.ExecuteAsync(async () => await bucket.CreateSignedUrlAsync(uploadTo, ObjectAccess.ReadWrite));
-
-            ProcessingResult result = await _fdaClient.TransferAsync(source, signedUrl);
+            ProcessingResult result = await _fdaClient.TransferAsync(source, target);
             if (!result.Success) throw new ApplicationException($"Failed to transfer project file {source}");
 
             _logger.LogInformation("File transferred.");
-
-            return signedUrl;
         }
 
         /// <summary>

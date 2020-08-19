@@ -76,8 +76,7 @@ namespace WebApplication.Processing
                                             bucket.CreateSignedUrlAsync(Parameters, ObjectAccess.Write),
                                             bucket.CreateSignedUrlAsync(OutputModelIAM, ObjectAccess.Write),
                                             bucket.CreateSignedUrlAsync(OutputModelIPT, ObjectAccess.Write),
-                                            bucket.CreateSignedUrlAsync(BomJson, ObjectAccess.Write),
-                                            bucket.CreateSignedUrlAsync(OutputDrawing, ObjectAccess.Write));
+                                            bucket.CreateSignedUrlAsync(BomJson, ObjectAccess.Write));
 
             return new AdoptionData
                     {
@@ -88,7 +87,6 @@ namespace WebApplication.Processing
                         OutputIAMModelUrl   = urls[3],
                         OutputIPTModelUrl   = urls[4],
                         BomUrl              = urls[5],
-                        OutputDrawingUrl    = urls[6],
                         TLA = tlaFilename
             };
         }
@@ -137,7 +135,7 @@ namespace WebApplication.Processing
         {
             var hashString = await GenerateParametersHashAsync();
             var bucket = await _userResolver.GetBucketAsync();
-            var hasDrawings = await bucket.TryToCreateSignedUrlForReadAsync(project.OSSSourceDrawings) != null;
+            var hasDrawings = true; // TBD , was: await bucket.TryToCreateSignedUrlForReadAsync(project.OSSSourceDrawings) != null;
             var attributes = new ProjectMetadata { Hash = hashString, TLA = tlaFilename, HasDrawings = hasDrawings };
 
             var ossNames = project.OssNameProvider(hashString);
@@ -227,7 +225,7 @@ namespace WebApplication.Processing
             };
         }
 
-        internal async Task<ProcessingArgs> ForDrawingViewablesAsync(string inputDocUrl, string inputDrawingUrl, string topLevelAssembly)
+        internal async Task<ProcessingArgs> ForDrawingViewablesAsync(string inputDocUrl, string topLevelAssembly)
         {
             var bucket = await _userResolver.GetBucketAsync();
             var drawingViewablesUrl = await bucket.CreateSignedUrlAsync(OutputDrawingViewables, ObjectAccess.Write);
@@ -235,27 +233,8 @@ namespace WebApplication.Processing
             return new ProcessingArgs
             {
                 InputDocUrl = inputDocUrl,
-                InputDrawingUrl = inputDrawingUrl,
                 DrawingViewablesUrl = drawingViewablesUrl,
                 TLA = topLevelAssembly
-            };
-        }
-
-        internal async Task<ProcessingArgs> ForSplitAsync(string inputDocUrl, string tla)
-        {
-            var bucket = await _userResolver.GetBucketAsync();
-
-            var urls = await Task.WhenAll(bucket.CreateSignedUrlAsync(OutputModelIAM, ObjectAccess.Write),
-                                            bucket.CreateSignedUrlAsync(OutputModelIPT, ObjectAccess.Write),
-                                            bucket.CreateSignedUrlAsync(OutputDrawing, ObjectAccess.Write));
-
-            return new ProcessingArgs
-            {
-                InputDocUrl = inputDocUrl,
-                OutputIAMModelUrl = urls[0],
-                OutputIPTModelUrl = urls[1],
-                OutputDrawingUrl = urls[2],
-                TLA = tla
             };
         }
 
@@ -280,31 +259,6 @@ namespace WebApplication.Processing
                                 bucket.DeleteObjectAsync(InputParams));
 
             return hashString;
-        }
-
-        public async Task<string> MoveAfterSplitAsync(ProjectStorage projectStorage)
-        {
-            var bucket = await _userResolver.GetBucketAsync();
-            var hasModelAfterSplit = await bucket.TryToCreateSignedUrlForReadAsync(OutputModelIAM) != null;
-            var hasDrawingAfterSplit = await bucket.TryToCreateSignedUrlForReadAsync(OutputDrawing) != null;
-
-            string ossModel = projectStorage.Project.OSSSourceModel;
-            string ossDrawing = projectStorage.Project.OSSSourceDrawings;
-
-            var tasks = new List<Task>();
-            // if drawing does not exist, use original UPLOADED data because 'Split' did nothing when no drawing available
-            tasks.Add(bucket.RenameObjectAsync(hasModelAfterSplit ? OutputModelIAM : UploadedModel, ossModel));
-            if (hasDrawingAfterSplit)
-                tasks.Add(bucket.RenameObjectAsync(OutputDrawing, ossDrawing));
-
-            await Task.WhenAll(tasks);
-
-            // clean 'upload' when splitted, skip when renamed
-            if (hasModelAfterSplit)
-                await bucket.DeleteObjectAsync(UploadedModel);
-
-            var url = await bucket.CreateSignedUrlAsync(ossModel);
-            return url;
         }
 
         /// <summary>

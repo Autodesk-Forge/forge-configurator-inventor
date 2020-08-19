@@ -106,26 +106,14 @@ namespace WebApplication
                 var project = await _userResolver.GetProjectAsync(defaultProjectConfig.Name);
 
                 _logger.LogInformation($"Launching 'TransferData' for {projectUrl}");
+                string signedUrl = await waitForBucketPolicy.ExecuteAsync(async () => await _bucket.CreateSignedUrlAsync(project.OSSSourceModel, ObjectAccess.ReadWrite));
 
-                bool isAssembly = !string.IsNullOrEmpty(defaultProjectConfig.TopLevelAssembly);
-                string uploadTo = await _projectWork.GetUploadToAsync(isAssembly, defaultProjectConfig.Name);
+                // TransferData from s3 to temporary oss url
+                await _projectWork.FileTransferAsync(projectUrl,signedUrl);
 
-                // TransferData from s3 to temporary oss url (before split)
-                string signedUrl = await _projectWork.FileTransferAsync(projectUrl, waitForBucketPolicy, _bucket/*signedUrl*/, uploadTo);
                 _logger.LogInformation($"'TransferData' for {projectUrl} is done.");
 
-                string adoptFromSignedUrl = "";
-                if (isAssembly)
-                {
-                    string splittedModelSignedUrl = await _projectWork.SplitAsync(defaultProjectConfig, signedUrl);
-
-                    adoptFromSignedUrl = splittedModelSignedUrl;
-                } else
-                {
-                    adoptFromSignedUrl = project.OSSSourceModel;
-                }
-
-                await _projectWork.AdoptAsync(defaultProjectConfig, adoptFromSignedUrl);
+                await _projectWork.AdoptAsync(defaultProjectConfig, signedUrl);
             }
 
             _logger.LogInformation("Added default projects.");
