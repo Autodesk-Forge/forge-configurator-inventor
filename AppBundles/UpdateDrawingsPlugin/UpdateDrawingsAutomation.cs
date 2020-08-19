@@ -84,14 +84,13 @@ namespace UpdateDrawingsPlugin
 
                 // zip updated drawings
                 var drawingFileName = System.IO.Path.Combine(rootDir, "drawing.zip");
-                var zipRoot = System.IO.Path.Combine(rootDir, "unzippedDrawing") + System.IO.Path.PathSeparator;
 
                 using (var drawingFS = new FileStream(drawingFileName, FileMode.Create))
                 using (var zip = new ZipArchive(drawingFS, ZipArchiveMode.Create, true))
                 {
                     foreach (var filePath in drawings)
                     {
-                        var pathInArchive = filePath.Substring(zipRoot.Length);
+                        var pathInArchive = filePath.Substring(rootDir.Length);
                         ZipArchiveEntry newEntry = zip.CreateEntry(pathInArchive);
                         using (var entryStream = newEntry.Open())
                         using (var fileStream = new FileStream(filePath, FileMode.Open))

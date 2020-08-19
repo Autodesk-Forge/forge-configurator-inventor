@@ -198,7 +198,7 @@ namespace WebApplication.Processing
             };
         }
 
-        internal async Task<ProcessingArgs> ForDrawingAsync(string inputDocUrl, string inputDrawingUrl, string topLevelAssembly)
+        internal async Task<ProcessingArgs> ForDrawingAsync(string inputDocUrl, string topLevelAssembly)
         {
             var bucket = await _userResolver.GetBucketAsync();
 
@@ -207,7 +207,6 @@ namespace WebApplication.Processing
             return new ProcessingArgs
             {
                 InputDocUrl = inputDocUrl,
-                InputDrawingUrl = inputDrawingUrl,
                 DrawingUrl = url,
                 TLA = topLevelAssembly
             };

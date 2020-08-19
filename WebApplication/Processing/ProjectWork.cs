@@ -163,13 +163,14 @@ namespace WebApplication.Processing
 
             ProjectStorage storage = await _userResolver.GetProjectStorageAsync(projectName);
             Project project = storage.Project;
-            var ossNameProvider = project.OssNameProvider(hash);
 
-            var bucket = await _userResolver.GetBucketAsync();
+            var ossNameProvider = project.OssNameProvider(hash);
 
             bool generated = false;
             ApiResponse<dynamic> ossObjectResponse = null;
-            // check if Drawing viewables file is already generated	
+            var bucket = await _userResolver.GetBucketAsync();
+            string msg = "";
+            // check if Drawing viewables file is already generated
             try
             {
                 ossObjectResponse = await bucket.GetObjectAsync(ossNameProvider.DrawingViewables);
@@ -177,16 +178,20 @@ namespace WebApplication.Processing
                 {
                     using (Stream objectStream = ossObjectResponse.Data)
                     {
-                        // zero length means that there is nothing to generate, but processed and do not continue	
+                        // zero length means that there is nothing to generate, but processed and do not continue
                         generated = objectStream.Length > 0;
                     }
                 }
+
+                msg = generated ? "ALREADY EXISTS" : "NOT GENERATED";
                 return generated;
             }
             catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
             {
-                // the file does not exist, so just swallow	
+                // the file does not exist, so just swallow
+                msg = "GENERATING";
             }
+            _logger.LogInformation($"Drawing viewables for hash {hash} - drawing {msg}");
 
             // OK, nothing in cache - generate it now
             var inputDocUrl = await bucket.CreateSignedUrlAsync(ossNameProvider.GetCurrentModel(storage.IsAssembly));
@@ -198,6 +203,9 @@ namespace WebApplication.Processing
                 _logger.LogError($"{result.ErrorMessage} for project {project.Name} and hash {hash}");
                 throw new FdaProcessingException($"{result.ErrorMessage} for project {project.Name} and hash {hash}", result.ReportUrl);
             }
+
+            // move to the right place
+            await _arranger.MoveDrawingViewablesAsync(project, hash);
 
             // check if Drawing viewables file is generated
             try
@@ -211,7 +219,9 @@ namespace WebApplication.Processing
                 await bucket.UploadObjectAsync(ossNameProvider.DrawingViewables, new MemoryStream(0));
             }
 
-            await _arranger.MoveDrawingViewablesAsync(project, hash);
+            msg = generated ? "GENERATED" : "NOT GENERATED";
+            _logger.LogInformation($"Drawing viewables for hash {hash} - drawing {msg}");
+
             return generated;
         }
 
@@ -242,9 +252,8 @@ namespace WebApplication.Processing
 
             // OK, nothing in cache - generate it now
             var inputDocUrl = await bucket.CreateSignedUrlAsync(ossNameProvider.GetCurrentModel(storage.IsAssembly));
-            string inputDrawingUrl = await bucket.TryToCreateSignedUrlForReadAsync(project.OSSSourceDrawings);
 
-            ProcessingArgs drawingData = await _arranger.ForDrawingAsync(inputDocUrl, inputDrawingUrl, storage.Metadata.TLA);
+            ProcessingArgs drawingData = await _arranger.ForDrawingAsync(inputDocUrl, storage.Metadata.TLA);
             ProcessingResult result = await _fdaClient.GenerateDrawing(drawingData);
             if (!result.Success)
             {
