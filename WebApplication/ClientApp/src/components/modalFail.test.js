@@ -66,15 +66,31 @@ describe('modal update failed ', () => {
     });
 
     it.each([
-        'http://example.com',
-        'https://example.com'
+        'http://example.com', // HTTP
+        'https://example.com', // HTTPS
+        'HTTPS://example.com', // HTTPS different case
     ])('should link to the reportUrl in the props (%s)', (url) => {
-        const props = { url };
 
-        const wrapper = shallow(<ModalFail {...props} />);
+        const wrapper = shallow(<ModalFail url={ url } />);
+
         const wrapperComponent = wrapper.find('.logContainer');
         const children = wrapperComponent.prop('children');
 
         expect(children.props).toMatchObject({ link: 'Open log file', href: url });
+        expect(wrapper.find('.errorMessage').exists()).toEqual(false); // error message area is not visible
+    });
+
+    it.each([
+        'The quick brown fox jumps over the lazy dog',
+        'httpppp' // should allow url-looking strings
+    ])('should detect and show error message (%s)', (message) => {
+
+        const wrapper = shallow(<ModalFail url={ message } />);
+
+        const errorMessageBlock = wrapper.find('.errorMessage');
+        const text = errorMessageBlock.render().text();
+
+        expect(text.indexOf(message)).not.toEqual(-1);
+        expect(wrapper.find('.logContainer').exists()).toEqual(false); // 'Open link' area is not visible
     });
 });

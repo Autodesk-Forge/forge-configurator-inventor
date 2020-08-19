@@ -70,3 +70,9 @@ svg.errorIcon path {
 .logContainer {
     margin-top: 10px;
 }
+
+.errorMessage {
+    padding-top: 7px;
+    overflow-y: auto;
+    height: 90px;
+}

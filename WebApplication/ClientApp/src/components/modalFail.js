@@ -27,6 +27,8 @@ import HyperLink from './hyperlink';
 import Button from '@hig/button';
 import IconButton from "@hig/icon-button";
 
+const urlRegex = new RegExp("^(http|https)://", "i");
+
 export class ModalFail extends Component {
 
     render() {
@@ -47,7 +49,7 @@ export class ModalFail extends Component {
         // backend can send a message to show. Someday it should be rewritten, so backend passes
         // error type as well. Now use a hack to detect error "type".
         const reportUrlOrMessage = this.props.url;
-        const isUrl = reportUrlOrMessage?.startsWith("http");
+        const isUrl = reportUrlOrMessage?.match(urlRegex);
 
         return (
             <Modal
@@ -88,7 +90,7 @@ export class ModalFail extends Component {
                     }
                     {reportUrlOrMessage && ! isUrl &&
                         <div>
-                            <Typography style={{ paddingTop: "7px", overflowY: "auto", "height": "90px" }}>
+                            <Typography className="errorMessage">
                                 Internal error. Try to repeat your last action and please report the following message: <br/>
                                 { reportUrlOrMessage }
                             </Typography>
