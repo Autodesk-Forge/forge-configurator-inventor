@@ -20,10 +20,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
-
-// this does not work in the production build. See INVGEN-44561
-// import { stopReportingRuntimeErrors } from "react-error-overlay";
-
+import { stopReportingRuntimeErrors } from "react-error-overlay";
 import {Provider} from 'react-redux';
 import {createStore, applyMiddleware} from 'redux';
 import thunk from 'redux-thunk';
@@ -32,12 +29,15 @@ import {mainReducer} from './reducers/mainReducer';
 
 import "@hig/fonts/build/ArtifaktElement.css";
 
+// We want to turn off on develop environment showing exception overlay
+// It is because ForgeViewer is causing our issue while removing it from DOM by throwing unhandled exceptions (by showing and immediate hiding ForgeViewer)
+// Even though these exception anyhow disturb our customers and workflows, since they are unhandeled, react decides to show them in overlay which is causing our PR check automations to fail
+if (process.env.NODE_ENV !== 'production') {
+    stopReportingRuntimeErrors(); // disables error overlays
+}
+
 const createStoreWithMiddleware = applyMiddleware(thunk)(createStore);
 const store = createStoreWithMiddleware(mainReducer);
-
-// this does not work in the production build. See INVGEN-44561
-//    stopReportingRuntimeErrors(); // disables error overlays
-
 
 // based on https://github.com/reduxjs/redux/issues/303#issuecomment-125184409
 function observeStore(store, select, onChange) {
