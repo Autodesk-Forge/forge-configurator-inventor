@@ -24,7 +24,7 @@ phases:
       - npm test -- --coverage
       - echo "**** Starting the server ****"
       - cd ..
-      - Start-Process -NoNewWindow dotnet -ArgumentList "run", "clear=true", "initialize=true"
+      - Start-Process -NoNewWindow dotnet -ArgumentList "run", "clear=true", "initialize=true", "allowCleanSelf=true"
       - echo "Waiting for server to initialize"
       - ..\AWS-CICD\build-specs\waitForServer.ps1
       - echo "**** running the UI tests ****"
@@ -34,6 +34,7 @@ phases:
   post_build:
     commands:
       - cd $slnDir
+      - rm WebApplication\bin\Release\netcoreapp3.1\publish\appsettings.Local.json
       - xcopy /Y /E WebApplication\bin\Release\netcoreapp3.1\publish\* app\
       - xcopy /Y /E WebApplication\AppBundles\* app\AppBundles\
       - xcopy /Y /E WebApplication\ClientApp\output\* report\errorScreenShots\
