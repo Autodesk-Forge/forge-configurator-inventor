@@ -31,8 +31,8 @@ namespace WebApplication.Processing
         public override string Description => "Find all drawings and update them -> zip";
 
         protected override string OutputUrl(ProcessingArgs projectData) => projectData.DrawingUrl;
-        protected override string OutputName => "drawing.zip";
-        protected override bool IsOutputZip => false;
+        protected override string OutputName => "drawings";
+        protected override bool IsOutputZip => true;
         protected override bool IsOutputOptional => true;
 
         /// <summary>

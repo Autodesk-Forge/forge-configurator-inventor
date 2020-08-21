@@ -71,6 +71,12 @@ namespace UpdateDrawingsPlugin
                                     .Where(file => drawingExtensions.IndexOf(System.IO.Path.GetExtension(file)) >= 0 &&
                                     !file.Contains(oldVersion)).ToArray();
 
+                if (drawings.Length == 0)
+                    return;
+
+                var drawingsPath = System.IO.Path.Combine(rootDir, "drawings");
+                System.IO.Directory.CreateDirectory(drawingsPath);
+
                 foreach (var filePath in drawings)
                 {
                     LogTrace($"Updating drawing {filePath}");
@@ -80,29 +86,15 @@ namespace UpdateDrawingsPlugin
                     LogTrace("Drawing updated");
                     drawingDocument.Save2(true);
                     LogTrace("Drawing saved");
+                    // copy to new place with keeping the folder structure
+                    var pathInArchive = filePath.Substring(rootDir.Length+1);
+                    pathInArchive = pathInArchive.Substring(pathInArchive.IndexOf(System.IO.Path.DirectorySeparatorChar)+1);
+                    var destPath = System.IO.Path.Combine(drawingsPath, pathInArchive);
+                    System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(destPath));
+                    LogTrace($"Copy {pathInArchive} to {destPath}");
+                    System.IO.File.Copy(filePath, destPath);
                 }
 
-                // zip updated drawings
-                var drawingFileName = System.IO.Path.Combine(rootDir, "drawing.zip");
-
-                using (var drawingFS = new FileStream(drawingFileName, FileMode.Create))
-                using (var zip = new ZipArchive(drawingFS, ZipArchiveMode.Create, true))
-                {
-                    foreach (var filePath in drawings)
-                    {
-                        var pathInArchive = filePath.Substring(rootDir.Length);
-                        ZipArchiveEntry newEntry = zip.CreateEntry(pathInArchive);
-                        using (var entryStream = newEntry.Open())
-                        using (var fileStream = new FileStream(filePath, FileMode.Open))
-                        using (var fileMS = new MemoryStream())
-                        using (var writer = new BinaryWriter(entryStream, Encoding.UTF8))
-                        {
-                            fileStream.CopyTo(fileMS);
-                            writer.Write(fileMS.ToArray());
-                        }
-                    }
-                }
-                LogTrace($"Created drawing.zip, {drawings.Length} item(s).");
             }
         }
 
