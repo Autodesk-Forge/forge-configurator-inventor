@@ -39,6 +39,13 @@ phases:
       - xcopy /Y /E WebApplication\AppBundles\* app\AppBundles\
       - xcopy /Y /E WebApplication\ClientApp\output\* report\errorScreenShots\
       - xcopy /Y /E WebApplication\ClientApp\coverage\* report\coverage\
+      - cd .\WebApplication
+      - $targetConfiguration='Release'
+      - $targetRuntime='win7-x64'
+      - $dotnetCore='netcoreapp3.1'
+      - dotnet publish --configuration $targetConfiguration --runtime $targetRuntime
+      - xcopy /Y /E .\AppBundles\* ".\bin\$targetConfiguration\$dotnetCore\$targetRuntime\publish\AppBundles\"
+      - Compress-Archive -Path ".\bin\$targetConfiguration\$dotnetCore\$targetRuntime\publish\*" -DestinationPath "$targetConfiguration.zip"
 artifacts:
   files:
     - 'app/**/*'
