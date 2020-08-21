@@ -21,7 +21,7 @@ phases:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
-      - docker login -p $DOCKER_HUB_USER -s $DOCKER_HUB_PASSWORD
+      - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD
       - docker push autodeskio/design-automation-demo:latest
       - sed -i 's/latest/'$IMAGE_TAG'/g' ./AWS-CICD/Dockerrun.aws.json
 artifacts:
