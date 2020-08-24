@@ -38,6 +38,11 @@ const Icon = ({ iconname }) => (
 
 const iconRenderer = ({ cellData: iconname }) => <Icon iconname={iconname} />;
 
+/** Hyperlink, which leads nowhere. */
+function deadEndLink(props) {
+    return <a href='' onClick={(e) => { e.preventDefault(); }}>{ props.title }</a>;
+}
+
 export const downloadColumns = [
     {
         key: 'icon',
@@ -123,13 +128,12 @@ export class Downloads extends Component {
                 });
             }
 
-            const rfaJsx = <a href="" onClick={(e) => { e.preventDefault(); }}>RFA</a>;
             data.push({
                 id: 'rfa',
                 icon: 'products-and-services-24.svg',
                 type: 'RFA',
                 env: 'Model',
-                link: rfaJsx,
+                link: deadEndLink({ title: 'RFA' }),
                 clickHandler: async () => {
                     this.props.getRFADownloadLink(project.id, project.hash);
                 }
@@ -152,22 +156,33 @@ export class Downloads extends Component {
                     clickHandler: () => downloadHyperlink.click()
                 });
             }
-        }
 
-        const hasDrawingUrl = project.hasDrawing;
-        if (hasDrawingUrl) {
-            const drawingJsx = <a href="" onClick={(e) => { e.preventDefault(); }}>Drawing</a>;
-            data.push(
-                {
-                    id: 'drawing',
-                    icon: 'products-and-services-24.svg',
-                    type: 'IDW',
-                    env: 'Model',
-                    link: drawingJsx,
-                    clickHandler: async () => {
-                        this.props.getDrawingDownloadLink(this.props.activeProject.id, this.props.activeProject.hash);
-                    }
-                });
+            const hasDrawingUrl = project.hasDrawing;
+            if (hasDrawingUrl) {
+                data.push(
+                    {
+                        id: 'drawing',
+                        icon: 'products-and-services-24.svg',
+                        type: 'IDW',
+                        env: 'Model',
+                        link: deadEndLink({ title: 'Drawing' }),
+                        clickHandler: async () => {
+                            this.props.getDrawingDownloadLink(project.id, project.hash);
+                        }
+                    });
+
+                data.push(
+                    {
+                        id: 'pdf',
+                        icon: 'products-and-services-24.svg',
+                        type: 'PDF',
+                        env: 'Model',
+                        link: deadEndLink({ title: 'Drawing PDF' }),
+                        clickHandler: async () => {
+                            this.props.getDrawingDownloadLink(project.id, project.hash);
+                        }
+                    });
+            }
         }
 
         return (
