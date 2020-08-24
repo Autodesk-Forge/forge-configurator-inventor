@@ -78,7 +78,7 @@ export const getDrawingDownloadLink = (projectId, temporaryUrl) => async (dispat
             // onComplete
             (drawingUrl) => {
                 dispatch(addLog('JobManager.doDrawingDownloadJob: Received onComplete'));
-                // set RFA link, it will show link in UI
+                // set link, it will show link in UI
                 dispatch(setDrawingDownloadLink(drawingUrl));
             },
             // onError
