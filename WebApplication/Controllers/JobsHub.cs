@@ -176,9 +176,9 @@ namespace WebApplication.Controllers
             await RunJobAsync(job);
         }
 
-        public async Task CreateExportDrawingJob(string projectId, string hash, string token)
+        public async Task CreateDrawingPdfJob(string projectId, string hash, string token)
         {
-            _logger.LogInformation($"invoked CreateExportDrawingJob, connectionId : {Context.ConnectionId}");
+            _logger.LogInformation($"invoked CreateDrawingPdfJob, connectionId : {Context.ConnectionId}");
 
             _userResolver.Token = token;
 

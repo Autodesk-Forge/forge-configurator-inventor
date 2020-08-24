@@ -160,7 +160,7 @@ class JobManager {
                 onError(jobId, reportUrl);
         });
 
-        await connection.invoke('CreateExportDrawingJob', projectId, hash, repo.getAccessToken());
+        await connection.invoke('CreateDrawingPdfJob', projectId, hash, repo.getAccessToken());
     }
 }
 
