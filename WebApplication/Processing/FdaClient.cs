@@ -115,7 +115,6 @@ namespace WebApplication.Processing
             if (!rfaResult.Success)
             {
                 rfaResult.ErrorMessage = "Failed to generate RFA file";
-                return rfaResult;
             }
 
             return rfaResult;
@@ -127,7 +126,6 @@ namespace WebApplication.Processing
             if (!result.Success)
             {
                 result.ErrorMessage = "Failed to update drawing file(s)";
-                return result;
             }
 
             return result;

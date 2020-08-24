@@ -132,7 +132,7 @@ namespace WebApplication.Processing
         {
             var hashString = await GenerateParametersHashAsync();
             var bucket = await _userResolver.GetBucketAsync();
-            var hasDrawings = true; // TBD , was: await bucket.TryToCreateSignedUrlForReadAsync(project.OSSSourceDrawings) != null;
+            var hasDrawings = true; // TBD , we will make it probably part of the story to list all drawings in drawing tab
             var attributes = new ProjectMetadata { Hash = hashString, TLA = tlaFilename, HasDrawings = hasDrawings };
 
             var ossNames = project.OssNameProvider(hashString);

@@ -66,10 +66,10 @@ namespace UpdateDrawingsPlugin
                 }
 
                 var drawingExtensions = new List<string> { ".idw", ".dwg" };
-                var oldVersion = @"OldVersions\";
+                var oldVersion = @"oldversions\";
                 string[] drawings = System.IO.Directory.GetFiles(rootDir, "*.*", System.IO.SearchOption.AllDirectories)
-                                    .Where(file => drawingExtensions.IndexOf(System.IO.Path.GetExtension(file)) >= 0 &&
-                                    !file.Contains(oldVersion)).ToArray();
+                                    .Where(file => drawingExtensions.IndexOf(System.IO.Path.GetExtension(file.ToLower())) >= 0 &&
+                                    !file.ToLower().Contains(oldVersion)).ToArray();
 
                 if (drawings.Length == 0)
                     return;

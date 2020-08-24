@@ -233,13 +233,6 @@ namespace WebApplication.Processing
             ProjectStorage storage = await _userResolver.GetProjectStorageAsync(projectName);
             Project project = storage.Project;
 
-            //// *********************************************
-            //// temporary fail *********************************************
-            //_logger.LogError($"Failed to generate SAT file");
-            //throw new FdaProcessingException($"Failed to generate SAT file", "https://localhost:5000/#");
-            //// *********************************************
-
-
             var ossNameProvider = project.OssNameProvider(hash);
 
             var bucket = await _userResolver.GetBucketAsync();
