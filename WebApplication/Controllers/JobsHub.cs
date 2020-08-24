@@ -183,7 +183,7 @@ namespace WebApplication.Controllers
             _userResolver.Token = token;
 
             // create job and run it
-            var job = new ExportDrawingJobItem(_logger, projectId, hash, _projectWork, _linkGenerator);
+            var job = new ExportDrawingPdfJobItem(_logger, projectId, hash, _projectWork, _linkGenerator);
             await RunJobAsync(job);
         }
 

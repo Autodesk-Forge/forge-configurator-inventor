@@ -57,7 +57,7 @@ namespace WebApplication.Utilities
         /// <summary>
         /// Drawing in format ForgeView can load and show
         /// </summary>
-        public const string DrawingViewables = "drawing.pdf";
+        public const string DrawingPdf = "drawing.pdf";
     }
 
     /// <summary>
@@ -177,7 +177,10 @@ namespace WebApplication.Utilities
 
         public string Drawing => ToFullName("drawing.zip");
 
-        public string DrawingViewables => ToFullName(LocalName.DrawingViewables);
+        /// <summary>
+        /// Filename for PDF with drawing.
+        /// </summary>
+        public string DrawingPdf => ToFullName(LocalName.DrawingPdf);
     }
 
     /// <summary>

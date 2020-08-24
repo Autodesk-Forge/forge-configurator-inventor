@@ -22,7 +22,7 @@ import { showRFAModalProgress, showRfaFailed, setRFALink, setReportUrlLink } fro
 import { showDrawingDownloadModalProgress, showDrawingDownloadFailed, setDrawingDownloadLink } from './uiFlagsActions';
 import { showDrawingExportProgress, setDrawingPdfUrl } from './uiFlagsActions';
 
-export const getRFADownloadLink = (projectId, temporaryUrl) => async (dispatch) => {
+export const getRFADownloadLink = (projectId, hash) => async (dispatch) => {
     dispatch(addLog('getRFADownloadLink invoked'));
 
     const jobManager = Jobs();
@@ -32,7 +32,7 @@ export const getRFADownloadLink = (projectId, temporaryUrl) => async (dispatch) 
 
     // launch signalR to make RFA here and wait for result
     try {
-        await jobManager.doRFAJob(projectId, temporaryUrl,
+        await jobManager.doRFAJob(projectId, hash,
             // start job
             () => {
                 dispatch(addLog('JobManager.doRFAJob: HubConnection started for project : ' + projectId));
@@ -59,7 +59,7 @@ export const getRFADownloadLink = (projectId, temporaryUrl) => async (dispatch) 
     }
 };
 
-export const getDrawingDownloadLink = (projectId, temporaryUrl) => async (dispatch) => {
+export const getDrawingDownloadLink = (projectId, hash) => async (dispatch) => {
     dispatch(addLog('getDrawingDownloadLink invoked'));
 
     const jobManager = Jobs();
@@ -69,7 +69,7 @@ export const getDrawingDownloadLink = (projectId, temporaryUrl) => async (dispat
 
     // launch signalR to prepare up-to-date drawing here and wait for result
     try {
-        await jobManager.doDrawingDownloadJob(projectId, temporaryUrl,
+        await jobManager.doDrawingDownloadJob(projectId, hash,
             // start job
             () => {
                 dispatch(addLog('JobManager.doDrawingDownloadJob: HubConnection started for project : ' + projectId));
