@@ -23,8 +23,6 @@ namespace WebApplication.Definitions
     {
         public string InputDocUrl { get; set; }
 
-        public string InputDrawingUrl { get; set; }
-
         /// <summary>
         /// Relative path to top level assembly in ZIP with assembly.
         /// </summary>
@@ -45,7 +43,6 @@ namespace WebApplication.Definitions
         public string BomUrl { get; set; }
         public string DrawingUrl { get; set; }
         public string DrawingViewablesUrl { get; set; }
-        public string OutputDrawingUrl { get; set; }
     }
 
     /// <summary>

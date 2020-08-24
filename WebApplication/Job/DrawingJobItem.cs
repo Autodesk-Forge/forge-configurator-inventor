@@ -48,7 +48,7 @@ namespace WebApplication.Job
             // without generating URL here
             var drawingUrl = _linkGenerator.GetPathByAction(controller: "Download",
                                                             action: "Drawing",
-                                                            values: new { projectName = ProjectId, fileName = "drawing.zip", hash = _hash });
+                                                            values: new { projectName = ProjectId, hash = _hash });
 
             // send resulting URL to the client
             await resultSender.SendSuccessAsync(drawingUrl);

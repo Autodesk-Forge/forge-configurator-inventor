@@ -22,10 +22,8 @@ using System.Threading.Tasks;
 using Autodesk.Forge.Client;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Polly.Retry;
 using Shared;
 using WebApplication.Definitions;
-using WebApplication.Services;
 using WebApplication.State;
 using WebApplication.Utilities;
 

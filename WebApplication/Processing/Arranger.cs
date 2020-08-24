@@ -17,12 +17,9 @@
 /////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Autodesk.Forge.Client;
-using Microsoft.AspNetCore.Http;
 using Shared;
 using WebApplication.Definitions;
 using WebApplication.Services;

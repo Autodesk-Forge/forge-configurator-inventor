@@ -16,7 +16,6 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using Autodesk.Forge.DesignAutomation.Model;
 using System.Collections.Generic;
 using WebApplication.Definitions;
 
@@ -31,7 +30,7 @@ namespace WebApplication.Processing
         public override string Description => "Find all drawings and update them -> zip";
 
         protected override string OutputUrl(ProcessingArgs projectData) => projectData.DrawingUrl;
-        protected override string OutputName => "drawings";
+        protected override string OutputName => "drawing";
         protected override bool IsOutputZip => true;
         protected override bool IsOutputOptional => true;
 
