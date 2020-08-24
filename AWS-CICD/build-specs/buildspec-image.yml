@@ -15,11 +15,14 @@ phases:
       - echo Building Docker production image...
       - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG -f ./AWS-CICD/Dockerfile.image .
       - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG autodeskio/design-automation-demo:latest
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+      - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD
+      - docker push autodeskio/design-automation-demo:latest
       - sed -i 's/latest/'$IMAGE_TAG'/g' ./AWS-CICD/Dockerrun.aws.json
 artifacts:
   files:
