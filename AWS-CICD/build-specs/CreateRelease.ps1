@@ -1,4 +1,4 @@
-$version="1.0.$CODEBUILD_BUILD_ID"
+$version="1.0.$env:CODEBUILD_BUILD_ID"
 
 $targetConfiguration='Release'
 $targetRuntime='win7-x64'
@@ -8,11 +8,7 @@ $release_zip_filename="ForgeConvInv-$targetConfiguration-$targetRuntime-$version
 
 $githubReleasesApiUrl='https://api.github.com/repos/Developer-Autodesk/forge-configurator-inventor/releases'
 
-try
-{
-	Get-Variable -Name githubOAuthToken -ErrorAction Stop
-}
-catch
+if ($githubOAuthToken -eq $null)
 {
 	Write-Host 'Github OAuth token not defined. Please specify variable $githubOAuthToken'
 	exit 1
@@ -46,7 +42,7 @@ $param = @{
 					{
 						"tag_name" : "v$version",
 						"name" : "Release $version",
-						"body" : "Created out of commit hash $($CODEBUILD_RESOLVED_SOURCE_VERSION.Substring(0,7))"
+						"body" : "Created out of commit hash $($env:CODEBUILD_RESOLVED_SOURCE_VERSION.Substring(0,7))"
 					}
 "@
     ContentType = 'application/json'
