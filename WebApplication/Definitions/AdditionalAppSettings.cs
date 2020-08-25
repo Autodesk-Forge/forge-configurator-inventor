@@ -31,6 +31,7 @@ namespace WebApplication.Definitions
         public string CreateRFA { get; set; }
         public string CreateBOM { get; set; }
         public string ExportDrawing { get; set; }
+        public string UpdateDrawings { get; set; }
     }
 
     public class DefaultProjectsConfiguration

@@ -29,7 +29,6 @@ export const actionTypes = {
     SHOW_RFA_FAILED: 'SHOW_RFA_FAILED',
     SET_REPORT_URL: 'SET_REPORT_URL',
     SHOW_RFA_PROGRESS: 'SHOW_RFA_PROGRESS',
-    HIDE_RFA_PROGRESS: 'HIDE_RFA_PROGRESS',
     SET_RFA_LINK: 'SET_RFA_LINK',
     SHOW_UPLOAD_PACKAGE: 'SHOW_UPLOAD_PACKAGE',
     PACKAGE_FILE_EDITED: 'PACKAGE_FILE_EDITED',
@@ -40,6 +39,9 @@ export const actionTypes = {
     SET_PROJECT_CHECKED: 'SET_PROJECT_CHECKED',
     SET_CHECKED_PROJECTS: 'SET_CHECKED_PROJECTS',
     CLEAR_CHECKED_PROJECTS: 'CLEAR_CHECKED_PROJECTS',
+    SHOW_DRAWING_DOWNLOAD_FAILED: 'SHOW_DRAWING_DOWNLOAD_FAILED',
+    SHOW_DRAWING_DOWNLOAD_PROGRESS: 'SHOW_DRAWING_DOWNLOAD_PROGRESS',
+    SET_DRAWING_DOWNLOAD_LINK: 'SET_DRAWING_DOWNLOAD_LINK',
     SHOW_DRAWING_PROGRESS: 'SHOW_DRAWING_PROGRESS',
     SET_DRAWING_URL: 'SET_DRAWING_URL',
     INVALIDATE_DRAWING: 'INVALIDATE_DRAWING'
@@ -107,6 +109,13 @@ export const showRfaFailed = (visible) => {
     };
 };
 
+export const showDrawingDownloadFailed = (visible) => {
+    return {
+        type: actionTypes.SHOW_DRAWING_DOWNLOAD_FAILED,
+        visible
+    };
+};
+
 export const setReportUrlLink = (url) => {
     return {
         type: actionTypes.SET_REPORT_URL,
@@ -121,9 +130,23 @@ export const showRFAModalProgress = (visible) => {
     };
 };
 
+export const showDrawingDownloadModalProgress = (visible) => {
+    return {
+        type: actionTypes.SHOW_DRAWING_DOWNLOAD_PROGRESS,
+        visible
+    };
+};
+
 export const setRFALink = (url) => {
     return {
         type: actionTypes.SET_RFA_LINK,
+        url
+    };
+};
+
+export const setDrawingDownloadLink = (url) => {
+    return {
+        type: actionTypes.SET_DRAWING_DOWNLOAD_LINK,
         url
     };
 };

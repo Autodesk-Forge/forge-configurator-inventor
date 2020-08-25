@@ -41,6 +41,7 @@ namespace WebApplication.Definitions
         public string SatUrl { get; internal set; }
         public string RfaUrl { get; internal set; }
         public string BomUrl { get; set; }
+        public string DrawingUrl { get; set; }
         public string DrawingViewablesUrl { get; set; }
     }
 

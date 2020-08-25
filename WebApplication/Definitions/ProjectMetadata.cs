@@ -35,5 +35,8 @@ namespace WebApplication.Definitions
         public string TLA { get; set; }
 
         public bool IsAssembly => !string.IsNullOrEmpty(TLA);
+
+        [JsonPropertyName("hasDrawings")]
+        public bool HasDrawings { get; set; }
     }
 }

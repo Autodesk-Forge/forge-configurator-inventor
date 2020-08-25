@@ -28,6 +28,7 @@ namespace WebApplication.Processing
         private readonly CreateSAT _satWork;
         private readonly CreateRFA _rfaWork;
         private readonly ExportDrawing _exportDrawingWork;
+        private readonly UpdateDrawings _updateDrawingsWork;
         private readonly AdoptProject _adoptWork;
         private readonly UpdateProject _updateProjectWork;
         private readonly AppBundleZipPaths _paths;
@@ -39,6 +40,7 @@ namespace WebApplication.Processing
             _satWork = new CreateSAT(publisher);
             _rfaWork = new CreateRFA(publisher);
             _exportDrawingWork = new ExportDrawing(publisher);
+            _updateDrawingsWork = new UpdateDrawings(publisher);
             _adoptWork = new AdoptProject(publisher);
             _updateProjectWork = new UpdateProject(publisher);
             _paths = appBundleZipPathsOptionsAccessor.Value;
@@ -59,6 +61,7 @@ namespace WebApplication.Processing
             await _satWork.InitializeAsync(_paths.CreateSAT);
             await _rfaWork.InitializeAsync(_paths.CreateRFA);
             await _exportDrawingWork.InitializeAsync(_paths.ExportDrawing);
+            await _updateDrawingsWork.InitializeAsync(_paths.UpdateDrawings);
 
             await _adoptWork.InitializeAsync(null /* does not matter */);
             await _updateProjectWork.InitializeAsync(null /* does not matter */);
@@ -78,6 +81,7 @@ namespace WebApplication.Processing
             await _satWork.CleanUpAsync();
             await _rfaWork.CleanUpAsync();
             await _exportDrawingWork.CleanUpAsync();
+            await _updateDrawingsWork.CleanUpAsync();
 
             await _adoptWork.CleanUpAsync();
             await _updateProjectWork.CleanUpAsync();
@@ -111,16 +115,25 @@ namespace WebApplication.Processing
             if (!rfaResult.Success)
             {
                 rfaResult.ErrorMessage = "Failed to generate RFA file";
-                return rfaResult;
             }
 
             return rfaResult;
         }
 
+        internal async Task<ProcessingResult> GenerateDrawing(ProcessingArgs data)
+        {
+            ProcessingResult result = await _updateDrawingsWork.ProcessAsync(data);
+            if (!result.Success)
+            {
+                result.ErrorMessage = "Failed to update drawing file(s)";
+            }
+
+            return result;
+        }
+
         internal async Task<ProcessingResult> ExportDrawingAsync(ProcessingArgs drawingData)
         {
             return await _exportDrawingWork.ProcessAsync(drawingData);
-
         }
     }
 }
