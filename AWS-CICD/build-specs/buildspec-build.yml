@@ -39,7 +39,7 @@ phases:
       - xcopy /Y /E WebApplication\AppBundles\* app\AppBundles\
       - xcopy /Y /E WebApplication\ClientApp\output\* report\errorScreenShots\
       - xcopy /Y /E WebApplication\ClientApp\coverage\* report\coverage\
-      - .\AWS-CICD\CreateRelease.ps1
+      - if ($githubOAuthToken -ne $null) { .\AWS-CICD\build-specs\CreateRelease.ps1 }
 artifacts:
   files:
     - 'app/**/*'

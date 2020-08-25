@@ -1,4 +1,4 @@
-$version="1.0.$BUILD_NUMBER"
+$version="1.0.$CODEBUILD_BUILD_ID"
 
 $targetConfiguration='Release'
 $targetRuntime='win7-x64'
