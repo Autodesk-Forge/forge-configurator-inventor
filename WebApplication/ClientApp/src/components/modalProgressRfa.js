@@ -66,12 +66,13 @@ export class ModalProgressRfa extends Component {
                 <div className="modalLink">
                     <React.Fragment>
                     <HyperLink
-                    onAutostart={(downloadHyperlink) => {
-                        downloadHyperlink.click();
-                    }}
-                    prefix="Download should start automatically, if it doesn't, "
-                    link="click here" href={this.props.url}
-                    suffix=" to download it manually."/>
+                        onAutostart={(downloadHyperlink) => {
+                            downloadHyperlink.click();
+                        }}
+                        onUrlClick={this.props.onClose}
+                        prefix="Download should start automatically, if it doesn't, "
+                        link="click here" href={this.props.url}
+                        suffix=" to download it manually."/>
                     <Button className="button" style={
                         { width: '116px', height: '36px', borderRadius: '2px', marginLeft: '12px'}}
                         type="secondary"

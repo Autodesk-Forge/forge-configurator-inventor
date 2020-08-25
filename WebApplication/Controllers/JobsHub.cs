@@ -187,7 +187,7 @@ namespace WebApplication.Controllers
             await RunJobAsync(job);
         }
 
-        public async Task RunJobAsync(JobItemBase job)
+        private async Task RunJobAsync(JobItemBase job)
         {
             try
             {

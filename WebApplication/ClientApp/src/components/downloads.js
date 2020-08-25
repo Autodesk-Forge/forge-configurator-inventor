@@ -210,7 +210,6 @@ export class Downloads extends Component {
                     icon='/Archive.svg'
                     onClose={() => this.onRfaProgressCloseClick()}
                     url={this.props.rfaDownloadUrl}
-                    onUrlClick={() => this.onRfaProgressCloseClick()}
                     />}
                 {this.props.rfaFailedShowing && <ModalFail
                     open={true}
@@ -223,19 +222,19 @@ export class Downloads extends Component {
                 {this.props.drawingDownloadProgressShowing && <ModalProgressRfa
                     open={true}
                     title="Preparing Drawings"
-                    label={this.props.activeProject.id}
+                    label={project.id}
                     icon='/Archive.svg'
                     onClose={() => this.onDrawingDownloadProgressCloseClick()}
                     url={this.props.drawingDownloadUrl}
-                    onUrlClick={() => this.onDrawingDownloadProgressCloseClick()}
                     />}
                 {this.props.drawingDownloadFailedShowing && <ModalFail
                     open={true}
                     title="Preparing Drawings Failed"
                     contentName="Project:"
-                    label={this.props.activeProject.id}
+                    label={project.id}
                     onClose={() => this.onDrawingDownloadFailedCloseClick()}
-                    url={this.props.reportUrl}/>}
+                    url={this.props.reportUrl}/>
+                    }
         </React.Fragment>
         );
     }
