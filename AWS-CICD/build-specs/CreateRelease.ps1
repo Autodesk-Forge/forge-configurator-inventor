@@ -22,6 +22,7 @@ $app_publish_dir=".\WebApplication\bin\$targetConfiguration\$dotnetCore\$targetR
 ##############################
 Write-Host "Building App"
 dotnet publish --configuration $targetConfiguration --runtime $targetRuntime .\WebApplication\WebApplication.csproj
+rm $app_publish_dir\appsettings.Local.json
 
 Write-Host "Including app bundles"
 xcopy /Y /E .\WebApplication\AppBundles\* "$app_publish_dir\AppBundles\"
