@@ -9,7 +9,6 @@ phases:
       - (Get-Content AppBundles\InventorBinFolder.props).replace('PATH_TO_YOUR_INVENTOR_BIN', $(pwd).path) | Set-Content AppBundles\InventorBinFolder.props
   build:
     commands:
-      - if ($githubOAuthToken -ne $null) { .\AWS-CICD\build-specs\CreateRelease.ps1 }
       - $slnDir=$PWD.ToString()
       - echo "Selecting right ClientId and Secret from the list"
       - .\AWS-CICD\build-specs\setClientId.ps1

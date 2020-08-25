@@ -21,11 +21,12 @@ $app_publish_dir=".\WebApplication\bin\$targetConfiguration\$dotnetCore\$targetR
 #build WebApplication project
 ##############################
 Write-Host "Building App"
-
 dotnet publish --configuration $targetConfiguration --runtime $targetRuntime .\WebApplication\WebApplication.csproj
 
-# xcopy /Y /E .\AppBundles\* "$app_publish_dir\AppBundles\"
+Write-Host "Including app bundles"
+xcopy /Y /E .\AppBundles\* "$app_publish_dir\AppBundles\"
 
+Write-Host "Zipping the App"
 Compress-Archive -Path "$app_publish_dir\*" -DestinationPath "$release_zip_filename" -Force
 
 Write-Host "Release file created: $release_zip_filename"
@@ -49,7 +50,6 @@ $param = @{
     ContentType = 'application/json'
 }
 
-Write-Host $param
 $create_release_ret=Invoke-RestMethod @param
 
 Write-Host "Created github release with ID $($create_release_ret.id)"
