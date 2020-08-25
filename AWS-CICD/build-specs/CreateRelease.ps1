@@ -46,7 +46,7 @@ $param = @{
 					{
 						"tag_name" : "v$version",
 						"name" : "Release $version",
-						"body" : "Created out of commit hash $($GIT_COMMIT.Substring(0,7))"
+						"body" : "Created out of commit hash $($CODEBUILD_RESOLVED_SOURCE_VERSION.Substring(0,7))"
 					}
 "@
     ContentType = 'application/json'
