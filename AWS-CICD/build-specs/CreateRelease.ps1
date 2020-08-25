@@ -1,4 +1,4 @@
-$version="1.0.$env:CODEBUILD_BUILD_ID"
+$version="1.0.$env:CODEBUILD_BUILD_NUMBER"
 
 $targetConfiguration='Release'
 $targetRuntime='win7-x64'
@@ -24,12 +24,13 @@ Write-Host "Building App"
 
 dotnet publish --configuration $targetConfiguration --runtime $targetRuntime .\WebApplication\WebApplication.csproj
 
-xcopy /Y /E .\AppBundles\* "$app_publish_dir\AppBundles\"
+# xcopy /Y /E .\AppBundles\* "$app_publish_dir\AppBundles\"
 
 Compress-Archive -Path "$app_publish_dir\*" -DestinationPath "$release_zip_filename" -Force
 
 Write-Host "Release file created: $release_zip_filename"
 
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 ##############################
 #create a new github release
@@ -47,6 +48,8 @@ $param = @{
 "@
     ContentType = 'application/json'
 }
+
+Write-Host $param
 $create_release_ret=Invoke-RestMethod @param
 
 Write-Host "Created github release with ID $($create_release_ret.id)"
