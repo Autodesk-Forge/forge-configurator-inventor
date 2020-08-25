@@ -24,7 +24,7 @@ Write-Host "Building App"
 dotnet publish --configuration $targetConfiguration --runtime $targetRuntime .\WebApplication\WebApplication.csproj
 
 Write-Host "Including app bundles"
-xcopy /Y /E .\AppBundles\* "$app_publish_dir\AppBundles\"
+xcopy /Y /E .\WebApplication\AppBundles\* "$app_publish_dir\AppBundles\"
 
 Write-Host "Zipping the App"
 Compress-Archive -Path "$app_publish_dir\*" -DestinationPath "$release_zip_filename" -Force
