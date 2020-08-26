@@ -87,7 +87,7 @@ describe('downloadActions', () => {
             const actions = store.getActions();
             // there are two SET_REPORT_URL actions in the list. The first one come from job start and is called with null to clear old data...
             expect(actions.some(a => (a.type === uiFlagsActionTypes.SET_REPORT_URL && a.url === errorReportLink))).toEqual(true);
-            expect(actions.some(a => a.type === uiFlagsActionTypes.SHOW_RFA_FAILED)).toEqual(true);
+            expect(actions.some(a => a.type === uiFlagsActionTypes.SHOW_DOWNLOAD_FAILED)).toEqual(true);
         });
     });
 
@@ -110,7 +110,7 @@ describe('downloadActions', () => {
             const actions = store.getActions();
             // there are two SET_REPORT_URL actions in the list. The first one come from job start and is called with null to clear old data...
             expect(actions.some(a => (a.type === uiFlagsActionTypes.SET_REPORT_URL && a.url === errorReportLink))).toEqual(true);
-            expect(actions.some(a => a.type === uiFlagsActionTypes.SHOW_DRAWING_DOWNLOAD_FAILED)).toEqual(true);
+            expect(actions.some(a => a.type === uiFlagsActionTypes.SHOW_DOWNLOAD_FAILED)).toEqual(true);
         });
 
         it('check fetchDrawing action', async () => {

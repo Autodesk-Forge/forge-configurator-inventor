@@ -26,9 +26,9 @@ class JobManager {
 
     async startConnection() {
         const connection = new signalR.HubConnectionBuilder()
-        .withUrl('/signalr/connection')
-        .configureLogging(signalR.LogLevel.Trace)
-        .build();
+                            .withUrl('/signalr/connection')
+                            .configureLogging(signalR.LogLevel.Warning)
+                            .build();
 
         await connection.start();
         return connection;
@@ -58,33 +58,6 @@ class JobManager {
         await connection.invoke('CreateUpdateJob', projectId, parameters, repo.getAccessToken());
     }
 
-    async doRFAJob(projectId, hash, onStart, onComplete, onError) {
-        const connection = await this.startConnection();
-
-        if (onStart)
-            onStart();
-
-        connection.on("onComplete", (rfaUrl) => {
-            // stop connection
-            connection.stop();
-
-            if (onComplete) {
-                if (repo.getAccessToken()) {
-                    rfaUrl += "/" + repo.getAccessToken();
-                }
-                onComplete(rfaUrl);
-            }
-        });
-
-        connection.on("onError", (jobId, reportUrl) => {
-            connection.stop();
-
-            if (onError)
-                onError(jobId, reportUrl);
-        });
-
-        await connection.invoke('CreateRFAJob', projectId, hash, repo.getAccessToken());
-    }
 
     async doAdoptJob(packageId, onStart, onComplete, onError) {
         const connection = await this.startConnection();
@@ -110,32 +83,42 @@ class JobManager {
         await connection.invoke('CreateAdoptJob', packageId, repo.getAccessToken());
     }
 
-    async doDrawingDownloadJob(projectId, hash, onStart, onComplete, onError) {
+    /**
+     * Generic way to generate a download and get URL to it.
+     *
+     * @param methodName SignalR method to call.
+     * @param projectId  Project ID.
+     * @param hash       Parameters hash.
+     * @param onStart    Callback to be called on start. No arguments.
+     * @param onSuccess  Callback to be called on success. Argument: url to the generated download.
+     * @param onError    Callback to be called on error. Arguments: job ID, report url.
+     * */
+    async doDownloadJob(methodName, projectId, hash, onStart, onSuccess, onError) {
+
         const connection = await this.startConnection();
 
-        if (onStart)
-            onStart();
+        if (onStart) onStart();
 
-        connection.on("onComplete", (drawingUrl) => {
-            // stop connection
+        connection.on("onComplete", downloadUrl => {
+
             connection.stop();
 
-            if (onComplete) {
-                if (repo.getAccessToken()) {
-                    drawingUrl += "/" + repo.getAccessToken();
+            if (onSuccess) {
+                const token = repo.getAccessToken();
+                if (token) {
+                    downloadUrl += "/" + token;
                 }
-                onComplete(drawingUrl);
+                onSuccess(downloadUrl);
             }
         });
 
         connection.on("onError", (jobId, reportUrl) => {
-            connection.stop();
 
-            if (onError)
-                onError(jobId, reportUrl);
+            connection.stop();
+            if (onError) onError(jobId, reportUrl);
         });
 
-        await connection.invoke('CreateDrawingDownloadJob', projectId, hash, repo.getAccessToken());
+        await connection.invoke(methodName, projectId, hash, repo.getAccessToken());
     }
 
     async doDrawingExportJob(projectId, hash, onStart, onComplete, onError) {

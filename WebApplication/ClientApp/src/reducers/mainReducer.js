@@ -88,8 +88,8 @@ export const loginFailedShowing = function(state) {
     return uiFlags.loginFailedShowing(state.uiFlags);
 };
 
-export const downloadRfaFailedShowing = function(state) {
-    return uiFlags.downloadRfaFailedShowing(state.uiFlags);
+export const downloadFailedShowing = function(state) {
+    return uiFlags.downloadFailedShowing(state.uiFlags);
 };
 
 export const downloadDrawingFailedShowing = function(state) {

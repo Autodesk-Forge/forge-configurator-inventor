@@ -26,8 +26,7 @@ export const initialState = {
    modalProgressShowing: false,
    updateFailedShowing: false,
    loginFailedShowing: false,
-   downloadRfaFailedShowing: false,
-   downloadDrawingFailedShowing: false,
+   downloadFailedShowing: false,
    reportUrl: null,
    downloadProgressShowing: null,
    downloadProgressTitle: null,
@@ -57,8 +56,8 @@ export const loginFailedShowing = function(state) {
    return state.loginFailedShowing;
 };
 
-export const downloadRfaFailedShowing = function(state) {
-   return state.downloadRfaFailedShowing;
+export const downloadFailedShowing = function(state) {
+   return state.downloadFailedShowing;
 };
 
 export const downloadDrawingFailedShowing = function(state) {
@@ -142,7 +141,7 @@ export default function(state = initialState, action) {
       case uiFlagsActionTypes.SHOW_LOGIN_FAILED:
          return { ...state, loginFailedShowing: action.visible};
       case uiFlagsActionTypes.SHOW_RFA_FAILED:
-         return { ...state, downloadRfaFailedShowing: action.visible};
+         return { ...state, downloadFailedShowing: action.visible};
       case uiFlagsActionTypes.SET_REPORT_URL:
          return { ...state, reportUrl: action.url};
       case uiFlagsActionTypes.SHOW_DOWNLOAD_PROGRESS:

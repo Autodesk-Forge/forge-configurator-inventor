@@ -149,7 +149,7 @@ describe('Downloads components', () => {
       const downloadUrl='downloadUrl';
       const failedReportUrl='failedReportUrl';
       const rfaProps = { ...props, downloadProgressShowing:true, downloadUrl:downloadUrl, showDownloadProgress: showModalProgressMock };
-      const rfaFailedProps = { ...props, rfaFailedShowing:true, reportUrl:failedReportUrl, showRfaFailed:showFailedMock};
+      const rfaFailedProps = { ...props, downloadFailedShowing:true, reportUrl:failedReportUrl, showDownloadFailed: showFailedMock };
 
       beforeEach(() => {
         showModalProgressMock.mockClear();

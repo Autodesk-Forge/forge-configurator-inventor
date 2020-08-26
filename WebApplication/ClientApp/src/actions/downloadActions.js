@@ -18,7 +18,7 @@
 
 import { addError, addLog } from './notificationActions';
 import { Jobs } from '../JobManager';
-import { showDownloadProgress, showRfaFailed, setDownloadLink, setReportUrlLink } from './uiFlagsActions';
+import { showDownloadProgress, showDownloadFailed, setDownloadLink, setReportUrlLink } from './uiFlagsActions';
 import { showDrawingExportProgress, setDrawingPdfUrl } from './uiFlagsActions';
 
 export const getDownloadLink = (projectId, hash, title, methodName) => async (dispatch) => {
@@ -50,7 +50,7 @@ export const getDownloadLink = (projectId, hash, title, methodName) => async (di
                 dispatch(showDownloadProgress(false, null));
                 // show error modal dialog
                 dispatch(setReportUrlLink(reportUrl));
-                dispatch(showRfaFailed(true));
+                dispatch(showDownloadFailed(true));
             }
         );
     } catch (error) {
@@ -87,7 +87,7 @@ export const getRFADownloadLink = (projectId, hash) => async (dispatch) => {
                 dispatch(showDownloadProgress(false, null));
                 // show error modal dialog
                 dispatch(setReportUrlLink(reportUrl));
-                dispatch(showRfaFailed(true));
+                dispatch(showDownloadFailed(true));
             }
         );
     } catch (error) {
@@ -124,7 +124,7 @@ export const getDrawingDownloadLink = (projectId, hash) => async (dispatch) => {
                 dispatch(showDownloadProgress(false, null));
                 // show error modal dialog
                 dispatch(setReportUrlLink(reportUrl));
-                dispatch(showRfaFailed(true));
+                dispatch(showDownloadFailed(true));
             }
         );
     } catch (error) {

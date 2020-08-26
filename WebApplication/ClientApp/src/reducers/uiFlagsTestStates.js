@@ -22,7 +22,7 @@ export const testState = {
     modalProgressShowing: 3,
     updateFailedShowing: 4,
     loginFailedShowing: 5,
-    downloadRfaFailedShowing: 6,
+    downloadFailedShowing: 6,
     downloadDrawingFailedShowing: 7,
     reportUrl: 8,
     downloadProgressShowing: 9,

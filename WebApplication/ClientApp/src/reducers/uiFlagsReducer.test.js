@@ -157,8 +157,8 @@ describe('uiFlags reducer', () => {
       it('sets the loginFailedShowing', () => {
          expect(uiFlagsReducer({}, uiFlagsActions.showLoginFailed(true)).loginFailedShowing).toEqual(true);
       }),
-      it('sets the downloadRfaFailedShowing', () => {
-         expect(uiFlagsReducer({}, uiFlagsActions.showRfaFailed(true)).downloadRfaFailedShowing).toEqual(true);
+      it('sets the downloadFailedShowing', () => {
+         expect(uiFlagsReducer({}, uiFlagsActions.showRfaFailed(true)).downloadFailedShowing).toEqual(true);
       }),
       it('sets the reportUrl', () => {
          expect(uiFlagsReducer({}, uiFlagsActions.setReportUrlLink('a link')).reportUrl).toEqual('a link');

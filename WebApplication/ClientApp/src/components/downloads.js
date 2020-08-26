@@ -20,11 +20,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import BaseTable, { AutoResizer, Column } from 'react-base-table';
 import 'react-base-table/styles.css';
-import { getActiveProject, downloadProgressShowing, downloadProgressTitle, downloadUrl as downloadUrl, downloadRfaFailedShowing, reportUrl } from '../reducers/mainReducer';
+import { getActiveProject, downloadProgressShowing, downloadProgressTitle, downloadUrl, downloadFailedShowing, reportUrl } from '../reducers/mainReducer';
 import { downloadDrawingFailedShowing } from '../reducers/mainReducer';
-import { getDrawingDownloadLink, getDownloadLink } from '../actions/downloadActions';
-import { showDownloadProgress, showRfaFailed } from '../actions/uiFlagsActions';
-import { showDrawingDownloadModalProgress, showDrawingDownloadFailed } from '../actions/uiFlagsActions';
+import { getDownloadLink } from '../actions/downloadActions';
+import { showDownloadProgress, showDownloadFailed } from '../actions/uiFlagsActions';
 import ModalDownloadProgress from './modalDownloadProgress';
 import ModalFail from './modalFail';
 
@@ -188,12 +187,12 @@ export class Downloads extends Component {
                     onClose={ () => this.props.showDownloadProgress(false) }
                     url={ this.props.downloadUrl } />}
 
-                {this.props.rfaFailedShowing && <ModalFail
+                {this.props.downloadFailedShowing && <ModalFail
                     open={true}
                     title={ `${this.props.downloadProgressTitle} Failed` }
                     contentName="Project:"
                     label={project.id}
-                    onClose={ () => this.props.showRfaFailed(false) }
+                    onClose={ () => this.props.showDownloadFailed(false) }
                     url={this.props.reportUrl}/>}
 
         </React.Fragment>
@@ -208,9 +207,9 @@ export default connect(function(store) {
         activeProject: activeProject,
         downloadProgressShowing: downloadProgressShowing(store),
         downloadProgressTitle: downloadProgressTitle(store),
-        rfaFailedShowing: downloadRfaFailedShowing(store),
+        downloadFailedShowing: downloadFailedShowing(store),
         downloadUrl: downloadUrl(store),
         reportUrl: reportUrl(store),
         drawingDownloadFailedShowing: downloadDrawingFailedShowing(store)
     };
-}, { Downloads, getDownloadLink, showDownloadProgress, showRfaFailed, getDrawingDownloadLink, showDrawingDownloadModalProgress, showDrawingDownloadFailed })(Downloads);
+}, { Downloads, getDownloadLink, showDownloadProgress, showDownloadFailed })(Downloads);
