@@ -20,6 +20,7 @@ import React, { Component } from 'react';
 import Avatar from '@hig/avatar';
 import "./userDetails.css";
 import Button from '@hig/button';
+import HyperLink from './hyperlink';
 
 class UserDetails extends Component {
     constructor(props) {
@@ -50,6 +51,9 @@ class UserDetails extends Component {
                             title={this.props.profile.isLoggedIn ? "Sign Out" : "Sign In"}
                             onClick={this.handleAuthClick}
                         />
+                <span className="hyperlink">
+                    <a href="https://github.com/Developer-Autodesk/forge-configurator-inventor/blob/master/README.md">Show documentation</a>
+                </span>
             </div>
         );
     }
