@@ -17,7 +17,9 @@
 /////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Autodesk.Forge.Client;
 using Microsoft.AspNetCore.Http;
@@ -97,7 +99,7 @@ namespace WebApplication
                     retryCount: 4,
                     retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
                     (exception, timeSpan) => _logger.LogWarning("Cannot get fresh OSS bucket. Repeating")
-                ); 
+                );
 
             // publish default project files (specified by the appsettings.json)
             foreach (DefaultProjectConfiguration defaultProjectConfig in _defaultProjectsConfiguration.Projects)
@@ -132,12 +134,14 @@ namespace WebApplication
                 _logger.LogInformation($"Nothing to delete because bucket {_bucket.BucketKey} does not exists yet");
             }
 
-            if (deleteUserBuckets) {
+            if (deleteUserBuckets)
+            {
                 _logger.LogInformation($"Deleting user buckets for registered users");
                 // delete all user buckets
                 var buckets = await _bucket.GetBucketsAsync();
                 string userBucketPrefix = _userResolver.GetBucketPrefix();
-                foreach (string bucket in buckets) {
+                foreach (string bucket in buckets)
+                {
                     if (bucket.Contains(userBucketPrefix))
                     {
                         _logger.LogInformation($"Deleting user bucket {bucket}");
@@ -149,8 +153,9 @@ namespace WebApplication
             // delete bundles and activities
             await _fdaClient.CleanUpAsync();
 
-            // cleanup locally cached files
-            Directory.Delete(_localCache.LocalRootName, true);
+            // cleanup locally cached files but keep the directory as it is initialized at the start of the app and needed to run the web server
+            Directory.EnumerateFiles(_localCache.LocalRootName).ToList().ForEach((string filePath) => File.Delete(filePath));
+            Directory.EnumerateDirectories(_localCache.LocalRootName).ToList().ForEach((string dirPath) => Directory.Delete(dirPath, true));
         }
     }
 }

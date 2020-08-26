@@ -16,6 +16,8 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
+using System;
+
 namespace WebApplication.Definitions
 {
     // Strongly typed classes for settings defined in appsettings.json to be deserialized to
@@ -35,7 +37,7 @@ namespace WebApplication.Definitions
 
     public class DefaultProjectsConfiguration
     {
-        public DefaultProjectConfiguration[] Projects { get; set; }
+        public DefaultProjectConfiguration[] Projects { get; set; } = Array.Empty<DefaultProjectConfiguration>();
     }
 
     public class DefaultProjectConfiguration : ProjectInfo
