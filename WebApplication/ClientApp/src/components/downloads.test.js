@@ -176,7 +176,7 @@ describe('Downloads components', () => {
         const wrapper = shallow(<Downloads { ...rfaProps} />);
         const dlg = wrapper.find('ModalDownloadProgress');
 
-        dlg.simulate('urlClick');
+        dlg.simulate('urlClick'); // TODO: the 'urlClick' moved inside ModalDownloadProgress.HyperLink, I guess this is why it does not work anymore
         expect(showModalProgressMock).toBeCalledWith(false);
       });
 
@@ -197,7 +197,7 @@ describe('Downloads components', () => {
       });
     });
 
-    describe('Drawings', () => {
+    describe('Drawings', () => { // TODO: some unit tests are not required anymore, since the same dialogs used for different downloads
       const showModalProgressMock = jest.fn();
       const showFailedMock = jest.fn();
       const downloadUrl='downloadUrl';
@@ -230,7 +230,7 @@ describe('Downloads components', () => {
         const wrapper = shallow(<Downloads { ...drwProps} />);
         const dlg = wrapper.find('ModalDownloadProgress');
 
-        dlg.simulate('urlClick');
+        dlg.simulate('urlClick');  // TODO: the 'urlClick' moved inside ModalDownloadProgress.HyperLink, I guess this is why it does not work anymore
         expect(showModalProgressMock).toBeCalledWith(false);
       });
 
