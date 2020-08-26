@@ -199,7 +199,7 @@ export default function(state = initialState, action) {
       case uiFlagsActionTypes.SHOW_DRAWING_DOWNLOAD_FAILED:
          return { ...state, downloadDrawingFailedShowing: action.visible};
       case uiFlagsActionTypes.SHOW_DRAWING_DOWNLOAD_PROGRESS:
-         return { ...state, drawingDownloadProgressShowing: action.visible};
+         return { ...state, drawingDownloadProgressShowing: action.visible, drawingDownloadUrl: null };
       case uiFlagsActionTypes.SET_DRAWING_DOWNLOAD_LINK:
          return { ...state, drawingDownloadUrl: action.url};
       case uiFlagsActionTypes.SHOW_DRAWING_PROGRESS:
