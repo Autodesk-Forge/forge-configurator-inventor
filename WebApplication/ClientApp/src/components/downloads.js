@@ -20,10 +20,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import BaseTable, { AutoResizer, Column } from 'react-base-table';
 import 'react-base-table/styles.css';
-import { getActiveProject, rfaProgressShowing, rfaDownloadUrl, downloadRfaFailedShowing, reportUrl } from '../reducers/mainReducer';
-import { drawingDownloadProgressShowing, drawingDownloadUrl, downloadDrawingFailedShowing } from '../reducers/mainReducer';
+import { getActiveProject, downloadProgressShowing, rfaDownloadUrl, downloadRfaFailedShowing, reportUrl } from '../reducers/mainReducer';
+import { drawingDownloadUrl, downloadDrawingFailedShowing } from '../reducers/mainReducer';
 import { getRFADownloadLink, getDrawingDownloadLink } from '../actions/downloadActions';
-import { showRFAModalProgress, showRfaFailed } from '../actions/uiFlagsActions';
+import { showDownloadProgress, showRfaFailed } from '../actions/uiFlagsActions';
 import { showDrawingDownloadModalProgress, showDrawingDownloadFailed } from '../actions/uiFlagsActions';
 import ModalDownloadProgress from './modalDownloadProgress';
 import ModalFail from './modalFail';
@@ -117,9 +117,7 @@ export class Downloads extends Component {
                 type: 'RFA',
                 env: 'Model',
                 link: deadEndLink('RFA'),
-                clickHandler: async () => {
-                    this.props.getRFADownloadLink(project.id, project.hash);
-                }
+                clickHandler: async () => this.props.getRFADownloadLink(project.id, project.hash)
             });
 
             if (bomDownloadUrl && project.isAssembly) {
@@ -149,9 +147,7 @@ export class Downloads extends Component {
                         type: 'IDW',
                         env: 'Model',
                         link: deadEndLink('Drawing'),
-                        clickHandler: async () => {
-                            this.props.getDrawingDownloadLink(project.id, project.hash);
-                        }
+                        clickHandler: async () => this.props.getDrawingDownloadLink(project.id, project.hash)
                     });
 
                 data.push(
@@ -186,13 +182,13 @@ export class Downloads extends Component {
                     />;
                 }}
             </AutoResizer>
-                {this.props.rfaProgressShowing && <ModalDownloadProgress
+                {this.props.downloadProgressShowing && <ModalDownloadProgress
                     open={true}
                     title="Preparing RFA"
                     label={project.id}
                     icon='/Archive.svg'
-                    onClose={ () => this.props.showRFAModalProgress(false) }
-                    url={this.props.rfaDownloadUrl}
+                    onClose={ () => this.props.showDownloadProgress(false) }
+                    url={ this.props.rfaDownloadUrl }
                     />}
                 {this.props.rfaFailedShowing && <ModalFail
                     open={true}
@@ -202,13 +198,13 @@ export class Downloads extends Component {
                     onClose={ () => this.props.showRfaFailed(false) }
                     url={this.props.reportUrl}/>}
 
-                {this.props.drawingDownloadProgressShowing && <ModalDownloadProgress
+                {/* {this.props.drawingDownloadProgressShowing && <ModalDownloadProgress
                     open={true}
                     title="Preparing Drawings"
                     label={project.id}
                     icon='/Archive.svg'
                     onClose={ () => this.props.showDrawingDownloadModalProgress(false) }
-                    url={this.props.drawingDownloadUrl}
+                    url={ this.props.drawingDownloadUrl }
                     />}
                 {this.props.drawingDownloadFailedShowing && <ModalFail
                     open={true}
@@ -217,7 +213,7 @@ export class Downloads extends Component {
                     label={project.id}
                     onClose={() => this.props.showDrawingDownloadFailed(false) }
                     url={this.props.reportUrl}/>
-                    }
+                    } */}
         </React.Fragment>
         );
     }
@@ -228,12 +224,12 @@ export default connect(function(store) {
     const activeProject = getActiveProject(store);
     return {
         activeProject: activeProject,
-        rfaProgressShowing: rfaProgressShowing(store),
+        downloadProgressShowing: downloadProgressShowing(store),
         rfaFailedShowing: downloadRfaFailedShowing(store),
         rfaDownloadUrl: rfaDownloadUrl(store),
         reportUrl: reportUrl(store),
-        drawingDownloadProgressShowing: drawingDownloadProgressShowing(store),
+//        drawingDownloadProgressShowing: drawingDownloadProgressShowing(store),
         drawingDownloadFailedShowing: downloadDrawingFailedShowing(store),
         drawingDownloadUrl: drawingDownloadUrl(store),
     };
-}, { Downloads, getRFADownloadLink, showRFAModalProgress, showRfaFailed, getDrawingDownloadLink, showDrawingDownloadModalProgress, showDrawingDownloadFailed })(Downloads);
+}, { Downloads, getRFADownloadLink, showDownloadProgress, showRfaFailed, getDrawingDownloadLink, showDrawingDownloadModalProgress, showDrawingDownloadFailed })(Downloads);

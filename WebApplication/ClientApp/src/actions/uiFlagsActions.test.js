@@ -78,8 +78,8 @@ describe('uiFlagsActions', () => {
         expect(store.getActions()).toMatchSnapshot();
     });
 
-    it('check showRFAModalProgress action', () => {
-        store.dispatch(uiFlagsActions.showRFAModalProgress(true));
+    it('check showDownloadProgress action', () => {
+        store.dispatch(uiFlagsActions.showDownloadProgress(true));
         expect(store.getActions()).toMatchSnapshot();
     });
 

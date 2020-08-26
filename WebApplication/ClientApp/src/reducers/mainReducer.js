@@ -100,12 +100,8 @@ export const reportUrl = function(state) {
     return uiFlags.reportUrl(state.uiFlags);
 };
 
-export const rfaProgressShowing = function(state) {
-    return uiFlags.rfaProgressShowing(state.uiFlags);
-};
-
-export const drawingDownloadProgressShowing = function(state) {
-    return uiFlags.drawingDownloadProgressShowing(state.uiFlags);
+export const downloadProgressShowing = function(state) {
+    return uiFlags.downloadProgressShowing(state.uiFlags);
 };
 
 export const rfaDownloadUrl = function(state) {

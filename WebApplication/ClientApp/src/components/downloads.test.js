@@ -148,7 +148,7 @@ describe('Downloads components', () => {
       const showFailedMock = jest.fn();
       const rfaDownloadUrl='rfaDownloadUrl';
       const failedReportUrl='failedReportUrl';
-      const rfaProps = { ...props, rfaProgressShowing:true, rfaDownloadUrl:rfaDownloadUrl, showRFAModalProgress:showModalProgressMock};
+      const rfaProps = { ...props, downloadProgressShowing:true, rfaDownloadUrl:rfaDownloadUrl, showDownloadProgress: showModalProgressMock };
       const rfaFailedProps = { ...props, rfaFailedShowing:true, reportUrl:failedReportUrl, showRfaFailed:showFailedMock};
 
       beforeEach(() => {
@@ -202,7 +202,7 @@ describe('Downloads components', () => {
       const showFailedMock = jest.fn();
       const downloadUrl='downloadUrl';
       const failedReportUrl='failedReportUrl';
-      const drwProps = { ...props, drawingDownloadProgressShowing:true, drawingDownloadUrl:downloadUrl, showDrawingDownloadModalProgress:showModalProgressMock};
+      const drwProps = { ...props, downloadProgressShowing:true, drawingDownloadUrl:downloadUrl, showDrawingDownloadModalProgress:showModalProgressMock};
       const drwFailedProps = { ...props, drawingDownloadFailedShowing:true, reportUrl:failedReportUrl, showDrawingDownloadFailed:showFailedMock};
 
       beforeEach(() => {

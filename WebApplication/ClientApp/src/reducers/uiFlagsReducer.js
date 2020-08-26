@@ -29,8 +29,9 @@ export const initialState = {
    downloadRfaFailedShowing: false,
    downloadDrawingFailedShowing: false,
    reportUrl: null,
-   rfaProgressShowing: null,
-   drawingDownloadProgressShowing: null,
+   downloadProgressShowing: null,
+   downloadProgressTitle: null,
+//   drawingDownloadProgressShowing: null,
    rfaDownloadUrl: null,
    drawingDownloadUrl: null,
    showUploadPackage: false,
@@ -70,13 +71,13 @@ export const reportUrl = function(state) {
    return state.reportUrl;
 };
 
-export const rfaProgressShowing = function(state) {
-   return state.rfaProgressShowing;
+export const downloadProgressShowing = function(state) {
+   return state.downloadProgressShowing;
 };
 
-export const drawingDownloadProgressShowing = function(state) {
-   return state.drawingDownloadProgressShowing;
-};
+// export const drawingDownloadProgressShowing = function(state) {
+//    return state.drawingDownloadProgressShowing;
+// };
 
 export const rfaDownloadUrl = function(state) {
    return state.rfaDownloadUrl;
@@ -150,8 +151,8 @@ export default function(state = initialState, action) {
          return { ...state, downloadRfaFailedShowing: action.visible};
       case uiFlagsActionTypes.SET_REPORT_URL:
          return { ...state, reportUrl: action.url};
-      case uiFlagsActionTypes.SHOW_RFA_PROGRESS:
-         return { ...state, rfaProgressShowing: action.visible, rfaDownloadUrl: null};
+      case uiFlagsActionTypes.SHOW_DOWNLOAD_PROGRESS:
+         return { ...state, downloadProgressShowing: action.visible, rfaDownloadUrl: null, downloadProgressTitle: action.title };
       case uiFlagsActionTypes.SET_RFA_LINK:
          return { ...state, rfaDownloadUrl: action.url};
       case uiFlagsActionTypes.SHOW_UPLOAD_PACKAGE:
@@ -199,7 +200,7 @@ export default function(state = initialState, action) {
       case uiFlagsActionTypes.SHOW_DRAWING_DOWNLOAD_FAILED:
          return { ...state, downloadDrawingFailedShowing: action.visible};
       case uiFlagsActionTypes.SHOW_DRAWING_DOWNLOAD_PROGRESS:
-         return { ...state, drawingDownloadProgressShowing: action.visible, drawingDownloadUrl: null };
+         return { ...state, downloadProgressShowing: action.visible, drawingDownloadUrl: null };
       case uiFlagsActionTypes.SET_DRAWING_DOWNLOAD_LINK:
          return { ...state, drawingDownloadUrl: action.url};
       case uiFlagsActionTypes.SHOW_DRAWING_PROGRESS:
