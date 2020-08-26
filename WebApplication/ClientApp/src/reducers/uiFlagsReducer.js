@@ -140,7 +140,7 @@ export default function(state = initialState, action) {
          return { ...state, updateFailedShowing: action.visible};
       case uiFlagsActionTypes.SHOW_LOGIN_FAILED:
          return { ...state, loginFailedShowing: action.visible};
-      case uiFlagsActionTypes.SHOW_RFA_FAILED:
+      case uiFlagsActionTypes.SHOW_DOWNLOAD_FAILED:
          return { ...state, downloadFailedShowing: action.visible};
       case uiFlagsActionTypes.SET_REPORT_URL:
          return { ...state, reportUrl: action.url};

@@ -79,7 +79,7 @@ describe('uiFlagsActions', () => {
     });
 
     it('check showDownloadProgress action', () => {
-        store.dispatch(uiFlagsActions.showDownloadProgress(true));
+        store.dispatch(uiFlagsActions.showDownloadProgress(true, "Some dialog title"));
         expect(store.getActions()).toMatchSnapshot();
     });
 
