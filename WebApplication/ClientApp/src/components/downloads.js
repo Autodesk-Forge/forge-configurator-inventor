@@ -39,8 +39,8 @@ const Icon = ({ iconname }) => (
 const iconRenderer = ({ cellData: iconname }) => <Icon iconname={iconname} />;
 
 /** Hyperlink, which leads nowhere. */
-function deadEndLink(props) {
-    return <a href='' onClick={(e) => { e.preventDefault(); }}>{ props.title }</a>;
+function deadEndLink(title) {
+    return <a href='' onClick={(e) => { e.preventDefault(); }}>{ title }</a>;
 }
 
 export const downloadColumns = [
@@ -116,7 +116,7 @@ export class Downloads extends Component {
                 icon: 'products-and-services-24.svg',
                 type: 'RFA',
                 env: 'Model',
-                link: deadEndLink({ title: 'RFA' }),
+                link: deadEndLink('RFA'),
                 clickHandler: async () => {
                     this.props.getRFADownloadLink(project.id, project.hash);
                 }
@@ -148,7 +148,7 @@ export class Downloads extends Component {
                         icon: 'products-and-services-24.svg',
                         type: 'IDW',
                         env: 'Model',
-                        link: deadEndLink({ title: 'Drawing' }),
+                        link: deadEndLink('Drawing'),
                         clickHandler: async () => {
                             this.props.getDrawingDownloadLink(project.id, project.hash);
                         }
@@ -160,7 +160,7 @@ export class Downloads extends Component {
                         icon: 'products-and-services-24.svg',
                         type: 'PDF',
                         env: 'Model',
-                        link: deadEndLink({ title: 'Drawing PDF' }),
+                        link: deadEndLink('Drawing PDF'),
                         clickHandler: async () => {
                             this.props.getDrawingDownloadLink(project.id, project.hash);
                         }
