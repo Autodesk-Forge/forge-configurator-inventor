@@ -147,7 +147,7 @@ export class Downloads extends Component {
                         type: 'IDW',
                         env: 'Model',
                         link: deadEndLink('Drawing'),
-                        clickHandler: async () => this.props.getDrawingDownloadLink(project.id, project.hash)
+                        clickHandler: async () => this.props.getDownloadLink(project.id, project.hash, 'Preparing Drawings', 'CreateDrawingDownloadJob')
                     });
 
                 data.push(
@@ -157,7 +157,7 @@ export class Downloads extends Component {
                         type: 'PDF',
                         env: 'Model',
                         link: deadEndLink('Drawing PDF'),
-                        clickHandler: async () => this.props.getDrawingDownloadLink(project.id, project.hash)
+                        clickHandler: async () => this.props.getDownloadLink(project.id, project.hash, 'Preparing Drawing PDF', 'CreateDrawingPdfJob')
                     });
             }
         }
@@ -196,22 +196,6 @@ export class Downloads extends Component {
                     onClose={ () => this.props.showRfaFailed(false) }
                     url={this.props.reportUrl}/>}
 
-                {/* {this.props.drawingDownloadProgressShowing && <ModalDownloadProgress
-                    open={true}
-                    title="Preparing Drawings"
-                    label={project.id}
-                    icon='/Archive.svg'
-                    onClose={ () => this.props.showDrawingDownloadModalProgress(false) }
-                    url={ this.props.drawingDownloadUrl }
-                    />}
-                {this.props.drawingDownloadFailedShowing && <ModalFail
-                    open={true}
-                    title="Preparing Drawings Failed"
-                    contentName="Project:"
-                    label={project.id}
-                    onClose={() => this.props.showDrawingDownloadFailed(false) }
-                    url={this.props.reportUrl}/>
-                    } */}
         </React.Fragment>
         );
     }

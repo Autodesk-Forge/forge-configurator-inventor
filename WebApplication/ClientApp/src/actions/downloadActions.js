@@ -22,7 +22,7 @@ import { showDownloadProgress, showRfaFailed, setDownloadLink, setReportUrlLink 
 import { showDrawingExportProgress, setDrawingPdfUrl } from './uiFlagsActions';
 
 export const getDownloadLink = (projectId, hash, title, methodName) => async (dispatch) => {
-    dispatch(addLog('getRFADownloadLink invoked'));
+    dispatch(addLog(`getDownloadLink invoked for ${methodName}`));
 
     const jobManager = Jobs();
 
@@ -34,18 +34,18 @@ export const getDownloadLink = (projectId, hash, title, methodName) => async (di
         await jobManager.doDownloadJob(methodName, projectId, hash,
             // start job
             () => {
-                dispatch(addLog('JobManager.doRFAJob: HubConnection started for project : ' + projectId));
+                dispatch(addLog(`JobManager.doDownloadJob: '${methodName}' started for project : ${projectId}`));
                 dispatch(setReportUrlLink(null)); // cleanup url link
             },
             // onComplete
             (rfaUrl) => {
-                dispatch(addLog('JobManager.doRFAJob: Received onComplete'));
+                dispatch(addLog(`JobManager.doDownloadJob: '${methodName}' completed for project : ${projectId}`));
                 // set RFA link, it will show link in UI
                 dispatch(setDownloadLink(rfaUrl));
             },
             // onError
             (jobId, reportUrl) => {
-                dispatch(addLog('JobManager: Received onError with jobId: ' + jobId + ' and reportUrl: ' + reportUrl));
+                dispatch(addLog('JobManager.doDownloadJob: Received onError with jobId: ' + jobId + ' and reportUrl: ' + reportUrl));
                 // hide progress modal dialog
                 dispatch(showDownloadProgress(false, null));
                 // show error modal dialog
@@ -54,7 +54,7 @@ export const getDownloadLink = (projectId, hash, title, methodName) => async (di
             }
         );
     } catch (error) {
-        dispatch(addError('JobManager.doRFAJob: Error : ' + error));
+        dispatch(addError('JobManager.doDownloadJob: Error : ' + error));
     }
 };
 
