@@ -17,24 +17,33 @@
 /////////////////////////////////////////////////////////////////////
 
 /* eslint-disable no-undef */
-const locators = require('./elements_definition.js');
+const assert = require('assert');
 
 Before((I) => {
     I.amOnPage('/');
 });
 
-Feature('Downloads');
+Feature('Download drawing');
 
-Scenario('should check switch to downloads tab shows the downloads links', async (I) => {
-    I.see('Downloads', locators.downloadsTab);
+Scenario('should check to download drawing ZIP file when you click on the downloads links', async (I) => {
+
+    I.selectProject('Wheel');
     I.goToDownloadsTab();
-    I.waitForElement('.BaseTable');
-    I.seeNumberOfElements('.BaseTable__row', 4);
-    // all expected download types are available
-    I.see('IAM', '.BaseTable__row-cell a');
-    I.see('RFA', '.BaseTable__row-cell a');
-    I.see('BOM', '.BaseTable__row-cell a');
-    I.see('Drawing', '.BaseTable__row-cell a');
-    // check icons
-    I.seeNumberOfElements({ css: '[src="products-and-services-24.svg"]'}, 4);
+
+    // find Drawing download item
+    const drawingLink = '//div[@role="gridcell"]//a[text()="Drawing"]';
+    I.waitForElement(drawingLink, 10);
+    I.click(drawingLink);
+
+    // wait for 'click here' link in progress dialog
+    const linkClickHere = '//article[@role="document"] //a[contains(.,"click here")]';
+    const preparingDrawingsDialog = '//article[@role="document"] //p[text()="Preparing Drawings"]';
+    I.waitForElement(preparingDrawingsDialog, 10);
+    I.waitForElement(linkClickHere, 120);
+
+    // validate the Link
+    const link = await I.grabAttributeFrom(linkClickHere, 'href');
+    assert.equal(true, link.includes('download/Wheel'));
+    assert.equal(true, link.includes('drawing'));
+
 });

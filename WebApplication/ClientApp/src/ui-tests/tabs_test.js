@@ -65,7 +65,7 @@ Scenario('should check if all Tabs are loaded after click', async (I) => {
     I.waitForVisible( locators.DrawingContainer, 10);
 
     // click on Downloads tab
-    I.click( locators.downloadsTab);
+    I.goToDownloadsTab();
 
     // check that Downloads tab has correct content
     I.seeElement('#downloads .BaseTable');
