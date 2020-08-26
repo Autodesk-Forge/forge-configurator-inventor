@@ -190,6 +190,6 @@ describe('uiFlags reducer', () => {
       }),
       it('invalidates the drawingUrl', () => {
          expect(uiFlagsReducer({}, uiFlagsActions.invalidateDrawing()).drawingUrl).toEqual(null);
-      })
+      });
    });
 });

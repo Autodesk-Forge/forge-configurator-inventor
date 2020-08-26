@@ -29,7 +29,7 @@ export function getMaxColumnTextWidth(strings) {
       const width = context2d.measureText(element).width;
       maxWidth = width>maxWidth ? width : maxWidth;
     });
-  
+
     // round to 10times number, like 81.5 -> 90, 87.1 -> 90, etc
     const roundTo = 10;
     const rounded = (maxWidth % roundTo==0) ? maxWidth : maxWidth-maxWidth%roundTo + roundTo;
