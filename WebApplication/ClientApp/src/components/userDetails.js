@@ -20,7 +20,6 @@ import React, { Component } from 'react';
 import Avatar from '@hig/avatar';
 import "./userDetails.css";
 import Button from '@hig/button';
-import HyperLink from './hyperlink';
 
 export class UserDetails extends Component {
     constructor(props) {

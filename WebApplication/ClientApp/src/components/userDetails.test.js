@@ -34,7 +34,7 @@ describe('user dialog ', () => {
               isLoggedIn: true,
             }
           };
-  
+
         const wrapper = shallow(<UserDetails {...props} />);
 
         const hyperlinkSpan = wrapper.find('.hyperlink');
