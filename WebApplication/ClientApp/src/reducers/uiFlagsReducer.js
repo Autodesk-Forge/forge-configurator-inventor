@@ -31,9 +31,7 @@ export const initialState = {
    reportUrl: null,
    downloadProgressShowing: null,
    downloadProgressTitle: null,
-//   drawingDownloadProgressShowing: null,
    downloadUrl: null,
-   drawingDownloadUrl: null,
    showUploadPackage: false,
    uploadProgressShowing: false,
    uploadProgressStatus: null,
@@ -81,10 +79,6 @@ export const downloadProgressTitle = function(state) {
 
 export const downloadUrl = function(state) {
    return state.downloadUrl;
-};
-
-export const drawingDownloadUrl = function(state) {
-   return state.drawingDownloadUrl;
 };
 
 export const uploadPackageDlgVisible = function(state) {

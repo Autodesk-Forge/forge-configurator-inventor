@@ -19,7 +19,7 @@
 import { addError, addLog } from './notificationActions';
 import { Jobs } from '../JobManager';
 import { showDownloadProgress, showRfaFailed, setDownloadLink, setReportUrlLink } from './uiFlagsActions';
-import { showDrawingDownloadModalProgress, showDrawingDownloadFailed } from './uiFlagsActions';
+import { showDrawingDownloadFailed } from './uiFlagsActions';
 import { showDrawingExportProgress, setDrawingPdfUrl } from './uiFlagsActions';
 
 export const getRFADownloadLink = (projectId, hash) => async (dispatch) => {
@@ -65,7 +65,7 @@ export const getDrawingDownloadLink = (projectId, hash) => async (dispatch) => {
     const jobManager = Jobs();
 
     // show progress
-    dispatch(showDrawingDownloadModalProgress(true));
+    dispatch(showDownloadProgress(true, 'Preparing Drawings'));
 
     // launch signalR to prepare up-to-date drawing here and wait for result
     try {
@@ -85,7 +85,7 @@ export const getDrawingDownloadLink = (projectId, hash) => async (dispatch) => {
             (jobId, reportUrl) => {
                 dispatch(addLog('JobManager: Received onError with jobId: ' + jobId + ' and reportUrl: ' + reportUrl));
                 // hide progress modal dialog
-                dispatch(showDrawingDownloadModalProgress(false));
+                dispatch(showDownloadProgress(false, null));
                 // show error modal dialog
                 dispatch(setReportUrlLink(reportUrl));
                 dispatch(showDrawingDownloadFailed(true));

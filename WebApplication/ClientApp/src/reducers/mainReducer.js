@@ -100,6 +100,7 @@ export const reportUrl = function(state) {
     return uiFlags.reportUrl(state.uiFlags);
 };
 
+/** If downloads are generating, and "In progress" dialog is shown */
 export const downloadProgressShowing = function(state) {
     return uiFlags.downloadProgressShowing(state.uiFlags);
 };
@@ -110,10 +111,6 @@ export const downloadProgressTitle = function(state) {
 
 export const downloadUrl = function(state) {
     return uiFlags.downloadUrl(state.uiFlags);
-};
-
-export const drawingDownloadUrl = function(state) {
-    return uiFlags.drawingDownloadUrl(state.uiFlags);
 };
 
 export const uploadPackageDlgVisible = function(state) {

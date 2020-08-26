@@ -21,7 +21,7 @@ import { connect } from 'react-redux';
 import BaseTable, { AutoResizer, Column } from 'react-base-table';
 import 'react-base-table/styles.css';
 import { getActiveProject, downloadProgressShowing, downloadProgressTitle, downloadUrl as downloadUrl, downloadRfaFailedShowing, reportUrl } from '../reducers/mainReducer';
-import { drawingDownloadUrl, downloadDrawingFailedShowing } from '../reducers/mainReducer';
+import { downloadDrawingFailedShowing } from '../reducers/mainReducer';
 import { getRFADownloadLink, getDrawingDownloadLink } from '../actions/downloadActions';
 import { showDownloadProgress, showRfaFailed } from '../actions/uiFlagsActions';
 import { showDrawingDownloadModalProgress, showDrawingDownloadFailed } from '../actions/uiFlagsActions';
@@ -157,9 +157,7 @@ export class Downloads extends Component {
                         type: 'PDF',
                         env: 'Model',
                         link: deadEndLink('Drawing PDF'),
-                        clickHandler: async () => {
-                            this.props.getDrawingDownloadLink(project.id, project.hash);
-                        }
+                        clickHandler: async () => this.props.getDrawingDownloadLink(project.id, project.hash)
                     });
             }
         }
@@ -188,11 +186,11 @@ export class Downloads extends Component {
                     label={project.id}
                     icon='/Archive.svg'
                     onClose={ () => this.props.showDownloadProgress(false) }
-                    url={ this.props.downloadUrl }
-                    />}
+                    url={ this.props.downloadUrl } />}
+
                 {this.props.rfaFailedShowing && <ModalFail
                     open={true}
-                    title="Preparing RFA Failed"
+                    title={ `${this.props.downloadProgressTitle} Failed` }
                     contentName="Project:"
                     label={project.id}
                     onClose={ () => this.props.showRfaFailed(false) }
@@ -229,8 +227,6 @@ export default connect(function(store) {
         rfaFailedShowing: downloadRfaFailedShowing(store),
         downloadUrl: downloadUrl(store),
         reportUrl: reportUrl(store),
-//        drawingDownloadProgressShowing: drawingDownloadProgressShowing(store),
-        drawingDownloadFailedShowing: downloadDrawingFailedShowing(store),
-        drawingDownloadUrl: drawingDownloadUrl(store),
+        drawingDownloadFailedShowing: downloadDrawingFailedShowing(store)
     };
 }, { Downloads, getRFADownloadLink, showDownloadProgress, showRfaFailed, getDrawingDownloadLink, showDrawingDownloadModalProgress, showDrawingDownloadFailed })(Downloads);

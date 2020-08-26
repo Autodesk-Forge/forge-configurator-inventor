@@ -104,9 +104,6 @@ describe('main reducer', () => {
       it('gets downloadUrl', () => {
          expect(reducer.downloadUrl(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.downloadUrl);
       }),
-      it('gets drawingDownloadUrl', () => {
-         expect(reducer.drawingDownloadUrl(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.drawingDownloadUrl);
-      }),
       it('gets uploadPackageDlgVisible', () => {
          expect(reducer.uploadPackageDlgVisible(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.showUploadPackage); /* method and flag name differ */
       }),
