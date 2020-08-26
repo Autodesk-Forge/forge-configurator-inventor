@@ -40,7 +40,7 @@ Scenario('should check downloads tab with RFA link for model', async (I) => {
     I.see('Downloads', locators.downloadsTab);
 
     // click on downlod tab
-    I.click(locators.downloadsTab);
+    I.goToDownloadsTab();
 
     //check if Div download exists
     I.seeElement(divDownloads);
@@ -70,7 +70,7 @@ Scenario('should check downloads tab with RFA link for Wrench', async (I) => {
     I.see('Downloads', locators.downloadsTab);
 
     // click on downlod tab
-    I.click(locators.downloadsTab);
+    I.goToDownloadsTab();
 
     //check if Div download exists
     I.seeElement(divDownloads);
