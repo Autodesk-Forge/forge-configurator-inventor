@@ -22,7 +22,7 @@ import "./userDetails.css";
 import Button from '@hig/button';
 import HyperLink from './hyperlink';
 
-class UserDetails extends Component {
+export class UserDetails extends Component {
     constructor(props) {
         super(props);
         this.handleAuthClick = this.handleAuthClick.bind(this);
