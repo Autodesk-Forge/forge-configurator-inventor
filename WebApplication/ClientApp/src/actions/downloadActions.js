@@ -19,8 +19,44 @@
 import { addError, addLog } from './notificationActions';
 import { Jobs } from '../JobManager';
 import { showDownloadProgress, showRfaFailed, setDownloadLink, setReportUrlLink } from './uiFlagsActions';
-import { showDrawingDownloadFailed } from './uiFlagsActions';
 import { showDrawingExportProgress, setDrawingPdfUrl } from './uiFlagsActions';
+
+export const getDownloadLink = (projectId, hash, title, methodName) => async (dispatch) => {
+    dispatch(addLog('getRFADownloadLink invoked'));
+
+    const jobManager = Jobs();
+
+    // show progress
+    dispatch(showDownloadProgress(true, title)); // TODO: split Show and Hide
+
+    // launch signalR to make RFA here and wait for result
+    try {
+        await jobManager.doDownloadJob(methodName, projectId, hash,
+            // start job
+            () => {
+                dispatch(addLog('JobManager.doRFAJob: HubConnection started for project : ' + projectId));
+                dispatch(setReportUrlLink(null)); // cleanup url link
+            },
+            // onComplete
+            (rfaUrl) => {
+                dispatch(addLog('JobManager.doRFAJob: Received onComplete'));
+                // set RFA link, it will show link in UI
+                dispatch(setDownloadLink(rfaUrl));
+            },
+            // onError
+            (jobId, reportUrl) => {
+                dispatch(addLog('JobManager: Received onError with jobId: ' + jobId + ' and reportUrl: ' + reportUrl));
+                // hide progress modal dialog
+                dispatch(showDownloadProgress(false, null));
+                // show error modal dialog
+                dispatch(setReportUrlLink(reportUrl));
+                dispatch(showRfaFailed(true));
+            }
+        );
+    } catch (error) {
+        dispatch(addError('JobManager.doRFAJob: Error : ' + error));
+    }
+};
 
 export const getRFADownloadLink = (projectId, hash) => async (dispatch) => {
     dispatch(addLog('getRFADownloadLink invoked'));
@@ -88,7 +124,7 @@ export const getDrawingDownloadLink = (projectId, hash) => async (dispatch) => {
                 dispatch(showDownloadProgress(false, null));
                 // show error modal dialog
                 dispatch(setReportUrlLink(reportUrl));
-                dispatch(showDrawingDownloadFailed(true));
+                dispatch(showRfaFailed(true));
             }
         );
     } catch (error) {

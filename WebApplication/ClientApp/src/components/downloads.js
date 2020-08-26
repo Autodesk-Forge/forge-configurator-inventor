@@ -22,7 +22,7 @@ import BaseTable, { AutoResizer, Column } from 'react-base-table';
 import 'react-base-table/styles.css';
 import { getActiveProject, downloadProgressShowing, downloadProgressTitle, downloadUrl as downloadUrl, downloadRfaFailedShowing, reportUrl } from '../reducers/mainReducer';
 import { downloadDrawingFailedShowing } from '../reducers/mainReducer';
-import { getRFADownloadLink, getDrawingDownloadLink } from '../actions/downloadActions';
+import { getDrawingDownloadLink, getDownloadLink } from '../actions/downloadActions';
 import { showDownloadProgress, showRfaFailed } from '../actions/uiFlagsActions';
 import { showDrawingDownloadModalProgress, showDrawingDownloadFailed } from '../actions/uiFlagsActions';
 import ModalDownloadProgress from './modalDownloadProgress';
@@ -117,7 +117,7 @@ export class Downloads extends Component {
                 type: 'RFA',
                 env: 'Model',
                 link: deadEndLink('RFA'),
-                clickHandler: async () => this.props.getRFADownloadLink(project.id, project.hash)
+                clickHandler: async () => this.props.getDownloadLink(project.id, project.hash, 'Preparing RFA', 'CreateRFAJob')
             });
 
             if (bomDownloadUrl && project.isAssembly) {
@@ -229,4 +229,4 @@ export default connect(function(store) {
         reportUrl: reportUrl(store),
         drawingDownloadFailedShowing: downloadDrawingFailedShowing(store)
     };
-}, { Downloads, getRFADownloadLink, showDownloadProgress, showRfaFailed, getDrawingDownloadLink, showDrawingDownloadModalProgress, showDrawingDownloadFailed })(Downloads);
+}, { Downloads, getDownloadLink, showDownloadProgress, showRfaFailed, getDrawingDownloadLink, showDrawingDownloadModalProgress, showDrawingDownloadFailed })(Downloads);
