@@ -62,7 +62,7 @@ const mockState = {
 };
 const store = mockStore(mockState);
 
-describe('downloadActions', () => {
+describe.skip('downloadActions', () => {
     beforeEach(() => { // Runs before each test in the suite
         store.clearActions();
     });

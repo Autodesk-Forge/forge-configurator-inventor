@@ -116,7 +116,7 @@ export class Downloads extends Component {
                 type: 'RFA',
                 env: 'Model',
                 link: deadEndLink('RFA'),
-                clickHandler: async () => this.props.getDownloadLink(project.id, project.hash, 'Preparing RFA', 'CreateRFAJob')
+                clickHandler: async () => this.props.getDownloadLink('CreateRFAJob', project.id, project.hash, 'Preparing RFA')
             });
 
             if (bomDownloadUrl && project.isAssembly) {
@@ -146,7 +146,7 @@ export class Downloads extends Component {
                         type: 'IDW',
                         env: 'Model',
                         link: deadEndLink('Drawing'),
-                        clickHandler: async () => this.props.getDownloadLink(project.id, project.hash, 'Preparing Drawings', 'CreateDrawingDownloadJob')
+                        clickHandler: async () => this.props.getDownloadLink('CreateDrawingDownloadJob', project.id, project.hash, 'Preparing Drawings')
                     });
 
                 data.push(
@@ -156,7 +156,7 @@ export class Downloads extends Component {
                         type: 'PDF',
                         env: 'Model',
                         link: deadEndLink('Drawing PDF'),
-                        clickHandler: async () => this.props.getDownloadLink(project.id, project.hash, 'Preparing Drawing PDF', 'CreateDrawingPdfJob')
+                        clickHandler: async () => this.props.getDownloadLink('CreateDrawingPdfJob', project.id, project.hash, 'Preparing Drawing PDF')
                     });
             }
         }

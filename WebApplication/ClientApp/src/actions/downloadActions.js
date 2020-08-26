@@ -21,15 +21,28 @@ import { Jobs } from '../JobManager';
 import { showDownloadProgress, showDownloadFailed, setDownloadLink, setReportUrlLink } from './uiFlagsActions';
 import { showDrawingExportProgress, setDrawingPdfUrl } from './uiFlagsActions';
 
-export const getDownloadLink = (projectId, hash, title, methodName) => async (dispatch) => {
+/**
+ * Generic method to handle downloads generation. The following happens:
+ * - show 'in progress' dialog
+ * - call SignalR method to generate downloads
+ * - wait for completion
+ * - store either 'download url' (for success), or 'report url' (for failure)
+ * - show Succeeded or Failed dialog
+ *
+ * @param {string} methodName  SignalR method to call.
+ * @param {string} projectId   Project ID. (passed as a first arg to the SignalR method)
+ * @param {string} hash        Parameters hash. (passed as a second arg to the SignalR method)
+ * @param {string} dialogTitle Title for dialogs.
+ */
+export const getDownloadLink = (methodName, projectId, hash, dialogTitle) => async (dispatch) => {
     dispatch(addLog(`getDownloadLink invoked for ${methodName}`));
 
     const jobManager = Jobs();
 
     // show progress
-    dispatch(showDownloadProgress(true, title)); // TODO: split Show and Hide
+    dispatch(showDownloadProgress(true, dialogTitle)); // TODO: split Show and Hide
 
-    // launch signalR to make RFA here and wait for result
+    // launch signalR to generate download and wait for result
     try {
         await jobManager.doDownloadJob(methodName, projectId, hash,
             // start job
@@ -38,10 +51,10 @@ export const getDownloadLink = (projectId, hash, title, methodName) => async (di
                 dispatch(setReportUrlLink(null)); // cleanup url link
             },
             // onComplete
-            (rfaUrl) => {
+            (downloadUrl) => {
                 dispatch(addLog(`JobManager.doDownloadJob: '${methodName}' completed for project : ${projectId}`));
-                // set RFA link, it will show link in UI
-                dispatch(setDownloadLink(rfaUrl));
+                // set download link, it will show link in UI
+                dispatch(setDownloadLink(downloadUrl));
             },
             // onError
             (jobId, reportUrl) => {
@@ -55,80 +68,6 @@ export const getDownloadLink = (projectId, hash, title, methodName) => async (di
         );
     } catch (error) {
         dispatch(addError('JobManager.doDownloadJob: Error : ' + error));
-    }
-};
-
-export const getRFADownloadLink = (projectId, hash) => async (dispatch) => {
-    dispatch(addLog('getRFADownloadLink invoked'));
-
-    const jobManager = Jobs();
-
-    // show progress
-    dispatch(showDownloadProgress(true, 'Preparing RFA')); // TODO: split Show and Hide
-
-    // launch signalR to make RFA here and wait for result
-    try {
-        await jobManager.doRFAJob(projectId, hash,
-            // start job
-            () => {
-                dispatch(addLog('JobManager.doRFAJob: HubConnection started for project : ' + projectId));
-                dispatch(setReportUrlLink(null)); // cleanup url link
-            },
-            // onComplete
-            (rfaUrl) => {
-                dispatch(addLog('JobManager.doRFAJob: Received onComplete'));
-                // set RFA link, it will show link in UI
-                dispatch(setDownloadLink(rfaUrl));
-            },
-            // onError
-            (jobId, reportUrl) => {
-                dispatch(addLog('JobManager: Received onError with jobId: ' + jobId + ' and reportUrl: ' + reportUrl));
-                // hide progress modal dialog
-                dispatch(showDownloadProgress(false, null));
-                // show error modal dialog
-                dispatch(setReportUrlLink(reportUrl));
-                dispatch(showDownloadFailed(true));
-            }
-        );
-    } catch (error) {
-        dispatch(addError('JobManager.doRFAJob: Error : ' + error));
-    }
-};
-
-export const getDrawingDownloadLink = (projectId, hash) => async (dispatch) => {
-    dispatch(addLog('getDrawingDownloadLink invoked'));
-
-    const jobManager = Jobs();
-
-    // show progress
-    dispatch(showDownloadProgress(true, 'Preparing Drawings'));
-
-    // launch signalR to prepare up-to-date drawing here and wait for result
-    try {
-        await jobManager.doDrawingDownloadJob(projectId, hash,
-            // start job
-            () => {
-                dispatch(addLog('JobManager.doDrawingDownloadJob: HubConnection started for project : ' + projectId));
-                dispatch(setReportUrlLink(null)); // cleanup url link
-            },
-            // onComplete
-            (drawingUrl) => {
-                dispatch(addLog('JobManager.doDrawingDownloadJob: Received onComplete'));
-                // set link, it will show link in UI
-                dispatch(setDownloadLink(drawingUrl));
-            },
-            // onError
-            (jobId, reportUrl) => {
-                dispatch(addLog('JobManager: Received onError with jobId: ' + jobId + ' and reportUrl: ' + reportUrl));
-                // hide progress modal dialog
-                dispatch(showDownloadProgress(false, null));
-                // show error modal dialog
-                dispatch(setReportUrlLink(reportUrl));
-                dispatch(showDownloadFailed(true));
-            }
-        );
-    } catch (error) {
-        dispatch(addError('JobManager.doDrawingDownloadJob: Error : ' + error));
     }
 };
 
