@@ -18,8 +18,8 @@
 
 import { addError, addLog } from './notificationActions';
 import { Jobs } from '../JobManager';
-import { showDownloadProgress, showRfaFailed, setRFALink, setReportUrlLink } from './uiFlagsActions';
-import { showDrawingDownloadModalProgress, showDrawingDownloadFailed, setDrawingDownloadLink } from './uiFlagsActions';
+import { showDownloadProgress, showRfaFailed, setDownloadLink, setReportUrlLink } from './uiFlagsActions';
+import { showDrawingDownloadModalProgress, showDrawingDownloadFailed } from './uiFlagsActions';
 import { showDrawingExportProgress, setDrawingPdfUrl } from './uiFlagsActions';
 
 export const getRFADownloadLink = (projectId, hash) => async (dispatch) => {
@@ -28,7 +28,7 @@ export const getRFADownloadLink = (projectId, hash) => async (dispatch) => {
     const jobManager = Jobs();
 
     // show progress
-    dispatch(showDownloadProgress(true, 'BLAH'));
+    dispatch(showDownloadProgress(true, 'Preparing RFA')); // TODO: split Show and Hide
 
     // launch signalR to make RFA here and wait for result
     try {
@@ -42,13 +42,13 @@ export const getRFADownloadLink = (projectId, hash) => async (dispatch) => {
             (rfaUrl) => {
                 dispatch(addLog('JobManager.doRFAJob: Received onComplete'));
                 // set RFA link, it will show link in UI
-                dispatch(setRFALink(rfaUrl));
+                dispatch(setDownloadLink(rfaUrl));
             },
             // onError
             (jobId, reportUrl) => {
                 dispatch(addLog('JobManager: Received onError with jobId: ' + jobId + ' and reportUrl: ' + reportUrl));
                 // hide progress modal dialog
-                dispatch(showDownloadProgress(false));
+                dispatch(showDownloadProgress(false, null));
                 // show error modal dialog
                 dispatch(setReportUrlLink(reportUrl));
                 dispatch(showRfaFailed(true));
@@ -79,7 +79,7 @@ export const getDrawingDownloadLink = (projectId, hash) => async (dispatch) => {
             (drawingUrl) => {
                 dispatch(addLog('JobManager.doDrawingDownloadJob: Received onComplete'));
                 // set link, it will show link in UI
-                dispatch(setDrawingDownloadLink(drawingUrl));
+                dispatch(setDownloadLink(drawingUrl));
             },
             // onError
             (jobId, reportUrl) => {

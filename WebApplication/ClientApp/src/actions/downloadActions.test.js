@@ -75,7 +75,7 @@ describe('downloadActions', () => {
 
             // check expected store actions
             const actions = store.getActions();
-            const linkAction = actions.find(a => a.type === uiFlagsActionTypes.SET_RFA_LINK);
+            const linkAction = actions.find(a => a.type === uiFlagsActionTypes.SET_DOWNLOAD_LINK);
             expect(linkAction.url).toEqual(fullLink);
         });
 
@@ -98,7 +98,7 @@ describe('downloadActions', () => {
 
             // check expected store actions
             const actions = store.getActions();
-            const linkAction = actions.find(a => a.type === uiFlagsActionTypes.SET_DRAWING_DOWNLOAD_LINK);
+            const linkAction = actions.find(a => a.type === uiFlagsActionTypes.SET_DOWNLOAD_LINK);
             expect(linkAction.url).toEqual(fullLink);
         });
 

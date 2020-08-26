@@ -101,8 +101,8 @@ describe('main reducer', () => {
       it('gets downloadProgressShowing', () => {
          expect(reducer.downloadProgressShowing(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.downloadProgressShowing);
       }),
-      it('gets rfaDownloadUrl', () => {
-         expect(reducer.rfaDownloadUrl(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.rfaDownloadUrl);
+      it('gets downloadUrl', () => {
+         expect(reducer.downloadUrl(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.downloadUrl);
       }),
       it('gets drawingDownloadUrl', () => {
          expect(reducer.drawingDownloadUrl(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.drawingDownloadUrl);

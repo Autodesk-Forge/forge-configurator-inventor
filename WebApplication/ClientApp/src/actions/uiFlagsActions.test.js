@@ -84,7 +84,7 @@ describe('uiFlagsActions', () => {
     });
 
     it('check setRFALink action', () => {
-        store.dispatch(uiFlagsActions.setRFALink("link"));
+        store.dispatch(uiFlagsActions.setDownloadLink("link"));
         expect(store.getActions()).toMatchSnapshot();
     });
 

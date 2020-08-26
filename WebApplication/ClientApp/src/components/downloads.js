@@ -20,7 +20,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import BaseTable, { AutoResizer, Column } from 'react-base-table';
 import 'react-base-table/styles.css';
-import { getActiveProject, downloadProgressShowing, rfaDownloadUrl, downloadRfaFailedShowing, reportUrl } from '../reducers/mainReducer';
+import { getActiveProject, downloadProgressShowing, downloadProgressTitle, downloadUrl as downloadUrl, downloadRfaFailedShowing, reportUrl } from '../reducers/mainReducer';
 import { drawingDownloadUrl, downloadDrawingFailedShowing } from '../reducers/mainReducer';
 import { getRFADownloadLink, getDrawingDownloadLink } from '../actions/downloadActions';
 import { showDownloadProgress, showRfaFailed } from '../actions/uiFlagsActions';
@@ -184,11 +184,11 @@ export class Downloads extends Component {
             </AutoResizer>
                 {this.props.downloadProgressShowing && <ModalDownloadProgress
                     open={true}
-                    title="Preparing RFA"
+                    title={ this.props.downloadProgressTitle }
                     label={project.id}
                     icon='/Archive.svg'
                     onClose={ () => this.props.showDownloadProgress(false) }
-                    url={ this.props.rfaDownloadUrl }
+                    url={ this.props.downloadUrl }
                     />}
                 {this.props.rfaFailedShowing && <ModalFail
                     open={true}
@@ -225,8 +225,9 @@ export default connect(function(store) {
     return {
         activeProject: activeProject,
         downloadProgressShowing: downloadProgressShowing(store),
+        downloadProgressTitle: downloadProgressTitle(store),
         rfaFailedShowing: downloadRfaFailedShowing(store),
-        rfaDownloadUrl: rfaDownloadUrl(store),
+        downloadUrl: downloadUrl(store),
         reportUrl: reportUrl(store),
 //        drawingDownloadProgressShowing: drawingDownloadProgressShowing(store),
         drawingDownloadFailedShowing: downloadDrawingFailedShowing(store),

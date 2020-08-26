@@ -146,9 +146,9 @@ describe('Downloads components', () => {
     describe('RFA', () => {
       const showModalProgressMock = jest.fn();
       const showFailedMock = jest.fn();
-      const rfaDownloadUrl='rfaDownloadUrl';
+      const downloadUrl='downloadUrl';
       const failedReportUrl='failedReportUrl';
-      const rfaProps = { ...props, downloadProgressShowing:true, rfaDownloadUrl:rfaDownloadUrl, showDownloadProgress: showModalProgressMock };
+      const rfaProps = { ...props, downloadProgressShowing:true, downloadUrl:downloadUrl, showDownloadProgress: showModalProgressMock };
       const rfaFailedProps = { ...props, rfaFailedShowing:true, reportUrl:failedReportUrl, showRfaFailed:showFailedMock};
 
       beforeEach(() => {
@@ -161,7 +161,7 @@ describe('Downloads components', () => {
         const dlg = wrapper.find('ModalDownloadProgress');
         expect(dlg.prop('label')).toEqual(props.activeProject.id);
         expect(dlg.prop('title')).toContain('RFA');
-        expect(dlg.prop('url')).toEqual(rfaDownloadUrl);
+        expect(dlg.prop('url')).toEqual(downloadUrl);
       });
 
       it('Handles progress dialog Close click', () => {

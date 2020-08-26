@@ -29,7 +29,7 @@ export const actionTypes = {
     SHOW_RFA_FAILED: 'SHOW_RFA_FAILED',
     SET_REPORT_URL: 'SET_REPORT_URL',
     SHOW_DOWNLOAD_PROGRESS: 'SHOW_DOWNLOAD_PROGRESS',
-    SET_RFA_LINK: 'SET_RFA_LINK',
+    SET_DOWNLOAD_LINK: 'SET_DOWNLOAD_LINK',
     SHOW_UPLOAD_PACKAGE: 'SHOW_UPLOAD_PACKAGE',
     PACKAGE_FILE_EDITED: 'PACKAGE_FILE_EDITED',
     PACKAGE_ROOT_EDITED: 'PACKAGE_ROOT_EDITED',
@@ -40,8 +40,6 @@ export const actionTypes = {
     SET_CHECKED_PROJECTS: 'SET_CHECKED_PROJECTS',
     CLEAR_CHECKED_PROJECTS: 'CLEAR_CHECKED_PROJECTS',
     SHOW_DRAWING_DOWNLOAD_FAILED: 'SHOW_DRAWING_DOWNLOAD_FAILED',
-//    SHOW_DRAWING_DOWNLOAD_PROGRESS: 'SHOW_DRAWING_DOWNLOAD_PROGRESS',
-    SET_DRAWING_DOWNLOAD_LINK: 'SET_DRAWING_DOWNLOAD_LINK',
     SHOW_DRAWING_PROGRESS: 'SHOW_DRAWING_PROGRESS',
     SET_DRAWING_URL: 'SET_DRAWING_URL',
     INVALIDATE_DRAWING: 'INVALIDATE_DRAWING'
@@ -138,16 +136,9 @@ export const showDrawingDownloadModalProgress = (visible) => {
     };
 };
 
-export const setRFALink = (url) => {
+export const setDownloadLink = (url) => {
     return {
-        type: actionTypes.SET_RFA_LINK,
-        url
-    };
-};
-
-export const setDrawingDownloadLink = (url) => {
-    return {
-        type: actionTypes.SET_DRAWING_DOWNLOAD_LINK,
+        type: actionTypes.SET_DOWNLOAD_LINK,
         url
     };
 };

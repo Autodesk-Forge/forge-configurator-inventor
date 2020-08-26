@@ -165,19 +165,16 @@ describe('uiFlags reducer', () => {
       }),
       it('sets the downloadProgressShowing', () => {
          expect(uiFlagsReducer({}, uiFlagsActions.showDownloadProgress(true)).downloadProgressShowing).toEqual(true);
-         expect(uiFlagsReducer({}, uiFlagsActions.showDownloadProgress(true)).rfaDownloadUrl).toEqual(null);
+         expect(uiFlagsReducer({}, uiFlagsActions.showDownloadProgress(true)).downloadUrl).toEqual(null);
       }),
-      it('sets the rfaDownloadUrl', () => {
-         expect(uiFlagsReducer({}, uiFlagsActions.setRFALink('rfa link')).rfaDownloadUrl).toEqual('rfa link');
+      it('sets the downloadUrl', () => {
+         expect(uiFlagsReducer({}, uiFlagsActions.setDownloadLink('rfa link')).downloadUrl).toEqual('rfa link');
       }),
       it('sets the activeTabIndex', () => {
          expect(uiFlagsReducer({}, uiFlagsActions.updateActiveTabIndex(7)).activeTabIndex).toEqual(7);
       }),
       it('sets the downloadDrawingFailedShowing', () => {
          expect(uiFlagsReducer({}, uiFlagsActions.showDrawingDownloadFailed(true)).downloadDrawingFailedShowing).toEqual(true);
-      }),
-      it('sets the drawingDownloadUrl', () => {
-         expect(uiFlagsReducer({}, uiFlagsActions.setDrawingDownloadLink('idw link')).drawingDownloadUrl).toEqual('idw link');
       }),
       it('sets the drawingProgressShowing', () => {
          expect(uiFlagsReducer({}, uiFlagsActions.showDrawingExportProgress(true)).drawingProgressShowing).toEqual(true);

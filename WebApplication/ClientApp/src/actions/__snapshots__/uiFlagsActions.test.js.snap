@@ -89,7 +89,7 @@ Array [
 exports[`uiFlagsActions check setRFALink action 1`] = `
 Array [
   Object {
-    "type": "SET_RFA_LINK",
+    "type": "SET_DOWNLOAD_LINK",
     "url": "link",
   },
 ]
