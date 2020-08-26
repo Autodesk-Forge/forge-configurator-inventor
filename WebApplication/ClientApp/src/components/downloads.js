@@ -84,23 +84,6 @@ function getDownloadUrls(project) {
 }
 
 export class Downloads extends Component {
-
-    onRfaProgressCloseClick() {
-        this.props.showRFAModalProgress(false);
-    }
-
-    onRfaFailedCloseClick() {
-        this.props.showRfaFailed(false);
-    }
-
-    onDrawingDownloadProgressCloseClick() {
-        this.props.showDrawingDownloadModalProgress(false);
-    }
-
-    onDrawingDownloadFailedCloseClick() {
-        this.props.showDrawingDownloadFailed(false);
-    }
-
     render() {
 
         // array with rows data
@@ -208,7 +191,7 @@ export class Downloads extends Component {
                     title="Preparing RFA"
                     label={project.id}
                     icon='/Archive.svg'
-                    onClose={() => this.onRfaProgressCloseClick()}
+                    onClose={ () => this.props.showRFAModalProgress(false) }
                     url={this.props.rfaDownloadUrl}
                     />}
                 {this.props.rfaFailedShowing && <ModalFail
@@ -216,7 +199,7 @@ export class Downloads extends Component {
                     title="Preparing RFA Failed"
                     contentName="Project:"
                     label={project.id}
-                    onClose={() => this.onRfaFailedCloseClick()}
+                    onClose={ () => this.props.showRfaFailed(false) }
                     url={this.props.reportUrl}/>}
 
                 {this.props.drawingDownloadProgressShowing && <ModalProgressRfa
@@ -224,7 +207,7 @@ export class Downloads extends Component {
                     title="Preparing Drawings"
                     label={project.id}
                     icon='/Archive.svg'
-                    onClose={() => this.onDrawingDownloadProgressCloseClick()}
+                    onClose={ () => this.props.showDrawingDownloadModalProgress(false) }
                     url={this.props.drawingDownloadUrl}
                     />}
                 {this.props.drawingDownloadFailedShowing && <ModalFail
@@ -232,7 +215,7 @@ export class Downloads extends Component {
                     title="Preparing Drawings Failed"
                     contentName="Project:"
                     label={project.id}
-                    onClose={() => this.onDrawingDownloadFailedCloseClick()}
+                    onClose={() => this.props.showDrawingDownloadFailed(false) }
                     url={this.props.reportUrl}/>
                     }
         </React.Fragment>
