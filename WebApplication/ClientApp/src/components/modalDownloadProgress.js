@@ -26,7 +26,7 @@ import merge from "lodash.merge";
 import HyperLink from './hyperlink';
 import Button from '@hig/button';
 
-export class ModalProgressRfa extends Component {
+export class ModalDownloadProgress extends Component {
 
     render() {
         const modalStyles = /* istanbul ignore next */ styles =>
@@ -88,4 +88,4 @@ export class ModalProgressRfa extends Component {
     }
 }
 
-export default ModalProgressRfa;
+export default ModalDownloadProgress;

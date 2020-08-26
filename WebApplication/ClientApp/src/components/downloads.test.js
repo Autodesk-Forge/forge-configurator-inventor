@@ -158,7 +158,7 @@ describe('Downloads components', () => {
 
       it('Shows progress dialog', () => {
         const wrapper = shallow(<Downloads { ...rfaProps} />);
-        const dlg = wrapper.find('ModalProgressRfa');
+        const dlg = wrapper.find('ModalDownloadProgress');
         expect(dlg.prop('label')).toEqual(props.activeProject.id);
         expect(dlg.prop('title')).toContain('RFA');
         expect(dlg.prop('url')).toEqual(rfaDownloadUrl);
@@ -166,7 +166,7 @@ describe('Downloads components', () => {
 
       it('Handles progress dialog Close click', () => {
         const wrapper = shallow(<Downloads { ...rfaProps} />);
-        const dlg = wrapper.find('ModalProgressRfa');
+        const dlg = wrapper.find('ModalDownloadProgress');
 
         dlg.simulate('close');
         expect(showModalProgressMock).toBeCalledWith(false);
@@ -174,7 +174,7 @@ describe('Downloads components', () => {
 
       it('Handles progress dialog Url click', () => {
         const wrapper = shallow(<Downloads { ...rfaProps} />);
-        const dlg = wrapper.find('ModalProgressRfa');
+        const dlg = wrapper.find('ModalDownloadProgress');
 
         dlg.simulate('urlClick');
         expect(showModalProgressMock).toBeCalledWith(false);
@@ -212,7 +212,7 @@ describe('Downloads components', () => {
 
       it('Shows progress dialog', () => {
         const wrapper = shallow(<Downloads { ...drwProps} />);
-        const dlg = wrapper.find('ModalProgressRfa');
+        const dlg = wrapper.find('ModalDownloadProgress');
         expect(dlg.prop('label')).toEqual(props.activeProject.id);
         expect(dlg.prop('title')).toContain('Drawings');
         expect(dlg.prop('url')).toEqual(downloadUrl);
@@ -220,7 +220,7 @@ describe('Downloads components', () => {
 
       it('Handles progress dialog Close click', () => {
         const wrapper = shallow(<Downloads { ...drwProps} />);
-        const dlg = wrapper.find('ModalProgressRfa');
+        const dlg = wrapper.find('ModalDownloadProgress');
 
         dlg.simulate('close');
         expect(showModalProgressMock).toBeCalledWith(false);
@@ -228,7 +228,7 @@ describe('Downloads components', () => {
 
       it('Handles progress dialog Url click', () => {
         const wrapper = shallow(<Downloads { ...drwProps} />);
-        const dlg = wrapper.find('ModalProgressRfa');
+        const dlg = wrapper.find('ModalDownloadProgress');
 
         dlg.simulate('urlClick');
         expect(showModalProgressMock).toBeCalledWith(false);

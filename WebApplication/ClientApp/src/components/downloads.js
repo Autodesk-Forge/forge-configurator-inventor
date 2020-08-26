@@ -25,7 +25,7 @@ import { drawingDownloadProgressShowing, drawingDownloadUrl, downloadDrawingFail
 import { getRFADownloadLink, getDrawingDownloadLink } from '../actions/downloadActions';
 import { showRFAModalProgress, showRfaFailed } from '../actions/uiFlagsActions';
 import { showDrawingDownloadModalProgress, showDrawingDownloadFailed } from '../actions/uiFlagsActions';
-import ModalProgressRfa from './modalProgressRfa';
+import ModalDownloadProgress from './modalDownloadProgress';
 import ModalFail from './modalFail';
 
 import repo from '../Repository';
@@ -186,7 +186,7 @@ export class Downloads extends Component {
                     />;
                 }}
             </AutoResizer>
-                {this.props.rfaProgressShowing && <ModalProgressRfa
+                {this.props.rfaProgressShowing && <ModalDownloadProgress
                     open={true}
                     title="Preparing RFA"
                     label={project.id}
@@ -202,7 +202,7 @@ export class Downloads extends Component {
                     onClose={ () => this.props.showRfaFailed(false) }
                     url={this.props.reportUrl}/>}
 
-                {this.props.drawingDownloadProgressShowing && <ModalProgressRfa
+                {this.props.drawingDownloadProgressShowing && <ModalDownloadProgress
                     open={true}
                     title="Preparing Drawings"
                     label={project.id}
