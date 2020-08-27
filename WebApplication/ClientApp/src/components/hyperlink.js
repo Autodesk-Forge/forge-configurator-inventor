@@ -27,12 +27,17 @@ export class HyperLink extends Component {
     }
 
     render() {
+        const downloadProps =  {};
+        if(this.props.download) {
+          downloadProps['download'] = '';
+        }
+
         const downloadLink = <a href={this.props.href} onClick={(e) => {
             e.stopPropagation();
             if (this.props.onUrlClick) this.props.onUrlClick();
         }} ref = {(h) => {
             this.downloadHyperlink = h;
-        }}>{this.props.link}</a>;
+        }} {...downloadProps}>{this.props.link}</a>;
 
       return(
           <Typography style={{ width: 'fit-content'}}>

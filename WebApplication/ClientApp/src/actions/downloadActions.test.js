@@ -101,5 +101,14 @@ describe('downloadActions', () => {
             const linkAction = actions.find(a => a.type === uiFlagsActionTypes.SET_DRAWING_URL);
             expect(linkAction.url).toEqual(noTokenLink);
         });
+
+        it('check fetchDrawing error handling', async () => {
+            await store.dispatch(downloadActions.fetchDrawing({ id: "ProjectId" }));
+            connectionMock.simulateError(jobId,errorReportLink);
+
+            // check expected store actions
+            const actions = store.getActions();
+            expect(actions.some(a => a.type === uiFlagsActionTypes.SHOW_DRAWING_PROGRESS)).toEqual(true);
+        });
     });
 });

@@ -72,7 +72,8 @@ export class ModalDownloadProgress extends Component {
                         onUrlClick={this.props.onClose}
                         prefix="Download should start automatically, if it doesn't, "
                         link="click here" href={this.props.url}
-                        suffix=" to download it manually."/>
+                        suffix=" to download it manually."
+                        download={true}/>
                     <Button className="button" style={
                         { width: '116px', height: '36px', borderRadius: '2px', marginLeft: '12px'}}
                         type="secondary"
