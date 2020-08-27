@@ -53,6 +53,7 @@ namespace WebApplication.Job
             ProjectStorage projectStorage = await _userResolver.GetProjectStorageAsync(_projectInfo.Name);
 
             string ossSourceModel = projectStorage.Project.OSSSourceModel;
+
             await bucket.SmartUploadAsync(_fileName, ossSourceModel);
 
             // cleanup before adoption
@@ -62,8 +63,9 @@ namespace WebApplication.Job
             bool adopted = false;
             try
             {
-                string signedUrl = await bucket.CreateSignedUrlAsync(ossSourceModel);
-                await ProjectWork.AdoptAsync(_projectInfo, signedUrl);
+                string signedUploadedUrl = await bucket.CreateSignedUrlAsync(ossSourceModel);
+                
+                await ProjectWork.AdoptAsync(_projectInfo, signedUploadedUrl);
 
                 adopted = true;
             }

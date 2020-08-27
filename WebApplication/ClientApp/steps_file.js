@@ -25,6 +25,7 @@
 
 require('dotenv').config();
 const locators = require('./src/ui-tests/elements_definition.js');
+const assert = require('assert');
 
 //Authentication
 const inputUserName = '#userName';
@@ -201,7 +202,7 @@ module.exports = function() {
       this.waitForVisible(projectRowWithName, 10);
       this.moveCursorTo(projectRowWithName);
 
-      // click the checkbox to select projetc
+      // click the checkbox to select project
       this.waitForVisible(checkBox);
       this.click(checkBox);
 
@@ -213,7 +214,7 @@ module.exports = function() {
       this.waitForVisible(confirmDelete);
       this.click(confirmDelete);
 
-      // wait for project disapear from the list
+      // wait for project disappear from the list
       this.waitForInvisible(projectRowWithName, 60);
     },
     setParamValue(paramName, paramValue) {
@@ -230,6 +231,11 @@ module.exports = function() {
     {
       this.waitForElement(locators.drawingTab, 5);
       this.click(locators.drawingTab);
+    },
+    goToDownloadsTab()
+    {
+      this.waitForElement(locators.downloadsTab, 5);
+      this.click(locators.downloadsTab);
     }
   });
 };

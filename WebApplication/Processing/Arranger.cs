@@ -20,8 +20,6 @@ using System;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Autodesk.Forge.Client;
-using Microsoft.AspNetCore.Http;
 using Shared;
 using WebApplication.Definitions;
 using WebApplication.Services;
@@ -48,7 +46,9 @@ namespace WebApplication.Processing
         public readonly string OutputSAT = $"{Guid.NewGuid():N}.sat";
         public readonly string OutputRFA = $"{Guid.NewGuid():N}.rfa";
         public readonly string BomJson = $"{Guid.NewGuid():N}.bom.json";
+        public readonly string OutputDrawing = $"{Guid.NewGuid():N}.drawing.zip";
         public readonly string OutputDrawingViewables = $"{Guid.NewGuid():N}.drawing.pdf";
+        public readonly string UploadedModel = $"{Guid.NewGuid():N}.upload";
 
         /// <summary>
         /// Constructor.
@@ -84,8 +84,8 @@ namespace WebApplication.Processing
                         OutputIAMModelUrl   = urls[3],
                         OutputIPTModelUrl   = urls[4],
                         BomUrl              = urls[5],
-                        TLA                 = tlaFilename
-                    };
+                        TLA = tlaFilename
+            };
         }
 
         /// <summary>
@@ -131,11 +131,11 @@ namespace WebApplication.Processing
         public async Task<string> MoveProjectAsync(Project project, string tlaFilename)
         {
             var hashString = await GenerateParametersHashAsync();
-            var attributes = new ProjectMetadata { Hash = hashString, TLA = tlaFilename };
+            var bucket = await _userResolver.GetBucketAsync();
+            var hasDrawings = true; // TBD , we will make it probably part of the story to list all drawings in drawing tab
+            var attributes = new ProjectMetadata { Hash = hashString, TLA = tlaFilename, HasDrawings = hasDrawings };
 
             var ossNames = project.OssNameProvider(hashString);
-
-            var bucket = await _userResolver.GetBucketAsync();
 
             // move data to expected places
             await Task.WhenAll(bucket.RenameObjectAsync(Thumbnail, project.OssAttributes.Thumbnail),
@@ -171,6 +171,14 @@ namespace WebApplication.Processing
             await bucket.RenameObjectAsync(OutputDrawingViewables, ossNames.DrawingViewables, true);
         }
 
+        internal async Task MoveDrawingAsync(Project project, string hash)
+        {
+            var bucket = await _userResolver.GetBucketAsync();
+
+            var ossNames = project.OssNameProvider(hash);
+            await bucket.RenameObjectAsync(OutputDrawing, ossNames.Drawing, true);
+        }
+
         internal async Task<ProcessingArgs> ForSatAsync(string inputDocUrl, string topLevelAssembly)
         {
             var bucket = await _userResolver.GetBucketAsync();
@@ -184,6 +192,20 @@ namespace WebApplication.Processing
                 InputDocUrl = inputDocUrl,
                 TLA = topLevelAssembly,
                 SatUrl = satUrl
+            };
+        }
+
+        internal async Task<ProcessingArgs> ForDrawingAsync(string inputDocUrl, string topLevelAssembly)
+        {
+            var bucket = await _userResolver.GetBucketAsync();
+
+            var url = await bucket.CreateSignedUrlAsync(OutputDrawing, ObjectAccess.ReadWrite);
+
+            return new ProcessingArgs
+            {
+                InputDocUrl = inputDocUrl,
+                DrawingUrl = url,
+                TLA = topLevelAssembly
             };
         }
 

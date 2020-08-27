@@ -40,7 +40,7 @@ namespace WebApplication.Utilities
         /// <summary>
         /// Create ProjectDTOBase based DTO and fill its properties.
         /// </summary>
-        public TProjectDTOBase MakeProjectDTO<TProjectDTOBase>(Project project, string hash, bool isAssembly) where TProjectDTOBase: ProjectDTOBase, new()
+        public TProjectDTOBase MakeProjectDTO<TProjectDTOBase>(Project project, string hash, bool isAssembly, bool hasDrawing) where TProjectDTOBase: ProjectDTOBase, new()
         {
             // TODO: fix workaround for `_linkGenerator` check for null
             var modelDownloadUrl = _linkGenerator?.GetPathByAction(controller: "Download",
@@ -63,7 +63,8 @@ namespace WebApplication.Utilities
                         BomJsonUrl = bomJsonUrl,
                         ModelDownloadUrl = modelDownloadUrl,
                         Hash = hash,
-                        IsAssembly = isAssembly
+                        IsAssembly = isAssembly,
+                        HasDrawing = hasDrawing
                     };
         }
 
@@ -74,7 +75,7 @@ namespace WebApplication.Utilities
         {
             Project project = projectStorage.Project;
 
-            var dto = MakeProjectDTO<ProjectDTO>(project, projectStorage.Metadata.Hash, projectStorage.IsAssembly);
+            var dto = MakeProjectDTO<ProjectDTO>(project, projectStorage.Metadata.Hash, projectStorage.IsAssembly, projectStorage.Metadata.HasDrawings);
             dto.Id = project.Name;
             dto.Label = project.Name;
             dto.Image = _localCache.ToDataUrl(project.LocalAttributes.Thumbnail);

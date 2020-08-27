@@ -201,6 +201,21 @@ namespace WebApplication.State
             return false;
         }
 
+        public async Task<string> TryToCreateSignedUrlForReadAsync(string objectName)
+        {
+            string url = null;
+            try
+            {
+                url = await CreateSignedUrlAsync(objectName);
+            }
+            catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
+            {
+                // the file does not exist
+            }
+
+            return url;
+        }
+
         /// <summary>
         /// Upload file to OSS.
         /// Uses upload in chunks if necessary.

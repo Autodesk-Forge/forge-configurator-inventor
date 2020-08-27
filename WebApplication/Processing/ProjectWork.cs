@@ -108,7 +108,7 @@ namespace WebApplication.Processing
                 }
             }
 
-            var dto = _dtoGenerator.MakeProjectDTO<ProjectStateDTO>(project, hash, storage.IsAssembly);
+            var dto = _dtoGenerator.MakeProjectDTO<ProjectStateDTO>(project, hash, storage.IsAssembly, storage.Metadata.HasDrawings);
             dto.Parameters = Json.DeserializeFile<InventorParameters>(localNames.Parameters);
 
             return dto;
@@ -136,16 +136,9 @@ namespace WebApplication.Processing
 
             var bucket = await _userResolver.GetBucketAsync();
             // check if RFA file is already generated
-            try
-            {
-                // TODO: this might be ineffective as some "get details" API call
-                await bucket.CreateSignedUrlAsync(ossNameProvider.Rfa);
+            var rfaExists = await bucket.TryToCreateSignedUrlForReadAsync(ossNameProvider.Rfa) != null;
+            if (rfaExists)
                 return;
-            }
-            catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
-            {
-                // the file does not exist, so just swallow
-            }
 
             // OK, nothing in cache - generate it now
             var inputDocUrl = await bucket.CreateSignedUrlAsync(ossNameProvider.GetCurrentModel(storage.IsAssembly));
@@ -184,7 +177,7 @@ namespace WebApplication.Processing
                     using (Stream objectStream = ossObjectResponse.Data)
                     {
                         // zero length means that there is nothing to generate, but processed and do not continue
-                        generated = objectStream.Length>0;
+                        generated = objectStream.Length > 0;
                     }
                 }
 
@@ -228,6 +221,38 @@ namespace WebApplication.Processing
             _logger.LogInformation($"Drawing viewables for hash {hash} - drawing {msg}");
 
             return generated;
+        }
+
+        /// <summary>
+        /// Generate Drawing zip with folder structure (or take it from cache).
+        /// </summary>
+        public async Task GenerateDrawingAsync(string projectName, string hash)
+        {
+            _logger.LogInformation($"Generating Drawing for hash {hash}");
+
+            ProjectStorage storage = await _userResolver.GetProjectStorageAsync(projectName);
+            Project project = storage.Project;
+
+            var ossNameProvider = project.OssNameProvider(hash);
+
+            var bucket = await _userResolver.GetBucketAsync();
+            // check if Drawing file is already generated
+            var drawingUrl = await bucket.TryToCreateSignedUrlForReadAsync(ossNameProvider.Drawing);
+            if (drawingUrl != null)
+                return;
+
+            // OK, nothing in cache - generate it now
+            var inputDocUrl = await bucket.CreateSignedUrlAsync(ossNameProvider.GetCurrentModel(storage.IsAssembly));
+
+            ProcessingArgs drawingData = await _arranger.ForDrawingAsync(inputDocUrl, storage.Metadata.TLA);
+            ProcessingResult result = await _fdaClient.GenerateDrawing(drawingData);
+            if (!result.Success)
+            {
+                _logger.LogError($"{result.ErrorMessage} for project {project.Name} and hash {hash}");
+                throw new FdaProcessingException($"{result.ErrorMessage} for project {project.Name} and hash {hash}", result.ReportUrl);
+            }
+
+            await _arranger.MoveDrawingAsync(project, hash);
         }
 
         public async Task FileTransferAsync(string source, string target)

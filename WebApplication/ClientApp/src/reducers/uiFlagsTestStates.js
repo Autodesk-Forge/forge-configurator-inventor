@@ -16,7 +16,32 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-import * as uiFlags from './uiFlagsReducer';
-export const stateParametersEditedMessageClosed = {...uiFlags.initialState, parametersEditedMessageClosed: true}; // not shown
-export const stateParametersEditedMessageRejected = {...uiFlags.initialState, parametersEditedMessageRejected: true}; // not shown
-export const stateParametersEditedMessageNotRejected = {...uiFlags.initialState, parametersEditedMessageRejected: false}; // shown
+export const testState = {
+    parametersEditedMessageClosed: 1,
+    parametersEditedMessageRejected: 2,
+    modalProgressShowing: 3,
+    updateFailedShowing: 4,
+    loginFailedShowing: 5,
+    downloadRfaFailedShowing: 6,
+    downloadDrawingFailedShowing: 7,
+    reportUrl: 8,
+    rfaProgressShowing: 9,
+    drawingDownloadProgressShowing: 10,
+    rfaDownloadUrl: 11,
+    drawingDownloadUrl: 12,
+    showUploadPackage: 13,
+    uploadProgressShowing: 14,
+    uploadProgressStatus: 'done',
+    package: { file: null, root: '', assemblies: null },
+    uploadFailedShowing: 16,
+    activeTabIndex: 17,
+    projectAlreadyExists: 18,
+    showDeleteProject: 19,
+    checkedProjects: [20],
+    drawingProgressShowing: 21,
+    drawingUrl: 22
+};
+
+ export const fullState = {
+     uiFlags: testState
+ };

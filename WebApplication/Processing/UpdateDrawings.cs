@@ -16,23 +16,22 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using Autodesk.Forge.DesignAutomation.Model;
 using System.Collections.Generic;
 using WebApplication.Definitions;
 
 namespace WebApplication.Processing
 {
     /// <summary>
-    /// Export drawing from Inventor document.
+    /// Update all drawings.
     /// </summary>
-    public class ExportDrawing : ForgeAppBase
+    public class UpdateDrawings : ForgeAppBase
     {
-        public override string Id => nameof(ExportDrawing);
-        public override string Description => "Find the drawing of Inventor document and generate viewables for ForgeViewer";
+        public override string Id => nameof(UpdateDrawings);
+        public override string Description => "Find all drawings and update them -> zip";
 
-        protected override string OutputUrl(ProcessingArgs projectData) => projectData.DrawingViewablesUrl;
-        protected override string OutputName => "Drawing.pdf";
-        protected override bool IsOutputZip => false;
+        protected override string OutputUrl(ProcessingArgs projectData) => projectData.DrawingUrl;
+        protected override string OutputName => "drawing";
+        protected override bool IsOutputZip => true;
         protected override bool IsOutputOptional => true;
 
         /// <summary>
@@ -47,6 +46,6 @@ namespace WebApplication.Processing
         /// <summary>
         /// Constructor.
         /// </summary>
-        public ExportDrawing(Publisher publisher) : base(publisher) {}
+        public UpdateDrawings(Publisher publisher) : base(publisher) {}
     }
 }

@@ -74,6 +74,12 @@ namespace WebApplication.Controllers
             return new PhysicalFileResult(localFileName, "application/pdf");
         }
 
+        [HttpGet("{projectName}/{hash}/drawing/{token?}")]
+        public Task<RedirectResult> Drawing(string projectName, string hash, string token = null)
+        {
+            return RedirectToOssObject(projectName, hash, (ossNames, _) => ossNames.Drawing);
+        }
+
         private async Task<RedirectResult> RedirectToOssObject(string projectName, string hash, Func<OSSObjectNameProvider, bool, string> nameExtractor)
         {
             ProjectStorage projectStorage = await _userResolver.GetProjectStorageAsync(projectName);

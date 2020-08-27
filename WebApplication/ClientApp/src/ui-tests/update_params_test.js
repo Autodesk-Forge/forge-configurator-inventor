@@ -18,6 +18,9 @@
 
 /* eslint-disable no-undef */
 const locators = require('./elements_definition.js');
+const assert = require('assert');
+const newParamValue = '24 mm';
+const paramName = 'JawOffset';
 
 Before((I) => {
     I.amOnPage('/');
@@ -27,12 +30,12 @@ Feature('Update params');
 
 const updatingProjectProgress = '//p[text()="Updating Project"]';
 
-Scenario('Updating parameters for model', (I) => {
+Scenario('Updating parameters for model', async (I) => {
 
     I.selectProject("Wrench");
 
     // enter new parameter value
-    I.setParamValue('JawOffset', '20 mm');
+    I.setParamValue(paramName, newParamValue);
 
     // check that stripe appeared
     I.waitForVisible(locators.xpStripeElement, 10);
@@ -48,5 +51,9 @@ Scenario('Updating parameters for model', (I) => {
     // check that stripe disappeared
     I.waitForInvisible(locators.xpStripeElement, 5);
 
-    // TODO: check for updated parameters values
+    // check for updated parameter value
+    const jawOffsetInput = '//div[text() = "'+ paramName +'"]//input';
+    I.waitForVisible(jawOffsetInput, 20);
+    const currentParamValue = await I.grabValueFrom(jawOffsetInput);
+    assert.equal(newParamValue, currentParamValue, 'Error: Parameter "' + paramName + '" has incorrect value!');
 });

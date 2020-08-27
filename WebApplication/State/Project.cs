@@ -32,15 +32,17 @@ namespace WebApplication.State
 
             Name = projectName; 
             OSSSourceModel = ExactOssName(projectName);
+            OSSSourceDrawings = ExactOssName(projectName, "Drawings");
 
             OssAttributes = new OssAttributes(projectName);
             LocalAttributes = new LocalAttributes(rootDir, Name);
         }
 
-        public static string ExactOssName(string projectName) => ONC.Join(ONC.ProjectsFolder, projectName);
+        public static string ExactOssName(string projectName, string suffix="") => string.IsNullOrEmpty(suffix) ? ONC.Join(ONC.ProjectsFolder, projectName) : ONC.Join(ONC.ProjectsFolder, projectName, suffix);
 
         public string Name { get; }
         public string OSSSourceModel { get; }
+        public string OSSSourceDrawings { get; }
 
         public OSSObjectNameProvider OssNameProvider(string hash) => new OSSObjectNameProvider(Name, hash);
         public LocalNameProvider LocalNameProvider(string hash) => new LocalNameProvider(LocalAttributes.BaseDir, hash);

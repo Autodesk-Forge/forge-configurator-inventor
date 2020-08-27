@@ -23,10 +23,10 @@ import thunk from 'redux-thunk';
 import * as downloadActions from './downloadActions';
 import { actionTypes as uiFlagsActionTypes } from './uiFlagsActions';
 
-const rfaLink = 'https://some.link';
+const aLink = 'https://some.link';
 const tokenMock = 'theToken';
-const fullLink = `${rfaLink}/${tokenMock}`;
-const noTokenLink = `${rfaLink}`;
+const fullLink = `${aLink}/${tokenMock}`;
+const noTokenLink = `${aLink}`;
 const errorReportLink = 'https://error.link';
 const jobId = 'job1';
 
@@ -67,37 +67,60 @@ describe('downloadActions', () => {
         store.clearActions();
     });
 
-    it('check getRFADownloadLink action', async () => {
-        await store.dispatch(downloadActions.getRFADownloadLink("ProjectId", "temp_url"));
-        // simulate conection.onComplete(rfaLink);
-        connectionMock.simulateComplete(rfaLink);
+    describe('RFA', () => {
+        it('check getRFADownloadLink action', async () => {
+            await store.dispatch(downloadActions.getRFADownloadLink("ProjectId", "temp_url"));
+            // simulate conection.onComplete(rfaLink);
+            connectionMock.simulateComplete(aLink);
 
-        // check expected store actions
-        const actions = store.getActions();
-        const linkAction = actions.find(a => a.type === uiFlagsActionTypes.SET_RFA_LINK);
-        expect(linkAction.url).toEqual(fullLink);
+            // check expected store actions
+            const actions = store.getActions();
+            const linkAction = actions.find(a => a.type === uiFlagsActionTypes.SET_RFA_LINK);
+            expect(linkAction.url).toEqual(fullLink);
+        });
+
+        it('check report url and fail dialog on error', async () => {
+            await store.dispatch(downloadActions.getRFADownloadLink("ProjectId", "temp_url"));
+            connectionMock.simulateError(jobId,errorReportLink);
+
+            // check expected store actions
+            const actions = store.getActions();
+            // there are two SET_REPORT_URL actions in the list. The first one come from job start and is called with null to clear old data...
+            expect(actions.some(a => (a.type === uiFlagsActionTypes.SET_REPORT_URL && a.url === errorReportLink))).toEqual(true);
+            expect(actions.some(a => a.type === uiFlagsActionTypes.SHOW_RFA_FAILED)).toEqual(true);
+        });
     });
 
-    it('check report url and fail dialog on error', async () => {
-        await store.dispatch(downloadActions.getRFADownloadLink("ProjectId", "temp_url"));
-        connectionMock.simulateError(jobId,errorReportLink);
+    describe('Drawing', () => {
+        it('check getDrawingDownloadLink action', async () => {
+            await store.dispatch(downloadActions.getDrawingDownloadLink("ProjectId", "temp_url"));
+            connectionMock.simulateComplete(aLink);
 
-        // check expected store actions
-        const actions = store.getActions();
-        // there are two SET_REPORT_URL actions in the list. The first one come from job start and is called with null to clear old data...
-        expect(actions.some(a => (a.type === uiFlagsActionTypes.SET_REPORT_URL && a.url === errorReportLink))).toEqual(true);
-        expect(actions.some(a => a.type === uiFlagsActionTypes.SHOW_RFA_FAILED)).toEqual(true);
-    });
+            // check expected store actions
+            const actions = store.getActions();
+            const linkAction = actions.find(a => a.type === uiFlagsActionTypes.SET_DRAWING_DOWNLOAD_LINK);
+            expect(linkAction.url).toEqual(fullLink);
+        });
 
+        it('check report url and fail dialog on error', async () => {
+            await store.dispatch(downloadActions.getDrawingDownloadLink("ProjectId", "temp_url"));
+            connectionMock.simulateError(jobId,errorReportLink);
 
-    it('check fetchDrawing action', async () => {
-        await store.dispatch(downloadActions.fetchDrawing({ id: "ProjectId" }));
-        // reusing the rfaLink as drawingPdf as well
-        connectionMock.simulateComplete(rfaLink);
+            // check expected store actions
+            const actions = store.getActions();
+            // there are two SET_REPORT_URL actions in the list. The first one come from job start and is called with null to clear old data...
+            expect(actions.some(a => (a.type === uiFlagsActionTypes.SET_REPORT_URL && a.url === errorReportLink))).toEqual(true);
+            expect(actions.some(a => a.type === uiFlagsActionTypes.SHOW_DRAWING_DOWNLOAD_FAILED)).toEqual(true);
+        });
 
-        // check expected store actions
-        const actions = store.getActions();
-        const linkAction = actions.find(a => a.type === uiFlagsActionTypes.SET_DRAWING_URL);
-        expect(linkAction.url).toEqual(noTokenLink);
+        it('check fetchDrawing action', async () => {
+            await store.dispatch(downloadActions.fetchDrawing({ id: "ProjectId" }));
+            connectionMock.simulateComplete(aLink);
+
+            // check expected store actions
+            const actions = store.getActions();
+            const linkAction = actions.find(a => a.type === uiFlagsActionTypes.SET_DRAWING_URL);
+            expect(linkAction.url).toEqual(noTokenLink);
+        });
     });
 });

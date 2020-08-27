@@ -67,6 +67,7 @@ export class ProjectList extends Component {
     // use file name without extension as ID of uploaded project
     const onlyName = filename.substring(0, filename.lastIndexOf('.')) || filename; // TODO: project name should be received from the server
     this.props.updateActiveProject(onlyName);
+    this.props.invalidateDrawing();
     // switch to MODEL tab
     this.props.updateActiveTabIndex(1);
   }
