@@ -51,7 +51,7 @@ export class UserDetails extends Component {
                             onClick={this.handleAuthClick}
                         />
                 <span className="hyperlink">
-                    <a href="https://github.com/Developer-Autodesk/forge-configurator-inventor/blob/master/README.md">Show documentation</a>
+                    <a href="https://github.com/Developer-Autodesk/forge-configurator-inventor/blob/master/howto.md">Show documentation</a>
                 </span>
             </div>
         );
