@@ -27,6 +27,7 @@ using Project = WebApplication.State.Project;
 
 namespace WebApplication.Tests
 {
+    [Collection("IntegrationTests1")]
     public class InitializerIntegrationTest : InitializerTestBase, IAsyncLifetime
     {
         const string testZippedIamUrl = "http://testipt.s3-us-west-2.amazonaws.com/Basic.zip";
