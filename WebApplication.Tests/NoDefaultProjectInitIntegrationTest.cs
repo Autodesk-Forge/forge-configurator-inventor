@@ -45,7 +45,7 @@ namespace WebApplication.Tests
         [Fact]
         public async void NoDefaultProjectInitTestAsync()
         {
-            // Init the project with no default project - this would previously fail on null reference exception
+            // Init the project with no default project as this would previously fail on null reference exception
             // while iterating the default projects
             await initializer.InitializeAsync();
             // Secondary defect from the first one caused the local cache directory to be removed druing clear - init - run sequence in one go
