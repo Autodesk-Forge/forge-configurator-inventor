@@ -39,19 +39,84 @@ using Project = WebApplication.State.Project;
 
 namespace WebApplication.Tests
 {
-    [Collection("IntegrationTests1")]
-    public class InitializerIntegrationTest : InitializerTestBase, IAsyncLifetime
+    public class InitializerIntegrationTest : IAsyncLifetime
     {
         const string testZippedIamUrl = "http://testipt.s3-us-west-2.amazonaws.com/Basic.zip";
         const string testIamPathInZip = "iLogicBasic1.iam";
 
-        private static readonly DefaultProjectsConfiguration defaultProjectsConfiguration = new DefaultProjectsConfiguration
-        {
-            Projects = new[] { new DefaultProjectConfiguration { Url = testZippedIamUrl, TopLevelAssembly = testIamPathInZip, Name = "Basic" } }
-        };
+        readonly ForgeOSS forgeOSS;
+        readonly string projectsBucketKey;
+        readonly Initializer initializer;
+        readonly DirectoryInfo testFileDirectory;
+        readonly HttpClient httpClient;
 
-        public InitializerIntegrationTest() : base(defaultProjectsConfiguration)
-        {}
+        public InitializerIntegrationTest()
+        {
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", false)
+                .AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables()
+                .AddForgeAlternativeEnvironmentVariables()
+                .Build();
+
+            IServiceCollection services = new ServiceCollection();
+            services.AddHttpClient();
+            var serviceProvider = services.BuildServiceProvider();
+
+            ForgeConfiguration forgeConfiguration = configuration.GetSection("Forge").Get<ForgeConfiguration>();
+            IOptions<ForgeConfiguration> forgeConfigOptions = Options.Create(forgeConfiguration);
+
+            var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
+
+            forgeOSS = new ForgeOSS(httpClientFactory, forgeConfigOptions, new NullLogger<ForgeOSS>());
+
+            var httpMessageHandler = new ForgeHandler(Options.Create(forgeConfiguration))
+            {
+                InnerHandler = new HttpClientHandler()
+            };
+            var forgeService = new ForgeService(new HttpClient(httpMessageHandler));
+            var designAutomationClient = new DesignAutomationClient(forgeService);
+
+            projectsBucketKey = Guid.NewGuid().ToString();
+            
+            var resourceProvider = new ResourceProvider(forgeConfigOptions, designAutomationClient, null, projectsBucketKey);
+            var localCache = new LocalCache();
+            var postProcessing = new PostProcessing(httpClientFactory, new NullLogger<PostProcessing>(), localCache, Options.Create(new ProcessingOptions()));
+            var publisher = new Publisher(designAutomationClient, new NullLogger<Publisher>(), resourceProvider, postProcessing);
+
+            var appBundleZipPathsConfiguration = new AppBundleZipPaths
+            {
+                EmptyExe = "../../../../WebApplication/AppBundles/EmptyExePlugin.bundle.zip",
+                CreateSVF = "../../../../WebApplication/AppBundles/CreateSVFPlugin.bundle.zip",
+                CreateThumbnail = "../../../../WebApplication/AppBundles/CreateThumbnailPlugin.bundle.zip",
+                ExtractParameters = "../../../../WebApplication/AppBundles/ExtractParametersPlugin.bundle.zip",
+                UpdateParameters = "../../../../WebApplication/AppBundles/UpdateParametersPlugin.bundle.zip",
+                CreateSAT = "../../../../WebApplication/AppBundles/SatExportPlugin.bundle.zip",
+                CreateRFA = "../../../../WebApplication/AppBundles/RFAExportPlugin.bundle.zip",
+                CreateBOM = "../../../../WebApplication/AppBundles/ExportBOMPlugin.bundle.zip",
+                ExportDrawing = "../../../../WebApplication/AppBundles/ExportDrawingAsPdfPlugin.bundle.zip"
+            };
+            IOptions<AppBundleZipPaths> appBundleZipPathsOptions = Options.Create(appBundleZipPathsConfiguration);
+
+            var fdaClient = new FdaClient(publisher, appBundleZipPathsOptions);
+            var defaultProjectsConfiguration = new DefaultProjectsConfiguration
+            {
+                Projects = new [] { new DefaultProjectConfiguration { Url = testZippedIamUrl, TopLevelAssembly = testIamPathInZip, Name = "Basic" } }
+            };
+            IOptions<DefaultProjectsConfiguration> defaultProjectsOptions = Options.Create(defaultProjectsConfiguration);
+            var userResolver = new UserResolver(resourceProvider, forgeOSS, forgeConfigOptions, localCache, NullLogger<UserResolver>.Instance, null);
+            var arranger = new Arranger(httpClientFactory, userResolver);
+
+            // TODO: linkGenerator should be mocked
+            var dtoGenerator = new DtoGenerator(linkGenerator: null, localCache);
+            var projectWork = new ProjectWork(new NullLogger<ProjectWork>(), arranger, fdaClient, dtoGenerator, userResolver);
+            initializer = new Initializer(new NullLogger<Initializer>(), fdaClient, 
+                                            defaultProjectsOptions, projectWork, userResolver, localCache);
+
+            testFileDirectory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()));
+            httpClient = new HttpClient();
+        }
 
         public async Task InitializeAsync()
         {
