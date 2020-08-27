@@ -75,7 +75,7 @@ namespace WebApplication.Tests
             projectsBucketKey = Guid.NewGuid().ToString();
 
             var resourceProvider = new ResourceProvider(forgeConfigOptions, designAutomationClient, null, projectsBucketKey);
-            localCache = new LocalCache();
+            var localCache = new LocalCache();
             var postProcessing = new PostProcessing(httpClientFactory, new NullLogger<PostProcessing>(), localCache, Options.Create(new ProcessingOptions()));
             var publisher = new Publisher(designAutomationClient, new NullLogger<Publisher>(), resourceProvider, postProcessing);
 
@@ -89,7 +89,8 @@ namespace WebApplication.Tests
                 CreateSAT = "../../../../WebApplication/AppBundles/SatExportPlugin.bundle.zip",
                 CreateRFA = "../../../../WebApplication/AppBundles/RFAExportPlugin.bundle.zip",
                 CreateBOM = "../../../../WebApplication/AppBundles/ExportBOMPlugin.bundle.zip",
-                ExportDrawing = "../../../../WebApplication/AppBundles/ExportDrawingAsPdfPlugin.bundle.zip"
+                ExportDrawing = "../../../../WebApplication/AppBundles/ExportDrawingAsPdfPlugin.bundle.zip",
+                UpdateDrawings = "../../../../WebApplication/AppBundles/UpdateDrawingsPlugin.bundle.zip"
             };
             IOptions<AppBundleZipPaths> appBundleZipPathsOptions = Options.Create(appBundleZipPathsConfiguration);
 
