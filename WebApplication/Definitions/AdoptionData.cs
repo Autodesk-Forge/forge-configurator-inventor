@@ -42,7 +42,7 @@ namespace WebApplication.Definitions
         public string RfaUrl { get; internal set; }
         public string BomUrl { get; set; }
         public string DrawingUrl { get; set; }
-        public string DrawingViewablesUrl { get; set; }
+        public string DrawingPdfUrl { get; set; }
     }
 
     /// <summary>

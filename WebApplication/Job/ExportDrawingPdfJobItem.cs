@@ -20,16 +20,18 @@ using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using WebApplication.Processing;
-using System.Threading;
 
 namespace WebApplication.Job
 {
-    internal class ExportDrawingJobItem : JobItemBase
+    /// <summary>
+    /// Generate drawing PDF.
+    /// </summary>
+    internal class ExportDrawingPdfJobItem : JobItemBase
     {
         private readonly string _hash;
         private readonly LinkGenerator _linkGenerator;
 
-        public ExportDrawingJobItem(ILogger logger, string projectId, string hash, ProjectWork projectWork, LinkGenerator linkGenerator)
+        public ExportDrawingPdfJobItem(ILogger logger, string projectId, string hash, ProjectWork projectWork, LinkGenerator linkGenerator)
             : base(logger, projectId, projectWork)
         {
             _hash = hash;
@@ -38,13 +40,13 @@ namespace WebApplication.Job
 
         public override async Task ProcessJobAsync(IResultSender resultSender)
         {
-            using var scope = Logger.BeginScope("Export Drawing ({Id})");
+            using var scope = Logger.BeginScope("Export Drawing PDF ({Id})");
 
-            Logger.LogInformation($"ProcessJob (ExportDrawing) {Id} for project {ProjectId} started.");
+            Logger.LogInformation($"ProcessJob (ExportDrawingPDF) {Id} for project {ProjectId} started.");
 
-            bool generated = await ProjectWork.ExportDrawingViewablesAsync(ProjectId, _hash);
+            bool generated = await ProjectWork.ExportDrawingPdfAsync(ProjectId, _hash);
 
-            Logger.LogInformation($"ProcessJob (ExportDrawing) {Id} for project {ProjectId} completed.");
+            Logger.LogInformation($"ProcessJob (ExportDrawingPDF) {Id} for project {ProjectId} completed.");
 
             string url = "";
             if (generated)

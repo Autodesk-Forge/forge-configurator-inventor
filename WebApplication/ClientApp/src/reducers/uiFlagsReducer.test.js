@@ -157,30 +157,21 @@ describe('uiFlags reducer', () => {
       it('sets the loginFailedShowing', () => {
          expect(uiFlagsReducer({}, uiFlagsActions.showLoginFailed(true)).loginFailedShowing).toEqual(true);
       }),
-      it('sets the downloadRfaFailedShowing', () => {
-         expect(uiFlagsReducer({}, uiFlagsActions.showRfaFailed(true)).downloadRfaFailedShowing).toEqual(true);
+      it('sets the downloadFailedShowing', () => {
+         expect(uiFlagsReducer({}, uiFlagsActions.showDownloadFailed(true)).downloadFailedShowing).toEqual(true);
       }),
       it('sets the reportUrl', () => {
          expect(uiFlagsReducer({}, uiFlagsActions.setReportUrlLink('a link')).reportUrl).toEqual('a link');
       }),
-      it('sets the rfaProgressShowing', () => {
-         expect(uiFlagsReducer({}, uiFlagsActions.showRFAModalProgress(true)).rfaProgressShowing).toEqual(true);
-         expect(uiFlagsReducer({}, uiFlagsActions.showRFAModalProgress(true)).rfaDownloadUrl).toEqual(null);
+      it('sets the downloadProgressShowing', () => {
+         expect(uiFlagsReducer({}, uiFlagsActions.showDownloadProgress(true)).downloadProgressShowing).toEqual(true);
+         expect(uiFlagsReducer({}, uiFlagsActions.showDownloadProgress(true)).downloadUrl).toEqual(null);
       }),
-      it('sets the rfaDownloadUrl', () => {
-         expect(uiFlagsReducer({}, uiFlagsActions.setRFALink('rfa link')).rfaDownloadUrl).toEqual('rfa link');
+      it('sets the downloadUrl', () => {
+         expect(uiFlagsReducer({}, uiFlagsActions.setDownloadLink('rfa link')).downloadUrl).toEqual('rfa link');
       }),
       it('sets the activeTabIndex', () => {
          expect(uiFlagsReducer({}, uiFlagsActions.updateActiveTabIndex(7)).activeTabIndex).toEqual(7);
-      }),
-      it('sets the downloadDrawingFailedShowing', () => {
-         expect(uiFlagsReducer({}, uiFlagsActions.showDrawingDownloadFailed(true)).downloadDrawingFailedShowing).toEqual(true);
-      }),
-      it('sets the drawingDownloadProgressShowing', () => {
-         expect(uiFlagsReducer({}, uiFlagsActions.showDrawingDownloadModalProgress(true)).drawingDownloadProgressShowing).toEqual(true);
-      }),
-      it('sets the drawingDownloadUrl', () => {
-         expect(uiFlagsReducer({}, uiFlagsActions.setDrawingDownloadLink('idw link')).drawingDownloadUrl).toEqual('idw link');
       }),
       it('sets the drawingProgressShowing', () => {
          expect(uiFlagsReducer({}, uiFlagsActions.showDrawingExportProgress(true)).drawingProgressShowing).toEqual(true);
@@ -190,6 +181,6 @@ describe('uiFlags reducer', () => {
       }),
       it('invalidates the drawingUrl', () => {
          expect(uiFlagsReducer({}, uiFlagsActions.invalidateDrawing()).drawingUrl).toEqual(null);
-      })
+      });
    });
 });

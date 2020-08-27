@@ -36,7 +36,7 @@ export class Drawing extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    // refresh bom data when Drawing tab was clicked before projects initialized
+    // refresh drawing data when Drawing tab was clicked before projects initialized
     const isAssembly = this.props.activeProject?.isAssembly;
     const hasDrawing = this.props.activeProject?.hasDrawing;
     if (isAssembly === true && hasDrawing === true && this.props.activeProject !== prevProps.activeProject) {

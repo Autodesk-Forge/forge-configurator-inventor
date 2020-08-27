@@ -26,7 +26,7 @@ import merge from "lodash.merge";
 import HyperLink from './hyperlink';
 import Button from '@hig/button';
 
-export class ModalProgressRfa extends Component {
+export class ModalDownloadProgress extends Component {
 
     render() {
         const modalStyles = /* istanbul ignore next */ styles =>
@@ -66,12 +66,14 @@ export class ModalProgressRfa extends Component {
                 <div className="modalLink">
                     <React.Fragment>
                     <HyperLink
-                    onAutostart={(downloadHyperlink) => {
-                        downloadHyperlink.click();
-                    }}
-                    prefix="Download should start automatically, if it doesn't, "
-                    link="click here" href={this.props.url}
-                    suffix=" to download it manually."/>
+                        onAutostart={(downloadHyperlink) => {
+                            downloadHyperlink.click();
+                        }}
+                        onUrlClick={this.props.onClose}
+                        prefix="Download should start automatically, if it doesn't, "
+                        link="click here" href={this.props.url}
+                        suffix=" to download it manually."
+                        download={true}/>
                     <Button className="button" style={
                         { width: '116px', height: '36px', borderRadius: '2px', marginLeft: '12px'}}
                         type="secondary"
@@ -87,4 +89,4 @@ export class ModalProgressRfa extends Component {
     }
 }
 
-export default ModalProgressRfa;
+export default ModalDownloadProgress;

@@ -88,8 +88,8 @@ export const loginFailedShowing = function(state) {
     return uiFlags.loginFailedShowing(state.uiFlags);
 };
 
-export const downloadRfaFailedShowing = function(state) {
-    return uiFlags.downloadRfaFailedShowing(state.uiFlags);
+export const downloadFailedShowing = function(state) {
+    return uiFlags.downloadFailedShowing(state.uiFlags);
 };
 
 export const downloadDrawingFailedShowing = function(state) {
@@ -100,20 +100,17 @@ export const reportUrl = function(state) {
     return uiFlags.reportUrl(state.uiFlags);
 };
 
-export const rfaProgressShowing = function(state) {
-    return uiFlags.rfaProgressShowing(state.uiFlags);
+/** If downloads are generating, and "In progress" dialog is shown */
+export const downloadProgressShowing = function(state) {
+    return uiFlags.downloadProgressShowing(state.uiFlags);
 };
 
-export const drawingDownloadProgressShowing = function(state) {
-    return uiFlags.drawingDownloadProgressShowing(state.uiFlags);
+export const downloadProgressTitle = function(state) {
+    return uiFlags.downloadProgressTitle(state.uiFlags);
 };
 
-export const rfaDownloadUrl = function(state) {
-    return uiFlags.rfaDownloadUrl(state.uiFlags);
-};
-
-export const drawingDownloadUrl = function(state) {
-    return uiFlags.drawingDownloadUrl(state.uiFlags);
+export const downloadUrl = function(state) {
+    return uiFlags.downloadUrl(state.uiFlags);
 };
 
 export const uploadPackageDlgVisible = function(state) {

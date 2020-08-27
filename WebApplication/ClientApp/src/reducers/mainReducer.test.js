@@ -89,8 +89,8 @@ describe('main reducer', () => {
       it('gets loginFailedShowing', () => {
          expect(reducer.loginFailedShowing(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.loginFailedShowing);
       }),
-      it('gets downloadRfaFailedShowing', () => {
-         expect(reducer.downloadRfaFailedShowing(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.downloadRfaFailedShowing);
+      it('gets downloadFailedShowing', () => {
+         expect(reducer.downloadFailedShowing(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.downloadFailedShowing);
       }),
       it('gets downloadDrawingFailedShowing', () => {
          expect(reducer.downloadDrawingFailedShowing(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.downloadDrawingFailedShowing);
@@ -98,17 +98,11 @@ describe('main reducer', () => {
       it('gets reportUrl', () => {
          expect(reducer.reportUrl(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.reportUrl);
       }),
-      it('gets rfaProgressShowing', () => {
-         expect(reducer.rfaProgressShowing(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.rfaProgressShowing);
+      it('gets downloadProgressShowing', () => {
+         expect(reducer.downloadProgressShowing(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.downloadProgressShowing);
       }),
-      it('gets drawingDownloadProgressShowing', () => {
-         expect(reducer.drawingDownloadProgressShowing(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.drawingDownloadProgressShowing);
-      }),
-      it('gets rfaDownloadUrl', () => {
-         expect(reducer.rfaDownloadUrl(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.rfaDownloadUrl);
-      }),
-      it('gets drawingDownloadUrl', () => {
-         expect(reducer.drawingDownloadUrl(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.drawingDownloadUrl);
+      it('gets downloadUrl', () => {
+         expect(reducer.downloadUrl(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.downloadUrl);
       }),
       it('gets uploadPackageDlgVisible', () => {
          expect(reducer.uploadPackageDlgVisible(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.showUploadPackage); /* method and flag name differ */
