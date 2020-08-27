@@ -172,14 +172,6 @@ describe('Downloads components', () => {
         expect(showModalProgressMock).toBeCalledWith(false);
       });
 
-      it('Handles progress dialog Url click', () => {
-        const wrapper = shallow(<Downloads { ...rfaProps} />);
-        const dlg = wrapper.find('ModalDownloadProgress');
-
-        dlg.simulate('urlClick'); // TODO: the 'urlClick' moved inside ModalDownloadProgress.HyperLink, I guess this is why it does not work anymore
-        expect(showModalProgressMock).toBeCalledWith(false);
-      });
-
       it('Shows failed dialog', () => {
         const wrapper = shallow(<Downloads { ...rfaFailedProps} />);
         const dlg = wrapper.find('ModalFail');
@@ -223,14 +215,6 @@ describe('Downloads components', () => {
         const dlg = wrapper.find('ModalDownloadProgress');
 
         dlg.simulate('close');
-        expect(showModalProgressMock).toBeCalledWith(false);
-      });
-
-      it('Handles progress dialog Url click', () => {
-        const wrapper = shallow(<Downloads { ...drwProps} />);
-        const dlg = wrapper.find('ModalDownloadProgress');
-
-        dlg.simulate('urlClick');  // TODO: the 'urlClick' moved inside ModalDownloadProgress.HyperLink, I guess this is why it does not work anymore
         expect(showModalProgressMock).toBeCalledWith(false);
       });
 

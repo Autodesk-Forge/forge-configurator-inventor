@@ -62,14 +62,14 @@ const mockState = {
 };
 const store = mockStore(mockState);
 
-describe.skip('downloadActions', () => {
+describe('downloadActions', () => {
     beforeEach(() => { // Runs before each test in the suite
         store.clearActions();
     });
 
-    describe('RFA', () => {
-        it('check getRFADownloadLink action', async () => {
-            await store.dispatch(downloadActions.getRFADownloadLink("ProjectId", "temp_url"));
+    describe('DownloadLink', () => {
+        it('check getDownloadLink onComplete action', async () => {
+            await store.dispatch(downloadActions.getDownloadLink("Method", "ProjectId", "hash", "title"));
             // simulate conection.onComplete(rfaLink);
             connectionMock.simulateComplete(aLink);
 
@@ -79,8 +79,8 @@ describe.skip('downloadActions', () => {
             expect(linkAction.url).toEqual(fullLink);
         });
 
-        it('check report url and fail dialog on error', async () => {
-            await store.dispatch(downloadActions.getRFADownloadLink("ProjectId", "temp_url"));
+        it('check getDownloadLink onError action', async () => {
+            await store.dispatch(downloadActions.getDownloadLink("Method", "ProjectId", "hash", "title"));
             connectionMock.simulateError(jobId,errorReportLink);
 
             // check expected store actions
@@ -92,27 +92,6 @@ describe.skip('downloadActions', () => {
     });
 
     describe('Drawing', () => {
-        it('check getDrawingDownloadLink action', async () => {
-            await store.dispatch(downloadActions.getDrawingDownloadLink("ProjectId", "temp_url"));
-            connectionMock.simulateComplete(aLink);
-
-            // check expected store actions
-            const actions = store.getActions();
-            const linkAction = actions.find(a => a.type === uiFlagsActionTypes.SET_DOWNLOAD_LINK);
-            expect(linkAction.url).toEqual(fullLink);
-        });
-
-        it('check report url and fail dialog on error', async () => {
-            await store.dispatch(downloadActions.getDrawingDownloadLink("ProjectId", "temp_url"));
-            connectionMock.simulateError(jobId,errorReportLink);
-
-            // check expected store actions
-            const actions = store.getActions();
-            // there are two SET_REPORT_URL actions in the list. The first one come from job start and is called with null to clear old data...
-            expect(actions.some(a => (a.type === uiFlagsActionTypes.SET_REPORT_URL && a.url === errorReportLink))).toEqual(true);
-            expect(actions.some(a => a.type === uiFlagsActionTypes.SHOW_DOWNLOAD_FAILED)).toEqual(true);
-        });
-
         it('check fetchDrawing action', async () => {
             await store.dispatch(downloadActions.fetchDrawing({ id: "ProjectId" }));
             connectionMock.simulateComplete(aLink);

@@ -98,6 +98,19 @@ describe('modal progress ', () => {
         expect(closeMockFn).toHaveBeenCalledTimes(1);
     });
 
+    it('should close when Url link clicked', () => {
+        const closeMockFn = jest.fn();
+        const props = { onClose: closeMockFn, url: 'http://example.com' };
+
+        const wrapper = shallow(<ModalDownloadProgress {...props} />);
+
+        const hyperlink = wrapper.find('HyperLink');
+        expect(hyperlink.length).toEqual(1);
+
+        hyperlink.simulate('urlClick');
+        expect(closeMockFn).toHaveBeenCalledTimes(1);
+    });
+
     it('should link to the rfa url in the props', () => {
         const props = { url: 'http://example.com' };
 
