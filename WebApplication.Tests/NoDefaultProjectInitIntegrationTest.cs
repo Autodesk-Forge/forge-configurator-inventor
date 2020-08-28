@@ -24,7 +24,7 @@ using Xunit;
 namespace WebApplication.Tests
 {
     // This initialization test cannot run in parallel because it touches the same files as other init test
-    // leading to a small chance of file access collision
+    // leading to a small chance of file access collision 
     [Collection("IntegrationTests1")]
     public class NoDefaultProjectInitIntegrationTest : InitializerTestBase, IAsyncLifetime
     {
