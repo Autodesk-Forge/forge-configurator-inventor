@@ -34,7 +34,7 @@ using WebApplication.Utilities;
 
 namespace WebApplication.Tests
 {
-    // Base class to setup Initializer class for further testing
+    // Base class to setup Initializer class for other tests
     public abstract class InitializerTestBase
     {
         protected readonly ForgeOSS forgeOSS;
