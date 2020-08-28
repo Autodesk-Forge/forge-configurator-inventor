@@ -74,7 +74,7 @@ namespace UpdateDrawingsPlugin
                 if (drawings.Length == 0)
                     return;
 
-                var drawingsPath = System.IO.Path.Combine(rootDir, "drawings");
+                var drawingsPath = System.IO.Path.Combine(rootDir, "drawing");
                 System.IO.Directory.CreateDirectory(drawingsPath);
 
                 foreach (var filePath in drawings)
