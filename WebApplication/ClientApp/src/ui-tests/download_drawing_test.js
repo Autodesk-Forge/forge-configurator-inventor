@@ -45,5 +45,5 @@ Scenario('should check to download drawing ZIP file when you click on the downlo
     const link = await I.grabAttributeFrom(linkClickHere, 'href');
     assert.equal(true, link.includes('download/Wheel'));
     assert.equal(true, link.includes('drawing'));
-
+    I.wait(2); // we seem to have a timing issue in test that end with physical file downloads
 });
