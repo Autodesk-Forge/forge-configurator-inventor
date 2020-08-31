@@ -69,4 +69,5 @@ Scenario('should check downloads tab with RFA link for Wrench', async (I) => {
     const link = await I.grabAttributeFrom(linkClickHere, 'href');
     assert.equal(true, link.includes('download/Wrench'));
     assert.equal(true, link.includes('/rfa'));
+    I.wait(2); // we seem to have a timing issue in test that end with physical file downloads
 });
