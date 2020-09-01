@@ -111,7 +111,7 @@ namespace WebApplication
                 string signedUrl = await waitForBucketPolicy.ExecuteAsync(async () => await _bucket.CreateSignedUrlAsync(project.OSSSourceModel, ObjectAccess.ReadWrite));
 
                 // TransferData from s3 to temporary oss url
-                await _projectWork.FileTransferAsync(projectUrl,signedUrl);
+                await _projectWork.FileTransferAsync(projectUrl, signedUrl);
 
                 _logger.LogInformation($"'TransferData' for {projectUrl} is done.");
 
