@@ -136,9 +136,7 @@ namespace WebApplication.Processing
 
             var bucket = await _userResolver.GetBucketAsync();
             // check if RFA file is already generated
-            var rfaExists = await bucket.TryToCreateSignedUrlForReadAsync(ossNameProvider.Rfa) != null;
-            if (rfaExists)
-                return;
+            if (await bucket.ObjectExistsAsync(ossNameProvider.Rfa)) return;
 
             // OK, nothing in cache - generate it now
             var inputDocUrl = await bucket.CreateSignedUrlAsync(ossNameProvider.GetCurrentModel(storage.IsAssembly));
@@ -165,12 +163,11 @@ namespace WebApplication.Processing
             var ossNameProvider = project.OssNameProvider(hash);
 
             bool generated = false;
-            ApiResponse<dynamic> ossObjectResponse = null;
             var bucket = await _userResolver.GetBucketAsync();
             // check if Drawing viewables file is already generated
             try
             {
-                ossObjectResponse = await bucket.GetObjectAsync(ossNameProvider.DrawingPdf);
+                ApiResponse<dynamic> ossObjectResponse = await bucket.GetObjectAsync(ossNameProvider.DrawingPdf);
                 if (ossObjectResponse != null)
                 {
                     using (Stream objectStream = ossObjectResponse.Data)
@@ -234,9 +231,7 @@ namespace WebApplication.Processing
 
             var bucket = await _userResolver.GetBucketAsync();
             // check if Drawing file is already generated
-            var drawingUrl = await bucket.TryToCreateSignedUrlForReadAsync(ossNameProvider.Drawing);
-            if (drawingUrl != null)
-                return;
+            if (await bucket.ObjectExistsAsync(ossNameProvider.Drawing)) return;
 
             // OK, nothing in cache - generate it now
             var inputDocUrl = await bucket.CreateSignedUrlAsync(ossNameProvider.GetCurrentModel(storage.IsAssembly));

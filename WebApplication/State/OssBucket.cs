@@ -190,7 +190,7 @@ namespace WebApplication.State
         {
             try
             {
-                await GetObjectAsync(objectName); // TODO: find better alternative
+                await CreateSignedUrlAsync(objectName); // don't care about result
                 return true;
             }
             catch (ApiException ex) when (ex.ErrorCode == 404)
