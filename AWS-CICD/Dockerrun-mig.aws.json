@@ -1,0 +1,13 @@
+{
+    "AWSEBDockerrunVersion": "1",
+    "Image": {
+      "Name": "624240287035.dkr.ecr.us-west-2.amazonaws.com/sdra-migration:latest",
+      "Update": "true"
+    },
+    "Ports": [
+      {
+        "ContainerPort": 80,
+        "HostPort": 80
+      }
+    ]
+  }
