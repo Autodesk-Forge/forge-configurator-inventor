@@ -1,7 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Autodesk.Forge.Core;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 
 namespace WebApplication.Services
 {
@@ -11,7 +8,7 @@ namespace WebApplication.Services
 
         public Task<string> GetBucketKeyAsync()
         {
-            return new Task<string>(() => BucketKey);
+            return Task.FromResult(BucketKey);
         }
     }
 }
