@@ -33,12 +33,11 @@ namespace WebApplication.Job
         private readonly UserResolver _userResolver;
         private readonly DtoGenerator _dtoGenerator;
 
-        public AdoptJobItem(ILogger logger, ProjectInfo projectInfo, string fileName, ProjectWork projectWork, UserResolver userResolver, DtoGenerator dtoGenerator)
+        public AdoptJobItem(ILogger logger, ProjectInfo projectInfo, string fileName, ProjectWork projectWork, DtoGenerator dtoGenerator)
             : base(logger, null, projectWork)
         {
             _projectInfo = projectInfo;
             _fileName = fileName;
-            _userResolver = userResolver;
             _dtoGenerator = dtoGenerator;
         }
 

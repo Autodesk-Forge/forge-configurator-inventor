@@ -25,6 +25,7 @@ using Shared;
 using WebApplication.Definitions;
 using WebApplication.Job;
 using WebApplication.Processing;
+using WebApplication.Services;
 using WebApplication.State;
 using WebApplication.Utilities;
 
@@ -111,17 +112,17 @@ namespace WebApplication.Controllers
         private readonly ILogger<JobsHub> _logger;
         private readonly ProjectWork _projectWork;
         private readonly LinkGenerator _linkGenerator;
-        private readonly UserResolver _userResolver;
+        private readonly ProfileProvider _profileProvider;
         private readonly Sender _sender;
         private readonly Uploads _uploads;
         private readonly DtoGenerator _dtoGenerator;
 
-        public JobsHub(ILogger<JobsHub> logger, ProjectWork projectWork, LinkGenerator linkGenerator, UserResolver userResolver, Uploads uploads, DtoGenerator dtoGenerator)
+        public JobsHub(ILogger<JobsHub> logger, ProjectWork projectWork, LinkGenerator linkGenerator, ProfileProvider profileProvider, Uploads uploads, DtoGenerator dtoGenerator)
         {
             _logger = logger;
             _projectWork = projectWork;
             _linkGenerator = linkGenerator;
-            _userResolver = userResolver;
+            _profileProvider = profileProvider;
             _uploads = uploads;
             _dtoGenerator = dtoGenerator;
 
@@ -132,7 +133,7 @@ namespace WebApplication.Controllers
         {
             _logger.LogInformation($"invoked CreateJob, connectionId : {Context.ConnectionId}");
 
-            _userResolver.Token = token;
+            _profileProvider.Token = token;
 
             // create job and run it
             var job = new UpdateModelJobItem(_logger, projectId, parameters, _projectWork);
@@ -143,7 +144,7 @@ namespace WebApplication.Controllers
         {
             _logger.LogInformation($"invoked CreateRFAJob, connectionId : {Context.ConnectionId}");
 
-            _userResolver.Token = token;
+            _profileProvider.Token = token;
 
             // create job and run it
             var job = new RFAJobItem(_logger, projectId, hash, _projectWork, _linkGenerator);
@@ -154,7 +155,7 @@ namespace WebApplication.Controllers
         {
             _logger.LogInformation($"invoked CreateDrawingDownloadJob, connectionId : {Context.ConnectionId}");
 
-            _userResolver.Token = token;
+            _profileProvider.Token = token;
 
             // create job and run it
             var job = new DrawingJobItem(_logger, projectId, hash, _projectWork, _linkGenerator);
@@ -165,14 +166,14 @@ namespace WebApplication.Controllers
         {
             _logger.LogInformation($"invoked CreateAdoptJob, connectionId : {Context.ConnectionId}");
 
-            _userResolver.Token = token;
+            _profileProvider.Token = token;
 
             // get upload information
             (ProjectInfo projectInfo, string fileName) = _uploads.GetUploadData(packageId);
             _uploads.ClearUploadData(packageId);
 
             // create job and run it
-            var job = new AdoptJobItem(_logger, projectInfo, fileName, _projectWork, _userResolver, _dtoGenerator);
+            var job = new AdoptJobItem(_logger, projectInfo, fileName, _projectWork, _dtoGenerator);
             await RunJobAsync(job);
         }
 
@@ -180,7 +181,7 @@ namespace WebApplication.Controllers
         {
             _logger.LogInformation($"invoked CreateDrawingPdfJob, connectionId : {Context.ConnectionId}");
 
-            _userResolver.Token = token;
+            _profileProvider.Token = token;
 
             // create job and run it
             var job = new ExportDrawingPdfJobItem(_logger, projectId, hash, _projectWork, _linkGenerator);
