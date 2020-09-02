@@ -57,7 +57,7 @@ namespace WebApplication.Processing
         /// </summary>
         public async Task AdoptAsync(ProjectInfo projectInfo, string inputDocUrl)
         {
-            _logger.LogInformation("Adopt the project");
+            _logger.LogInformation($"Adopt project '{projectInfo.Name}'");
 
             var projectStorage = await _userResolver.GetProjectStorageAsync(projectInfo.Name);
             var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, projectInfo.TopLevelAssembly);
@@ -65,8 +65,9 @@ namespace WebApplication.Processing
             ProcessingResult result = await _fdaClient.AdoptAsync(adoptionData);
             if (! result.Success)
             {
-                _logger.LogError($"Failed to process '{projectInfo.Name}' project.");
-                throw new FdaProcessingException($"Failed to process '{projectInfo.Name}' project.", result.ReportUrl);
+                var message = $"Failed to process '{projectInfo.Name}' project.";
+                _logger.LogError(message);
+                throw new FdaProcessingException(message, result.ReportUrl);
             }
 
             // rearrange generated data according to the parameters hash
@@ -75,11 +76,11 @@ namespace WebApplication.Processing
             _logger.LogInformation("Cache the project locally");
             var bucket = await _userResolver.GetBucketAsync();
 
+            await projectStorage.EnsureLocalAsync(bucket);
+
             var ossNames = projectStorage.GetOssNames();
             await UploadStatsAsync(bucket, ossNames.StatsAdopt, result.Stats);
             await bucket.CopyAsync(ossNames.StatsAdopt, ossNames.StatsUpdate);
-
-            await projectStorage.EnsureLocalAsync(bucket);
         }
 
         private static Task UploadStatsAsync(OssBucket bucket, string ossName, List<Statistics> stats)
