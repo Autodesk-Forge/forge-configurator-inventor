@@ -16,7 +16,7 @@
                "timezone": "Local"
             },
             {
-               "file_path": "/app/console.log",
+               "file_path": "/mig/console.log",
                "log_group_name": "sdra-mig",
                "log_stream_name": "console.log",
                "timezone": "Local"
