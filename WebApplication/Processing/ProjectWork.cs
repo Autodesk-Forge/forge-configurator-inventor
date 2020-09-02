@@ -76,15 +76,15 @@ namespace WebApplication.Processing
             var bucket = await _userResolver.GetBucketAsync();
 
             var ossNames = projectStorage.GetOssNames();
-            await UploadStatsAsync(bucket, "stats.adopt.json", ossNames, result.Stats);
-            await bucket.CopyAsync(ossNames.ToFullName("stats.adopt.json"), ossNames.ToFullName("stats.update.json"));
+            await UploadStatsAsync(bucket, ossNames[ONC.Stats.Adopt], result.Stats);
+            await bucket.CopyAsync(ossNames[ONC.Stats.Adopt], ossNames[ONC.Stats.Update]);
 
             await projectStorage.EnsureLocalAsync(bucket);
         }
 
-        private static Task UploadStatsAsync(OssBucket bucket, string fileName, OSSObjectNameProvider ossNames, List<Statistics> stats)
+        private static Task UploadStatsAsync(OssBucket bucket, string ossName, List<Statistics> stats)
         {
-            return bucket.UploadObjectAsync(ossNames.ToFullName(fileName), Json.ToStream(stats));
+            return bucket.UploadObjectAsync(ossName, Json.ToStream(stats));
         }
 
         /// <summary>
@@ -161,7 +161,7 @@ namespace WebApplication.Processing
             }
 
             await _arranger.MoveRfaAsync(project, hash);
-            await UploadStatsAsync(bucket, "stats.rfa.json", ossNames, result.Stats);
+            await UploadStatsAsync(bucket, ossNames[ONC.Stats.RFA], result.Stats);
         }
 
         public async Task<bool> ExportDrawingPdfAsync(string projectName, string hash)
@@ -224,7 +224,7 @@ namespace WebApplication.Processing
 
             if (generated)
             {
-                await UploadStatsAsync(bucket, "stats.drawing.pdf.json", ossNames, result.Stats);
+                await UploadStatsAsync(bucket, ossNames[ONC.Stats.DrawingPDF], result.Stats);
                 _logger.LogInformation($"Drawing PDF for hash {hash} is generated");
             }
             else
@@ -263,7 +263,7 @@ namespace WebApplication.Processing
             }
 
             await _arranger.MoveDrawingAsync(project, hash);
-            await UploadStatsAsync(bucket, "stats.drawing.zip.json", ossNames, result.Stats);
+            await UploadStatsAsync(bucket, ossNames[ONC.Stats.Drawings], result.Stats);
         }
 
         public async Task FileTransferAsync(string source, string target)
@@ -308,7 +308,8 @@ namespace WebApplication.Processing
                 // NOTE: hash might be changed if Inventor adjust them!
                 hash = await _arranger.MoveViewablesAsync(project, storage.IsAssembly);
 
-                await UploadStatsAsync(bucket, "stats.update.json", storage.GetOssNames(hash), result.Stats);
+                OssNameConverter ossNames = storage.GetOssNames(hash);
+                await UploadStatsAsync(bucket, ossNames[ONC.Stats.Update], result.Stats);
             }
 
             _logger.LogInformation($"Cache the project locally ({hash})");
