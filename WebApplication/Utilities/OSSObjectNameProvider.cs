@@ -58,13 +58,7 @@ namespace WebApplication.Utilities
         /// Drawing in format ForgeView can load and show
         /// </summary>
         public const string DrawingPdf = "drawing.pdf";
-    }
 
-    /// <summary>
-    /// Object Name Constants
-    /// </summary>
-    public static class ONC // aka ObjectNameConstants
-    {
         /// <summary>
         /// Files with statistics.
         /// </summary>
@@ -76,7 +70,13 @@ namespace WebApplication.Utilities
             public const string DrawingPDF = "stats.drawing.pdf.json";
             public const string Drawings = "stats.drawing.zip.json";
         }
+    }
 
+    /// <summary>
+    /// Object Name Constants
+    /// </summary>
+    public static class ONC // aka ObjectNameConstants
+    {
         /// <summary>
         /// Separator to fake directories in OSS filename.
         /// </summary>
@@ -199,6 +199,12 @@ namespace WebApplication.Utilities
         /// Filename for PDF with drawing.
         /// </summary>
         public string DrawingPdf => ToFullName(LocalName.DrawingPdf);
+
+        public string StatsAdopt => ToFullName(LocalName.Stats.Adopt);
+        public string StatsUpdate => ToFullName(LocalName.Stats.Update);
+        public string StatsRFA => ToFullName(LocalName.Stats.RFA);
+        public string StatsDrawingPDF => ToFullName(LocalName.Stats.DrawingPDF);
+        public string StatsDrawings => ToFullName(LocalName.Stats.Drawings);
     }
 
     /// <summary>

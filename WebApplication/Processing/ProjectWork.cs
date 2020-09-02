@@ -76,8 +76,8 @@ namespace WebApplication.Processing
             var bucket = await _userResolver.GetBucketAsync();
 
             var ossNames = projectStorage.GetOssNames();
-            await UploadStatsAsync(bucket, ossNames[ONC.Stats.Adopt], result.Stats);
-            await bucket.CopyAsync(ossNames[ONC.Stats.Adopt], ossNames[ONC.Stats.Update]);
+            await UploadStatsAsync(bucket, ossNames.StatsAdopt, result.Stats);
+            await bucket.CopyAsync(ossNames.StatsAdopt, ossNames.StatsUpdate);
 
             await projectStorage.EnsureLocalAsync(bucket);
         }
@@ -161,7 +161,7 @@ namespace WebApplication.Processing
             }
 
             await _arranger.MoveRfaAsync(project, hash);
-            await UploadStatsAsync(bucket, ossNames[ONC.Stats.RFA], result.Stats);
+            await UploadStatsAsync(bucket, ossNames.StatsRFA, result.Stats);
         }
 
         public async Task<bool> ExportDrawingPdfAsync(string projectName, string hash)
@@ -224,7 +224,7 @@ namespace WebApplication.Processing
 
             if (generated)
             {
-                await UploadStatsAsync(bucket, ossNames[ONC.Stats.DrawingPDF], result.Stats);
+                await UploadStatsAsync(bucket, ossNames.StatsDrawingPDF, result.Stats);
                 _logger.LogInformation($"Drawing PDF for hash {hash} is generated");
             }
             else
@@ -263,7 +263,7 @@ namespace WebApplication.Processing
             }
 
             await _arranger.MoveDrawingAsync(project, hash);
-            await UploadStatsAsync(bucket, ossNames[ONC.Stats.Drawings], result.Stats);
+            await UploadStatsAsync(bucket, ossNames.StatsDrawings, result.Stats);
         }
 
         public async Task FileTransferAsync(string source, string target)
@@ -308,8 +308,8 @@ namespace WebApplication.Processing
                 // NOTE: hash might be changed if Inventor adjust them!
                 hash = await _arranger.MoveViewablesAsync(project, storage.IsAssembly);
 
-                OssNameConverter ossNames = storage.GetOssNames(hash);
-                await UploadStatsAsync(bucket, ossNames[ONC.Stats.Update], result.Stats);
+                var ossNames = storage.GetOssNames(hash);
+                await UploadStatsAsync(bucket, ossNames.StatsUpdate, result.Stats);
             }
 
             _logger.LogInformation($"Cache the project locally ({hash})");
