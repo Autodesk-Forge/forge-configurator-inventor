@@ -75,15 +75,16 @@ namespace WebApplication.Processing
             _logger.LogInformation("Cache the project locally");
             var bucket = await _userResolver.GetBucketAsync();
 
-            await UploadStatsAsync(bucket, projectStorage, result.Stats, "stats.adopt.json");
-            await UploadStatsAsync(bucket, projectStorage, result.Stats, "stats.update.json");
+            var ossNames = projectStorage.GetOssNames();
+            await UploadStatsAsync(bucket, "stats.adopt.json", ossNames, result.Stats);
+            await bucket.CopyAsync(ossNames.ToFullName("stats.adopt.json"), ossNames.ToFullName("stats.update.json"));
 
             await projectStorage.EnsureLocalAsync(bucket);
         }
 
-        private static Task UploadStatsAsync(OssBucket bucket, ProjectStorage projectStorage, List<Statistics> stats, string fileName, string hash = null)
+        private static Task UploadStatsAsync(OssBucket bucket, string fileName, OSSObjectNameProvider ossNames, List<Statistics> stats)
         {
-            return bucket.UploadObjectAsync(projectStorage.GetOssNames(hash).ToFullName(fileName), Json.ToStream(stats));
+            return bucket.UploadObjectAsync(ossNames.ToFullName(fileName), Json.ToStream(stats));
         }
 
         /// <summary>
@@ -107,7 +108,7 @@ namespace WebApplication.Processing
             }
             else
             {
-                var resultingHash = await UpdateAsync(project, storage, parameters, hash, bForceUpdate);
+                var resultingHash = await UpdateAsync(storage, parameters, hash, bForceUpdate);
                 if (! hash.Equals(resultingHash, StringComparison.Ordinal))
                 {
                     _logger.LogInformation($"Update returned different parameters. Hash is {resultingHash}.");
@@ -141,14 +142,14 @@ namespace WebApplication.Processing
             //// *********************************************
 
 
-            var ossNameProvider = project.OssNameProvider(hash);
+            var ossNames = project.OssNameProvider(hash);
 
             var bucket = await _userResolver.GetBucketAsync();
             // check if RFA file is already generated
-            if (await bucket.ObjectExistsAsync(ossNameProvider.Rfa)) return;
+            if (await bucket.ObjectExistsAsync(ossNames.Rfa)) return;
 
             // OK, nothing in cache - generate it now
-            var inputDocUrl = await bucket.CreateSignedUrlAsync(ossNameProvider.GetCurrentModel(storage.IsAssembly));
+            var inputDocUrl = await bucket.CreateSignedUrlAsync(ossNames.GetCurrentModel(storage.IsAssembly));
             ProcessingArgs satData = await _arranger.ForSatAsync(inputDocUrl, storage.Metadata.TLA);
             ProcessingArgs rfaData = await _arranger.ForRfaAsync(satData.SatUrl);
 
@@ -160,7 +161,7 @@ namespace WebApplication.Processing
             }
 
             await _arranger.MoveRfaAsync(project, hash);
-            await UploadStatsAsync(bucket, storage, result.Stats, "stats.rfa.json", hash);
+            await UploadStatsAsync(bucket, "stats.rfa.json", ossNames, result.Stats);
         }
 
         public async Task<bool> ExportDrawingPdfAsync(string projectName, string hash)
@@ -170,14 +171,14 @@ namespace WebApplication.Processing
             ProjectStorage storage = await _userResolver.GetProjectStorageAsync(projectName);
             Project project = storage.Project;
 
-            var ossNameProvider = project.OssNameProvider(hash);
+            var ossNames = project.OssNameProvider(hash);
 
             bool generated = false;
             var bucket = await _userResolver.GetBucketAsync();
             // check if Drawing viewables file is already generated
             try
             {
-                ApiResponse<dynamic> ossObjectResponse = await bucket.GetObjectAsync(ossNameProvider.DrawingPdf);
+                ApiResponse<dynamic> ossObjectResponse = await bucket.GetObjectAsync(ossNames.DrawingPdf);
                 if (ossObjectResponse != null)
                 {
                     using (Stream objectStream = ossObjectResponse.Data)
@@ -196,7 +197,7 @@ namespace WebApplication.Processing
             _logger.LogInformation($"Drawing PDF for hash {hash}: generating");
 
             // OK, nothing in cache - generate it now
-            var inputDocUrl = await bucket.CreateSignedUrlAsync(ossNameProvider.GetCurrentModel(storage.IsAssembly));
+            var inputDocUrl = await bucket.CreateSignedUrlAsync(ossNames.GetCurrentModel(storage.IsAssembly));
             ProcessingArgs drawingData = await _arranger.ForDrawingPdfAsync(inputDocUrl, storage.Metadata.TLA);
 
             ProcessingResult result = await _fdaClient.ExportDrawingAsync(drawingData);
@@ -212,18 +213,18 @@ namespace WebApplication.Processing
             // check if Drawing viewables file is generated
             try
             {
-                await bucket.CreateSignedUrlAsync(ossNameProvider.DrawingPdf);
+                await bucket.CreateSignedUrlAsync(ossNames.DrawingPdf);
                 generated = true;
             }
             catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
             {
                 // the file does not exist after generating drawing, so just mark with zero length that we already processed it
-                await bucket.UploadObjectAsync(ossNameProvider.DrawingPdf, new MemoryStream(0));
+                await bucket.UploadObjectAsync(ossNames.DrawingPdf, new MemoryStream(0));
             }
 
             if (generated)
             {
-                await UploadStatsAsync(bucket, storage, result.Stats, "stats.drawing.pdf.json", hash);
+                await UploadStatsAsync(bucket, "stats.drawing.pdf.json", ossNames, result.Stats);
                 _logger.LogInformation($"Drawing PDF for hash {hash} is generated");
             }
             else
@@ -244,14 +245,14 @@ namespace WebApplication.Processing
             ProjectStorage storage = await _userResolver.GetProjectStorageAsync(projectName);
             Project project = storage.Project;
 
-            var ossNameProvider = project.OssNameProvider(hash);
+            var ossNames = project.OssNameProvider(hash);
 
             var bucket = await _userResolver.GetBucketAsync();
             // check if Drawing file is already generated
-            if (await bucket.ObjectExistsAsync(ossNameProvider.Drawing)) return;
+            if (await bucket.ObjectExistsAsync(ossNames.Drawing)) return;
 
             // OK, nothing in cache - generate it now
-            var inputDocUrl = await bucket.CreateSignedUrlAsync(ossNameProvider.GetCurrentModel(storage.IsAssembly));
+            var inputDocUrl = await bucket.CreateSignedUrlAsync(ossNames.GetCurrentModel(storage.IsAssembly));
 
             ProcessingArgs drawingData = await _arranger.ForDrawingAsync(inputDocUrl, storage.Metadata.TLA);
             ProcessingResult result = await _fdaClient.GenerateDrawing(drawingData);
@@ -262,7 +263,7 @@ namespace WebApplication.Processing
             }
 
             await _arranger.MoveDrawingAsync(project, hash);
-            await UploadStatsAsync(bucket, storage, result.Stats, "stats.drawing.zip.json", hash);
+            await UploadStatsAsync(bucket, "stats.drawing.zip.json", ossNames, result.Stats);
         }
 
         public async Task FileTransferAsync(string source, string target)
@@ -277,10 +278,12 @@ namespace WebApplication.Processing
         /// Generate project data for the given parameters and cache results locally.
         /// </summary>
         /// <returns>Resulting parameters hash</returns>
-        private async Task<string> UpdateAsync(Project project, ProjectStorage storage, InventorParameters parameters, string hash, bool bForceUpdate = false)
+        private async Task<string> UpdateAsync(ProjectStorage storage, InventorParameters parameters, string hash, bool bForceUpdate = false)
         {
             _logger.LogInformation("Update the project");
             var bucket = await _userResolver.GetBucketAsync();
+
+            Project project = storage.Project;
 
             var isUpdateExists = bForceUpdate ? false : await IsGenerated(project, bucket, hash);
             if (isUpdateExists)
@@ -305,7 +308,7 @@ namespace WebApplication.Processing
                 // NOTE: hash might be changed if Inventor adjust them!
                 hash = await _arranger.MoveViewablesAsync(project, storage.IsAssembly);
 
-                await UploadStatsAsync(bucket, storage, result.Stats, "stats.update.json", hash);
+                await UploadStatsAsync(bucket, "stats.update.json", storage.GetOssNames(hash), result.Stats);
             }
 
             _logger.LogInformation($"Cache the project locally ({hash})");
