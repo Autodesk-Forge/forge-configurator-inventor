@@ -43,7 +43,7 @@ namespace WebApplication
         private readonly FdaClient _fdaClient;
         private readonly ProjectWork _projectWork;
         private readonly UserResolver _userResolver;
-        private readonly IBucketKeyProvider _bucketKeyProvider;
+        private readonly BucketPrefixProvider _bucketPrefixProvider;
         private readonly LocalCache _localCache;
         private readonly OssBucket _bucket;
 
@@ -51,7 +51,7 @@ namespace WebApplication
         /// Constructor.
         /// </summary>
         public Initializer(ILogger<Initializer> logger, FdaClient fdaClient, IOptions<DefaultProjectsConfiguration> optionsAccessor,
-                            ProjectWork projectWork, UserResolver userResolver, LocalCache localCache, IBucketKeyProvider bucketKeyProvider)
+                            ProjectWork projectWork, UserResolver userResolver, LocalCache localCache, BucketPrefixProvider bucketPrefixProvider)
         {
             _logger = logger;
             _fdaClient = fdaClient;
@@ -63,7 +63,7 @@ namespace WebApplication
             // bucket for anonymous user
             _bucket = _userResolver.AnonymousBucket;
 
-            _bucketKeyProvider = bucketKeyProvider;
+            _bucketPrefixProvider = bucketPrefixProvider;
         }
         public async Task InitializeBundlesAsync()
         {
@@ -142,7 +142,7 @@ namespace WebApplication
                 _logger.LogInformation($"Deleting user buckets for registered users");
                 // delete all user buckets
                 var buckets = await _bucket.GetBucketsAsync();
-                string userBucketPrefix = _bucketKeyProvider.GetBucketPrefix();
+                string userBucketPrefix = _bucketPrefixProvider.GetBucketPrefix();
                 foreach (string bucket in buckets)
                 {
                     if (bucket.Contains(userBucketPrefix))

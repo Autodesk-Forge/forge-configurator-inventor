@@ -97,7 +97,8 @@ namespace WebApplication.Tests
             var fdaClient = new FdaClient(publisher, appBundleZipPathsOptions);
             IOptions<DefaultProjectsConfiguration> defaultProjectsOptions = Options.Create(defaultProjectsConfiguration);
             var profileProvider = new ProfileProvider(forgeOSS);
-            var bucketKeyProvider = new LoggedInUserBucketKeyProvider(forgeConfigOptions, null, profileProvider);
+            var bucketPrefixProvider = new BucketPrefixProvider(forgeConfigOptions, null);
+            var bucketKeyProvider = new LoggedInUserBucketKeyProvider(forgeConfigOptions, profileProvider, bucketPrefixProvider);
             var userResolver = new UserResolver(resourceProvider, forgeOSS, bucketKeyProvider, localCache, NullLogger<UserResolver>.Instance, profileProvider);
             var arranger = new Arranger(httpClientFactory, userResolver);
 
@@ -105,7 +106,7 @@ namespace WebApplication.Tests
             var dtoGenerator = new DtoGenerator(linkGenerator: null, localCache);
             var projectWork = new ProjectWork(new NullLogger<ProjectWork>(), arranger, fdaClient, dtoGenerator, userResolver);
             initializer = new Initializer(new NullLogger<Initializer>(), fdaClient,
-                                            defaultProjectsOptions, projectWork, userResolver, localCache, bucketKeyProvider);
+                                            defaultProjectsOptions, projectWork, userResolver, localCache, bucketPrefixProvider);
 
             testFileDirectory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()));
             httpClient = new HttpClient();

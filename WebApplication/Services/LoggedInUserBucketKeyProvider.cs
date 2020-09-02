@@ -9,14 +9,14 @@ namespace WebApplication.Services
     public class LoggedInUserBucketKeyProvider : IBucketKeyProvider
     {
         private readonly ForgeConfiguration _forgeConfig;
-        private readonly IConfiguration _configuration;
         private readonly ProfileProvider _profileProvider;
+        private readonly BucketPrefixProvider _bucketPrefixProvider;
 
-        public LoggedInUserBucketKeyProvider(IOptions<ForgeConfiguration> forgeConfiguration, IConfiguration configuration, ProfileProvider profileProvider)
+        public LoggedInUserBucketKeyProvider(IOptions<ForgeConfiguration> forgeConfiguration, ProfileProvider profileProvider, BucketPrefixProvider bucketPrefixProvider)
         {
-            _configuration = configuration;
-            _forgeConfig = forgeConfiguration.Value;
             _profileProvider = profileProvider;
+            _forgeConfig = forgeConfiguration.Value;
+            _bucketPrefixProvider = bucketPrefixProvider;
         }
 
         public async Task<string> GetBucketKeyAsync()
@@ -28,15 +28,9 @@ namespace WebApplication.Services
             // so it a Forge user gets registered into several deployments it will not cause
             // name collisions. So use client ID (as a salt) to generate bucket name.
             var userHash = Crypto.GenerateHashString(_forgeConfig.ClientId + userId);
-            var bucketKey = $"{GetBucketPrefix()}-{userId.Substring(0, 3)}-{userHash}".ToLowerInvariant();
+            var bucketKey = $"{_bucketPrefixProvider.GetBucketPrefix()}-{userId.Substring(0, 3)}-{userHash}".ToLowerInvariant();
 
             return bucketKey;
-        }
-
-        public string GetBucketPrefix()
-        {
-            string suffix = _configuration?.GetValue<string>("BucketKeySuffix");
-            return $"authd{suffix}-{_forgeConfig.ClientId}".ToLowerInvariant();
         }
     }
 }

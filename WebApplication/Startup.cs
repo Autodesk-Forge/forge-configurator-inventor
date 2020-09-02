@@ -106,6 +106,7 @@ namespace WebApplication
             services.AddScoped<IBucketKeyProvider, LoggedInUserBucketKeyProvider>();
             //services.AddScoped<MigrationBucketKeyProvider>();
             services.AddScoped<UserResolver>();
+            services.AddSingleton<BucketPrefixProvider>();
             services.AddSingleton<LocalCache>();
             services.AddSingleton<Uploads>();
         }

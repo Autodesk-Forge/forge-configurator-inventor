@@ -113,16 +113,19 @@ namespace WebApplication.Controllers
         private readonly ProjectWork _projectWork;
         private readonly LinkGenerator _linkGenerator;
         private readonly ProfileProvider _profileProvider;
+        private readonly UserResolver _userResolver;
         private readonly Sender _sender;
         private readonly Uploads _uploads;
         private readonly DtoGenerator _dtoGenerator;
 
-        public JobsHub(ILogger<JobsHub> logger, ProjectWork projectWork, LinkGenerator linkGenerator, ProfileProvider profileProvider, Uploads uploads, DtoGenerator dtoGenerator)
+        public JobsHub(ILogger<JobsHub> logger, ProjectWork projectWork, LinkGenerator linkGenerator, UserResolver userResolver, 
+            ProfileProvider profileProvider, Uploads uploads, DtoGenerator dtoGenerator)
         {
             _logger = logger;
             _projectWork = projectWork;
             _linkGenerator = linkGenerator;
             _profileProvider = profileProvider;
+            _userResolver = userResolver;
             _uploads = uploads;
             _dtoGenerator = dtoGenerator;
 
@@ -173,7 +176,7 @@ namespace WebApplication.Controllers
             _uploads.ClearUploadData(packageId);
 
             // create job and run it
-            var job = new AdoptJobItem(_logger, projectInfo, fileName, _projectWork, _dtoGenerator);
+            var job = new AdoptJobItem(_logger, projectInfo, fileName, _projectWork, _dtoGenerator, _userResolver);
             await RunJobAsync(job);
         }
 

@@ -33,12 +33,13 @@ namespace WebApplication.Job
         private readonly UserResolver _userResolver;
         private readonly DtoGenerator _dtoGenerator;
 
-        public AdoptJobItem(ILogger logger, ProjectInfo projectInfo, string fileName, ProjectWork projectWork, DtoGenerator dtoGenerator)
+        public AdoptJobItem(ILogger logger, ProjectInfo projectInfo, string fileName, ProjectWork projectWork, DtoGenerator dtoGenerator, UserResolver userResolver)
             : base(logger, null, projectWork)
         {
             _projectInfo = projectInfo;
             _fileName = fileName;
             _dtoGenerator = dtoGenerator;
+            _userResolver = userResolver;
         }
 
         public override async Task ProcessJobAsync(IResultSender resultSender)

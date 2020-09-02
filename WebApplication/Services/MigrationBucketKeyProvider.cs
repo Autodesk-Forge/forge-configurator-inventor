@@ -5,16 +5,11 @@ using Microsoft.Extensions.Options;
 
 namespace WebApplication.Services
 {
-    public class MigrationBucketKeyProvider : LoggedInUserBucketKeyProvider
+    public class MigrationBucketKeyProvider : IBucketKeyProvider
     {
         public string BucketKey { private get; set; }
 
-        public MigrationBucketKeyProvider(IOptions<ForgeConfiguration> forgeConfiguration, IConfiguration configuration, ProfileProvider profileProvider)
-            : base(forgeConfiguration, configuration, profileProvider)
-        {
-        }
-
-        public new Task<string> GetBucketKeyAsync()
+        public Task<string> GetBucketKeyAsync()
         {
             return new Task<string>(() => BucketKey);
         }
