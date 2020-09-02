@@ -25,6 +25,7 @@ using Autodesk.Forge.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using WebApplication.Services;
+using WebApplication.Utilities;
 
 namespace WebApplication.State
 {
@@ -172,9 +173,17 @@ namespace WebApplication.State
             await _forgeOSS.UploadObjectAsync(BucketKey, objectName, stream);
         }
 
+        /// <summary>
+        /// Upload JSON representation of object to OSS.
+        /// </summary>
+        public async Task UploadAsJsonAsync<T>(string objectName, T obj, bool writeIndented = false)
+        {
+            await using var stream = Json.ToStream(obj, writeIndented);
+            await _forgeOSS.UploadObjectAsync(BucketKey, objectName, stream);
+        }
+
         public async Task UploadChunkAsync(string objectName, string contentRange, string sessionId, Stream stream)
         {
-            // public async Task UploadChunkAsync(string bucketKey, )
             await _forgeOSS.UploadChunkAsync(BucketKey, objectName, contentRange, sessionId, stream);
         }
 

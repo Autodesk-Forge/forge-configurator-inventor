@@ -107,8 +107,7 @@ namespace WebApplication.Processing
                                             bucket.CreateSignedUrlAsync(BomJson, ObjectAccess.Write)
                                             );
 
-            await using var jsonStream = Json.ToStream(parameters);
-            await bucket.UploadObjectAsync(InputParams, jsonStream);
+            await bucket.UploadAsJsonAsync(InputParams, parameters);
 
             return new UpdateData
                     {
