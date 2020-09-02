@@ -40,7 +40,7 @@ describe('user dialog ', () => {
         const hyperlinkSpan = wrapper.find('.hyperlink');
 
         expect(hyperlinkSpan.length).toBe(1);
-        expect(hyperlinkSpan.find('a').prop('href')).toContain('howto.md');
+        expect(hyperlinkSpan.find('a').prop('href')).toContain('about.md');
     });
 
 });
