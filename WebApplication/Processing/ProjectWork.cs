@@ -17,9 +17,11 @@
 /////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Autodesk.Forge.Client;
+using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Shared;
@@ -73,7 +75,15 @@ namespace WebApplication.Processing
             _logger.LogInformation("Cache the project locally");
             var bucket = await _userResolver.GetBucketAsync();
 
+            await UploadStatsAsync(bucket, projectStorage, result.Stats, "stats.adopt.json");
+            await UploadStatsAsync(bucket, projectStorage, result.Stats, "stats.update.json");
+
             await projectStorage.EnsureLocalAsync(bucket);
+        }
+
+        private static Task UploadStatsAsync(OssBucket bucket, ProjectStorage projectStorage, List<Statistics> stats, string fileName, string hash = null)
+        {
+            return bucket.UploadObjectAsync(projectStorage.GetOssNames(hash).ToFullName(fileName), Json.ToStream(stats));
         }
 
         /// <summary>
@@ -114,7 +124,6 @@ namespace WebApplication.Processing
             return dto;
         }
 
-
         /// <summary>
         /// Generate RFA (or take it from cache).
         /// </summary>
@@ -151,6 +160,7 @@ namespace WebApplication.Processing
             }
 
             await _arranger.MoveRfaAsync(project, hash);
+            await UploadStatsAsync(bucket, storage, result.Stats, "stats.rfa.json", hash);
         }
 
         public async Task<bool> ExportDrawingPdfAsync(string projectName, string hash)
@@ -211,8 +221,15 @@ namespace WebApplication.Processing
                 await bucket.UploadObjectAsync(ossNameProvider.DrawingPdf, new MemoryStream(0));
             }
 
-            var msg = generated ? "GENERATED" : "NOT GENERATED";
-            _logger.LogInformation($"Drawing viewables for hash {hash} - drawing {msg}");
+            if (generated)
+            {
+                await UploadStatsAsync(bucket, storage, result.Stats, "stats.drawing.pdf.json", hash);
+                _logger.LogInformation($"Drawing PDF for hash {hash} is generated");
+            }
+            else
+            {
+                _logger.LogError($"Drawing PDF for hash {hash} is NOT generated");
+            }
 
             return generated;
         }
@@ -245,6 +262,7 @@ namespace WebApplication.Processing
             }
 
             await _arranger.MoveDrawingAsync(project, hash);
+            await UploadStatsAsync(bucket, storage, result.Stats, "stats.drawing.zip.json", hash);
         }
 
         public async Task FileTransferAsync(string source, string target)
@@ -286,13 +304,14 @@ namespace WebApplication.Processing
                 // rearrange generated data according to the parameters hash
                 // NOTE: hash might be changed if Inventor adjust them!
                 hash = await _arranger.MoveViewablesAsync(project, storage.IsAssembly);
+
+                await UploadStatsAsync(bucket, storage, result.Stats, "stats.update.json", hash);
             }
 
             _logger.LogInformation($"Cache the project locally ({hash})");
 
-            // and now cache the generate stuff locally
-            var projectStorage = new ProjectStorage(project);
-            await projectStorage.EnsureViewablesAsync(bucket, hash);
+            // and now cache the generated stuff locally
+            await storage.EnsureViewablesAsync(bucket, hash);
 
             return hash;
         }

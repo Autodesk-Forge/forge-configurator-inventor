@@ -265,7 +265,7 @@ namespace WebApplication.Services
         /// </remarks>
         public async Task<dynamic> GetProfileAsync(string token)
         {
-            var api = new UserProfileApi(new Configuration { AccessToken = token });
+            var api = new UserProfileApi(new Configuration { AccessToken = token }); // TODO: use Polly cache policy!
             return await api.GetUserProfileAsync();
         }
 
