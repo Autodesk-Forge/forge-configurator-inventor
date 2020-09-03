@@ -47,13 +47,20 @@ ForgePdfViewExtension.prototype.createUI = function() {
 
     // prev button
     const prevbutton = new Autodesk.Viewing.UI.Button('drawing-button-prev');
+    // next button
+    const nextbutton = new Autodesk.Viewing.UI.Button('drawing-button-next');
+
+    // initially disabled prev button on the first page
+    prevbutton.setState(Autodesk.Viewing.UI.Button.State.DISABLED);
 
     prevbutton.onClick = function (e) {
 
-        if (actualPage === 1) // do nothing
-            return;
-
         actualPage -= 1;
+        const state = actualPage === 1 ? Autodesk.Viewing.UI.Button.State.DISABLED : Autodesk.Viewing.UI.Button.State.INACTIVE;
+
+        prevbutton.setState(state);
+        nextbutton.setState(Autodesk.Viewing.UI.Button.State.INACTIVE);
+
         viewer.loadModel( urn, { page: actualPage });
     };
 
@@ -61,15 +68,14 @@ ForgePdfViewExtension.prototype.createUI = function() {
     prevbutton.setIcon('drawing-icon-prev');
     prevbutton.setToolTip('Previous Drawing Sheet');
 
-    // next button
-    const nextbutton = new Autodesk.Viewing.UI.Button('drawing-button-next');
-
     nextbutton.onClick = function (e) {
 
-        if (actualPage === numPages) // do nothing
-            return;
-
         actualPage += 1;
+        const state = actualPage === numPages ? Autodesk.Viewing.UI.Button.State.DISABLED : Autodesk.Viewing.UI.Button.State.INACTIVE;
+
+        prevbutton.setState(Autodesk.Viewing.UI.Button.State.INACTIVE);
+        nextbutton.setState(state);
+
         viewer.loadModel( urn, { page: actualPage });
     };
 
