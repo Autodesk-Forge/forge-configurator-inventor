@@ -40,7 +40,7 @@ namespace WebApplication.Utilities
         /// <summary>
         /// Create ProjectDTOBase based DTO and fill its properties.
         /// </summary>
-        public TProjectDTOBase MakeProjectDTO<TProjectDTOBase>(ProjectStorage projectStorage, string hash) where TProjectDTOBase: ProjectDTOBase, new()
+        public TProjectDTOBase MakeProjectDTO<TProjectDTOBase>(ProjectStorage projectStorage, string hash, FdaStatsDTO stats) where TProjectDTOBase: ProjectDTOBase, new()
         {
             Project project = projectStorage.Project;
             // TODO: fix workaround for `_linkGenerator` check for null
@@ -65,7 +65,8 @@ namespace WebApplication.Utilities
                         ModelDownloadUrl = modelDownloadUrl,
                         Hash = hash,
                         IsAssembly = projectStorage.IsAssembly,
-                        HasDrawing = projectStorage.Metadata.HasDrawings
+                        HasDrawing = projectStorage.Metadata.HasDrawings,
+                        Stats = stats
                     };
         }
 
@@ -76,7 +77,7 @@ namespace WebApplication.Utilities
         {
             Project project = projectStorage.Project;
 
-            var dto = MakeProjectDTO<ProjectDTO>(projectStorage, projectStorage.Metadata.Hash);
+            var dto = MakeProjectDTO<ProjectDTO>(projectStorage, projectStorage.Metadata.Hash, new FdaStatsDTO { Credits = 0.2 } );
             dto.Id = project.Name;
             dto.Label = project.Name;
             dto.Image = _localCache.ToDataUrl(project.LocalAttributes.Thumbnail);

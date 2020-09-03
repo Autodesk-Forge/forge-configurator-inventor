@@ -17,11 +17,9 @@
 /////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Autodesk.Forge.Client;
-using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Shared;
@@ -90,13 +88,11 @@ namespace WebApplication.Processing
         public async Task<ProjectStateDTO> DoSmartUpdateAsync(InventorParameters parameters, string projectId, bool bForceUpdate = false)
         {
             var hash = Crypto.GenerateObjectHashString(parameters);
-            //_logger.LogInformation(JsonSerializer.Serialize(parameters));
             _logger.LogInformation($"Incoming parameters hash is {hash}");
 
             var storage = await _userResolver.GetProjectStorageAsync(projectId);
-            var project = storage.Project;
 
-            var localNames = project.LocalNameProvider(hash);
+            var localNames = storage.Project.LocalNameProvider(hash);
 
             // check if the data cached already
             if (Directory.Exists(localNames.SvfDir) && !bForceUpdate)
@@ -109,14 +105,14 @@ namespace WebApplication.Processing
                 if (! hash.Equals(resultingHash, StringComparison.Ordinal))
                 {
                     _logger.LogInformation($"Update returned different parameters. Hash is {resultingHash}.");
-                    await CopyStateAsync(project, resultingHash, hash, storage.IsAssembly);
+                    await CopyStateAsync(storage.Project, resultingHash, hash, storage.IsAssembly);
 
                     // update 
                     hash = resultingHash;
                 }
             }
 
-            var dto = _dtoGenerator.MakeProjectDTO<ProjectStateDTO>(storage, hash);
+            var dto = _dtoGenerator.MakeProjectDTO<ProjectStateDTO>(storage, hash, null); // TODO: fix before PR
             dto.Parameters = Json.DeserializeFile<InventorParameters>(localNames.Parameters);
 
             return dto;
