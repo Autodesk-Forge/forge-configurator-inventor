@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Autodesk.Forge.Client;
 using Autodesk.Forge.Model;
@@ -190,6 +191,18 @@ namespace WebApplication.State
         public async Task<ApiResponse<dynamic>> GetObjectAsync(string objectName)
         {
             return await _forgeOSS.GetObjectAsync(BucketKey, objectName);
+        }        
+        
+        /// <summary>
+        /// Load JSON from OSS and deserialize it to <see cref="T"/> instance.
+        /// </summary>
+        public async Task<T> DeserializeAsync<T>(string objectName)
+        {
+            var response = await _forgeOSS.GetObjectAsync(BucketKey, objectName);
+            if (response == null) return default;
+
+            await using Stream objectStream = response.Data;
+            return await JsonSerializer.DeserializeAsync<T>(objectStream);
         }
 
         /// <summary>

@@ -17,9 +17,11 @@
 /////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Autodesk.Forge.Client;
+using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Shared;
@@ -112,7 +114,7 @@ namespace WebApplication.Processing
                 }
             }
 
-            var dto = _dtoGenerator.MakeProjectDTO<ProjectStateDTO>(storage, hash, null); // TODO: fix before PR
+            var dto = _dtoGenerator.MakeProjectDTO<ProjectStateDTO>(storage, hash, new FdaStatsDTO { Credits = 3.14, Download = 0.1, Processing = 0.2, Queueing = 0.3, Upload = 0.4 }); // TODO: fix before PR
             dto.Parameters = Json.DeserializeFile<InventorParameters>(localNames.Parameters);
 
             return dto;
@@ -231,7 +233,7 @@ namespace WebApplication.Processing
         /// <summary>
         /// Generate Drawing zip with folder structure (or take it from cache).
         /// </summary>
-        public async Task GenerateDrawingAsync(string projectName, string hash)
+        public async Task<FdaStatsDTO> GenerateDrawingAsync(string projectName, string hash)
         {
             _logger.LogInformation($"Generating Drawing for hash {hash}");
 
@@ -242,7 +244,11 @@ namespace WebApplication.Processing
 
             var bucket = await _userResolver.GetBucketAsync();
             // check if Drawing file is already generated
-            if (await bucket.ObjectExistsAsync(ossNames.Drawing)) return;
+            if (await bucket.ObjectExistsAsync(ossNames.Drawing))
+            {
+                var stats = await bucket.DeserializeAsync<Statistics[]>(ossNames.StatsDrawings);
+                return FdaStatsDTO.CreditsOnly(stats);
+            }
 
             // OK, nothing in cache - generate it now
             var inputDocUrl = await bucket.CreateSignedUrlAsync(ossNames.GetCurrentModel(storage.IsAssembly));
@@ -256,7 +262,9 @@ namespace WebApplication.Processing
             }
 
             await _arranger.MoveDrawingAsync(project, hash);
+
             await bucket.UploadAsJsonAsync(ossNames.StatsDrawings, result.Stats);
+            return FdaStatsDTO.All(result.Stats);
         }
 
         public async Task FileTransferAsync(string source, string target)

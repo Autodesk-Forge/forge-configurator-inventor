@@ -99,7 +99,7 @@ class JobManager {
 
         if (onStart) onStart();
 
-        connection.on("onComplete", downloadUrl => {
+        connection.on("onComplete", (downloadUrl, stats) => {
 
             connection.stop();
 
