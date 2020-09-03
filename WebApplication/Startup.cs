@@ -102,7 +102,11 @@ namespace WebApplication
                                         return new DesignAutomationClient(forgeService);
                                     });
             services.AddSingleton<Publisher>();
-            services.AddScoped<UserResolver>(); // TODO: use interface
+            services.AddScoped<ProfileProvider>();
+            services.AddScoped<IBucketKeyProvider, LoggedInUserBucketKeyProvider>();
+            //services.AddScoped<MigrationBucketKeyProvider>();
+            services.AddScoped<UserResolver>();
+            services.AddSingleton<BucketPrefixProvider>();
             services.AddSingleton<LocalCache>();
             services.AddSingleton<Uploads>();
 
