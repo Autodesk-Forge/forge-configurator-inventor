@@ -142,7 +142,7 @@ namespace WebApplication.Processing
                                 bucket.RenameObjectAsync(BomJson, ossNames.Bom),
                                 bucket.RenameObjectAsync(Parameters, ossNames.Parameters),
                                 bucket.RenameObjectAsync(attributes.IsAssembly ? OutputModelIAM : OutputModelIPT, ossNames.GetCurrentModel(attributes.IsAssembly)),
-                                bucket.UploadObjectAsync(project.OssAttributes.Metadata, Json.ToStream(attributes, writeIndented: true)));
+                                bucket.UploadAsJsonAsync(project.OssAttributes.Metadata, attributes, writeIndented: true));
 
             return hashString;
         }
