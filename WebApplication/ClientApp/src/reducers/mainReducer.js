@@ -164,3 +164,7 @@ export const getDrawingPdfUrl = function(state) {
 export const drawingProgressShowing = function(state) {
     return uiFlags.drawingProgressShowing(state.uiFlags);
 };
+
+export const getStats = function(state) {
+    return uiFlags.getStats(state.uiFlags);
+}

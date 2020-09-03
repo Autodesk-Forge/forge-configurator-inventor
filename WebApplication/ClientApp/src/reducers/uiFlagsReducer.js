@@ -41,7 +41,17 @@ export const initialState = {
    showDeleteProject: false,
    checkedProjects: [],
    drawingProgressShowing: false,
-   drawingUrl: null
+   drawingUrl: null,
+   stats: { credits: 7 /*,
+      time: {
+          queue: 10,
+          download: 3,
+          processing: 4,
+          upload: 2,
+          total: 20
+      }
+      */
+    }
 };
 
 export const modalProgressShowing = function(state) {
@@ -124,6 +134,10 @@ export const drawingProgressShowing = function(state) {
    return state.drawingProgressShowing;
 };
 
+export const getStats = function(state) {
+   return state.stats;
+};
+
 export default function(state = initialState, action) {
    switch(action.type) {
       case uiFlagsActionTypes.CLOSE_PARAMETERS_EDITED_MESSAGE:
@@ -198,6 +212,8 @@ export default function(state = initialState, action) {
          return { ...state, drawingUrl: action.url };
       case uiFlagsActionTypes.INVALIDATE_DRAWING:
          return { ...state, drawingUrl: null };
+      case uiFlagsActionTypes.SET_STATS:
+         return { ...state, stats: action.stats };
       default:
          return state;
   }

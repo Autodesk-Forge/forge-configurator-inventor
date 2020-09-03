@@ -37,7 +37,8 @@ export const testState = {
     showDeleteProject: 19,
     checkedProjects: [20],
     drawingProgressShowing: 21,
-    drawingUrl: 22
+    drawingUrl: 22,
+    stats: { credits: 3, time: { processing: 2 }}
 };
 
  export const fullState = {
