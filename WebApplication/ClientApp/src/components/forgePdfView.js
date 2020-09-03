@@ -21,6 +21,7 @@ import Script from 'react-load-script';
 import {connect} from 'react-redux';
 import { getDrawingPdfUrl } from '../reducers/mainReducer';
 import repo from '../Repository';
+import './forgePdfView.css';
 
 let Autodesk = null;
 
@@ -33,7 +34,7 @@ export class ForgePdfView extends Component {
       this.viewer = null;
     }
 
-    handleScriptLoad() {
+    async handleScriptLoad() {
 
         const options = repo.hasAccessToken() ?
                             { accessToken: repo.getAccessToken() } :
@@ -41,8 +42,10 @@ export class ForgePdfView extends Component {
 
         Autodesk = window.Autodesk;
 
+        await import('./forgePdfViewExtension');
+
         const container = this.viewerDiv.current;
-        this.viewer = new Autodesk.Viewing.GuiViewer3D(container);
+        this.viewer = new Autodesk.Viewing.GuiViewer3D(container, { extensions: ['ForgePdfViewExtension'] });
 
         // uncomment this for Viewer debugging
         //this.viewer.debugEvents(true);
@@ -61,14 +64,14 @@ export class ForgePdfView extends Component {
 
         this.viewer.loadExtension('Autodesk.PDF');
 
-        this.viewer.loadModel( this.props.drawingPdf , this.viewer);
+        this.viewer.loadModel( this.props.drawingPdf);
         //this.viewer.loadExtension("Autodesk.Viewing.MarkupsCore")
         //this.viewer.loadExtension("Autodesk.Viewing.MarkupsGui")
     }
 
     componentDidUpdate(prevProps) {
-        if (Autodesk && (this.props.drawingPdf !== prevProps.drawingPdf)) {
-            this.viewer.loadModel( this.props.drawingPdf , this.viewer);
+        if (this.viewer && Autodesk && (this.props.drawingPdf !== prevProps.drawingPdf)) {
+            this.viewer.loadModel( this.props.drawingPdf);
         }
     }
 
