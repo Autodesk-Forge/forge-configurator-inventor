@@ -21,6 +21,7 @@ import { connect } from 'react-redux';
 import Spacer from "@hig/spacer";
 import Typography from "@hig/typography";
 import { getStats } from '../reducers/mainReducer';
+import { Cloud16 } from '@hig/icons';
 
 export class CreditCost extends Component {
     render() {
@@ -35,15 +36,15 @@ export class CreditCost extends Component {
                         <Typography>Processing: {this.props.stats.time.processing}</Typography>
                         <Typography>Upload: {this.props.stats.time.upload}</Typography>
                         <Typography><b>Overall time: {this.props.stats.time.total}</b></Typography>
-                        <Typography><b>Cloud Credits: {this.props.stats.credits}</b></Typography>
+                        <Typography><b>Cloud Credits: {this.props.stats.credits}</b> <Cloud16/></Typography>
                         <Spacer spacing='s'/>
                         <Typography>Queuing: {this.props.stats.time.queue}</Typography>
                     </div>
                     :
                     <div>
-                    <Typography><b>Used cache, Cloud Credits: 0</b></Typography>
+                    <Typography><b>Used cache, Cloud Credits: 0</b> <Cloud16/></Typography>
                     <Spacer spacing='s'/>
-                    <Typography>The last consumed Cloud Credits: {this.props.stats.credits}</Typography>
+                    <Typography>The last consumed Cloud Credits: {this.props.stats.credits} <Cloud16/></Typography>
                     </div>
                 }
                 <Spacer spacing='m'/>
