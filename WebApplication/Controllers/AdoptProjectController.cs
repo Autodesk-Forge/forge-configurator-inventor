@@ -32,6 +32,10 @@ namespace WebApplication.Controllers
         private AdoptProjectWithParametersPayload FetchPayload(string payloadUrl)
         {
             _logger.LogInformation($"fetching payload from {payloadUrl}");
+
+            //TODO: add implementation
+
+            //just return some dummy data
             return new AdoptProjectWithParametersPayload()
             {
                 Name = "Foo",

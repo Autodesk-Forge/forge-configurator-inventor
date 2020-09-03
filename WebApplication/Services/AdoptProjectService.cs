@@ -19,6 +19,8 @@ namespace WebApplication.Services
         public void AdoptProjectWithParameters(AdoptProjectWithParametersPayload payload)
         {
             _logger.LogInformation($"adopting project {payload.Name}");
+
+            //TODO: add implementation
         }
     }
 }
