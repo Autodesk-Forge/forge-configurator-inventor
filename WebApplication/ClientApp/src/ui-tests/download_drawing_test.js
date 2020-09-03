@@ -18,6 +18,7 @@
 
 /* eslint-disable no-undef */
 const assert = require('assert');
+const locators = require('./elements_definition.js');
 
 Before((I) => {
     I.amOnPage('/');
@@ -43,7 +44,7 @@ Data(downloadsData).Scenario('should check file download on downloads link click
     const linkClickHere = '//article[@role="document"] //a[contains(.,"click here")]';
     const preparingDrawingsDialog = `//article[@role="document"] //p[text()="${current.dlgTitle}"]`;
     I.waitForElement(preparingDrawingsDialog, 10);
-    I.waitForElement(linkClickHere, 600);
+    I.waitForElement(linkClickHere, locators.FDAActionTimeout);
 
     // validate the Link
     const link = await I.grabAttributeFrom(linkClickHere, 'href');

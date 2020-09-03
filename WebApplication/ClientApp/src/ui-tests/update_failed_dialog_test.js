@@ -48,7 +48,7 @@ Scenario('should check incorrect input to show failed dialog', async (I) => {
 
     // waiting for Updating dialog
     I.waitForVisible(updatingDialogTitle, 10);
-    I.waitForInvisible(updatingDialogTitle, 600);
+    I.waitForInvisible(updatingDialogTitle, locators.FDAActionTimeout);
 
     // check if Failed dialog is displayed
     I.waitForVisible(failedDialogTitle, 30);

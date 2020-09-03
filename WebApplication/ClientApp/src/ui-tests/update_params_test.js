@@ -46,7 +46,7 @@ Scenario('Updating parameters for model', async (I) => {
 
     // wait for progress bar shows and disappeared
     I.waitForVisible(updatingProjectProgress, 10);
-    I.waitForInvisible(updatingProjectProgress, 600);
+    I.waitForInvisible(updatingProjectProgress, locators.FDAActionTimeout);
 
     // check that stripe disappeared
     I.waitForInvisible(locators.xpStripeElement, 5);

@@ -63,7 +63,7 @@ Scenario('should check downloads tab with RFA link for Wrench', async (I) => {
     const linkClickHere = '//article[@role="document"] //a[contains(.,"click here")]';
     const preparingDialog = '//article[@role="document"] //p[text()="Preparing RFA"]';
     I.waitForElement(preparingDialog, 10);
-    I.waitForElement(linkClickHere, 600);
+    I.waitForElement(linkClickHere, locators.FDAActionTimeout);
 
     // validate the Link
     const link = await I.grabAttributeFrom(linkClickHere, 'href');

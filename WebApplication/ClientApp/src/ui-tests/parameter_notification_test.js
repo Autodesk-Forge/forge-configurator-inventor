@@ -52,7 +52,7 @@ Scenario('should check parameter notification', async (I) => {
 
     // wait for progress bar shows and disappears
     I.waitForVisible(updatingProjectProgress, 10);
-    I.waitForInvisible(updatingProjectProgress, 600);
+    I.waitForInvisible(updatingProjectProgress, locators.FDAActionTimeout);
 
     // check if there is correct number of changeOnUpdate inputs
     I.seeNumberOfElements(updatedElements, 1);

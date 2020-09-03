@@ -95,7 +95,7 @@ Scenario('should check BOM data after change', async (I) => {
 
     // wait for update stripe shows and disappears
     I.waitForVisible(locators.xpStripeElement, 10);
-    I.waitForInvisible(locators.xpStripeElement, 600);
+    I.waitForInvisible(locators.xpStripeElement, locators.FDAActionTimeout);
 
     // click to BOM tab
     I.click(locators.bomTab);
