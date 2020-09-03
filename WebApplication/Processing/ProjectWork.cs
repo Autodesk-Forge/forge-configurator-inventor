@@ -55,7 +55,7 @@ namespace WebApplication.Processing
         /// <summary>
         /// Adapt the project.
         /// </summary>
-        public async Task AdoptAsync(ProjectInfo projectInfo, string inputDocUrl)
+        public async Task<FdaStatsDTO> AdoptAsync(ProjectInfo projectInfo, string inputDocUrl)
         {
             _logger.LogInformation($"Adopt project '{projectInfo.Name}'");
 
@@ -82,6 +82,7 @@ namespace WebApplication.Processing
             var ossNames = projectStorage.GetOssNames();
             await bucket.UploadAsJsonAsync(ossNames.StatsAdopt, result.Stats);
             await bucket.CopyAsync(ossNames.StatsAdopt, ossNames.StatsUpdate);
+            return FdaStatsDTO.All(result.Stats);
         }
 
         /// <summary>

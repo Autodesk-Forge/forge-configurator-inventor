@@ -73,11 +73,11 @@ namespace WebApplication.Utilities
         /// <summary>
         /// Generate project DTO.
         /// </summary>
-        public ProjectDTO ToDTO(ProjectStorage projectStorage)
+        public ProjectDTO ToDTO(ProjectStorage projectStorage, FdaStatsDTO stats)
         {
             Project project = projectStorage.Project;
 
-            var dto = MakeProjectDTO<ProjectDTO>(projectStorage, projectStorage.Metadata.Hash, new FdaStatsDTO { Credits = 0.2 } );
+            var dto = MakeProjectDTO<ProjectDTO>(projectStorage, projectStorage.Metadata.Hash, stats);
             dto.Id = project.Name;
             dto.Label = project.Name;
             dto.Image = _localCache.ToDataUrl(project.LocalAttributes.Thumbnail);

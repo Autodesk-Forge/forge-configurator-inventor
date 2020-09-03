@@ -31,6 +31,8 @@ namespace WebApplication.Definitions
 
         public static FdaStatsDTO All(IEnumerable<Statistics> stats)
         {
+            if (stats == null) return null;
+
             return new FdaStatsDTO
             {
                 Credits = 3.14,
@@ -46,6 +48,8 @@ namespace WebApplication.Definitions
         /// </summary>
         public static FdaStatsDTO CreditsOnly(IEnumerable<Statistics> stats)
         {
+            if (stats == null) return null;
+
             return new FdaStatsDTO { Credits = 0.3 };
         }
     }
