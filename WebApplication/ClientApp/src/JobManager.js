@@ -108,7 +108,7 @@ class JobManager {
                 if (token) {
                     downloadUrl += "/" + token;
                 }
-                onSuccess(downloadUrl);
+                onSuccess(downloadUrl, stats);
             }
         });
 

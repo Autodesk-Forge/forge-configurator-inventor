@@ -183,7 +183,7 @@ describe('uiFlags reducer', () => {
          expect(uiFlagsReducer({}, uiFlagsActions.invalidateDrawing()).drawingUrl).toEqual(null);
       }),
       it('sets the processing stats', () => {
-         const theStats = { credits: 7, time: { processing: 13 }};
+         const theStats = { credits: 7, processing: 13 };
          expect(uiFlagsReducer({}, uiFlagsActions.setStats(theStats)).stats).toEqual(theStats);
       });
    });

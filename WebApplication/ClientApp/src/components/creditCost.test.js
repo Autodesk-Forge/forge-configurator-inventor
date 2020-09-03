@@ -25,7 +25,7 @@ Enzyme.configure({ adapter: new Adapter() });
 
 describe('Show processing stats and cost', () => {
     it('Shows the cost  and time when run FDA was invoked', () => {
-        const stats = { credits: 11, time: { processing: 2 }};
+        const stats = { credits: 11, processing: 2 };
         const wrapper = shallow(<CreditCost stats={stats} />);
         const texts = wrapper.find('Typography');
         expect(texts.someWhere((t) => t.html().includes('Consumed resources'))).toBeTruthy();

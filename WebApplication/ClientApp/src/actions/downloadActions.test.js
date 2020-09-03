@@ -29,6 +29,7 @@ const fullLink = `${aLink}/${tokenMock}`;
 const noTokenLink = `${aLink}`;
 const errorReportLink = 'https://error.link';
 const jobId = 'job1';
+const theStats = { credits: 1 };
 
 // prepare mock for signalR
 import connectionMock from './connectionMock';
@@ -71,12 +72,14 @@ describe('downloadActions', () => {
         it('check getDownloadLink onComplete action', async () => {
             await store.dispatch(downloadActions.getDownloadLink("Method", "ProjectId", "hash", "title"));
             // simulate conection.onComplete(rfaLink);
-            connectionMock.simulateComplete(aLink);
+            connectionMock.simulateComplete(aLink, theStats);
 
             // check expected store actions
             const actions = store.getActions();
             const linkAction = actions.find(a => a.type === uiFlagsActionTypes.SET_DOWNLOAD_LINK);
             expect(linkAction.url).toEqual(fullLink);
+            const statsAction = actions.find(a => a.type === uiFlagsActionTypes.SET_STATS);
+            expect(statsAction.stats).toEqual(theStats);
         });
 
         it('check getDownloadLink onError action', async () => {

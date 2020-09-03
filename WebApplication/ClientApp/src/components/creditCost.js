@@ -28,23 +28,23 @@ export class CreditCost extends Component {
 
         return (
             <div>
-                {this.props.stats.time ?
+                {this.props.stats?.processing ?
                     <div>
                         <Typography><b>Consumed resources:</b></Typography>
                         <Spacer spacing='s'/>
-                        <Typography>Download: {this.props.stats.time.download}</Typography>
-                        <Typography>Processing: {this.props.stats.time.processing}</Typography>
-                        <Typography>Upload: {this.props.stats.time.upload}</Typography>
-                        <Typography><b>Overall time: {this.props.stats.time.total}</b></Typography>
-                        <Typography><b>Cloud Credits: {this.props.stats.credits}</b> <Cloud16/></Typography>
+                        <Typography>Download: {this.props.stats?.download}s</Typography>
+                        <Typography>Processing: {this.props.stats?.processing}s</Typography>
+                        <Typography>Upload: {this.props.stats?.upload}s</Typography>
+                        <Typography><b>Overall time: {this.props.stats?.total /*download+this.props.stats.processing+this.props.stats.upload*/}s</b></Typography>
+                        <Typography><b>Cloud Credits: {this.props.stats?.credits}</b> <Cloud16/></Typography>
                         <Spacer spacing='s'/>
-                        <Typography>Queuing: {this.props.stats.time.queue}</Typography>
+                        <Typography>Queuing: {this.props.stats?.queueing}s</Typography>
                     </div>
                     :
                     <div>
                     <Typography><b>Used cache, Cloud Credits: 0</b> <Cloud16/></Typography>
                     <Spacer spacing='s'/>
-                    <Typography>The last consumed Cloud Credits: {this.props.stats.credits} <Cloud16/></Typography>
+                    <Typography>The last consumed Cloud Credits: {this.props.stats?.credits} <Cloud16/></Typography>
                     </div>
                 }
                 <Spacer spacing='m'/>

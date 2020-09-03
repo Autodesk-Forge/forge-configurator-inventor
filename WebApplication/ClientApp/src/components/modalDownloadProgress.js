@@ -25,6 +25,7 @@ import './modalProgress.css';
 import merge from "lodash.merge";
 import HyperLink from './hyperlink';
 import Button from '@hig/button';
+import CreditCost from './creditCost';
 
 export class ModalDownloadProgress extends Component {
 
@@ -62,6 +63,9 @@ export class ModalDownloadProgress extends Component {
                       {!done && <ProgressBar className="modalProgress"/>}
                   </div>
               </div>
+              {(done) &&
+                <CreditCost/>
+              }
               {(done && this.props.url) &&
                 <div className="modalLink">
                     <React.Fragment>

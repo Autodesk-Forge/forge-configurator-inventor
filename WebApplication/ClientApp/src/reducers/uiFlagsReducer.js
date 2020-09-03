@@ -42,16 +42,7 @@ export const initialState = {
    checkedProjects: [],
    drawingProgressShowing: false,
    drawingUrl: null,
-   stats: { credits: 7 /*,
-      time: {
-          queue: 10,
-          download: 3,
-          processing: 4,
-          upload: 2,
-          total: 20
-      }
-      */
-    }
+   stats: null
 };
 
 export const modalProgressShowing = function(state) {

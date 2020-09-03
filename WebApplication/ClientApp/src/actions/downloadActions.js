@@ -18,7 +18,7 @@
 
 import { addError, addLog } from './notificationActions';
 import { Jobs } from '../JobManager';
-import { showDownloadProgress, showDownloadFailed, setDownloadLink, setReportUrlLink } from './uiFlagsActions';
+import { showDownloadProgress, showDownloadFailed, setDownloadLink, setReportUrlLink, setStats } from './uiFlagsActions';
 import { showDrawingExportProgress, setDrawingPdfUrl } from './uiFlagsActions';
 
 /**
@@ -51,10 +51,11 @@ export const getDownloadLink = (methodName, projectId, hash, dialogTitle) => asy
                 dispatch(setReportUrlLink(null)); // cleanup url link
             },
             // onComplete
-            (downloadUrl) => {
+            (downloadUrl, stats) => {
                 dispatch(addLog(`JobManager.doDownloadJob: '${methodName}' completed for project : ${projectId}`));
                 // set download link, it will show link in UI
                 dispatch(setDownloadLink(downloadUrl));
+                dispatch(setStats(stats));
             },
             // onError
             (jobId, reportUrl) => {
