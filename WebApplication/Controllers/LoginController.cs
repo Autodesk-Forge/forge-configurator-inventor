@@ -24,6 +24,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WebApplication.Definitions;
+using WebApplication.Services;
 using WebApplication.State;
 using WebApplication.Utilities;
 
@@ -36,7 +37,7 @@ namespace WebApplication.Controllers
         private static readonly ProfileDTO AnonymousProfile = new ProfileDTO { Name = "Anonymous", AvatarUrl = "logo-xs-white-BG.svg" };
 
         private readonly ILogger<LoginController> _logger;
-        private readonly UserResolver _userResolver;
+        private readonly ProfileProvider _profileProvider;
         private readonly InviteOnlyModeConfiguration _inviteOnlyModeConfig;
 
         /// <summary>
@@ -44,10 +45,10 @@ namespace WebApplication.Controllers
         /// </summary>
         public ForgeConfiguration Configuration { get; }
 
-        public LoginController(ILogger<LoginController> logger, IOptions<ForgeConfiguration> optionsAccessor, UserResolver userResolver, IOptions<InviteOnlyModeConfiguration> inviteOnlyModeOptionsAccessor)
+        public LoginController(ILogger<LoginController> logger, IOptions<ForgeConfiguration> optionsAccessor, ProfileProvider profileProvider, IOptions<InviteOnlyModeConfiguration> inviteOnlyModeOptionsAccessor)
         {
             _logger = logger;
-            _userResolver = userResolver;
+            _profileProvider = profileProvider;
             Configuration = optionsAccessor.Value.Validate();
             _inviteOnlyModeConfig = inviteOnlyModeOptionsAccessor.Value;
         }
@@ -82,9 +83,9 @@ namespace WebApplication.Controllers
         public async Task<ActionResult<ProfileDTO>> Profile()
         {
             _logger.LogInformation("Get profile");
-            if (_userResolver.IsAuthenticated)
+            if (_profileProvider.IsAuthenticated)
             {
-                dynamic profile = await _userResolver.GetProfileAsync();
+                dynamic profile = await _profileProvider.GetProfileAsync();
                 if (_inviteOnlyModeConfig.Enabled)
                 {
                     var inviteOnlyChecker = new InviteOnlyChecker(_inviteOnlyModeConfig);

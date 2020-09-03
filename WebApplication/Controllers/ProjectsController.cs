@@ -24,6 +24,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using WebApplication.Definitions;
+using WebApplication.Services;
 using WebApplication.State;
 using WebApplication.Utilities;
 using Project = WebApplication.State.Project;
@@ -37,13 +38,15 @@ namespace WebApplication.Controllers
         private readonly ILogger<ProjectsController> _logger;
         private readonly DtoGenerator _dtoGenerator;
         private readonly UserResolver _userResolver;
+        private readonly ProfileProvider _profileProvider;
         private readonly Uploads _uploads;
 
-        public ProjectsController(ILogger<ProjectsController> logger, DtoGenerator dtoGenerator, UserResolver userResolver, Uploads uploads)
+        public ProjectsController(ILogger<ProjectsController> logger, DtoGenerator dtoGenerator, UserResolver userResolver, ProfileProvider profileProvider, Uploads uploads)
         {
             _logger = logger;
             _dtoGenerator = dtoGenerator;
             _userResolver = userResolver;
+            _profileProvider = profileProvider;
             _uploads = uploads;
         }
 
@@ -78,7 +81,7 @@ namespace WebApplication.Controllers
         [HttpPost]
         public async Task<ActionResult<ProjectDTO>> CreateProject([FromForm]NewProjectModel projectModel)
         {
-            if (!_userResolver.IsAuthenticated)
+            if (!_profileProvider.IsAuthenticated)
             {
                 _logger.LogError("Attempt to create project for anonymous user");
                 return BadRequest();
@@ -116,7 +119,7 @@ namespace WebApplication.Controllers
         [HttpDelete]
         public async Task<StatusCodeResult> DeleteProjects([FromBody] List<string> projectNameList)
         {
-            if (!_userResolver.IsAuthenticated)
+            if (!_profileProvider.IsAuthenticated)
             {
                 _logger.LogError("Attempt to delete projects for anonymous user");
                 return BadRequest();

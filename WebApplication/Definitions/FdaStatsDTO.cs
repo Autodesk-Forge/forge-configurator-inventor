@@ -21,17 +21,36 @@ using Autodesk.Forge.DesignAutomation.Model;
 
 namespace WebApplication.Definitions
 {
-    public class ProcessingResult
+    public class FdaStatsDTO
     {
-        public bool Success { get; set; }
-        public string ReportUrl { get; set; }
-        public string ErrorMessage { get; set; }
+        public double Credits { get; set; }
+        public double? Download { get; set; }
+        public double? Processing { get; set; }
+        public double? Upload { get; set; }
+        public double? Queueing { get; set; }
 
-        public List<Statistics> Stats { get; set; } = new List<Statistics>();
-
-        public ProcessingResult(Statistics statistics)
+        public static FdaStatsDTO All(IEnumerable<Statistics> stats)
         {
-            Stats.Add(statistics);
+            if (stats == null) return null;
+
+            return new FdaStatsDTO
+            {
+                Credits = 3.14,
+                Download = 0.1,
+                Processing = 0.2,
+                Upload = 0.3,
+                Queueing = 0.4
+            };
+        }
+
+        /// <summary>
+        /// Generate stats for cached item (without timings).
+        /// </summary>
+        public static FdaStatsDTO CreditsOnly(IEnumerable<Statistics> stats)
+        {
+            if (stats == null) return null;
+
+            return new FdaStatsDTO { Credits = 0.3 };
         }
     }
 }
