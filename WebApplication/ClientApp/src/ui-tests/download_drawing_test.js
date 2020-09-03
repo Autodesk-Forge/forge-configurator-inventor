@@ -43,7 +43,7 @@ Data(downloadsData).Scenario('should check file download on downloads link click
     const linkClickHere = '//article[@role="document"] //a[contains(.,"click here")]';
     const preparingDrawingsDialog = `//article[@role="document"] //p[text()="${current.dlgTitle}"]`;
     I.waitForElement(preparingDrawingsDialog, 10);
-    I.waitForElement(linkClickHere, 120);
+    I.waitForElement(linkClickHere, 600);
 
     // validate the Link
     const link = await I.grabAttributeFrom(linkClickHere, 'href');

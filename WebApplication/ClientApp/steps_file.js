@@ -160,7 +160,7 @@ module.exports = function() {
       this.click(uploadButton);
 
       // Wait for file to be uploaded
-      this.waitForVisible(uploadConfirmationDialog, 120);
+      this.waitForVisible(uploadConfirmationDialog, 600);
       this.click(closeButton);
     },
     uploadIPTFile(IPT_File) {
@@ -175,7 +175,7 @@ module.exports = function() {
       this.click(uploadButton);
 
       // Wait for file to be uploaded
-      this.waitForVisible(uploadConfirmationDialog, 120);
+      this.waitForVisible(uploadConfirmationDialog, 600);
       this.click(closeButton);
     },
     uploadInvalidIPTFile(IPT_File) {
@@ -190,7 +190,7 @@ module.exports = function() {
       this.click(uploadButton);
 
       // Wait for Upload Failed dialog
-      this.waitForVisible(uploadFailedDialog, 120);
+      this.waitForVisible(uploadFailedDialog, 600);
       // check log url link
       this.seeElement(uploadFailLogLink);
 
