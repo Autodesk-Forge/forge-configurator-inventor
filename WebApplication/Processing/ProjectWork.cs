@@ -123,7 +123,7 @@ namespace WebApplication.Processing
         /// <summary>
         /// Generate RFA (or take it from cache).
         /// </summary>
-        public async Task GenerateRfaAsync(string projectName, string hash)
+        public async Task<FdaStatsDTO> GenerateRfaAsync(string projectName, string hash)
         {
             _logger.LogInformation($"Generating RFA for hash {hash}");
 
@@ -141,7 +141,11 @@ namespace WebApplication.Processing
 
             var bucket = await _userResolver.GetBucketAsync();
             // check if RFA file is already generated
-            if (await bucket.ObjectExistsAsync(ossNames.Rfa)) return;
+            if (await bucket.ObjectExistsAsync(ossNames.Rfa))
+            {
+                var stats = await bucket.DeserializeAsync<Statistics[]>(ossNames.StatsRFA);
+                return FdaStatsDTO.CreditsOnly(stats);
+            }
 
             // OK, nothing in cache - generate it now
             var inputDocUrl = await bucket.CreateSignedUrlAsync(ossNames.GetCurrentModel(storage.IsAssembly));
@@ -157,6 +161,7 @@ namespace WebApplication.Processing
 
             await _arranger.MoveRfaAsync(project, hash);
             await bucket.UploadAsJsonAsync(ossNames.StatsRFA, result.Stats);
+            return FdaStatsDTO.All(result.Stats);
         }
 
         public async Task<bool> ExportDrawingPdfAsync(string projectName, string hash)
