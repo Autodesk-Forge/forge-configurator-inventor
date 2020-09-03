@@ -83,12 +83,12 @@ export class ModalFail extends Component {
                     <div>
                         <Typography><span className="assemblyText">{this.props.contentName}</span> {this.props.label ? this.props.label : "Missing label."}</Typography>
                     </div>
-                    {reportUrlOrMessage && isUrl &&
+                    {(reportUrlOrMessage && isUrl) &&
                         <div className="logContainer">
                             <HyperLink link="Open log file" href={ reportUrlOrMessage } />
                         </div>
                     }
-                    {reportUrlOrMessage && ! isUrl &&
+                    {(reportUrlOrMessage && ! isUrl) &&
                         <div>
                             <Typography className="errorMessage">
                                 Internal error. Try to repeat your last action and please report the following message: <br/>

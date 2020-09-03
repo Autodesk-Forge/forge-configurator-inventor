@@ -19,7 +19,7 @@
 import React from 'react';
 import Enzyme, { shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
-import { ModalProgressRfa } from './modalProgressRfa';
+import { ModalDownloadProgress } from './modalDownloadProgress';
 
 Enzyme.configure({ adapter: new Adapter() });
 
@@ -33,7 +33,7 @@ describe('modal progress ', () => {
             icon: "Archive.svg"
         };
 
-        const wrapper = shallow(<ModalProgressRfa {...props} />);
+        const wrapper = shallow(<ModalDownloadProgress {...props} />);
 
         const wrapperComponent = wrapper.find('.modalAction');
         const children = wrapperComponent.prop('children');
@@ -46,7 +46,7 @@ describe('modal progress ', () => {
 
         const propsNoTitle = { title: null };
 
-        const wrapper = shallow(<ModalProgressRfa {...propsNoTitle} />);
+        const wrapper = shallow(<ModalDownloadProgress {...propsNoTitle} />);
 
         const wrapperComponent = wrapper.find('.modalAction');
         const children = wrapperComponent.prop('children');
@@ -59,7 +59,7 @@ describe('modal progress ', () => {
 
         const props = { url: "someUrl" };
 
-        const wrapper = shallow(<ModalProgressRfa {...props} />);
+        const wrapper = shallow(<ModalDownloadProgress {...props} />);
 
         const button = wrapper.find('Button');
         expect(button.prop('title')).toBe('Done');
@@ -69,7 +69,7 @@ describe('modal progress ', () => {
 
         const props = { url: null };
 
-        const wrapper = shallow(<ModalProgressRfa {...props} />);
+        const wrapper = shallow(<ModalDownloadProgress {...props} />);
 
         const button = wrapper.find('Button');
         expect(button.length).toBe(0);
@@ -79,7 +79,7 @@ describe('modal progress ', () => {
 
         const props = { url: "someurl" };
 
-        const wrapper = shallow(<ModalProgressRfa {...props} />);
+        const wrapper = shallow(<ModalDownloadProgress {...props} />);
 
         const buttons = wrapper.find('Button');
         expect(buttons.length).toBe(1);
@@ -89,7 +89,7 @@ describe('modal progress ', () => {
         const closeMockFn = jest.fn();
         const props = { onClose: closeMockFn, url: 'http://example.com' };
 
-        const wrapper = shallow(<ModalProgressRfa {...props} />);
+        const wrapper = shallow(<ModalDownloadProgress {...props} />);
 
         const closeButton = wrapper.find({ title: "Done"});
         expect(closeButton.length).toEqual(1);
@@ -98,10 +98,24 @@ describe('modal progress ', () => {
         expect(closeMockFn).toHaveBeenCalledTimes(1);
     });
 
+    // close on Url link click conficts with Autostart save and imho was not requested by the UX/PO
+    it.skip('should close when Url link clicked', () => {
+        const closeMockFn = jest.fn();
+        const props = { onClose: closeMockFn, url: 'http://example.com' };
+
+        const wrapper = shallow(<ModalDownloadProgress {...props} />);
+
+        const hyperlink = wrapper.find('HyperLink');
+        expect(hyperlink.length).toEqual(1);
+
+        hyperlink.simulate('urlClick');
+        expect(closeMockFn).toHaveBeenCalledTimes(1);
+    });
+
     it('should link to the rfa url in the props', () => {
         const props = { url: 'http://example.com' };
 
-        const wrapper = shallow(<ModalProgressRfa {...props} />);
+        const wrapper = shallow(<ModalDownloadProgress {...props} />);
         const wrapperComponent = wrapper.find('.modalLink');
         const children = wrapperComponent.prop('children');
 

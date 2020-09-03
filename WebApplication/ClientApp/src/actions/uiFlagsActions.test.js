@@ -78,13 +78,13 @@ describe('uiFlagsActions', () => {
         expect(store.getActions()).toMatchSnapshot();
     });
 
-    it('check showRFAModalProgress action', () => {
-        store.dispatch(uiFlagsActions.showRFAModalProgress(true));
+    it('check showDownloadProgress action', () => {
+        store.dispatch(uiFlagsActions.showDownloadProgress(true, "Some dialog title"));
         expect(store.getActions()).toMatchSnapshot();
     });
 
     it('check setRFALink action', () => {
-        store.dispatch(uiFlagsActions.setRFALink("link"));
+        store.dispatch(uiFlagsActions.setDownloadLink("link"));
         expect(store.getActions()).toMatchSnapshot();
     });
 

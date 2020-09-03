@@ -19,6 +19,9 @@
 /* eslint-disable no-undef */
 const locators = require('./elements_definition.js');
 
+/* eslint-disable no-undef */
+const assert = require('assert');
+
 Before((I) => {
     I.amOnPage('/');
 });
@@ -31,35 +34,6 @@ const linkRFA = locate('a').withText('RFA').inside(rowForRFA);
 //const clickHere = locate('section').find('a').withText('Click here');
 
 Feature('Downloads RFA');
-
-Scenario('should check downloads tab with RFA link for model', async (I) => {
-
-    I.selectProject("Wrench");
-
-    //check Download Tab
-    I.see('Downloads', locators.downloadsTab);
-
-    // click on downlod tab
-    I.goToDownloadsTab();
-
-    //check if Div download exists
-    I.seeElement(divDownloads);
-
-    // check if RFA link exists
-    I.see('RFA', linkRFA);
-
-    // click on RFA link
-    I.click(linkRFA);
-
-    // check if Progress download window is displayed with correct data
-    I.waitForElement(progressDialog, 30);
-
-    const titleDataFileForModel = locate('p').withText('Wrench').inside(progressDialog);
-    I.seeElement(titleDataFileForModel);
-
-    // wait for a link to download a file
-    //I.waitForElement(clickHere, 50);
-});
 
 Scenario('should check downloads tab with RFA link for Wrench', async (I) => {
 
@@ -85,6 +59,15 @@ Scenario('should check downloads tab with RFA link for Wrench', async (I) => {
     I.waitForElement(progressDialog, 30);
     I.seeElement(titleDataFileForWrench);
 
-    // wait for a link to download a file
-    //I.waitForElement(clickHere, 50);
+    // wait for 'click here' link in progress dialog
+    const linkClickHere = '//article[@role="document"] //a[contains(.,"click here")]';
+    const preparingDialog = '//article[@role="document"] //p[text()="Preparing RFA"]';
+    I.waitForElement(preparingDialog, 10);
+    I.waitForElement(linkClickHere, 120);
+
+    // validate the Link
+    const link = await I.grabAttributeFrom(linkClickHere, 'href');
+    assert.equal(true, link.includes('download/Wrench'));
+    assert.equal(true, link.includes('/rfa'));
+    I.wait(2); // we seem to have a timing issue in test that end with physical file downloads
 });

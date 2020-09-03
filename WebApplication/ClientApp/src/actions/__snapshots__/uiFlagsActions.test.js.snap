@@ -89,7 +89,7 @@ Array [
 exports[`uiFlagsActions check setRFALink action 1`] = `
 Array [
   Object {
-    "type": "SET_RFA_LINK",
+    "type": "SET_DOWNLOAD_LINK",
     "url": "link",
   },
 ]
@@ -104,19 +104,11 @@ Array [
 ]
 `;
 
-exports[`uiFlagsActions check showRFAModalProgress action 1`] = `
+exports[`uiFlagsActions check showDownloadProgress action 1`] = `
 Array [
   Object {
-    "type": "SHOW_RFA_PROGRESS",
-    "visible": true,
-  },
-]
-`;
-
-exports[`uiFlagsActions check showUpdateFailed action 1`] = `
-Array [
-  Object {
-    "type": "SHOW_UPDATE_FAILED",
+    "title": "Some dialog title",
+    "type": "SHOW_DOWNLOAD_PROGRESS",
     "visible": true,
   },
 ]
@@ -126,6 +118,15 @@ exports[`uiFlagsActions check showModalProgress action 1`] = `
 Array [
   Object {
     "type": "SHOW_MODAL_PROGRESS",
+    "visible": true,
+  },
+]
+`;
+
+exports[`uiFlagsActions check showUpdateFailed action 1`] = `
+Array [
+  Object {
+    "type": "SHOW_UPDATE_FAILED",
     "visible": true,
   },
 ]

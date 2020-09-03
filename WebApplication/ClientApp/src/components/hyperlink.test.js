@@ -17,7 +17,7 @@
 /////////////////////////////////////////////////////////////////////
 
 import React from 'react';
-import Enzyme, { mount } from 'enzyme';
+import Enzyme, { shallow, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import HyperLink from './hyperlink';
 
@@ -53,6 +53,32 @@ describe('components', () => {
         mount(<HyperLink {...props}/>);
         expect(onAutostartMock).toHaveBeenCalledTimes(1);
       });
+    it('verify that link has download attribute when defined in props', () => {
+      const props = {
+        href: "link to file",
+        prefix: "P ",
+        link: "link text",
+        suffix: " S",
+        download: true
+      };
 
+      const wrapper = shallow(<HyperLink {...props}/>);
+
+      const link = wrapper.find('a');
+      expect(link.prop('download')).toBeDefined();
+    });
+    it('verify that link has NO download attribute when not defined in props', () => {
+      const props = {
+        href: "link to file",
+        prefix: "P ",
+        link: "link text",
+        suffix: " S"
+      };
+
+      const wrapper = shallow(<HyperLink {...props}/>);
+
+      const link = wrapper.find('a');
+      expect(link.prop('download')).toBeUndefined();
+    });
   });
 });
