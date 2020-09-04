@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Net;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using WebApplication.Definitions;
@@ -23,7 +22,7 @@ namespace WebApplication.Services
         /// https://jira.autodesk.com/browse/INVGEN-45256
         /// </summary>
         /// <param name="payload">project configuration with parameters</param>
-        public async Task<string> AdoptProjectWithParameters(AdoptProjectWithParametersPayload payload)
+        public string AdoptProjectWithParameters(AdoptProjectWithParametersPayload payload)
         {
             _logger.LogInformation($"adopting project {payload.Name}");
 
@@ -34,10 +33,10 @@ namespace WebApplication.Services
                 client.DownloadFile(payload.Url, localFileName);
             }
 
-            await using FileStream stream = File.OpenRead(localFileName);
+            using FileStream stream = File.OpenRead(localFileName);
 
             _logger.LogInformation($"creating project {payload.Name}");
-            var projectId = await _projectService.CreateProject(new NewProjectModel()
+            var projectIdTask = _projectService.CreateProject(new NewProjectModel()
             {
                 package = new FormFile(stream, 0, stream.Length, null, Path.GetFileName(stream.Name))
                 {
@@ -47,7 +46,9 @@ namespace WebApplication.Services
                 root = payload.TopLevelAssembly
             });
 
-            return projectId;
+            projectIdTask.Wait();
+
+            return projectIdTask.Result;
         }
     }
 }

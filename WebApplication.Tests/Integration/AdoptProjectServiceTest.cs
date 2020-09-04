@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Shared;
 using WebApplication.Definitions;
 using WebApplication.Services;
@@ -12,11 +12,15 @@ namespace WebApplication.Tests.Integration
 {
     public class AdoptProjectServiceTest : IClassFixture<WebApplicationFactory<WebApplication.Startup>>
     {
+        private readonly ILogger<AdoptProjectServiceTest> _logger;
         private readonly WebApplicationFactory<WebApplication.Startup> _factory;
 
         public AdoptProjectServiceTest(WebApplicationFactory<WebApplication.Startup> factory)
         {
             _factory = factory;
+
+            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            _logger = loggerFactory.CreateLogger<AdoptProjectServiceTest>();
         }
 
         public class AdoptProjectWithParametersDataProvider : IEnumerable<object[]>
@@ -50,14 +54,13 @@ namespace WebApplication.Tests.Integration
         [ClassData(typeof(AdoptProjectWithParametersDataProvider))]
         public void AdoptProjectWithParameters(AdoptProjectWithParametersPayload payload)
         {
-            Environment.SetEnvironmentVariable("FORGE_CLIENT_ID", "CHQJfXdh7JJ8sMQ8H0kuMiZXdD7Cp4Pn");
-            Environment.SetEnvironmentVariable("FORGE_CLIENT_SECRET", "BkZhZ9E4zsnGhxr0");
-
             //TODO: move to setUp method
             using var scope = _factory.Services.CreateScope();
             var service = scope.ServiceProvider.GetRequiredService<AdoptProjectService>();
 
-            service.AdoptProjectWithParameters(payload);
+            var projectId = service.AdoptProjectWithParameters(payload);
+
+            _logger.LogInformation($"project created with id {projectId}");
         }
     }
 }
