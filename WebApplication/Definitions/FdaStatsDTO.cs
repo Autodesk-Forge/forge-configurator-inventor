@@ -18,39 +18,95 @@
 
 using System.Collections.Generic;
 using Autodesk.Forge.DesignAutomation.Model;
+// ReSharper disable PossibleInvalidOperationException
 
 namespace WebApplication.Definitions
 {
     public class FdaStatsDTO
     {
+        private const double CreditsPerHour = 6.0; // should it be in config?
+        private const double CreditsPerSecond = CreditsPerHour / 3600.0;
+
         public double Credits { get; set; }
+
+        public double? Queueing { get; set; }
         public double? Download { get; set; }
         public double? Processing { get; set; }
         public double? Upload { get; set; }
-        public double? Queueing { get; set; }
+        public double? Total { get; set; }
 
-        public static FdaStatsDTO All(IEnumerable<Statistics> stats)
+        /// <summary>
+        /// Generate processing statistics.
+        /// </summary>
+        /// <param name="stats"></param>
+        /// <returns></returns>
+        public static FdaStatsDTO All(ICollection<Statistics> stats)
         {
-            if (stats == null) return null;
-
-            return new FdaStatsDTO
-            {
-                Credits = 3.14,
-                Download = 0.1,
-                Processing = 0.2,
-                Upload = 0.3,
-                Queueing = 0.4
-            };
+            return Convert(stats);
         }
 
         /// <summary>
-        /// Generate stats for cached item (without timings).
+        /// Generate processing statistics for cached item (without timings).
         /// </summary>
-        public static FdaStatsDTO CreditsOnly(IEnumerable<Statistics> stats)
+        public static FdaStatsDTO CreditsOnly(ICollection<Statistics> stats)
         {
-            if (stats == null) return null;
+            return All(stats).ClearTimings();
+        }
 
-            return new FdaStatsDTO { Credits = 0.3 };
+        private static FdaStatsDTO Convert(ICollection<Statistics> stats)
+        {
+            if (stats == null || stats.Count == 0) return null;
+
+            var sum = new FdaStatsDTO();
+            foreach (var s in stats)
+            {
+                var current = ConvertSingle(s);
+
+                sum.Queueing = sum.Queueing.GetValueOrDefault() + current.Queueing;
+                sum.Download = sum.Download.GetValueOrDefault() + current.Download;
+                sum.Processing = sum.Processing.GetValueOrDefault() + current.Processing;
+                sum.Upload = sum.Upload.GetValueOrDefault() + current.Upload;
+                sum.Total = sum.Total.GetValueOrDefault() + current.Total;
+
+                sum.Credits += current.Credits;
+            }
+
+            return sum;
+        }
+
+        private static FdaStatsDTO ConvertSingle(Statistics stats)
+        {
+            // it's assumed that statistics calculated for successful job, so all timings are present
+            var downloadSec = stats.TimeInstructionsStarted.Value.Subtract(stats.TimeDownloadStarted.Value).TotalSeconds;
+            var processingSec = stats.TimeInstructionsEnded.Value.Subtract(stats.TimeInstructionsStarted.Value).TotalSeconds;
+            var uploadSec = stats.TimeUploadEnded.Value.Subtract(stats.TimeInstructionsEnded.Value).TotalSeconds;
+
+            var result = new FdaStatsDTO
+                            {
+                                Queueing = stats.TimeDownloadStarted.Value.Subtract(stats.TimeQueued).TotalSeconds,
+                                Download = downloadSec,
+                                Processing = processingSec,
+                                Upload = uploadSec,
+                                Total = stats.TimeFinished.Value.Subtract(stats.TimeQueued).TotalSeconds,
+                                Credits = (downloadSec + processingSec + uploadSec) * CreditsPerSecond
+                            };
+
+            return result;
+        }
+
+        /// <summary>
+        /// Remove timings.
+        /// Used for cached jobs, where timings are not important.
+        /// </summary>
+        private FdaStatsDTO ClearTimings()
+        {
+            Queueing = null;
+            Download = null;
+            Processing = null;
+            Upload = null;
+            Total = null;
+
+            return this;
         }
     }
 }

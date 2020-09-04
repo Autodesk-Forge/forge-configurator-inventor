@@ -20,9 +20,6 @@ import * as signalR from '@aspnet/signalr';
 import repo from './Repository';
 
 class JobManager {
-    constructor() {
-        this.jobs = new Map();
-    }
 
     async startConnection() {
         const connection = new signalR.HubConnectionBuilder()
@@ -40,7 +37,7 @@ class JobManager {
         if (onStart)
             onStart();
 
-        connection.on("onComplete", (updatedState) => {
+        connection.on("onComplete", (updatedState, stats) => {
             // stop connection
             connection.stop();
 
@@ -65,7 +62,7 @@ class JobManager {
         if (onStart)
             onStart();
 
-        connection.on("onComplete", (newProject) => {
+        connection.on("onComplete", (newProject, stats) => {
             // stop connection
             connection.stop();
 
@@ -127,7 +124,7 @@ class JobManager {
         if (onStart)
             onStart();
 
-        connection.on("onComplete", (drawingUrl) => {
+        connection.on("onComplete", (drawingUrl, stats) => {
             // stop connection
             connection.stop();
 

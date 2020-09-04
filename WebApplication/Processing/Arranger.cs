@@ -197,7 +197,6 @@ namespace WebApplication.Processing
         internal async Task<ProcessingArgs> ForDrawingAsync(string inputDocUrl, string topLevelAssembly)
         {
             var bucket = await _userResolver.GetBucketAsync();
-
             var url = await bucket.CreateSignedUrlAsync(OutputDrawing, ObjectAccess.ReadWrite);
 
             return new ProcessingArgs
