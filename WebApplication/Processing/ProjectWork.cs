@@ -198,7 +198,7 @@ namespace WebApplication.Processing
 
                 if (generated)
                 {
-                    var nativeStats = await bucket.DeserializeAsync<IEnumerable<Statistics>>(ossNames.StatsDrawingPDF);
+                    var nativeStats = await bucket.DeserializeAsync<List<Statistics>>(ossNames.StatsDrawingPDF);
                     return FdaStatsDTO.CreditsOnly(nativeStats);
                 }
                 else
