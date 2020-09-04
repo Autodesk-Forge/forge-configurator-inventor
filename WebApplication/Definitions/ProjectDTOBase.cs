@@ -57,10 +57,5 @@ namespace WebApplication.Definitions
         /// HasDrawing
         /// </summary>
         public bool HasDrawing { get; set; }
-
-        /// <summary>
-        /// FDA cost and times.
-        /// </summary>
-        public FdaStatsDTO Stats { get; set; }
     }
 }
