@@ -39,7 +39,7 @@ export class ModalProgressUpload extends Component {
           modal: {
                 window: { // by design
                     width: "371px",
-                    height: "263px",
+                    height: "auto",
                     borderLeftWidth: "3px",
                     borderLeftStyle: "solid",
                     borderLeftColor: done ? doneColor : "rgb(255, 255, 255)"

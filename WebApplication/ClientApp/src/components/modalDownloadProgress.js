@@ -35,7 +35,7 @@ export class ModalDownloadProgress extends Component {
           modal: {
                 window: { // by design
                     width: "371px",
-                    height: "263px"
+                    height: "auto"
                 }
             }
         });
