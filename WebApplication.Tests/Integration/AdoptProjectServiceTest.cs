@@ -44,7 +44,7 @@ namespace WebApplication.Tests.Integration
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         }
 
-        [Theory]
+        [Theory(Skip = "not a real test, just for development purposes")]
         [ClassData(typeof(AdoptProjectWithParametersDataProvider))]
         public void AdoptProjectWithParameters(AdoptProjectWithParametersPayload payload)
         {
