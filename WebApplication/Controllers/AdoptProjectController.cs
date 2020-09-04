@@ -1,7 +1,6 @@
 ﻿using System.Web;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Shared;
 using WebApplication.Definitions;
 using WebApplication.Services;
@@ -41,7 +40,7 @@ namespace WebApplication.Controllers
                 Name = "Foo",
                 Url = "http://url.com/path_to_the_zip",
                 TopLevelAssembly = "top_level_assembly.iam",
-                Parameters = new InventorParameters()
+                Config = new InventorParameters()
                 {
                     {
                         "Some Param", new InventorParameter()
