@@ -267,8 +267,9 @@ describe('fetchParameters', () => {
                 parameters: parameters,
                 ...projectData
             };
+            const theStats = { credits: 1 };
 
-            connectionMock.simulateComplete(updatedState);
+            connectionMock.simulateComplete(updatedState, theStats);
 
             // check expected store actions
             const actions = store.getActions();
@@ -279,6 +280,8 @@ describe('fetchParameters', () => {
             const updateProject = actions.find(a => a.type === projectListActionTypes.UPDATE_PROJECT);
             expect(updateProject.activeProjectId).toEqual(projectId);
             expect(updateProject.data).toEqual(projectData);
+            const statsAction = actions.find(a => a.type === uiFlagsActionTypes.SET_STATS);
+            expect(statsAction.stats).toEqual(theStats);
         });
 
         it('check updateModelWithParameters error path', async () => {

@@ -42,7 +42,7 @@ class JobManager {
             connection.stop();
 
             if (onComplete)
-                onComplete(updatedState);
+                onComplete(updatedState, stats);
         });
 
         connection.on("onError", (jobId, reportUrl) => {
@@ -67,7 +67,7 @@ class JobManager {
             connection.stop();
 
             if (onComplete)
-                onComplete(newProject);
+                onComplete(newProject,stats);
         });
 
         connection.on("onError", (jobId, reportUrl) => {
@@ -129,7 +129,7 @@ class JobManager {
             connection.stop();
 
             if (onComplete) {
-                onComplete(drawingUrl);
+                onComplete(drawingUrl, stats);
             }
         });
 

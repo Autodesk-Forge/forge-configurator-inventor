@@ -91,10 +91,11 @@ export const fetchDrawing = (project) => async (dispatch) => {
                 //dispatch(setReportUrlLink(null)); // cleanup url link
             },
             // onComplete
-            (drawingPdfUrl) => {
+            (drawingPdfUrl, stats) => {
                 dispatch(addLog('JobManager.doDrawingExportJob: Received onComplete'));
                 // store drawings link
                 dispatch(setDrawingPdfUrl(drawingPdfUrl));
+                dispatch(setStats(stats));
                 // hide progress modal dialog
                 dispatch(showDrawingExportProgress(false));
             },

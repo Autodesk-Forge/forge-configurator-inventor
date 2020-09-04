@@ -97,12 +97,14 @@ describe('downloadActions', () => {
     describe('Drawing', () => {
         it('check fetchDrawing action', async () => {
             await store.dispatch(downloadActions.fetchDrawing({ id: "ProjectId" }));
-            connectionMock.simulateComplete(aLink);
+            connectionMock.simulateComplete(aLink, theStats);
 
             // check expected store actions
             const actions = store.getActions();
             const linkAction = actions.find(a => a.type === uiFlagsActionTypes.SET_DRAWING_URL);
             expect(linkAction.url).toEqual(noTokenLink);
+            const statsAction = actions.find(a => a.type === uiFlagsActionTypes.SET_STATS);
+            expect(statsAction.stats).toEqual(theStats);
         });
 
         it('check fetchDrawing error handling', async () => {

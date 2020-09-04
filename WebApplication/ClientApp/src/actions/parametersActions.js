@@ -19,7 +19,7 @@
 import repo from '../Repository';
 import { addError, addLog } from './notificationActions';
 import { Jobs } from '../JobManager';
-import { showModalProgress, showUpdateFailed, setReportUrlLink } from './uiFlagsActions';
+import { showModalProgress, showUpdateFailed, setReportUrlLink, setStats } from './uiFlagsActions';
 
 import { updateProject } from './projectListActions';
 
@@ -162,7 +162,7 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
                 dispatch(setReportUrlLink(null)); // cleanup url link
             },
             // onComplete
-            updatedState => {
+            (updatedState, stats) => {
                 dispatch(addLog('JobManager: Received onComplete'));
                 // hide modal dialog
                 dispatch(showModalProgress(false));
@@ -174,8 +174,8 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
                 // launch update
                 const adaptedParams = adaptParameters(parameters);
                 dispatch(updateParameters(projectId, adaptedParams));
-
                 dispatch(updateProject(projectId, baseProjectState));
+                dispatch(setStats(stats));
             },
             // onError
             (jobId, reportUrl) => {
