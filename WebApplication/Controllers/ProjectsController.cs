@@ -24,6 +24,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using WebApplication.Definitions;
+using WebApplication.Services;
+using WebApplication.Services.Exceptions;
 using WebApplication.State;
 using WebApplication.Utilities;
 using Project = WebApplication.State.Project;
@@ -38,13 +40,15 @@ namespace WebApplication.Controllers
         private readonly DtoGenerator _dtoGenerator;
         private readonly UserResolver _userResolver;
         private readonly Uploads _uploads;
+        private readonly ProjectService _projectService;
 
-        public ProjectsController(ILogger<ProjectsController> logger, DtoGenerator dtoGenerator, UserResolver userResolver, Uploads uploads)
+        public ProjectsController(ILogger<ProjectsController> logger, DtoGenerator dtoGenerator, UserResolver userResolver, Uploads uploads, ProjectService projectService)
         {
             _logger = logger;
             _dtoGenerator = dtoGenerator;
             _userResolver = userResolver;
             _uploads = uploads;
+            _projectService = projectService;
         }
 
         [HttpGet("")]
@@ -53,7 +57,7 @@ namespace WebApplication.Controllers
             var bucket = await _userResolver.GetBucketAsync(tryToCreate: true);
 
             var projectDTOs = new List<ProjectDTO>();
-            foreach (var projectName in await GetProjectNamesAsync(bucket))
+            foreach (var projectName in await _projectService.GetProjectNamesAsync(bucket))
             {
                 // TODO: in future bad projects should not affect project listing. It's a workaround
                 try
@@ -76,7 +80,7 @@ namespace WebApplication.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ProjectDTO>> CreateProject([FromForm]NewProjectModel projectModel)
+        public async Task<ActionResult<string>> CreateProject([FromForm]NewProjectModel projectModel)
         {
             if (!_userResolver.IsAuthenticated)
             {
@@ -84,33 +88,15 @@ namespace WebApplication.Controllers
                 return BadRequest();
             }
 
-            var projectName = Path.GetFileNameWithoutExtension(projectModel.package.FileName);
-            var bucket = await _userResolver.GetBucketAsync(true);
-
-            // Check if project already exists
-            foreach (var existingProjectName in await GetProjectNamesAsync(bucket))
+            try
             {
-                if (projectName == existingProjectName) return Conflict();
+                var packageId = await _projectService.CreateProject(projectModel);
+                return Ok(packageId);
             }
-
-            var projectInfo = new ProjectInfo
+            catch (ProjectAlreadyExistsException)
             {
-                Name = projectName,
-                TopLevelAssembly = projectModel.root
-            };
-            
-            // download file locally (a place to improve... would be good to stream it directly to OSS)
-            var fileName = Path.GetTempFileName();
-            await using (var fileWriteStream = System.IO.File.OpenWrite(fileName))
-            {
-                await projectModel.package.CopyToAsync(fileWriteStream);
+                return Conflict();
             }
-
-            var packageId = Guid.NewGuid().ToString();
-            _uploads.AddUploadData(packageId, projectInfo, fileName);
-
-            return Ok(packageId);
-
         }
 
         [HttpDelete]
@@ -159,16 +145,6 @@ namespace WebApplication.Controllers
             }
 
             return NoContent();
-        }
-
-        /// <summary>
-        /// Get list of project names for a bucket.
-        /// </summary>
-        private async Task<ICollection<string>> GetProjectNamesAsync(OssBucket bucket)
-        {
-            return (await bucket.GetObjectsAsync(ONC.ProjectsMask))
-                                .Select(objDetails =>  ONC.ToProjectName(objDetails.ObjectKey))
-                                .ToList();
         }
     }
 }

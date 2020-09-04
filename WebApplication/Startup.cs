@@ -105,7 +105,8 @@ namespace WebApplication
             services.AddScoped<UserResolver>(); // TODO: use interface
             services.AddSingleton<LocalCache>();
             services.AddSingleton<Uploads>();
-            services.AddSingleton<AdoptProjectService>();
+            services.AddScoped<ProjectService>();
+            services.AddScoped<AdoptProjectService>();
 
             if (Configuration.GetValue<bool>("migration"))
             {

@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.DependencyInjection;
 using Shared;
 using WebApplication.Definitions;
 using WebApplication.Services;
@@ -44,11 +46,16 @@ namespace WebApplication.Tests.Integration
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         }
 
-        [Theory(Skip = "not a real test, just for development purposes")]
+        [Theory]//(Skip = "not a real test, just for development purposes")]
         [ClassData(typeof(AdoptProjectWithParametersDataProvider))]
         public void AdoptProjectWithParameters(AdoptProjectWithParametersPayload payload)
         {
-            var service = (AdoptProjectService) _factory.Services.GetService(typeof(AdoptProjectService));
+            Environment.SetEnvironmentVariable("FORGE_CLIENT_ID", "CHQJfXdh7JJ8sMQ8H0kuMiZXdD7Cp4Pn");
+            Environment.SetEnvironmentVariable("FORGE_CLIENT_SECRET", "BkZhZ9E4zsnGhxr0");
+
+            //TODO: move to setUp method
+            using var scope = _factory.Services.CreateScope();
+            var service = scope.ServiceProvider.GetRequiredService<AdoptProjectService>();
 
             service.AdoptProjectWithParameters(payload);
         }

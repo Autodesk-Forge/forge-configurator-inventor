@@ -1,26 +1,53 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.IO;
+using System.Net;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using WebApplication.Definitions;
+using WebApplication.State;
 
 namespace WebApplication.Services
 {
     public class AdoptProjectService
     {
         private readonly ILogger<AdoptProjectService> _logger;
+        private readonly ProjectService _projectService;
 
-        public AdoptProjectService(ILogger<AdoptProjectService> logger)
+        public AdoptProjectService(ILogger<AdoptProjectService> logger, ProjectService projectService)
         {
-            this._logger = logger;
+            _logger = logger;
+            _projectService = projectService;
         }
 
         /// <summary>
         /// https://jira.autodesk.com/browse/INVGEN-45256
         /// </summary>
         /// <param name="payload">project configuration with parameters</param>
-        public void AdoptProjectWithParameters(AdoptProjectWithParametersPayload payload)
+        public async Task<string> AdoptProjectWithParameters(AdoptProjectWithParametersPayload payload)
         {
             _logger.LogInformation($"adopting project {payload.Name}");
 
-            //TODO: add implementation
+            var localFileName = Path.GetTempFileName();
+            using (var client = new WebClient())
+            {
+                _logger.LogInformation($"downloading project from {payload.Url} to {localFileName}");
+                client.DownloadFile(payload.Url, localFileName);
+            }
+
+            await using FileStream stream = File.OpenRead(localFileName);
+
+            _logger.LogInformation($"creating project {payload.Name}");
+            var projectId = await _projectService.CreateProject(new NewProjectModel()
+            {
+                package = new FormFile(stream, 0, stream.Length, null, Path.GetFileName(stream.Name))
+                {
+                    Headers = new HeaderDictionary(),
+                    ContentType = "application/pdf"
+                },
+                root = payload.TopLevelAssembly
+            });
+
+            return projectId;
         }
     }
 }
