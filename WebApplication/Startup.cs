@@ -102,10 +102,6 @@ namespace WebApplication
                                         return new DesignAutomationClient(forgeService);
                                     });
             services.AddSingleton<Publisher>();
-            services.AddScoped<ProfileProvider>();
-            services.AddScoped<IBucketKeyProvider, LoggedInUserBucketKeyProvider>();
-            //services.AddScoped<MigrationBucketKeyProvider>();
-            services.AddScoped<UserResolver>();
             services.AddSingleton<BucketPrefixProvider>();
             services.AddSingleton<LocalCache>();
             services.AddSingleton<Uploads>();
@@ -113,6 +109,15 @@ namespace WebApplication
             if(Configuration.GetValue<bool>("migration"))
             {
                 services.AddHostedService<MigrationApp.Worker>();
+                services.AddSingleton<IBucketKeyProvider, MigrationBucketKeyProvider>();
+                services.AddSingleton<UserResolver>();
+                services.AddSingleton<ProfileProvider>();
+            }
+            else
+            {
+                services.AddScoped<IBucketKeyProvider, LoggedInUserBucketKeyProvider>();
+                services.AddScoped<UserResolver>();
+                services.AddScoped<ProfileProvider>();
             }
         }
 

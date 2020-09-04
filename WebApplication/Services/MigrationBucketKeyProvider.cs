@@ -4,11 +4,16 @@ namespace WebApplication.Services
 {
     public class MigrationBucketKeyProvider : IBucketKeyProvider
     {
-        public string BucketKey { private get; set; }
+        private string BucketKey = "";
+        public string AnonymousBucketKey {get;}
 
         public Task<string> GetBucketKeyAsync()
         {
             return Task.FromResult(BucketKey);
+        }
+        public void SetBucketKey(string bucketKey)
+        {
+            BucketKey = bucketKey;
         }
     }
 }

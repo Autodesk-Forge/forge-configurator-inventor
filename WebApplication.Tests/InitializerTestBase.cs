@@ -98,7 +98,7 @@ namespace WebApplication.Tests
             IOptions<DefaultProjectsConfiguration> defaultProjectsOptions = Options.Create(defaultProjectsConfiguration);
             var profileProvider = new ProfileProvider(forgeOSS);
             var bucketPrefixProvider = new BucketPrefixProvider(forgeConfigOptions, null);
-            var bucketKeyProvider = new LoggedInUserBucketKeyProvider(forgeConfigOptions, profileProvider, bucketPrefixProvider);
+            var bucketKeyProvider = new LoggedInUserBucketKeyProvider(forgeConfigOptions, profileProvider, bucketPrefixProvider, resourceProvider);
             var userResolver = new UserResolver(resourceProvider, forgeOSS, bucketKeyProvider, localCache, NullLogger<UserResolver>.Instance, profileProvider);
             var arranger = new Arranger(httpClientFactory, userResolver);
 
