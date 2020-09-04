@@ -124,7 +124,7 @@ class JobManager {
         if (onStart)
             onStart();
 
-        connection.on("onComplete", (drawingUrl) => {
+        connection.on("onComplete", (drawingUrl, stats) => {
             // stop connection
             connection.stop();
 

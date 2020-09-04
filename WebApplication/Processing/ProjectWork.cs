@@ -172,7 +172,7 @@ namespace WebApplication.Processing
             return FdaStatsDTO.All(result.Stats);
         }
 
-        public async Task<bool> ExportDrawingPdfAsync(string projectName, string hash)
+        public async Task<FdaStatsDTO> ExportDrawingPdfAsync(string projectName, string hash)
         {
             _logger.LogInformation($"Getting drawing pdf for hash {hash}");
 
@@ -181,22 +181,30 @@ namespace WebApplication.Processing
 
             var ossNames = project.OssNameProvider(hash);
 
-            bool generated = false;
             var bucket = await _userResolver.GetBucketAsync();
             // check if Drawing viewables file is already generated
             try
             {
+                bool generated = false;
+
                 ApiResponse<dynamic> ossObjectResponse = await bucket.GetObjectAsync(ossNames.DrawingPdf);
                 if (ossObjectResponse != null)
                 {
-                    using (Stream objectStream = ossObjectResponse.Data)
-                    {
-                        // zero length means that there is nothing to generate, but processed and do not continue
-                        generated = objectStream.Length > 0;
-                    }
+                    await using Stream objectStream = ossObjectResponse.Data;
+
+                    // zero length means that there is nothing to generate, but processed and do not continue
+                    generated = objectStream.Length > 0;
                 }
 
-                return generated;
+                if (generated)
+                {
+                    var nativeStats = await bucket.DeserializeAsync<IEnumerable<Statistics>>(ossNames.StatsDrawingPDF);
+                    return FdaStatsDTO.CreditsOnly(nativeStats);
+                }
+                else
+                {
+                    return null;
+                }
             }
             catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
             {
@@ -218,29 +226,24 @@ namespace WebApplication.Processing
             // move to the right place
             await _arranger.MoveDrawingPdfAsync(project, hash);
 
-            // check if Drawing viewables file is generated
+            // check if Drawing PDF file is generated
             try
             {
                 await bucket.CreateSignedUrlAsync(ossNames.DrawingPdf);
-                generated = true;
+
+                // handle statistics
+                await bucket.UploadAsJsonAsync(ossNames.StatsDrawingPDF, result.Stats);
+                _logger.LogInformation($"Drawing PDF for hash {hash} is generated");
+                return FdaStatsDTO.All(result.Stats);
             }
             catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
             {
                 // the file does not exist after generating drawing, so just mark with zero length that we already processed it
                 await bucket.UploadObjectAsync(ossNames.DrawingPdf, new MemoryStream(0));
-            }
 
-            if (generated)
-            {
-                await bucket.UploadAsJsonAsync(ossNames.StatsDrawingPDF, result.Stats);
-                _logger.LogInformation($"Drawing PDF for hash {hash} is generated");
-            }
-            else
-            {
                 _logger.LogError($"Drawing PDF for hash {hash} is NOT generated");
+                return null;
             }
-
-            return generated;
         }
 
         /// <summary>
