@@ -29,11 +29,11 @@ namespace WebApplication.Controllers
     [Route("[controller]")]
     public class ClearSelfController : ControllerBase
     {
-        private readonly ILogger<DataMigrationController> _logger;
+        private readonly ILogger<ClearSelfController> _logger;
         Initializer _initializer;
         IConfiguration _configuration;
 
-        public ClearSelfController(ILogger<DataMigrationController> logger, Initializer initializer, IConfiguration configuration)
+        public ClearSelfController(ILogger<ClearSelfController> logger, Initializer initializer, IConfiguration configuration)
         {
             _logger = logger;
             _initializer = initializer;

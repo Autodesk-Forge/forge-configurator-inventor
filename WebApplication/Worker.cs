@@ -9,6 +9,7 @@ using WebApplication.Definitions;
 using WebApplication.Processing;
 using WebApplication.Services;
 using WebApplication.State;
+using WebApplication.Utilities;
 
 namespace MigrationApp
 {
@@ -19,17 +20,14 @@ namespace MigrationApp
         private readonly ProjectWork _projectWork;
         private readonly UserResolver _userResolver;
         private readonly IBucketKeyProvider _bucketProvider;
-        private readonly ProfileProvider _profileProvider;
 
-        public  Worker(ILogger<Worker> logger, IForgeOSS forgeOSS, ProjectWork projectWork, UserResolver userResolver, IBucketKeyProvider bucketProvider, ProfileProvider profileProvider)
+        public  Worker(ILogger<Worker> logger, IForgeOSS forgeOSS, ProjectWork projectWork, UserResolver userResolver, IBucketKeyProvider bucketProvider)
         {
             _logger = logger;
             _forgeOSS = forgeOSS;
             _projectWork = projectWork;
             _userResolver = userResolver;
             _bucketProvider = bucketProvider;
-            _profileProvider = profileProvider;
-            _profileProvider.Token = "SomeToken";
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -41,49 +39,38 @@ namespace MigrationApp
                 await Task.Delay(1000, stoppingToken);
             }
         }
-        public async Task<string> AdoptDefaultOnly(string bucketKey)
+        public async Task AdoptDefaultOnly(string bucketKey)
         {
             _bucketProvider.SetBucketKey(bucketKey);
             OssBucket bucket = await _userResolver.GetBucketAsync();
-            string returnValue = "";
-            /*
-            if (RemoveCached)
-            {
-                List<ObjectDetails> ossFiles = await _forgeOSS.GetBucketObjectsAsync(_bucket.BucketKey, "cache/");
-                foreach (ObjectDetails file in ossFiles)
-                {
-                    returnValue += "Removing cache file " + file.ObjectKey + "\n";
-                    try
-                    {
-                        await _forgeOSS.DeleteAsync(_bucket.BucketKey, file.ObjectKey);
-                    } catch(Exception e)
-                    {
-                        returnValue += "Removing cache file " + file.ObjectKey + " failed\nException:" + e.Message + "\n";
-                    }
-                }
-            }
-            */
-            List<ObjectDetails> ossFiles = await _forgeOSS.GetBucketObjectsAsync(bucket.BucketKey, "projects/");
-            foreach (ObjectDetails file in ossFiles)
-            {
-                //returnValue += "Project " + defaultProjectConfig.Name + " is being adopted\n";
-                var projectUrl = file.ObjectKey;
-                //var project = await _userResolver.GetProjectAsync(defaultProjectConfig.Name);
 
-                //string signedUrl = await _bucket.CreateSignedUrlAsync(project.OSSSourceModel, ObjectAccess.ReadWrite);
+            List<ObjectDetails> ossProjectFiles = await _forgeOSS.GetBucketObjectsAsync(bucket.BucketKey, "projects/");
+            foreach (ObjectDetails file in ossProjectFiles)
+            {
+                string projectUrl = file.ObjectKey;
+                string projectName = projectUrl.Split('/')[1];
+                _logger.LogInformation("Project " + projectName + " is being adopted");
+                WebApplication.State.Project project = await _userResolver.GetProjectAsync(projectName);
+
+                await _forgeOSS.DownloadFileAsync(bucketKey, "attributes/" + projectName + "/metadata.json", "metadata.json");
+                ProjectMetadata projectMetadata = Json.DeserializeFile<ProjectMetadata>("metadata.json");
+
+                string signedUrl = await bucket.CreateSignedUrlAsync(project.OSSSourceModel, ObjectAccess.ReadWrite);
+
+                ProjectInfo projectInfo = new ProjectInfo();
+                projectInfo.Name = projectName;
+                projectInfo.TopLevelAssembly = projectMetadata.TLA;
 
                 try
                 {
-                    //await _projectWork.AdoptAsync(defaultProjectConfig, signedUrl);
-                    //returnValue += "Project " + defaultProjectConfig.Name + " was adopted\n";
+                    await _projectWork.AdoptAsync(projectInfo, signedUrl);
+                    _logger.LogInformation("Project " + projectName + " was adopted");
                 }
                 catch(Exception e)
                 {
-                    //returnValue += "Project " + defaultProjectConfig.Name + " was not adopted\nException:" + e.Message + "\n";
+                    _logger.LogError("Project " + projectName + " was not adopted\nException:" + e.Message);
                 }
             }
-
-            return returnValue;
         }
 
         /*
