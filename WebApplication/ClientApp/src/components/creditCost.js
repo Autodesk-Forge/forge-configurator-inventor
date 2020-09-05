@@ -22,6 +22,7 @@ import Spacer from "@hig/spacer";
 import Typography from "@hig/typography";
 import { getStats } from '../reducers/mainReducer';
 import { Cloud16 } from '@hig/icons';
+import { significantDigits } from '../utils/conversion';
 
 export class CreditCost extends Component {
     render() {
@@ -32,19 +33,19 @@ export class CreditCost extends Component {
                     <div>
                         <Typography><b>Consumed resources:</b></Typography>
                         <Spacer spacing='s'/>
-                        <Typography>Download: {this.props.stats?.download}s</Typography>
-                        <Typography>Processing: {this.props.stats?.processing}s</Typography>
-                        <Typography>Upload: {this.props.stats?.upload}s</Typography>
-                        <Typography><b>Overall time: {this.props.stats?.total /*download+this.props.stats.processing+this.props.stats.upload*/}s</b></Typography>
-                        <Typography><b>Cloud Credits: {this.props.stats?.credits}</b> <Cloud16/></Typography>
+                        <Typography>Download: {significantDigits(this.props.stats?.download, 5)}s</Typography>
+                        <Typography>Processing: {significantDigits(this.props.stats?.processing, 5)}s</Typography>
+                        <Typography>Upload: {significantDigits(this.props.stats?.upload, 5)}s</Typography>
+                        <Typography><b>Overall time: {significantDigits(this.props.stats?.total, 5)}s</b></Typography>
+                        <Typography><b>Cloud Credits: {significantDigits(this.props.stats?.credits, 5)}</b> <Cloud16/></Typography>
                         <Spacer spacing='s'/>
-                        <Typography>Queuing: {this.props.stats?.queueing}s</Typography>
+                        <Typography>Queuing: {significantDigits(this.props.stats?.queueing, 5)}s</Typography>
                     </div>
                     :
                     <div>
                     <Typography><b>Used cache, Cloud Credits: 0</b> <Cloud16/></Typography>
                     <Spacer spacing='s'/>
-                    <Typography>The last consumed Cloud Credits: {this.props.stats?.credits} <Cloud16/></Typography>
+                    <Typography>The last consumed Cloud Credits: {significantDigits(this.props.stats?.credits, 5)} <Cloud16/></Typography>
                     </div>
                 }
                 <Spacer spacing='m'/>
