@@ -88,6 +88,7 @@ export const fetchDrawing = (project) => async (dispatch) => {
             // start job
             () => {
                 dispatch(addLog('JobManager.doDrawingExportJob: HubConnection started for project : ' + project.id));
+                dispatch(setStats(null));
                 //dispatch(setReportUrlLink(null)); // cleanup url link
             },
             // onComplete
@@ -96,8 +97,6 @@ export const fetchDrawing = (project) => async (dispatch) => {
                 // store drawings link
                 dispatch(setDrawingPdfUrl(drawingPdfUrl));
                 dispatch(setStats(stats));
-                // hide progress modal dialog
-                dispatch(showDrawingExportProgress(false));
             },
             // onError
             (jobId, reportUrl) => {

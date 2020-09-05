@@ -160,12 +160,12 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
             () => {
                 dispatch(addLog('JobManager: HubConnection started for project : ' + projectId));
                 dispatch(setReportUrlLink(null)); // cleanup url link
+                dispatch(setStats(null));
             },
             // onComplete
             (updatedState, stats) => {
                 dispatch(addLog('JobManager: Received onComplete'));
-                // hide modal dialog
-                dispatch(showModalProgress(false));
+                dispatch(setStats(stats));
 
                 // parameters and "base project state" should be handled differently,
                 // so split the incoming updated state to pieces.
@@ -175,7 +175,6 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
                 const adaptedParams = adaptParameters(parameters);
                 dispatch(updateParameters(projectId, adaptedParams));
                 dispatch(updateProject(projectId, baseProjectState));
-                dispatch(setStats(stats));
             },
             // onError
             (jobId, reportUrl) => {

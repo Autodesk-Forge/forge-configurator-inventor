@@ -64,29 +64,28 @@ export class ModalDownloadProgress extends Component {
                   </div>
               </div>
               {(done) &&
-                <CreditCost/>
-              }
-              {(done && this.props.url) &&
-                <div className="modalLink">
-                    <React.Fragment>
-                    <HyperLink
-                        onAutostart={(downloadHyperlink) => {
-                            downloadHyperlink.click();
-                        }}
-                        /* onUrlClick={this.props.onClose} */ // onClose in onUrlClick colides with onAutostart, causing the dialog to close itself when download starts. But we dont want it to close itself.
-                        prefix="Download should start automatically, if it doesn't, "
-                        link="click here" href={this.props.url}
-                        suffix=" to download it manually."
-                        download={true}/>
-                    <Button className="button" style={
-                        { width: '116px', height: '36px', borderRadius: '2px', marginLeft: '12px'}}
-                        type="secondary"
-                        size="small"
-                        title="Done"
-                        onClick={this.props.onClose}
-                    />
-                    </React.Fragment>
-              </div>
+                <React.Fragment>
+                    <CreditCost/>
+                    <div className="modalLink">
+                        <HyperLink
+                            onAutostart={(downloadHyperlink) => {
+                                downloadHyperlink.click();
+                            }}
+                            /* onUrlClick={this.props.onClose} */ // onClose in onUrlClick colides with onAutostart, causing the dialog to close itself when download starts. But we dont want it to close itself.
+                            prefix="Download should start automatically, if it doesn't, "
+                            link="click here" href={this.props.url}
+                            suffix=" to download it manually."
+                            download={true}
+                        />
+                        <Button className="button" style={
+                            { width: '116px', height: '36px', borderRadius: '2px', marginLeft: '12px'}}
+                            type="secondary"
+                            size="small"
+                            title="Done"
+                            onClick={this.props.onClose}
+                        />
+                    </div>
+                </React.Fragment>
               }
           </Modal>
         );
