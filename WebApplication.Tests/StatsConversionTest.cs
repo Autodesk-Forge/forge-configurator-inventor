@@ -9,6 +9,8 @@ namespace WebApplication.Tests
 {
     public class StatsConversionTest
     {
+        private const int CostPerHour = 6;
+
         [Fact]
         public void Null()
         {
@@ -28,7 +30,7 @@ namespace WebApplication.Tests
             Assert.ThrowsAny<Exception>(() => FdaStatsDTO.All(new List<Statistics>(new []{ new Statistics() })));
         }
 
-        [Fact]
+        [Fact(DisplayName = "Statistics for single work item")]
         public void Single()
         {
             var stats = MakeStat(downloadOffset: 15, instructionStartedOffset: 20, instructionEndedOffset: 40, uploadOffset: 50, finishedOffset: 52);
@@ -42,8 +44,26 @@ namespace WebApplication.Tests
 
             // validate credits
             const double paidTimeSec = 35.0; // download + processing + upload
-            const int costPerHour = 6;
-            var expected = paidTimeSec * costPerHour / 3600;
+            const double expected = paidTimeSec * CostPerHour / 3600;
+            Assert.Equal(expected, calculated.Credits, 4);
+        }
+
+        [Fact(DisplayName = "Statistics for multiple work items")]
+        public void Multiple()
+        {
+            var stats1 = MakeStat(downloadOffset: 15, instructionStartedOffset: 20, instructionEndedOffset: 40, uploadOffset: 50, finishedOffset: 52);
+            var stats2 = MakeStat(downloadOffset: 1, instructionStartedOffset: 6, instructionEndedOffset: 22, uploadOffset: 25, finishedOffset: 33);
+
+            var calculated = FdaStatsDTO.All(new List<Statistics>(new []{ stats1, stats2 }));
+            Assert.Equal(16, calculated.Queueing.Value, 1);
+            Assert.Equal(10, calculated.Download.Value, 1);
+            Assert.Equal(36, calculated.Processing.Value, 1);
+            Assert.Equal(13, calculated.Upload.Value, 1);
+            Assert.Equal(85, calculated.Total.Value, 1);
+
+            // validate credits
+            const double paidTimeSec = 35.0 + 24.0; // download + processing + upload
+            const double expected = paidTimeSec * CostPerHour / 3600;
             Assert.Equal(expected, calculated.Credits, 4);
         }
 
