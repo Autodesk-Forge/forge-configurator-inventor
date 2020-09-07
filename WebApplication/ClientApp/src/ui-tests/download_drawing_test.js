@@ -18,32 +18,37 @@
 
 /* eslint-disable no-undef */
 const assert = require('assert');
+const locators = require('./elements_definition.js');
 
 Before((I) => {
     I.amOnPage('/');
 });
 
+const downloadsData = new DataTable(['linkText', 'dlgTitle', 'urlTail']);
+downloadsData.add(['Drawing', 'Preparing Drawings', /\/drawing$/]);             // ZIP with drawings
+downloadsData.add(['Drawing PDF', 'Preparing Drawing PDF', /\/drawing\.pdf$/]); // Drawing PDF
+
 Feature('Download drawing');
 
-Scenario('should check to download drawing ZIP file when you click on the downloads links', async (I) => {
+Data(downloadsData).Scenario('should check file download on downloads link click', async (I, current) => {
 
     I.selectProject('Wheel');
     I.goToDownloadsTab();
 
-    // find Drawing download item
-    const drawingLink = '//div[@role="gridcell"]//a[text()="Drawing"]';
+    // find the download item by link text
+    const drawingLink = `//div[@role="gridcell"]//a[text()="${current.linkText}"]`;
     I.waitForElement(drawingLink, 10);
     I.click(drawingLink);
 
     // wait for 'click here' link in progress dialog
     const linkClickHere = '//article[@role="document"] //a[contains(.,"click here")]';
-    const preparingDrawingsDialog = '//article[@role="document"] //p[text()="Preparing Drawings"]';
+    const preparingDrawingsDialog = `//article[@role="document"] //p[text()="${current.dlgTitle}"]`;
     I.waitForElement(preparingDrawingsDialog, 10);
-    I.waitForElement(linkClickHere, 120);
+    I.waitForElement(linkClickHere, locators.FDAActionTimeout);
 
     // validate the Link
     const link = await I.grabAttributeFrom(linkClickHere, 'href');
-    assert.equal(true, link.includes('download/Wheel'));
-    assert.equal(true, link.includes('drawing'));
+    assert.strictEqual(true, link.includes('download/Wheel'));
+    assert.match(link, current.urlTail);
     I.wait(2); // we seem to have a timing issue in test that end with physical file downloads
 });

@@ -19,6 +19,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
+using WebApplication.Services;
 using WebApplication.State;
 
 namespace WebApplication.Middleware
@@ -37,7 +38,7 @@ namespace WebApplication.Middleware
             _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context, UserResolver resolver)
+        public async Task InvokeAsync(HttpContext context, ProfileProvider profileProvider)
         {
             while (context.Request.Headers.TryGetValue(HeaderNames.Authorization, out var values))
             {
@@ -48,7 +49,7 @@ namespace WebApplication.Middleware
                 string token = headerValue.Substring(BearerPrefix.Length);
                 if (string.IsNullOrEmpty(token)) break;
 
-                resolver.Token = token;
+                profileProvider.Token = token;
                 break;
             }
 

@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
+using WebApplication.Services;
 using WebApplication.State;
 
 namespace WebApplication.Middleware
@@ -37,13 +38,13 @@ namespace WebApplication.Middleware
             _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context, UserResolver resolver, ILogger<RouteTokenHandler> logger)
+        public async Task InvokeAsync(HttpContext context, ProfileProvider profileProvider, ILogger<RouteTokenHandler> logger)
         {
             string token = context.GetRouteValue("token") as string; // IMPORTANT: parameter name must be in sync with route definition
             if (!string.IsNullOrEmpty(token))
             {
                 logger.LogInformation("Extracted token from route");
-                resolver.Token = token;
+                profileProvider.Token = token;
             }
 
             // Call the next delegate/middleware in the pipeline

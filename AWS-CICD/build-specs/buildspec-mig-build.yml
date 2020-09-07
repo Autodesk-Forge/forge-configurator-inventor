@@ -1,0 +1,20 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - apt-get update
+      - apt-get install -y nodejs
+      - apt-get install -y npm
+  build:
+    commands:
+       - cd WebApplication
+       - dotnet publish -c Release -o ../mig
+artifacts:
+  files:
+    - 'mig/**/*'
+    - 'AWS-CICD/commands-mig.sh'
+    - 'AWS-CICD/Dockerfile-mig.image'
+    - 'AWS-CICD/build-specs/buildspec-mig-image.yml'
+    - 'AWS-CICD/Dockerrun.aws.json'
+    - 'AWS-CICD/amazon-cloudwatch-agent-mig.json'

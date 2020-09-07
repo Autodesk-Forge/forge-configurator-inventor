@@ -1,0 +1,11 @@
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
+COPY mig/ mig/
+COPY amazon-cloudwatch-agent.deb /mig
+WORKDIR /mig
+
+RUN dpkg -i -E ./amazon-cloudwatch-agent.deb
+COPY /AWS-CICD/amazon-cloudwatch-agent-mig.json /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
+COPY /AWS-CICD/commands-mig.sh .
+RUN chmod +x commands-mig.sh
+
+ENTRYPOINT ["./commands-mig.sh"]

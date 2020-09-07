@@ -128,7 +128,6 @@ module.exports = function() {
       // to agree to authorize our application
       this.waitForNavigation();
       const currentUrl = await this.grabCurrentUrl();
-      console.log(currentUrl);
       if (currentUrl.includes('auth.autodesk.com')) {
         // click on Allow Button
         this.waitForVisible(allowButton, 15);
@@ -160,7 +159,7 @@ module.exports = function() {
       this.click(uploadButton);
 
       // Wait for file to be uploaded
-      this.waitForVisible(uploadConfirmationDialog, 120);
+      this.waitForVisible(uploadConfirmationDialog, locators.FDAActionTimeout);
       this.click(closeButton);
     },
     uploadIPTFile(IPT_File) {
@@ -175,7 +174,7 @@ module.exports = function() {
       this.click(uploadButton);
 
       // Wait for file to be uploaded
-      this.waitForVisible(uploadConfirmationDialog, 120);
+      this.waitForVisible(uploadConfirmationDialog, locators.FDAActionTimeout);
       this.click(closeButton);
     },
     uploadInvalidIPTFile(IPT_File) {
@@ -190,7 +189,7 @@ module.exports = function() {
       this.click(uploadButton);
 
       // Wait for Upload Failed dialog
-      this.waitForVisible(uploadFailedDialog, 120);
+      this.waitForVisible(uploadFailedDialog, locators.FDAActionTimeout);
       // check log url link
       this.seeElement(uploadFailLogLink);
 
