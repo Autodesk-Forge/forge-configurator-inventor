@@ -2,25 +2,26 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Shared;
 using WebApplication.Definitions;
 using WebApplication.Services;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace WebApplication.Tests.Integration
 {
     public class AdoptProjectServiceTest : IClassFixture<WebApplicationFactory<WebApplication.Startup>>
     {
-        private readonly ILogger<AdoptProjectServiceTest> _logger;
-        private readonly WebApplicationFactory<WebApplication.Startup> _factory;
+        private readonly ITestOutputHelper _output;
+        private readonly AdoptProjectService _adoptProjectService;
 
-        public AdoptProjectServiceTest(WebApplicationFactory<WebApplication.Startup> factory)
+        public AdoptProjectServiceTest(WebApplicationFactory<WebApplication.Startup> factory, ITestOutputHelper output)
         {
-            _factory = factory;
+            _output = output;
+            XUnitUtils.RedirectConsoleToXUnitOutput(output);
 
-            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            _logger = loggerFactory.CreateLogger<AdoptProjectServiceTest>();
+            using var scope = factory.Services.CreateScope();
+            _adoptProjectService = scope.ServiceProvider.GetRequiredService<AdoptProjectService>();
         }
 
         public class AdoptProjectWithParametersDataProvider : IEnumerable<object[]>
@@ -54,13 +55,9 @@ namespace WebApplication.Tests.Integration
         [ClassData(typeof(AdoptProjectWithParametersDataProvider))]
         public void AdoptProjectWithParameters(AdoptProjectWithParametersPayload payload)
         {
-            //TODO: move to setUp method
-            using var scope = _factory.Services.CreateScope();
-            var service = scope.ServiceProvider.GetRequiredService<AdoptProjectService>();
+            var projectId = _adoptProjectService.AdoptProjectWithParameters(payload);
 
-            var projectId = service.AdoptProjectWithParameters(payload);
-
-            _logger.LogInformation($"project created with id {projectId}");
+            _output.WriteLine($"project created with id {projectId}");
         }
     }
 }
