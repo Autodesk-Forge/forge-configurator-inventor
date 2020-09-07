@@ -18,6 +18,7 @@
 
 /* eslint-disable no-undef */
 const noDrawingElement = '.drawingEmptyText';
+const locators = require('./elements_definition.js');
 
 Before((I) => {
     I.amOnPage('/');
@@ -39,7 +40,7 @@ Scenario('should check that Drawing tab shows drawing for an Assembly', async (I
 
     // wait for drawing to be displayed
     const viewCubeElement = '//div[@id="ForgePdfViewer"] //div[@class="viewcubeWrapper"]';
-    I.waitForVisible(viewCubeElement, 30);
+    I.waitForVisible(viewCubeElement, locators.FDAActionTimeout);
 
 });
 
@@ -53,7 +54,7 @@ Scenario('should check if an Assembly do not have any drawings then No data page
     I.goToDrawingTab();
 
     // wait for no drawing page to be displayed
-    I.waitForVisible(noDrawingElement, 20);
+    I.waitForVisible(noDrawingElement, locators.FDAActionTimeout);
     I.see("You don't have any drawings in package.", noDrawingElement);
 
 });
@@ -72,7 +73,7 @@ Scenario('should check that IPT do not display any data', async (I) => {
     I.goToDrawingTab();
 
     // wait for no drawing page to be displayed
-    I.waitForVisible(noDrawingElement, 20);
+    I.waitForVisible(noDrawingElement, locators.FDAActionTimeout);
     I.see("You don't have any drawings in package.", noDrawingElement);
 
 });
