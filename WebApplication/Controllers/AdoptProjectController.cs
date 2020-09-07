@@ -24,7 +24,7 @@ namespace WebApplication.Controllers
         public StatusCodeResult AdoptProjectWithParameters(string payloadURL)
         {
             AdoptProjectWithParametersPayload payload = FetchPayload(HttpUtility.UrlDecode(payloadURL));
-            _adoptProjectService.AdoptProjectWithParameters(payload);
+            _adoptProjectService.AdoptProjectWithParametersAsync(payload);
             return NoContent();
         }
 

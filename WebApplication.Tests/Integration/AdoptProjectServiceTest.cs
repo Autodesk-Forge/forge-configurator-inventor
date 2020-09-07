@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,7 +33,8 @@ namespace WebApplication.Tests.Integration
                 {
                     new AdoptProjectWithParametersPayload()
                     {
-                        Name = "TestWrench",
+                        //Name = "TestWrench",
+                        Name = Guid.NewGuid().ToString(),
                         Url = "https://sdra-default-projects.s3-us-west-2.amazonaws.com/Wrench_2021.zip",
                         TopLevelAssembly = "Wrench.iam",
                         Config = new InventorParameters()
@@ -55,7 +57,7 @@ namespace WebApplication.Tests.Integration
         [ClassData(typeof(AdoptProjectWithParametersDataProvider))]
         public void AdoptProjectWithParameters(AdoptProjectWithParametersPayload payload)
         {
-            var projectId = _adoptProjectService.AdoptProjectWithParameters(payload);
+            var projectId = _adoptProjectService.AdoptProjectWithParametersAsync(payload).Result;
 
             _output.WriteLine($"project created with id {projectId}");
         }
