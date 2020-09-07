@@ -84,6 +84,7 @@ export class ModalProgress extends Component {
     }
 }
 
+/* istanbul ignore next */
 export default connect(function (store){
     return {
       done: getStats(store) != null

@@ -128,18 +128,29 @@ describe('parameters container', () => {
         expect(fnMock).toHaveBeenCalledWith(projectId, props.projectSourceParameters);
     });
 
-    it('verify when modal close called, here is no operation called NOW', () => {
-        const fnMock = jest.fn();
+    it('verify progress close handler calls passed in method', () => {
+        const handler = jest.fn();
         const props = {
             activeProject: { id: projectId },
             fetchParameters: () => {},
-            showModalProgress: fnMock,
-            modalProgressShowing: true
+            hideModalProgress: handler
         };
 
         const wrapper = shallow(<ParametersContainer {...props} />);
-        const wrapperComponent = wrapper.find(ModalProgress);
-        wrapperComponent.props().onClose();
-        expect(fnMock).toHaveBeenCalledTimes(0);
+        wrapper.instance().onModalProgressClose();
+        expect(handler).toHaveBeenCalled();
+    });
+
+    it('verify update fail dialog close handler calls passed in method', () => {
+        const handler = jest.fn();
+        const props = {
+            activeProject: { id: projectId },
+            fetchParameters: () => {},
+            showUpdateFailed: handler
+        };
+
+        const wrapper = shallow(<ParametersContainer {...props} />);
+        wrapper.instance().onUpdateFailedCloseClick();
+        expect(handler).toHaveBeenCalledWith(false);
     });
 });

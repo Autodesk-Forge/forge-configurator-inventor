@@ -280,8 +280,9 @@ describe('fetchParameters', () => {
             const updateProject = actions.find(a => a.type === projectListActionTypes.UPDATE_PROJECT);
             expect(updateProject.activeProjectId).toEqual(projectId);
             expect(updateProject.data).toEqual(projectData);
-            const statsAction = actions.find(a => a.type === uiFlagsActionTypes.SET_STATS);
-            expect(statsAction.stats).toEqual(theStats);
+            // there are two setStats in the flow: clear (null) and set (theStats)
+            expect(actions.some(a => a.type === uiFlagsActionTypes.SET_STATS && a.stats === null)).toBeTruthy();
+            expect(actions.some(a => a.type === uiFlagsActionTypes.SET_STATS && a.stats === theStats)).toBeTruthy();
         });
 
         it('check updateModelWithParameters error path', async () => {
