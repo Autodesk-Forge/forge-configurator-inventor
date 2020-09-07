@@ -301,7 +301,7 @@ describe('fetchParameters', () => {
         const first = {
             value: "12000 mm",
             units: "mm"
-        }
+        };
 
         it('makes exact match', () => {
             expect(compareParamaters(first, first)).toBeTruthy();

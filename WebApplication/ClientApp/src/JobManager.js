@@ -37,7 +37,7 @@ class JobManager {
         if (onStart)
             onStart();
 
-        connection.on("onComplete", (updatedState, stats) => {
+        connection.on("onComplete", (updatedState/*, stats*/) => {
             // stop connection
             connection.stop();
 
@@ -62,7 +62,7 @@ class JobManager {
         if (onStart)
             onStart();
 
-        connection.on("onComplete", (newProject, stats) => {
+        connection.on("onComplete", (newProject/*, stats*/) => {
             // stop connection
             connection.stop();
 
@@ -96,7 +96,7 @@ class JobManager {
 
         if (onStart) onStart();
 
-        connection.on("onComplete", (downloadUrl, stats) => {
+        connection.on("onComplete", (downloadUrl/*, stats*/) => {
 
             connection.stop();
 
@@ -124,7 +124,7 @@ class JobManager {
         if (onStart)
             onStart();
 
-        connection.on("onComplete", (drawingUrl, stats) => {
+        connection.on("onComplete", (drawingUrl/*, stats*/) => {
             // stop connection
             connection.stop();
 
