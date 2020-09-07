@@ -49,7 +49,7 @@ namespace WebApplication.Job
             Logger.LogInformation($"ProcessJob (Adopt) {Id} for project {_projectInfo.Name} started.");
             
             // upload the file to OSS
-            var bucket = await _userResolver.GetBucketAsync(true);
+            var bucket = await _userResolver.GetBucketAsync(tryToCreate: true);
             ProjectStorage projectStorage = await _userResolver.GetProjectStorageAsync(_projectInfo.Name);
 
             string ossSourceModel = projectStorage.Project.OSSSourceModel;
@@ -61,11 +61,12 @@ namespace WebApplication.Job
 
             // adopt the project
             bool adopted = false;
+            FdaStatsDTO stats;
             try
             {
                 string signedUploadedUrl = await bucket.CreateSignedUrlAsync(ossSourceModel);
-                
-                await ProjectWork.AdoptAsync(_projectInfo, signedUploadedUrl);
+
+                stats = await ProjectWork.AdoptAsync(_projectInfo, signedUploadedUrl);
 
                 adopted = true;
             }
@@ -85,7 +86,7 @@ namespace WebApplication.Job
             }
 
             Logger.LogInformation($"ProcessJob (Adopt) {Id} for project {_projectInfo.Name} completed.");
-            await resultSender.SendSuccessAsync(_dtoGenerator.ToDTO(projectStorage));
+            await resultSender.SendSuccessAsync(_dtoGenerator.ToDTO(projectStorage), stats);
         }
     }
 }

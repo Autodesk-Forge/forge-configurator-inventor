@@ -58,6 +58,18 @@ namespace WebApplication.Utilities
         /// Drawing in format ForgeView can load and show
         /// </summary>
         public const string DrawingPdf = "drawing.pdf";
+
+        /// <summary>
+        /// Files with statistics.
+        /// </summary>
+        public static class Stats
+        {
+            public const string Adopt = "stats.adopt.json";
+            public const string Update = "stats.update.json";
+            public const string RFA = "stats.rfa.json";
+            public const string DrawingPDF = "stats.drawing.pdf.json";
+            public const string Drawings = "stats.drawing.zip.json";
+        }
     }
 
     /// <summary>
@@ -74,6 +86,7 @@ namespace WebApplication.Utilities
         public const string ShowParametersChanged = "showparameterschanged.json";
         public const string CacheFolder = "cache";
         public const string AttributesFolder = "attributes";
+
 
         public static readonly string ProjectsMask = ToPathMask(ProjectsFolder);
 
@@ -140,6 +153,11 @@ namespace WebApplication.Utilities
         {
             return ONC.Join(_namePrefix, fileName);
         }
+
+        /// <summary>
+        /// Shorthand for <see cref="ToFullName"/>.
+        /// </summary>
+        public string this[string fileName] => ToFullName(fileName);
     }
 
     /// <summary>
@@ -181,6 +199,12 @@ namespace WebApplication.Utilities
         /// Filename for PDF with drawing.
         /// </summary>
         public string DrawingPdf => ToFullName(LocalName.DrawingPdf);
+
+        public string StatsAdopt => ToFullName(LocalName.Stats.Adopt);
+        public string StatsUpdate => ToFullName(LocalName.Stats.Update);
+        public string StatsRFA => ToFullName(LocalName.Stats.RFA);
+        public string StatsDrawingPDF => ToFullName(LocalName.Stats.DrawingPDF);
+        public string StatsDrawings => ToFullName(LocalName.Stats.Drawings);
     }
 
     /// <summary>

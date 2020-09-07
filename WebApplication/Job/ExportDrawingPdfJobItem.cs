@@ -19,6 +19,7 @@
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
+using WebApplication.Definitions;
 using WebApplication.Processing;
 
 namespace WebApplication.Job
@@ -41,15 +42,14 @@ namespace WebApplication.Job
         public override async Task ProcessJobAsync(IResultSender resultSender)
         {
             using var scope = Logger.BeginScope("Export Drawing PDF ({Id})");
-
             Logger.LogInformation($"ProcessJob (ExportDrawingPDF) {Id} for project {ProjectId} started.");
 
-            bool generated = await ProjectWork.ExportDrawingPdfAsync(ProjectId, _hash);
+            FdaStatsDTO stats = await ProjectWork.ExportDrawingPdfAsync(ProjectId, _hash);
 
             Logger.LogInformation($"ProcessJob (ExportDrawingPDF) {Id} for project {ProjectId} completed.");
 
             string url = "";
-            if (generated)
+            if (stats != null)
             {
                 url = _linkGenerator.GetPathByAction(controller: "Download",
                                                                 action: "DrawingViewables",
@@ -59,7 +59,7 @@ namespace WebApplication.Job
                 url = url.IndexOf("/") == 0 ? url.Substring(1) : url;
             }
 
-            await resultSender.SendSuccessAsync(url);
+            await resultSender.SendSuccessAsync(url, stats);
         }
     }
 }

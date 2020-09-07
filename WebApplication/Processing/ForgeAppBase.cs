@@ -97,11 +97,11 @@ namespace WebApplication.Processing
         protected async Task<ProcessingResult> RunAsync(Dictionary<string, IArgument> args)
         {
             WorkItemStatus status = await Publisher.RunWorkItemAsync(args, this);
-            return new ProcessingResult
-            {
-                Success = (status.Status == Status.Success),
-                ReportUrl = status.ReportUrl
-            };
+            return new ProcessingResult(status.Stats)
+                    {
+                        Success = (status.Status == Status.Success),
+                        ReportUrl = status.ReportUrl
+                    };
         }
 
         /// <summary>
