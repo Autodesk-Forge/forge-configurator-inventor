@@ -167,4 +167,4 @@ export const drawingProgressShowing = function(state) {
 
 export const getStats = function(state) {
     return uiFlags.getStats(state.uiFlags);
-}
+};

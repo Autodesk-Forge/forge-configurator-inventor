@@ -66,5 +66,5 @@ describe('modal progress ', () => {
         const doneBtn = wrapper.find('Button');
         doneBtn.simulate('click');
         expect(doneHandlerMock).toHaveBeenCalled();
-    })
+    });
 });
