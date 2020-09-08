@@ -22,7 +22,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using WebApplication.Services;
-using WebApplication.State;
 
 namespace WebApplication.Middleware
 {

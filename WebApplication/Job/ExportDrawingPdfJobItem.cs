@@ -21,7 +21,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using WebApplication.Definitions;
 using WebApplication.Processing;
-using WebApplication.Utilities;
 
 namespace WebApplication.Job
 {
@@ -54,10 +53,13 @@ namespace WebApplication.Job
             {
                 url = _linkGenerator.GetPathByAction(controller: "Download",
                                                                 action: "DrawingPdf",
-                                                                values: new { projectName = ProjectId, fileName = LocalName.DrawingPdf, hash = _hash });
+                                                                values: new { projectName = ProjectId, hash = _hash });
 
                 // when local url starts with slash, it does not work, because it is doubled in url
-                url = url.IndexOf("/") == 0 ? url.Substring(1) : url;
+                if (url.StartsWith('/'))
+                {
+                    url = url.Substring(1);
+                }
             }
 
             await resultSender.SendSuccessAsync(url, stats);

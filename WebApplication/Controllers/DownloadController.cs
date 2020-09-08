@@ -72,11 +72,11 @@ namespace WebApplication.Controllers
             return File(stream, "text/csv", "bom.csv");
         }
 
-        // viewer expects PDF extension, so `drawing.pdf` is a piece of URL now (TODO: get rid of it somehow)
-        [HttpGet("{projectName}/{hash}/{fileName}/{token?}")]
-        public async Task<ActionResult> DrawingPdf(string projectName, string hash, string fileName, string token = null)
+        // viewer expects PDF extension, so `drawing.pdf` is a piece of the route
+        [HttpGet("{projectName}/{hash}/drawing.pdf/{token?}")]
+        public async Task<ActionResult> DrawingPdf(string projectName, string hash, string token = null)
         {
-            string localFileName = await _userResolver.EnsureLocalFile(projectName, fileName, hash);
+            string localFileName = await _userResolver.EnsureLocalFile(projectName, LocalName.DrawingPdf, hash);
             return new PhysicalFileResult(localFileName, "application/pdf") { FileDownloadName = LocalName.DrawingPdf };
         }
 
