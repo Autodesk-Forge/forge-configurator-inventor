@@ -69,7 +69,8 @@ describe('uploadPackage', () => {
         expect(uploadPackageMock).toHaveBeenCalledTimes(1);
 
         const newProject = { name: "newProject" };
-        connectionMock.simulateComplete(newProject);
+        const theStats = { credits: 1 };
+        connectionMock.simulateComplete(newProject, theStats);
 
         const actions = store.getActions();
 
@@ -77,7 +78,9 @@ describe('uploadPackage', () => {
         expect(actions[0].type).toEqual(uiFlagsActionTypes.SHOW_UPLOAD_PACKAGE);
         expect(actions[1].type).toEqual(actionTypes.SET_UPLOAD_PROGRESS_VISIBLE);
         // there are some logs in action in between...
-        expect(actions[actions.length-2].type).toEqual(projectListActions.ADD_PROJECT);
+        expect(actions[actions.length-3].type).toEqual(projectListActions.ADD_PROJECT);
+        expect(actions[actions.length-2].type).toEqual(uiFlagsActionTypes.SET_STATS);
+        expect(actions[actions.length-2].stats).toEqual(theStats);
         expect(actions[actions.length-1].type).toEqual(actionTypes.SET_UPLOAD_PROGRESS_DONE);
     });
 
