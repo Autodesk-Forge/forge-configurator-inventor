@@ -59,55 +59,6 @@ namespace WebApplication.Services
             return signedUrl;
         }
         
-        //TODO: remove duplicity, use in AdoptJob
-        public async Task<ProjectStorage> AdoptProject(ProjectInfo projectInfo, string fileName, string id)
-        {
-            using var scope = _logger.BeginScope("Project Adoption ({id})");
-
-            _logger.LogInformation($"Adopt {id} for project {projectInfo.Name} started.");
-
-            // upload the file to OSS
-            var bucket = await _userResolver.GetBucketAsync(true);
-            ProjectStorage projectStorage = await _userResolver.GetProjectStorageAsync(projectInfo.Name);
-
-            string ossSourceModel = projectStorage.Project.OSSSourceModel;
-
-            await bucket.SmartUploadAsync(fileName, ossSourceModel);
-
-            // cleanup before adoption
-            File.Delete(fileName);
-
-            // adopt the project
-            bool adopted = false;
-            try
-            {
-                string signedUploadedUrl = await bucket.CreateSignedUrlAsync(ossSourceModel);
-
-                await _projectWork.AdoptAsync(projectInfo, signedUploadedUrl);
-
-                adopted = true;
-            }
-            catch (FdaProcessingException fpe)
-            {
-                throw;
-                //await resultSender.SendErrorAsync(id, fpe.ReportUrl);
-            }
-            finally
-            {
-                // on any failure during adoption we consider that project adoption failed and it's not usable
-                if (!adopted)
-                {
-                    _logger.LogInformation($"Adoption failed. Removing '{ossSourceModel}' OSS object.");
-                    await bucket.DeleteObjectAsync(ossSourceModel);
-                }
-            }
-
-            _logger.LogInformation($"Adopt {id} for project {projectInfo.Name} completed.");
-            //await resultSender.SendSuccessAsync(_dtoGenerator.ToDTO(projectStorage));
-
-            return projectStorage;
-        }
-
         /// <summary>
         /// Get list of project names for a bucket.
         /// </summary>
