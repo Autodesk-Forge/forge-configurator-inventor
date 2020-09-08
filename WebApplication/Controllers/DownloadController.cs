@@ -67,11 +67,11 @@ namespace WebApplication.Controllers
             return File(stream, "text/csv", "bom.csv");
         }
 
-        [HttpGet("{projectName}/{hash}/{fileName}")]
-        public async Task<ActionResult> DrawingViewables(string projectName, string hash, string fileName)
+        [HttpGet("{projectName}/{hash}/{fileName}/{token?}")]
+        public async Task<ActionResult> DrawingViewables(string projectName, string hash, string fileName, string token = null)
         {
             string localFileName = await _userResolver.EnsureLocalFile(projectName, fileName, hash);
-            return new PhysicalFileResult(localFileName, "application/pdf");
+            return new PhysicalFileResult(localFileName, "application/pdf") { FileDownloadName = fileName };
         }
 
         [HttpGet("{projectName}/{hash}/drawing/{token?}")]
