@@ -24,6 +24,7 @@ import ForgeView from './forgeView';
 import ParametersContainer from './parametersContainer';
 import Bom from './bom';
 import Downloads from './downloads';
+import AdoptTest from './adoptTest';
 import './tabs.css';
 import { activeTabIndex } from '../reducers/mainReducer';
 import { updateActiveTabIndex } from '../actions/uiFlagsActions';
@@ -75,6 +76,11 @@ export class TabsContainer extends Component {
               <Tab label="Downloads">
                 <div id="downloads" className="tabContent fullheight">
                   <Downloads/>
+                </div>
+              </Tab>
+              <Tab label="Adopt Test">
+                <div id="adoptTest" className="tabContent fullheight">
+                  <AdoptTest/>
                 </div>
               </Tab>
             </Tabs>
