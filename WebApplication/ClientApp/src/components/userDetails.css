@@ -26,15 +26,18 @@ span.user {
   margin-right: 12px !important;
 }
 
-span.username {
+span.username, span.hyperlink {
   width: 70px;
   height: 20px;
-  color: rgb(60, 60, 60);
   font-size: 14px;
   font-family: ArtifaktElement, sans-serif;
-  font-weight: 700;
   line-height: 20px;
   margin: 12px;
+}
+
+span.username {
+  color: rgb(60, 60, 60);
+  font-weight: 700;
 }
 
 div.auth-button {

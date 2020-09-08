@@ -17,9 +17,9 @@
 /////////////////////////////////////////////////////////////////////
 
 using Microsoft.Extensions.Logging;
-using WebApplication.Definitions;
 using System.Threading.Tasks;
 using Shared;
+using WebApplication.Definitions;
 using WebApplication.Processing;
 
 namespace WebApplication.Job
@@ -40,12 +40,12 @@ namespace WebApplication.Job
 
             Logger.LogInformation($"ProcessJob (Update) {Id} for project {ProjectId} started.");
 
-            ProjectStateDTO updatedState = await ProjectWork.DoSmartUpdateAsync(Parameters, ProjectId);
+            (ProjectStateDTO state, FdaStatsDTO stats) = await ProjectWork.DoSmartUpdateAsync(Parameters, ProjectId);
 
             Logger.LogInformation($"ProcessJob (Update) {Id} for project {ProjectId} completed.");
 
             // send that we are done to client
-            await resultSender.SendSuccessAsync(updatedState);
+            await resultSender.SendSuccessAsync(state, stats);
         }
     }
 }

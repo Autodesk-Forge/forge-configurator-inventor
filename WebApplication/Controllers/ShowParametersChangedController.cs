@@ -69,7 +69,7 @@ namespace WebApplication.Controllers
         public async Task<bool> Set([FromBody]bool show)
         {
             var bucket = await _userResolver.GetBucketAsync();
-            await bucket.UploadObjectAsync(ONC.ShowParametersChanged, Json.ToStream(show));
+            await bucket.UploadAsJsonAsync(ONC.ShowParametersChanged, show);
             return show;
         }
     }
