@@ -17,12 +17,16 @@
 /////////////////////////////////////////////////////////////////////
 
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import Modal from '@hig/modal';
 import ProgressBar from '@hig/progress-bar';
 import Typography from "@hig/typography";
 import './modalProgress.css';
 import merge from "lodash.merge";
+import CreditCost from './creditCost';
+import Button from '@hig/button';
+import { getStats } from '../reducers/mainReducer';
 
 export class ModalProgress extends Component {
 
@@ -32,7 +36,7 @@ export class ModalProgress extends Component {
           modal: {
                 window: { // by design
                     width: "371px",
-                    height: "263px"
+                    height: "auto"
                 }
             }
         });
@@ -45,23 +49,44 @@ export class ModalProgress extends Component {
 
         return (
             <Modal
-              open={this.props.open}
-              title={this.props.title}
-              onCloseClick={this.props.onClose}
-              percentComplete={null}
-              stylesheet={modalStyles}>
-              <div className="modalContent">
-                  <div style={iconAsBackgroundImage}/>
-                  <div className="modalAction" fontWeight="bold">
-                      <Typography>
+            open={this.props.open}
+            title={this.props.title}
+            onCloseClick={this.props.onClose}
+            percentComplete={null}
+            stylesheet={modalStyles}>
+                <div className="modalContent">
+                    <div style={iconAsBackgroundImage}/>
+                    <div className="modalAction" fontWeight="bold">
+                        <Typography>
                         {this.props.label ? this.props.label : "Missing label."}
-                      </Typography>
-                      <ProgressBar className="modalProgress"/>
-                  </div>
-              </div>
+                        </Typography>
+                        {(!this.props.done) &&
+                            <ProgressBar className="modalProgress"/>
+                        }
+                    </div>
+                </div>
+                {(this.props.done) &&
+                <React.Fragment>
+                    <CreditCost/>
+                    <div id="modalDone">
+                        <Button className="button" style={
+                            { width: '116px', height: '36px', borderRadius: '2px', marginLeft: '12px'}}
+                            type="secondary"
+                            size="small"
+                            title="Done"
+                            onClick={this.props.onClose}
+                        />
+                    </div>
+                </React.Fragment>
+              }
           </Modal>
         );
     }
 }
 
-export default ModalProgress;
+/* istanbul ignore next */
+export default connect(function (store){
+    return {
+      done: getStats(store) != null
+    };
+})(ModalProgress);

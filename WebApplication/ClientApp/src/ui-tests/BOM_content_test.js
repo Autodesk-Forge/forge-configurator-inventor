@@ -89,13 +89,7 @@ Scenario('should check BOM data after change', async (I) => {
     I.waitForVisible(listbox, 3);
     I.click(optionStainlessSteel);
 
-    // Click on Update button
-    I.waitForVisible(locators.xpButtonUpdate, 10);
-    I.click(locators.xpButtonUpdate);
-
-    // wait for update stripe shows and disappears
-    I.waitForVisible(locators.xpStripeElement, 10);
-    I.waitForInvisible(locators.xpStripeElement, locators.FDAActionTimeout);
+    I.updateProject();
 
     // click to BOM tab
     I.click(locators.bomTab);

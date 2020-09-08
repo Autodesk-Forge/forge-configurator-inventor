@@ -19,7 +19,7 @@
 import repo from '../Repository';
 import { addError, addLog } from './notificationActions';
 import { Jobs } from '../JobManager';
-import { showModalProgress, showUpdateFailed, setReportUrlLink } from './uiFlagsActions';
+import { showModalProgress, showUpdateFailed, setReportUrlLink, setStats } from './uiFlagsActions';
 
 import { updateProject } from './projectListActions';
 
@@ -160,12 +160,12 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
             () => {
                 dispatch(addLog('JobManager: HubConnection started for project : ' + projectId));
                 dispatch(setReportUrlLink(null)); // cleanup url link
+                dispatch(setStats(null));
             },
             // onComplete
-            updatedState => {
+            (updatedState, stats) => {
                 dispatch(addLog('JobManager: Received onComplete'));
-                // hide modal dialog
-                dispatch(showModalProgress(false));
+                dispatch(setStats(stats));
 
                 // parameters and "base project state" should be handled differently,
                 // so split the incoming updated state to pieces.
@@ -174,7 +174,6 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
                 // launch update
                 const adaptedParams = adaptParameters(parameters);
                 dispatch(updateParameters(projectId, adaptedParams));
-
                 dispatch(updateProject(projectId, baseProjectState));
             },
             // onError
