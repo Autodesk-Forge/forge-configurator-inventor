@@ -17,25 +17,28 @@ namespace WebApplication.Services
         private readonly ProjectService _projectService;
         private readonly ProjectWork _projectWork;
         private readonly Uploads _uploads;
+        private readonly UserResolver _userResolver;
 
         public AdoptProjectService(ILogger<AdoptProjectService> logger, ProjectService projectService, 
-            Uploads uploads, ProjectWork projectWork)
+            Uploads uploads, ProjectWork projectWork, UserResolver userResolver)
         {
             _logger = logger;
             _projectService = projectService;
             _uploads = uploads;
             _projectWork = projectWork;
+            _userResolver = userResolver;
         }
 
         /// <summary>
         /// https://jira.autodesk.com/browse/INVGEN-45256
         /// </summary>
         /// <param name="payload">project configuration with parameters</param>
-        public async Task<string> AdoptProjectWithParametersAsync(AdoptProjectWithParametersPayload payload)
+        /// <returns>project storage</returns>
+        public async Task<ProjectStorage> AdoptProjectWithParametersAsync(AdoptProjectWithParametersPayload payload)
         {
             if (! await DoesProjectAlreadyExistAsync(payload.Name))
             {
-                var packageId = CreateProjectAsync(payload).Result;
+                var packageId = await CreateProjectAsync(payload);
                 await AdoptProjectAsync(packageId);
             }
             else
@@ -45,7 +48,7 @@ namespace WebApplication.Services
 
             await UpdateParamsAsync(payload);
 
-            return payload.Name;
+            return await _userResolver.GetProjectStorageAsync(payload.Name);
         }
 
         private async Task<bool> DoesProjectAlreadyExistAsync(string projectName)
@@ -60,7 +63,7 @@ namespace WebApplication.Services
         /// </summary>
         /// <param name="configuration"></param>
         /// <returns></returns>
-        private Task<string> CreateProjectAsync(DefaultProjectConfiguration configuration)
+        private async Task<string> CreateProjectAsync(DefaultProjectConfiguration configuration)
         {
             _logger.LogInformation($"start of CreateProjectAsync, projectName {configuration.Name}");
 
@@ -76,7 +79,7 @@ namespace WebApplication.Services
 
             _logger.LogInformation($"creating project {configuration.Name}");
 
-            return _projectService.CreateProject(new NewProjectModel()
+            return await _projectService.CreateProject(new NewProjectModel()
             {
                 package = new FormFile(stream, 0, stream.Length, null, configuration.Name)
                 {
@@ -91,7 +94,7 @@ namespace WebApplication.Services
         /// Gets the project data and delegates to ProjectService.AdoptProject
         /// </summary>
         /// <returns></returns>
-        private Task AdoptProjectAsync(string packageId)
+        private Task<ProjectStorage> AdoptProjectAsync(string packageId)
         {
             _logger.LogInformation($"start of AdoptProjectAsync, packageId {packageId}");
 
@@ -107,7 +110,7 @@ namespace WebApplication.Services
         /// </summary>
         /// <param name="payload"></param>
         /// <returns></returns>
-        private Task UpdateParamsAsync(AdoptProjectWithParametersPayload payload)
+        private Task<ProjectStateDTO> UpdateParamsAsync(AdoptProjectWithParametersPayload payload)
         {
             _logger.LogInformation($"start of UpdateParamsAsync, projectName {payload.Name}");
 

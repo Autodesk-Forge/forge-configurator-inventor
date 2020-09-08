@@ -25,6 +25,7 @@ using Shared;
 using WebApplication.Definitions;
 using WebApplication.Job;
 using WebApplication.Processing;
+using WebApplication.Services;
 using WebApplication.State;
 using WebApplication.Utilities;
 
@@ -115,8 +116,10 @@ namespace WebApplication.Controllers
         private readonly Sender _sender;
         private readonly Uploads _uploads;
         private readonly DtoGenerator _dtoGenerator;
+        private readonly AdoptProjectService _adoptProjectService;
 
-        public JobsHub(ILogger<JobsHub> logger, ProjectWork projectWork, LinkGenerator linkGenerator, UserResolver userResolver, Uploads uploads, DtoGenerator dtoGenerator)
+        public JobsHub(ILogger<JobsHub> logger, ProjectWork projectWork, LinkGenerator linkGenerator, UserResolver userResolver, 
+            Uploads uploads, DtoGenerator dtoGenerator, AdoptProjectService adoptProjectService)
         {
             _logger = logger;
             _projectWork = projectWork;
@@ -124,6 +127,7 @@ namespace WebApplication.Controllers
             _userResolver = userResolver;
             _uploads = uploads;
             _dtoGenerator = dtoGenerator;
+            _adoptProjectService = adoptProjectService;
 
             _sender = new Sender(this);
         }
@@ -184,6 +188,17 @@ namespace WebApplication.Controllers
 
             // create job and run it
             var job = new ExportDrawingPdfJobItem(_logger, projectId, hash, _projectWork, _linkGenerator);
+            await RunJobAsync(job);
+        }
+
+        public async Task CreateAdoptProjectWithParametersJob(AdoptProjectWithParametersPayload payload, string token = null)
+        {
+            _logger.LogInformation($"invoked CreateDrawingPdfJob, connectionId : {Context.ConnectionId}");
+
+            _userResolver.Token = token;
+
+            // create job and run it
+            var job = new AdoptProjectWithParametersJobItem(_logger, _adoptProjectService, payload, _dtoGenerator);
             await RunJobAsync(job);
         }
 

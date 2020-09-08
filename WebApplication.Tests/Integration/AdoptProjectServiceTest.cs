@@ -93,9 +93,9 @@ namespace WebApplication.Tests.Integration
         [ClassData(typeof(AdoptProjectWithParametersDataProvider))]
         public void AdoptProjectWithParameters(AdoptProjectWithParametersPayload payload)
         {
-            var projectId = _adoptProjectService.AdoptProjectWithParametersAsync(payload).Result;
+            var projectStorage = _adoptProjectService.AdoptProjectWithParametersAsync(payload).Result;
 
-            _output.WriteLine($"adopted project with parameters, project name: {projectId}");
+            _output.WriteLine($"adopted project with parameters, project storage: {projectStorage.Project.Name}");
         }
     }
 }

@@ -60,7 +60,7 @@ namespace WebApplication.Services
             return packageId;
         }
 
-        public async Task AdoptProject(ProjectInfo projectInfo, string fileName, string id)
+        public async Task<ProjectStorage> AdoptProject(ProjectInfo projectInfo, string fileName, string id)
         {
             using var scope = _logger.BeginScope("Project Adoption ({id})");
 
@@ -104,6 +104,8 @@ namespace WebApplication.Services
 
             _logger.LogInformation($"Adopt {id} for project {projectInfo.Name} completed.");
             //await resultSender.SendSuccessAsync(_dtoGenerator.ToDTO(projectStorage));
+
+            return projectStorage;
         }
 
         /// <summary>
