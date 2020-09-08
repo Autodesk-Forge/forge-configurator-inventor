@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -18,15 +19,17 @@ namespace WebApplication.Services
         private readonly ProjectWork _projectWork;
         private readonly Uploads _uploads;
         private readonly UserResolver _userResolver;
+        private readonly IHttpClientFactory _clientFactory;
 
         public AdoptProjectService(ILogger<AdoptProjectService> logger, ProjectService projectService, 
-            Uploads uploads, ProjectWork projectWork, UserResolver userResolver)
+            Uploads uploads, ProjectWork projectWork, UserResolver userResolver, IHttpClientFactory clientFactory)
         {
             _logger = logger;
             _projectService = projectService;
             _uploads = uploads;
             _projectWork = projectWork;
             _userResolver = userResolver;
+            _clientFactory = clientFactory;
         }
 
         /// <summary>
@@ -69,10 +72,10 @@ namespace WebApplication.Services
 
             using var localFile = new TempFile();
             var localFileName = localFile.Name;
-            using (var client = new WebClient())
+            using (var client = _clientFactory.CreateClient())
             {
                 _logger.LogInformation($"downloading project from {configuration.Url} to {localFileName}");
-                client.DownloadFile(configuration.Url, localFileName);
+                await client.DownloadAsync(configuration.Url, localFileName);
             }
 
             using FileStream stream = File.OpenRead(localFileName);
