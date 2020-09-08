@@ -10,18 +10,18 @@ using Xunit.Abstractions;
 
 namespace WebApplication.Tests.Integration
 {
-    public class AdoptProjectServiceTest : IClassFixture<WebApplicationFactory<WebApplication.Startup>>
+    public class ProjectServiceTest : IClassFixture<WebApplicationFactory<WebApplication.Startup>>
     {
         private readonly ITestOutputHelper _output;
-        private readonly AdoptProjectService _adoptProjectService;
+        private readonly ProjectService _projectService;
 
-        public AdoptProjectServiceTest(WebApplicationFactory<WebApplication.Startup> factory, ITestOutputHelper output)
+        public ProjectServiceTest(WebApplicationFactory<WebApplication.Startup> factory, ITestOutputHelper output)
         {
             _output = output;
             XUnitUtils.RedirectConsoleToXUnitOutput(output);
 
             using var scope = factory.Services.CreateScope();
-            _adoptProjectService = scope.ServiceProvider.GetRequiredService<AdoptProjectService>();
+            _projectService = scope.ServiceProvider.GetRequiredService<ProjectService>();
         }
 
         public class AdoptProjectWithParametersDataProvider : IEnumerable<object[]>
@@ -93,9 +93,17 @@ namespace WebApplication.Tests.Integration
         [ClassData(typeof(AdoptProjectWithParametersDataProvider))]
         public void AdoptProjectWithParameters(AdoptProjectWithParametersPayload payload)
         {
-            var projectStorage = _adoptProjectService.AdoptProjectWithParametersAsync(payload).Result;
+            var projectStorage = _projectService.AdoptProjectWithParametersAsync(payload).Result;
 
-            _output.WriteLine($"adopted project with parameters, project storage: {projectStorage.Project.Name}");
+            _output.WriteLine($"adopted project with parameters, project name: {projectStorage.Project.Name}");
+        }
+
+        [Fact]//(Skip = "not a real test, just for development purposes")]
+        public async void DeleteAllProjects()
+        {
+            await _projectService.DeleteAllProjects();
+
+            _output.WriteLine("all projects deleted");
         }
     }
 }

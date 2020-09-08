@@ -19,7 +19,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -135,41 +134,7 @@ namespace WebApplication.Controllers
                 return BadRequest();
             }
 
-            var bucket = await _userResolver.GetBucketAsync(true);
-
-            // collect all oss objects for all provided projects
-            var tasks = new List<Task>();
-
-            foreach (var projectName in projectNameList)
-            {
-                tasks.Add(bucket.DeleteObjectAsync(Project.ExactOssName(projectName)));
-
-                foreach (var searchMask in ONC.ProjectFileMasks(projectName))
-                {
-                    var objects = await bucket.GetObjectsAsync(searchMask);
-                    foreach (var objectDetail in objects)
-                    {
-                        tasks.Add(bucket.DeleteObjectAsync(objectDetail.ObjectKey));
-                    }
-                }
-            }
-
-            // delete the OSS objects
-            await Task.WhenAll(tasks);
-            for (var i = 0; i < tasks.Count; i++)
-            {
-                if (tasks[i].IsFaulted)
-                {
-                    _logger.LogError($"Failed to delete file #{i}");
-                }
-            }
-
-            // delete local cache for all provided projects
-            foreach (var projectName in projectNameList)
-            {
-                var projectStorage = await _userResolver.GetProjectStorageAsync(projectName, ensureDir: false);
-                projectStorage.DeleteLocal();
-            }
+            await _projectService.DeleteProjects(projectNameList);
 
             return NoContent();
         }

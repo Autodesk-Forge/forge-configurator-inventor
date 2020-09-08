@@ -116,10 +116,10 @@ namespace WebApplication.Controllers
         private readonly Sender _sender;
         private readonly Uploads _uploads;
         private readonly DtoGenerator _dtoGenerator;
-        private readonly AdoptProjectService _adoptProjectService;
+        private readonly ProjectService _projectService;
 
         public JobsHub(ILogger<JobsHub> logger, ProjectWork projectWork, LinkGenerator linkGenerator, UserResolver userResolver, 
-            Uploads uploads, DtoGenerator dtoGenerator, AdoptProjectService adoptProjectService)
+            Uploads uploads, DtoGenerator dtoGenerator, ProjectService projectService)
         {
             _logger = logger;
             _projectWork = projectWork;
@@ -127,7 +127,7 @@ namespace WebApplication.Controllers
             _userResolver = userResolver;
             _uploads = uploads;
             _dtoGenerator = dtoGenerator;
-            _adoptProjectService = adoptProjectService;
+            _projectService = projectService;
 
             _sender = new Sender(this);
         }
@@ -198,7 +198,7 @@ namespace WebApplication.Controllers
             _userResolver.Token = token;
 
             // create job and run it
-            var job = new AdoptProjectWithParametersJobItem(_logger, _adoptProjectService, payload, _dtoGenerator);
+            var job = new AdoptProjectWithParametersJobItem(_logger, _projectService, payload, _dtoGenerator);
             await RunJobAsync(job);
         }
 

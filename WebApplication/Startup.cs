@@ -106,7 +106,6 @@ namespace WebApplication
             services.AddSingleton<LocalCache>();
             services.AddSingleton<Uploads>();
             services.AddScoped<ProjectService>();
-            services.AddScoped<AdoptProjectService>();
 
             if (Configuration.GetValue<bool>("migration"))
             {

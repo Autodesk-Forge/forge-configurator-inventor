@@ -27,15 +27,15 @@ namespace WebApplication.Job
 {
     internal class AdoptProjectWithParametersJobItem : JobItemBase
     {
-        private readonly AdoptProjectService _adoptProjectService;
+        private readonly ProjectService _projectService;
         private readonly AdoptProjectWithParametersPayload _payload;
         private readonly DtoGenerator _dtoGenerator;
 
-        public AdoptProjectWithParametersJobItem(ILogger logger, AdoptProjectService adoptProjectService, AdoptProjectWithParametersPayload payload, 
+        public AdoptProjectWithParametersJobItem(ILogger logger, ProjectService projectService, AdoptProjectWithParametersPayload payload, 
             DtoGenerator dtoGenerator)
             : base(logger, null, null)
         {
-            _adoptProjectService = adoptProjectService;
+            _projectService = projectService;
             _payload = payload;
             _dtoGenerator = dtoGenerator;
         }
@@ -48,7 +48,7 @@ namespace WebApplication.Job
             
             try
             {
-                ProjectStorage projectStorage = await _adoptProjectService.AdoptProjectWithParametersAsync(_payload);
+                ProjectStorage projectStorage = await _projectService.AdoptProjectWithParametersAsync(_payload);
 
                 Logger.LogInformation($"ProcessJob (AdoptProjectWithParameters) {Id} for project {_payload.Name} completed.");
                 
