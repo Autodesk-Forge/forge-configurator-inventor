@@ -66,6 +66,8 @@ namespace WebApplication.Services
 
         Task<Autodesk.Forge.Client.ApiResponse<dynamic>> GetObjectAsync(string bucketKey, string objectName);
 
+        Task<bool> DoesObjectExist(string bucketKey, string objectName);
+
         /// <summary>
         /// Copy OSS object.
         /// </summary>

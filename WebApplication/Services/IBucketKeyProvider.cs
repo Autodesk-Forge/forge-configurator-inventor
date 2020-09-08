@@ -6,6 +6,5 @@ namespace WebApplication.Services
     {
         string AnonymousBucketKey {get;}
         Task<string> GetBucketKeyAsync();
-        void SetBucketKey(string bucketKey);
     }
 }

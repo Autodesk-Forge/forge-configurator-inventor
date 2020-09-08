@@ -228,6 +228,23 @@ namespace WebApplication.Services
             return await WithObjectsApiAsync(async api => await api.GetObjectAsyncWithHttpInfo(bucketKey, objectName));
         }
 
+        public async Task<bool> DoesObjectExist(string bucketKey, string objectName)
+        {
+            try
+            {
+                DynamicJsonResponse response = await WithObjectsApiAsync(async api =>
+                {
+                    return await api.GetObjectsAsync(bucketKey, PageSize, objectName, null);
+                });
+
+                return response.Count == 0 ? false : true;
+            }
+            catch (ApiException ex) when (ex.ErrorCode == 404)
+            {
+                return false;
+            }
+        }
+
         /// <summary>
         /// Copy OSS object.
         /// </summary>

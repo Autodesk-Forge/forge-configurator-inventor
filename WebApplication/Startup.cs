@@ -27,6 +27,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MigrationApp;
 using WebApplication.Definitions;
 using WebApplication.Middleware;
 using WebApplication.Processing;
@@ -109,9 +110,14 @@ namespace WebApplication
             if(Configuration.GetValue<bool>("migration"))
             {
                 services.AddHostedService<MigrationApp.Worker>();
-                services.AddSingleton<IBucketKeyProvider, MigrationBucketKeyProvider>();
+                services.AddSingleton<MigrationBucketKeyProvider>();
+                services.AddSingleton<IBucketKeyProvider>(provider =>
+                {
+                    return provider.GetService<MigrationBucketKeyProvider>();
+                });
                 services.AddSingleton<UserResolver>();
                 services.AddSingleton<ProfileProvider>();
+                services.AddSingleton<Migration>();
             }
             else
             {
