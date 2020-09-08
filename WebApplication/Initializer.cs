@@ -97,7 +97,8 @@ namespace WebApplication
             // publish default project files (specified by the appsettings.json)
             foreach (DefaultProjectConfiguration defaultProjectConfig in _defaultProjectsConfiguration.Projects)
             {
-                await _projectService.TransferProjectToOssAsync(_bucket, defaultProjectConfig);
+                var signedUrl = await _projectService.TransferProjectToOssAsync(_bucket, defaultProjectConfig);
+                await _projectWork.AdoptAsync(defaultProjectConfig, signedUrl);
             }
 
             _logger.LogInformation("Added default projects.");
