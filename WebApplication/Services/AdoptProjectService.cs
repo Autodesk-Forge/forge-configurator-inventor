@@ -56,7 +56,7 @@ namespace WebApplication.Services
         }
 
         /// <summary>
-        /// Facade for ProjectService.CreateProject
+        /// Downloads project ZIP file and delegates to ProjectService.CreateProject
         /// </summary>
         /// <param name="configuration"></param>
         /// <returns></returns>
@@ -88,7 +88,7 @@ namespace WebApplication.Services
         }
 
         /// <summary>
-        /// Facade for ProjectService.AdoptProject
+        /// Gets the project data and delegates to ProjectService.AdoptProject
         /// </summary>
         /// <returns></returns>
         private Task AdoptProjectAsync(string packageId)
