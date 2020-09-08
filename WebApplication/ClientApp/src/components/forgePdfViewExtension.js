@@ -67,7 +67,7 @@ ForgePdfViewExtension.prototype.createUI = function() {
     // initially disabled prev button on the first page
     prevbutton.setState(Autodesk.Viewing.UI.Button.State.DISABLED);
 
-    prevbutton.onClick = function (e) {
+    prevbutton.onClick = function () {
 
         actualPage -= 1;
         const state = actualPage === 1 ? Autodesk.Viewing.UI.Button.State.DISABLED : Autodesk.Viewing.UI.Button.State.INACTIVE;
@@ -82,7 +82,7 @@ ForgePdfViewExtension.prototype.createUI = function() {
     prevbutton.setIcon('drawing-icon-prev');
     prevbutton.setToolTip('Previous Drawing Sheet');
 
-    nextbutton.onClick = function (e) {
+    nextbutton.onClick = function () {
 
         actualPage += 1;
         const state = actualPage === numPages ? Autodesk.Viewing.UI.Button.State.DISABLED : Autodesk.Viewing.UI.Button.State.INACTIVE;
