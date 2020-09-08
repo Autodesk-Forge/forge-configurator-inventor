@@ -29,6 +29,7 @@ namespace WebApplication.State
 {
     /// <summary>
     /// Business logic to differentiate state for logged in and anonymous users.
+    /// Lifetime: scoped.
     /// </summary>
     public class UserResolver
     {
@@ -135,7 +136,7 @@ namespace WebApplication.State
 
                 Directory.CreateDirectory(localNames.BaseDir);
 
-                var bucket = await GetBucketAsync(tryToCreate: false);
+                var bucket = await GetBucketAsync();
                 await bucket.DownloadFileAsync(projectStorage.GetOssNames(hash).ToFullName(fileName), fullLocalName);
             }
 

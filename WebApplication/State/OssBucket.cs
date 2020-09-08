@@ -19,12 +19,14 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Autodesk.Forge.Client;
 using Autodesk.Forge.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using WebApplication.Services;
+using WebApplication.Utilities;
 
 namespace WebApplication.State
 {
@@ -172,15 +174,35 @@ namespace WebApplication.State
             await _forgeOSS.UploadObjectAsync(BucketKey, objectName, stream);
         }
 
+        /// <summary>
+        /// Upload JSON representation of object to OSS.
+        /// </summary>
+        public async Task UploadAsJsonAsync<T>(string objectName, T obj, bool writeIndented = false)
+        {
+            await using var stream = Json.ToStream(obj, writeIndented);
+            await _forgeOSS.UploadObjectAsync(BucketKey, objectName, stream);
+        }
+
         public async Task UploadChunkAsync(string objectName, string contentRange, string sessionId, Stream stream)
         {
-            // public async Task UploadChunkAsync(string bucketKey, )
             await _forgeOSS.UploadChunkAsync(BucketKey, objectName, contentRange, sessionId, stream);
         }
 
         public async Task<ApiResponse<dynamic>> GetObjectAsync(string objectName)
         {
             return await _forgeOSS.GetObjectAsync(BucketKey, objectName);
+        }        
+        
+        /// <summary>
+        /// Load JSON from OSS and deserialize it to <see cref="T"/> instance.
+        /// </summary>
+        public async Task<T> DeserializeAsync<T>(string objectName)
+        {
+            var response = await _forgeOSS.GetObjectAsync(BucketKey, objectName);
+            if (response == null) return default;
+
+            await using Stream objectStream = response.Data;
+            return await JsonSerializer.DeserializeAsync<T>(objectStream);
         }
 
         /// <summary>
@@ -190,7 +212,7 @@ namespace WebApplication.State
         {
             try
             {
-                await GetObjectAsync(objectName); // TODO: find better alternative
+                await CreateSignedUrlAsync(objectName); // don't care about result
                 return true;
             }
             catch (ApiException ex) when (ex.ErrorCode == 404)
