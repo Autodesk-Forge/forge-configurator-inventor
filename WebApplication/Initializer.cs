@@ -17,7 +17,6 @@
 /////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -44,6 +43,7 @@ namespace WebApplication
         private readonly FdaClient _fdaClient;
         private readonly ProjectWork _projectWork;
         private readonly UserResolver _userResolver;
+        private readonly BucketPrefixProvider _bucketPrefixProvider;
         private readonly LocalCache _localCache;
         private readonly OssBucket _bucket;
         private readonly ProjectService _projectService;
@@ -52,7 +52,8 @@ namespace WebApplication
         /// Constructor.
         /// </summary>
         public Initializer(ILogger<Initializer> logger, FdaClient fdaClient, IOptions<DefaultProjectsConfiguration> optionsAccessor,
-                            ProjectWork projectWork, UserResolver userResolver, LocalCache localCache, ProjectService projectService)
+                            ProjectWork projectWork, UserResolver userResolver, LocalCache localCache, ProjectService projectService,
+                            BucketPrefixProvider bucketPrefixProvider)
         {
             _logger = logger;
             _fdaClient = fdaClient;
@@ -64,6 +65,8 @@ namespace WebApplication
 
             // bucket for anonymous user
             _bucket = _userResolver.AnonymousBucket;
+
+            _bucketPrefixProvider = bucketPrefixProvider;
         }
         public async Task InitializeBundlesAsync()
         {
@@ -98,6 +101,7 @@ namespace WebApplication
             foreach (DefaultProjectConfiguration defaultProjectConfig in _defaultProjectsConfiguration.Projects)
             {
                 var signedUrl = await _projectService.TransferProjectToOssAsync(_bucket, defaultProjectConfig);
+
                 await _projectWork.AdoptAsync(defaultProjectConfig, signedUrl);
             }
 
@@ -123,7 +127,7 @@ namespace WebApplication
                 _logger.LogInformation($"Deleting user buckets for registered users");
                 // delete all user buckets
                 var buckets = await _bucket.GetBucketsAsync();
-                string userBucketPrefix = _userResolver.GetBucketPrefix();
+                string userBucketPrefix = _bucketPrefixProvider.GetBucketPrefix();
                 foreach (string bucket in buckets)
                 {
                     if (bucket.Contains(userBucketPrefix))

@@ -21,7 +21,7 @@ import Avatar from '@hig/avatar';
 import "./userDetails.css";
 import Button from '@hig/button';
 
-class UserDetails extends Component {
+export class UserDetails extends Component {
     constructor(props) {
         super(props);
         this.handleAuthClick = this.handleAuthClick.bind(this);
@@ -50,6 +50,9 @@ class UserDetails extends Component {
                             title={this.props.profile.isLoggedIn ? "Sign Out" : "Sign In"}
                             onClick={this.handleAuthClick}
                         />
+                <span className="hyperlink">
+                    <a href="https://github.com/Developer-Autodesk/forge-configurator-inventor/blob/master/about.md">About application</a>
+                </span>
             </div>
         );
     }

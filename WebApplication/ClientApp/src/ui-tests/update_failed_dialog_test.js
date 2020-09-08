@@ -44,11 +44,11 @@ Scenario('should check incorrect input to show failed dialog', async (I) => {
     I.setParamValue('iTrigger0', '5'  );
 
     // click on Update button
-    I.click( locators.xpButtonUpdate);
+    I.click(locators.xpButtonUpdate);
 
     // waiting for Updating dialog
     I.waitForVisible(updatingDialogTitle, 10);
-    I.waitForInvisible(updatingDialogTitle, 120);
+    I.waitForInvisible(updatingDialogTitle, locators.FDAActionTimeout);
 
     // check if Failed dialog is displayed
     I.waitForVisible(failedDialogTitle, 30);

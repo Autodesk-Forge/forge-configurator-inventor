@@ -38,14 +38,16 @@ namespace WebApplication.Controllers
         private readonly ILogger<ProjectsController> _logger;
         private readonly DtoGenerator _dtoGenerator;
         private readonly UserResolver _userResolver;
+        private readonly ProfileProvider _profileProvider;
         private readonly Uploads _uploads;
         private readonly ProjectService _projectService;
 
-        public ProjectsController(ILogger<ProjectsController> logger, DtoGenerator dtoGenerator, UserResolver userResolver, Uploads uploads, ProjectService projectService)
+        public ProjectsController(ILogger<ProjectsController> logger, DtoGenerator dtoGenerator, UserResolver userResolver, ProfileProvider profileProvider, Uploads uploads, ProjectService projectService)
         {
             _logger = logger;
             _dtoGenerator = dtoGenerator;
             _userResolver = userResolver;
+            _profileProvider = profileProvider;
             _uploads = uploads;
             _projectService = projectService;
         }
@@ -81,7 +83,7 @@ namespace WebApplication.Controllers
         [HttpPost]
         public async Task<ActionResult<string>> CreateProject([FromForm]NewProjectModel projectModel)
         {
-            if (!_userResolver.IsAuthenticated)
+            if (!_profileProvider.IsAuthenticated)
             {
                 _logger.LogError("Attempt to create project for anonymous user");
                 return BadRequest();
@@ -128,7 +130,7 @@ namespace WebApplication.Controllers
         [HttpDelete]
         public async Task<StatusCodeResult> DeleteProjects([FromBody] List<string> projectNameList)
         {
-            if (!_userResolver.IsAuthenticated)
+            if (!_profileProvider.IsAuthenticated)
             {
                 _logger.LogError("Attempt to delete projects for anonymous user");
                 return BadRequest();

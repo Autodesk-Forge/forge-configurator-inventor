@@ -147,11 +147,13 @@ namespace WebApplication.State
 
         /// <summary>
         /// OSS names for "hashed" files.
+        /// Uses default parameters hash if <paramref name="hash"/> is not provided.
         /// </summary>
         public OSSObjectNameProvider GetOssNames(string hash = null) => Project.OssNameProvider(hash ?? Metadata.Hash);
 
         /// <summary>
         /// Local names for "hashed" files.
+        /// Uses default parameters hash if <paramref name="hash"/> is not provided.
         /// </summary>
         public LocalNameProvider GetLocalNames(string hash = null) => Project.LocalNameProvider(hash ?? Metadata.Hash);
 
