@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Autodesk.Forge.Client;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Polly;
 using WebApplication.Definitions;
 using WebApplication.Processing;
 using WebApplication.Services.Exceptions;
@@ -27,39 +30,39 @@ namespace WebApplication.Services
             _projectWork = projectWork;
         }
 
-        public async Task<string> CreateProject(NewProjectModel projectModel)
+        //TODO: duplicity with Initializer
+        public async Task<string> TransferToOssAsync(DefaultProjectConfiguration defaultProjectConfig)
         {
-            var projectName = Path.GetFileNameWithoutExtension(projectModel.package.FileName);
+            var bucket = await _userResolver.GetBucketAsync(true);
 
-            // Check if project already exists
-            var projectNames = await GetProjectNamesAsync();
-            foreach (var existingProjectName in projectNames)
-            {
-                if (projectName == existingProjectName) 
-                    throw new ProjectAlreadyExistsException(projectName);
-            }
+            _logger.LogInformation($"Bucket {bucket.BucketKey} created");
 
-            var projectInfo = new ProjectInfo
-            {
-                Name = projectName,
-                TopLevelAssembly = projectModel.root
-            };
+            // OSS bucket might be not ready yet, so repeat attempts
+            var waitForBucketPolicy = Policy
+                .Handle<ApiException>(e => e.ErrorCode == StatusCodes.Status404NotFound)
+                .WaitAndRetryAsync(
+                    retryCount: 4,
+                    retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                    (exception, timeSpan) => _logger.LogWarning("Cannot get fresh OSS bucket. Repeating")
+                );
 
-            // download file locally (a place to improve... would be good to stream it directly to OSS)
-            var fileName = Path.GetTempFileName();
-            await using (var fileWriteStream = System.IO.File.OpenWrite(fileName))
-            {
-                await projectModel.package.CopyToAsync(fileWriteStream);
-            }
+            // publish default project files (specified by the appsettings.json)
+            var projectUrl = defaultProjectConfig.Url;
+            var project = await _userResolver.GetProjectAsync(defaultProjectConfig.Name);
 
-            var packageId = Guid.NewGuid().ToString();
-            _uploads.AddUploadData(packageId, projectInfo, fileName);
+            _logger.LogInformation($"Launching 'TransferData' for {projectUrl}");
+            string signedUrl = await waitForBucketPolicy.ExecuteAsync(async () =>
+                await bucket.CreateSignedUrlAsync(project.OSSSourceModel, ObjectAccess.ReadWrite));
 
-            _logger.LogInformation($"created project with packageId {packageId}");
+            // TransferData from s3 to temporary oss url
+            await _projectWork.FileTransferAsync(projectUrl, signedUrl);
 
-            return packageId;
+            _logger.LogInformation($"'TransferData' for {projectUrl} is done.");
+
+            return signedUrl;
         }
 
+        //TODO: remove duplicity, use in AdoptJob
         public async Task<ProjectStorage> AdoptProject(ProjectInfo projectInfo, string fileName, string id)
         {
             using var scope = _logger.BeginScope("Project Adoption ({id})");
