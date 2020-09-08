@@ -67,6 +67,7 @@ namespace WebApplication.Services
 
             return existingProjects.Contains(projectName);
         }
+
         public async Task<string> TransferProjectToOssAsync(OssBucket bucket, DefaultProjectConfiguration projectConfig)
         {
             _logger.LogInformation($"Bucket {bucket.BucketKey} created");
