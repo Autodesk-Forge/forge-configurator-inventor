@@ -26,6 +26,7 @@ import './modalProgress.css';
 import merge from "lodash.merge";
 import Button from '@hig/button';
 import IconButton from "@hig/icon-button";
+import CreditCost from './creditCost';
 
 export class ModalProgressUpload extends Component {
 
@@ -38,7 +39,7 @@ export class ModalProgressUpload extends Component {
           modal: {
                 window: { // by design
                     width: "371px",
-                    height: "263px",
+                    height: "auto",
                     borderLeftWidth: "3px",
                     borderLeftStyle: "solid",
                     borderLeftColor: done ? doneColor : "rgb(255, 255, 255)"
@@ -91,21 +92,24 @@ export class ModalProgressUpload extends Component {
                     </div>
                 </div>
                 {done &&
-                    <div className="buttonsContainer">
-                        <Button className="button" style={
-                            { width: '102px', height: '36px', borderRadius: '2px', marginLeft: '12px'}}
-                            type="primary"
-                            size="small"
-                            title="Open"
-                            onClick={this.props.onOpen}
-                        />
-                        <Button className="button" style={
-                            { width: '102px', height: '36px', borderRadius: '2px', marginLeft: '12px'}}
-                            type="secondary"
-                            size="small"
-                            title="Close"
-                            onClick={this.props.onClose}
-                        />
+                    <div>
+                        <CreditCost />
+                        <div className="buttonsContainer">
+                            <Button className="button" style={
+                                { width: '102px', height: '36px', borderRadius: '2px', marginLeft: '12px'}}
+                                type="primary"
+                                size="small"
+                                title="Open"
+                                onClick={this.props.onOpen}
+                            />
+                            <Button className="button" style={
+                                { width: '102px', height: '36px', borderRadius: '2px', marginLeft: '12px'}}
+                                type="secondary"
+                                size="small"
+                                title="Close"
+                                onClick={this.props.onClose}
+                            />
+                        </div>
                     </div>
                 }
               </div>

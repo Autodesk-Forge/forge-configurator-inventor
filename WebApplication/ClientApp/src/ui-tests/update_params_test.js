@@ -28,8 +28,6 @@ Before((I) => {
 
 Feature('Update params');
 
-const updatingProjectProgress = '//p[text()="Updating Project"]';
-
 Scenario('Updating parameters for model', async (I) => {
 
     I.selectProject("Wrench");
@@ -41,12 +39,7 @@ Scenario('Updating parameters for model', async (I) => {
     I.waitForVisible(locators.xpStripeElement, 10);
 
     // Click on Update button
-    I.waitForVisible(locators.xpButtonUpdate);
-    I.click(locators.xpButtonUpdate);
-
-    // wait for progress bar shows and disappeared
-    I.waitForVisible(updatingProjectProgress, 10);
-    I.waitForInvisible(updatingProjectProgress, locators.FDAActionTimeout);
+    I.updateProject();
 
     // check that stripe disappeared
     I.waitForInvisible(locators.xpStripeElement, 5);

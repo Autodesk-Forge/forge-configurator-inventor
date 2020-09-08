@@ -181,6 +181,10 @@ describe('uiFlags reducer', () => {
       }),
       it('invalidates the drawingUrl', () => {
          expect(uiFlagsReducer({}, uiFlagsActions.invalidateDrawing()).drawingUrl).toEqual(null);
+      }),
+      it('sets the processing stats', () => {
+         const theStats = { credits: 7, processing: 13 };
+         expect(uiFlagsReducer({}, uiFlagsActions.setStats(theStats)).stats).toEqual(theStats);
       });
    });
 });
