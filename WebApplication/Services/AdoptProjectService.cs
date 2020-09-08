@@ -31,7 +31,8 @@ namespace WebApplication.Services
         {
             if (! await DoesProjectAlreadyExistAsync(payload.Name))
             {
-                var signedUrl = await _projectService.TransferToOssAsync(payload);
+                var bucket = await _userResolver.GetBucketAsync();
+                var signedUrl = await _projectService.TransferProjectToOssAsync(bucket, payload);
                 await _projectWork.AdoptAsync(payload, signedUrl);
             }
             else
