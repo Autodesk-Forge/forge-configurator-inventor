@@ -17,18 +17,14 @@ namespace WebApplication.Services
         private readonly ProjectService _projectService;
         private readonly ProjectWork _projectWork;
         private readonly Uploads _uploads;
-        private readonly UserResolver _userResolver;
-        private readonly DtoGenerator _dtoGenerator;
 
         public AdoptProjectService(ILogger<AdoptProjectService> logger, ProjectService projectService, 
-            Uploads uploads, ProjectWork projectWork, UserResolver userResolver, DtoGenerator dtoGenerator)
+            Uploads uploads, ProjectWork projectWork)
         {
             _logger = logger;
             _projectService = projectService;
             _uploads = uploads;
             _projectWork = projectWork;
-            _userResolver = userResolver;
-            _dtoGenerator = dtoGenerator;
         }
 
         /// <summary>
@@ -37,28 +33,36 @@ namespace WebApplication.Services
         /// <param name="payload">project configuration with parameters</param>
         public async Task<string> AdoptProjectWithParametersAsync(AdoptProjectWithParametersPayload payload)
         {
-            //TODO: check whether project already exists. If yes, skip upload and adoption and continue with parameters update.
-            var packageId = CreateProjectAsync(payload).Result;
+            if (! await DoesProjectAlreadyExistAsync(payload.Name))
+            {
+                var packageId = CreateProjectAsync(payload).Result;
+                await AdoptProjectAsync(packageId);
+            }
+            else
+            {
+                _logger.LogInformation($"project with name {payload.Name} already exists");
+            }
 
-            (ProjectInfo projectInfo, string fileName) = _uploads.GetUploadData(packageId);
-            _uploads.ClearUploadData(packageId);
+            await UpdateParamsAsync(payload);
 
-            var id = Guid.NewGuid().ToString();
-            await _projectService.AdoptProject(projectInfo, fileName, id);
+            return payload.Name;
+        }
 
-            await _projectWork.DoSmartUpdateAsync(payload.Config, payload.Name);
+        private async Task<bool> DoesProjectAlreadyExistAsync(string projectName)
+        {
+            var existingProjects = await _projectService.GetProjectNamesAsync();
 
-            return packageId;
+            return existingProjects.Contains(projectName);
         }
 
         /// <summary>
-        /// Kind of a facade for ProjectService.CreateProject
+        /// Facade for ProjectService.CreateProject
         /// </summary>
         /// <param name="configuration"></param>
         /// <returns></returns>
-        private async Task<string> CreateProjectAsync(DefaultProjectConfiguration configuration)
+        private Task<string> CreateProjectAsync(DefaultProjectConfiguration configuration)
         {
-            _logger.LogInformation($"adopting project {configuration.Name}");
+            _logger.LogInformation($"start of CreateProjectAsync, projectName {configuration.Name}");
 
             using var localFile = new TempFile();
             var localFileName = localFile.Name;
@@ -72,7 +76,7 @@ namespace WebApplication.Services
 
             _logger.LogInformation($"creating project {configuration.Name}");
 
-            return await _projectService.CreateProject(new NewProjectModel()
+            return _projectService.CreateProject(new NewProjectModel()
             {
                 package = new FormFile(stream, 0, stream.Length, null, configuration.Name)
                 {
@@ -81,6 +85,33 @@ namespace WebApplication.Services
                 },
                 root = configuration.TopLevelAssembly
             });
+        }
+
+        /// <summary>
+        /// Facade for ProjectService.AdoptProject
+        /// </summary>
+        /// <returns></returns>
+        private Task AdoptProjectAsync(string packageId)
+        {
+            _logger.LogInformation($"start of AdoptProjectAsync, packageId {packageId}");
+
+            (ProjectInfo projectInfo, string fileName) = _uploads.GetUploadData(packageId);
+            _uploads.ClearUploadData(packageId);
+
+            var id = Guid.NewGuid().ToString();
+            return _projectService.AdoptProject(projectInfo, fileName, id);
+        }
+
+        /// <summary>
+        /// Facade for ProjectWork.DoSmartUpdateAsync
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        private Task UpdateParamsAsync(AdoptProjectWithParametersPayload payload)
+        {
+            _logger.LogInformation($"start of UpdateParamsAsync, projectName {payload.Name}");
+
+            return _projectWork.DoSmartUpdateAsync(payload.Config, payload.Name);
         }
     }
 }

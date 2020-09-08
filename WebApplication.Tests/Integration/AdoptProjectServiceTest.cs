@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,16 +32,53 @@ namespace WebApplication.Tests.Integration
                 {
                     new AdoptProjectWithParametersPayload()
                     {
-                        //Name = "TestWrench",
-                        Name = Guid.NewGuid().ToString(),
+                        Name = "TestWrench",
+                        //Name = Guid.NewGuid().ToString(),
                         Url = "https://sdra-default-projects.s3-us-west-2.amazonaws.com/Wrench_2021.zip",
                         TopLevelAssembly = "Wrench.iam",
                         Config = new InventorParameters()
                         {
                             {
-                                "Some Param", new InventorParameter()
+                                "WrenchSz", new InventorParameter()
                                 {
-                                    Label = "Some Label"
+                                    Value = "\"Large\"",
+                                    Values = new [] {
+                                        "\"Large\"",
+                                        "\"Medium\"",
+                                        "\"Small\""
+                                    },
+                                    Unit = "Text"
+                                }
+                            },
+                            {
+                                "JawOffset", new InventorParameter()
+                                {
+                                    Value = "11 mm",
+                                    Unit = "mm",
+                                    Values = new string [] {}
+                                }
+                            },
+                            {
+                                "PartMaterial", new InventorParameter()
+                                {
+                                    Value = "\"Steel\"",
+                                    Values = new [] {
+                                        "\"Cast Bronze\"",
+                                        "\"Cast Iron\"",
+                                        "\"Copper\"",
+                                        "\"Gray Iron\"",
+                                        "\"Stainless Steel\"",
+                                        "\"Steel\""
+                                    },
+                                    Unit = "Text"
+                                }
+                            },
+                            {
+                                "iTrigger0", new InventorParameter()
+                                {
+                                    Value = "2 ul",
+                                    Unit = "ul",
+                                    Values = new string [] {}
                                 }
                             }
                         }
@@ -59,7 +95,7 @@ namespace WebApplication.Tests.Integration
         {
             var projectId = _adoptProjectService.AdoptProjectWithParametersAsync(payload).Result;
 
-            _output.WriteLine($"project created with id {projectId}");
+            _output.WriteLine($"adopted project with parameters, project name: {projectId}");
         }
     }
 }

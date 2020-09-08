@@ -30,10 +30,9 @@ namespace WebApplication.Services
         public async Task<string> CreateProject(NewProjectModel projectModel)
         {
             var projectName = Path.GetFileNameWithoutExtension(projectModel.package.FileName);
-            var bucket = await _userResolver.GetBucketAsync(true);
 
             // Check if project already exists
-            var projectNames = await GetProjectNamesAsync(bucket);
+            var projectNames = await GetProjectNamesAsync();
             foreach (var existingProjectName in projectNames)
             {
                 if (projectName == existingProjectName) 
@@ -55,6 +54,8 @@ namespace WebApplication.Services
 
             var packageId = Guid.NewGuid().ToString();
             _uploads.AddUploadData(packageId, projectInfo, fileName);
+
+            _logger.LogInformation($"created project with packageId {packageId}");
 
             return packageId;
         }
@@ -108,9 +109,10 @@ namespace WebApplication.Services
         /// <summary>
         /// Get list of project names for a bucket.
         /// </summary>
-        //TODO: make private again
-        public async Task<ICollection<string>> GetProjectNamesAsync(OssBucket bucket)
+        public async Task<ICollection<string>> GetProjectNamesAsync(OssBucket bucket = null)
         {
+            bucket ??= await _userResolver.GetBucketAsync(true);
+
             var objectDetails = (await bucket.GetObjectsAsync(ONC.ProjectsMask));
             var projectNames = objectDetails
                 .Select(objDetails => ONC.ToProjectName(objDetails.ObjectKey))
