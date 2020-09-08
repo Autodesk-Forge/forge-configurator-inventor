@@ -17,7 +17,7 @@
 /////////////////////////////////////////////////////////////////////
 
 // returns string representing passed in number with at least minimumDigits significant digits,
-// without removing any significat digits before decimal point and
+// without removing any significant digits before decimal point and
 // without adding any zeros after decimal point
 export const significantDigits = (number, minimumDigits) => {
     if(number == null) {

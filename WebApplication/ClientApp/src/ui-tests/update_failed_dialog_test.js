@@ -18,6 +18,8 @@
 
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
+const locators = require('./elements_definition.js');
+const updatingDialogTitle = '//div[@role="dialog" and .//p[contains(.,"Updating Project")]]';
 const failedDialogTitle = '//div[@role="dialog" and .//p[contains(.,"Update Failed")]]';
 const projectShelves = '//div[@role="row"]//div[text()="shelves"]';
 
@@ -42,7 +44,11 @@ Scenario('should check incorrect input to show failed dialog', async (I) => {
     I.setParamValue('iTrigger0', '5'  );
 
     // click on Update button
-    I.updateProject();
+    I.click(locators.xpButtonUpdate);
+
+    // waiting for Updating dialog
+    I.waitForVisible(updatingDialogTitle, 10);
+    I.waitForInvisible(updatingDialogTitle, locators.FDAActionTimeout);
 
     // check if Failed dialog is displayed
     I.waitForVisible(failedDialogTitle, 30);
