@@ -98,29 +98,12 @@ describe('modal progress ', () => {
         expect(closeMockFn).toHaveBeenCalledTimes(1);
     });
 
-    // close on Url link click conficts with Autostart save and imho was not requested by the UX/PO
-    it.skip('should close when Url link clicked', () => {
-        const closeMockFn = jest.fn();
-        const props = { onClose: closeMockFn, url: 'http://example.com' };
-
-        const wrapper = shallow(<ModalDownloadProgress {...props} />);
-
-        const hyperlink = wrapper.find('HyperLink');
-        expect(hyperlink.length).toEqual(1);
-
-        hyperlink.simulate('urlClick');
-        expect(closeMockFn).toHaveBeenCalledTimes(1);
-    });
-
     it('should link to the rfa url in the props', () => {
         const props = { url: 'http://example.com' };
 
         const wrapper = shallow(<ModalDownloadProgress {...props} />);
-        const wrapperComponent = wrapper.find('.modalLink');
-        const children = wrapperComponent.prop('children');
 
-        expect(children.props['children']).toHaveLength(2);
-        expect(children.props['children'][0].props.link).toBe("click here");
-        expect(children.props['children'][0].props.href).toBe(props.url);
+        const hyperlink = wrapper.find('HyperLink');
+        expect(hyperlink.prop('href')).toEqual(props.url);
     });
 });

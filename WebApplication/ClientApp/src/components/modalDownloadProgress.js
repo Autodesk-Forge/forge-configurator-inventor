@@ -25,6 +25,7 @@ import './modalProgress.css';
 import merge from "lodash.merge";
 import HyperLink from './hyperlink';
 import Button from '@hig/button';
+import CreditCost from './creditCost';
 
 export class ModalDownloadProgress extends Component {
 
@@ -34,7 +35,7 @@ export class ModalDownloadProgress extends Component {
           modal: {
                 window: { // by design
                     width: "371px",
-                    height: "263px"
+                    height: "auto"
                 }
             }
         });
@@ -62,27 +63,29 @@ export class ModalDownloadProgress extends Component {
                       {!done && <ProgressBar className="modalProgress"/>}
                   </div>
               </div>
-              {(done && this.props.url) &&
-                <div className="modalLink">
-                    <React.Fragment>
-                    <HyperLink
-                        onAutostart={(downloadHyperlink) => {
-                            downloadHyperlink.click();
-                        }}
-                        /* onUrlClick={this.props.onClose} */ // onClose in onUrlClick colides with onAutostart, causing the dialog to close itself when download starts. But we dont want it to close itself.
-                        prefix="Download should start automatically, if it doesn't, "
-                        link="click here" href={this.props.url}
-                        suffix=" to download it manually."
-                        download={true}/>
-                    <Button className="button" style={
-                        { width: '116px', height: '36px', borderRadius: '2px', marginLeft: '12px'}}
-                        type="secondary"
-                        size="small"
-                        title="Done"
-                        onClick={this.props.onClose}
-                    />
-                    </React.Fragment>
-              </div>
+              {(done) &&
+                <React.Fragment>
+                    <CreditCost/>
+                    <div className="modalLink">
+                        <HyperLink
+                            onAutostart={(downloadHyperlink) => {
+                                downloadHyperlink.click();
+                            }}
+                            /* onUrlClick={this.props.onClose} */ // onClose in onUrlClick colides with onAutostart, causing the dialog to close itself when download starts. But we dont want it to close itself.
+                            prefix="Download should start automatically, if it doesn't, "
+                            link="click here" href={this.props.url}
+                            suffix=" to download it manually."
+                            download={true}
+                        />
+                        <Button className="button" style={
+                            { width: '116px', height: '36px', borderRadius: '2px', marginLeft: '12px'}}
+                            type="secondary"
+                            size="small"
+                            title="Done"
+                            onClick={this.props.onClose}
+                        />
+                    </div>
+                </React.Fragment>
               }
           </Modal>
         );

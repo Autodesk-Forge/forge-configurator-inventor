@@ -17,11 +17,8 @@
 /////////////////////////////////////////////////////////////////////
 
 /* eslint-disable no-undef */
-const locators = require('./elements_definition.js');
-
 const parametersElement = '.parameters';
 const updatedElements = '//div[(@class = "parameter" or @class = "parameter checkbox")] //input[contains(@class , "changedOnUpdate")]';
-const updatingProjectProgress = '//p[text()="Updating Project"]';
 const tooltipTestNotify = '//div[contains(@class,"paramTooltip__flyout-container")][ancestor::div[contains(@class , "parameter") and contains(text(),"TestNotify")]]';
 const parameterTestNotify = '//div[contains(@class , "parameter") and contains(text(),"TestNotify")]';
 
@@ -46,13 +43,7 @@ Scenario('should check parameter notification', async (I) => {
     // change paramter
     I.setParamValue("NumberOfBolts", "5");
 
-    // Click on Update button
-    I.waitForVisible(locators.xpButtonUpdate, 10);
-    I.click(locators.xpButtonUpdate);
-
-    // wait for progress bar shows and disappears
-    I.waitForVisible(updatingProjectProgress, 10);
-    I.waitForInvisible(updatingProjectProgress, locators.FDAActionTimeout);
+    I.updateProject();
 
     // check if there is correct number of changeOnUpdate inputs
     I.seeNumberOfElements(updatedElements, 1);
