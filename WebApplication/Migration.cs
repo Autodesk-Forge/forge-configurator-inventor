@@ -59,11 +59,11 @@ namespace MigrationApp
          string suffixFrom = _configuration.GetValue<string>("BucketKeySuffixOld");
          string bucketKeyStart = _bucketPrefix.GetBucketPrefix(suffixFrom);
          List<string> bucketKeys = await _forgeOSS.GetBucketsAsync();
+         string AnonymousBucketKeyOld = _resourceProvider.AnonymousBucketKey(suffixFrom);
          foreach (string bucketKey in bucketKeys)
          {
-            if (bucketKey.Length >= bucketKeyStart.Length && 
-               bucketKey.Substring(0, bucketKeyStart.Length) == bucketKeyStart ||
-               bucketKey == _resourceProvider.AnonymousBucketKey(suffixFrom)
+            if (bucketKey.StartsWith(bucketKeyStart) ||
+                bucketKey == AnonymousBucketKeyOld
                )
             {
                await ScanBucket(migrationJobs, bucketKey);
@@ -85,7 +85,7 @@ namespace MigrationApp
 
             // check attributes file existance in new destination bucket
             if (await _forgeOSS.DoesObjectExist(bucketKeyNew, attributeFile))
-               return;
+               continue;
 
             await _forgeOSS.DownloadFileAsync(bucketKey, attributeFile, "metadata.json");
             ProjectMetadata projectMetadata = Json.DeserializeFile<ProjectMetadata>("metadata.json");
@@ -115,6 +115,7 @@ namespace MigrationApp
             catch(Exception e)
             {
                _logger.LogError("Project " + job.projectInfo.Name + " cannot be copied\nException:" + e.Message);
+               continue;
             }
 
             try

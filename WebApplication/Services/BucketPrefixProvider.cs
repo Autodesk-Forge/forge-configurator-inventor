@@ -17,7 +17,7 @@ namespace WebApplication.Services
 
         public string GetBucketPrefix(string suffixParam = null)
         {
-            string suffix = suffixParam == null ? _configuration?.GetValue<string>("BucketKeySuffix") : suffixParam;
+            string suffix = suffixParam ?? _configuration?.GetValue<string>("BucketKeySuffix");
             return $"authd{suffix}-{_forgeConfig.ClientId}".ToLowerInvariant();
         }
     }

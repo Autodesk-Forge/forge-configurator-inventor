@@ -13,7 +13,7 @@ namespace WebApplication.Services
         private readonly ForgeConfiguration _forgeConfig;
         private readonly ProfileProvider _profileProvider;
         private readonly BucketPrefixProvider _bucketPrefixProvider;
-        private readonly ResourceProvider _resoureProvider;
+        private readonly ResourceProvider _resourceProvider;
         public string AnonymousBucketKey {get;}
 
         public LoggedInUserBucketKeyProvider(IOptions<ForgeConfiguration> forgeConfiguration, ProfileProvider profileProvider, BucketPrefixProvider bucketPrefixProvider, ResourceProvider resourceProvider)
@@ -21,7 +21,7 @@ namespace WebApplication.Services
             _profileProvider = profileProvider;
             _forgeConfig = forgeConfiguration.Value;
             _bucketPrefixProvider = bucketPrefixProvider;
-            _resoureProvider = resourceProvider;
+            _resourceProvider = resourceProvider;
 
             AnonymousBucketKey = resourceProvider.BucketKey;
         }
@@ -33,7 +33,7 @@ namespace WebApplication.Services
             dynamic profile = await _profileProvider.GetProfileAsync();
             var userId = profile.userId;
 
-            return _resoureProvider.LoggedUserBucketKey(userId);
+            return _resourceProvider.LoggedUserBucketKey(userId);
         }
     }
 }

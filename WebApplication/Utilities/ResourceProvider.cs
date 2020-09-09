@@ -52,7 +52,7 @@ namespace WebApplication.Utilities
 
         public string AnonymousBucketKey(string suffixParam = null)
         {
-            string suffix = (suffixParam == null) ? (_configuration != null) ? _configuration.GetValue<string>("BucketKeySuffix") : "" : suffixParam;
+            string suffix = suffixParam ?? _configuration?.GetValue<string>("BucketKeySuffix") ?? "";
             return $"projects-{_forgeConfiguration.ClientId.Substring(0, 3)}-{_forgeConfiguration.HashString()}{suffix}".ToLowerInvariant();
         }
 

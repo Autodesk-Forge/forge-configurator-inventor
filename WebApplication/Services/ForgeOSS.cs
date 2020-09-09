@@ -121,7 +121,6 @@ namespace WebApplication.Services
                         BucketKey = item.bucketKey,
                         ObjectId = item.objectId,
                         ObjectKey = item.objectKey,
-                        Sha1 = Encoding.ASCII.GetBytes(item.sha1),
                         Size = (int?)item.size,
                         Location = item.location
                     };
@@ -237,7 +236,7 @@ namespace WebApplication.Services
                     return await api.GetObjectsAsync(bucketKey, PageSize, objectName, null);
                 });
 
-                return response.Count == 0 ? false : true;
+                return response.Count != 0;
             }
             catch (ApiException ex) when (ex.ErrorCode == 404)
             {
