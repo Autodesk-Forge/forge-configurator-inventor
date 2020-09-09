@@ -20,6 +20,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Shared;
 using WebApplication.Definitions;
@@ -118,9 +119,11 @@ namespace WebApplication.Controllers
         private readonly Uploads _uploads;
         private readonly DtoGenerator _dtoGenerator;
         private readonly ProjectService _projectService;
+        private readonly IConfiguration _configuration;
 
         public JobsHub(ILogger<JobsHub> logger, ProjectWork projectWork, LinkGenerator linkGenerator, UserResolver userResolver, 
-            ProfileProvider profileProvider, Uploads uploads, DtoGenerator dtoGenerator, ProjectService projectService)
+            ProfileProvider profileProvider, Uploads uploads, DtoGenerator dtoGenerator, ProjectService projectService,
+            IConfiguration configuration)
         {
             _logger = logger;
             _projectWork = projectWork;
@@ -130,6 +133,7 @@ namespace WebApplication.Controllers
             _uploads = uploads;
             _dtoGenerator = dtoGenerator;
             _projectService = projectService;
+            _configuration = configuration;
 
             _sender = new Sender(this);
         }
@@ -195,6 +199,12 @@ namespace WebApplication.Controllers
 
         public async Task CreateAdoptProjectWithParametersJob(AdoptProjectWithParametersPayload payload, string token = null)
         {
+            if (!_configuration.GetValue<bool>("poc"))
+            {
+                _logger.LogInformation("PoC AdoptProjectWithParameters feature is not turned on, quitting");
+                return;
+            }
+
             _logger.LogInformation($"invoked CreateDrawingPdfJob, connectionId : {Context.ConnectionId}");
 
             _profileProvider.Token = token;
