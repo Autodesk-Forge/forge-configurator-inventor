@@ -93,7 +93,11 @@ namespace WebApplication.Controllers
             // Check if project already exists
             foreach (var existingProjectName in await GetProjectNamesAsync(bucket))
             {
-                if (projectName == existingProjectName) return Conflict();
+                if (projectName == existingProjectName)
+                {
+                    _logger.LogError($"Found existing '{projectName}' project");
+                    return Conflict();
+                }
             }
 
             var projectInfo = new ProjectInfo
