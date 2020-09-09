@@ -78,6 +78,12 @@ Scenario('should check id a drawing has more sheet is will show arrow buttons', 
     I.waitForForgeViewerToPreventItFromCrashing(30);
     I.goToDrawingTab();
 
+    // check the dialog will appear with Done button
+    const drawingProgress = '//p[text()="Generating Drawing"]';
+    I.waitForVisible(drawingProgress, 10);
+    I.waitForVisible(locators.xpButtonDone, locators.FDAActionTimeout);
+    I.click(locators.xpButtonDone);
+
     // wait for drawing page to be displayed with extra arrow buttons
     const customDrwToolbar = '//div[@id="custom-drawing-toolbar"]';
     const prevButtonEnabled = '//div[@id="drawing-button-prev" and not(contains(@class,"disabled"))]';
