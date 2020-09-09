@@ -57,7 +57,7 @@ describe('components', () => {
         adskViewingShutdownMock.mockClear();
     });
 
-    it('load gets called when pdf provided', () => {
+    it('load gets called when pdf provided', async () => {
       const wrapper = shallow(<ForgePdfView { ...baseProps } />);
 
       const viewer = wrapper.find('.viewer');
@@ -66,35 +66,39 @@ describe('components', () => {
       expect(script).toHaveLength(1);
 
       window.Autodesk = AutodeskMock;
-      script.simulate('load');
+      await script.simulate('load');
+      await Promise.resolve(); // waits until all is done
+
       expect(loadExtensionMock).toHaveBeenCalledWith('Autodesk.PDF');
       expect(loadModelMock).toHaveBeenCalledWith(drawingPdf);
     });
 
-    it('load gets called when pdf changes', () => {
+    it('load gets called when pdf changes', async () => {
         const wrapper = shallow(<ForgePdfView { ...baseProps } />);
 
         window.Autodesk = AutodeskMock;
         const script = wrapper.find('Script');
-        script.simulate('load');
+        await script.simulate('load');
+        await Promise.resolve(); // waits until all is done
 
         const updateProps = { drawingPdf: 'newurl.pdf' };
         wrapper.setProps(updateProps);
         expect(loadModelMock).toHaveBeenCalledTimes(2);
     });
 
-    it('returns without loading when pdf is null', () => {
+    it('returns without loading when pdf is null', async () => {
       const nullProps = { drawingPdf: null };
       const wrapper = shallow(<ForgePdfView { ...nullProps } />);
 
       window.Autodesk = AutodeskMock;
       const script = wrapper.find('Script');
-      script.simulate('load');
+      await script.simulate('load');
+      await Promise.resolve(); // waits until all is done
 
       expect(loadModelMock).toHaveBeenCalledTimes(0);
     });
 
-    it('unmounts correctly', () => {
+    it('unmounts correctly', async () => {
         const wrapper = shallow(<ForgePdfView { ...baseProps } />);
 
       // preparation: must load the viewer first
@@ -103,7 +107,8 @@ describe('components', () => {
         const script = viewer.find('Script');
         expect(script).toHaveLength(1);
         window.Autodesk = AutodeskMock;
-        script.simulate('load');
+        await script.simulate('load');
+        await Promise.resolve(); // waits until all is done
 
         wrapper.unmount();
 
