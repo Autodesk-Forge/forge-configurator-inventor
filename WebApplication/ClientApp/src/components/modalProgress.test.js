@@ -54,4 +54,17 @@ describe('modal progress ', () => {
         expect(children).toHaveLength(2);
         expect(children[0].props['children']).toBe("Missing label.");
     });
+
+    it('should call method provided for Done button', () => {
+        const doneHandlerMock = jest.fn();
+        const props = {
+            done: true,
+            onClose: doneHandlerMock
+        };
+
+        const wrapper = shallow(<ModalProgress {...props} />);
+        const doneBtn = wrapper.find('Button');
+        doneBtn.simulate('click');
+        expect(doneHandlerMock).toHaveBeenCalled();
+    });
 });

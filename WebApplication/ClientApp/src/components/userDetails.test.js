@@ -1,4 +1,4 @@
-﻿/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
 // Copyright (c) Autodesk, Inc. All rights reserved
 // Written by Forge Design Automation team for Inventor
 //
@@ -16,22 +16,31 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using System.Collections.Generic;
-using Autodesk.Forge.DesignAutomation.Model;
+import React from 'react';
+import Enzyme, { shallow } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+import { UserDetails } from './userDetails';
 
-namespace WebApplication.Definitions
-{
-    public class ProcessingResult
-    {
-        public bool Success { get; set; }
-        public string ReportUrl { get; set; }
-        public string ErrorMessage { get; set; }
+Enzyme.configure({ adapter: new Adapter() });
 
-        public List<Statistics> Stats { get; set; } = new List<Statistics>();
+describe('user dialog ', () => {
 
-        public ProcessingResult(Statistics statistics)
-        {
-            Stats.Add(statistics);
-        }
-    }
-}
+    it('check there is contained a hyperlink to README.md', () => {
+
+        const props = {
+            profile: {
+              name: 'profileName',
+              avatarUrl: 'avatarUrl',
+              isLoggedIn: true,
+            }
+          };
+
+        const wrapper = shallow(<UserDetails {...props} />);
+
+        const hyperlinkSpan = wrapper.find('.hyperlink');
+
+        expect(hyperlinkSpan.length).toBe(1);
+        expect(hyperlinkSpan.find('a').prop('href')).toContain('about.md');
+    });
+
+});

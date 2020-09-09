@@ -112,22 +112,24 @@ namespace WebApplication.Controllers
         private readonly ILogger<JobsHub> _logger;
         private readonly ProjectWork _projectWork;
         private readonly LinkGenerator _linkGenerator;
+        private readonly ProfileProvider _profileProvider;
         private readonly UserResolver _userResolver;
         private readonly Sender _sender;
         private readonly Uploads _uploads;
         private readonly DtoGenerator _dtoGenerator;
-        private readonly AdoptProjectService _adoptProjectService;
+        private readonly ProjectService _projectService;
 
         public JobsHub(ILogger<JobsHub> logger, ProjectWork projectWork, LinkGenerator linkGenerator, UserResolver userResolver, 
-            Uploads uploads, DtoGenerator dtoGenerator, AdoptProjectService adoptProjectService)
+            ProfileProvider profileProvider, Uploads uploads, DtoGenerator dtoGenerator, ProjectService projectService)
         {
             _logger = logger;
             _projectWork = projectWork;
             _linkGenerator = linkGenerator;
+            _profileProvider = profileProvider;
             _userResolver = userResolver;
             _uploads = uploads;
             _dtoGenerator = dtoGenerator;
-            _adoptProjectService = adoptProjectService;
+            _projectService = projectService;
 
             _sender = new Sender(this);
         }
@@ -136,7 +138,7 @@ namespace WebApplication.Controllers
         {
             _logger.LogInformation($"invoked CreateJob, connectionId : {Context.ConnectionId}");
 
-            _userResolver.Token = token;
+            _profileProvider.Token = token;
 
             // create job and run it
             var job = new UpdateModelJobItem(_logger, projectId, parameters, _projectWork);
@@ -147,7 +149,7 @@ namespace WebApplication.Controllers
         {
             _logger.LogInformation($"invoked CreateRFAJob, connectionId : {Context.ConnectionId}");
 
-            _userResolver.Token = token;
+            _profileProvider.Token = token;
 
             // create job and run it
             var job = new RFAJobItem(_logger, projectId, hash, _projectWork, _linkGenerator);
@@ -158,7 +160,7 @@ namespace WebApplication.Controllers
         {
             _logger.LogInformation($"invoked CreateDrawingDownloadJob, connectionId : {Context.ConnectionId}");
 
-            _userResolver.Token = token;
+            _profileProvider.Token = token;
 
             // create job and run it
             var job = new DrawingJobItem(_logger, projectId, hash, _projectWork, _linkGenerator);
@@ -169,14 +171,14 @@ namespace WebApplication.Controllers
         {
             _logger.LogInformation($"invoked CreateAdoptJob, connectionId : {Context.ConnectionId}");
 
-            _userResolver.Token = token;
+            _profileProvider.Token = token;
 
             // get upload information
             (ProjectInfo projectInfo, string fileName) = _uploads.GetUploadData(packageId);
             _uploads.ClearUploadData(packageId);
 
             // create job and run it
-            var job = new AdoptJobItem(_logger, projectInfo, fileName, _projectWork, _userResolver, _dtoGenerator);
+            var job = new AdoptJobItem(_logger, projectInfo, fileName, _projectWork, _dtoGenerator, _userResolver);
             await RunJobAsync(job);
         }
 
@@ -184,7 +186,7 @@ namespace WebApplication.Controllers
         {
             _logger.LogInformation($"invoked CreateDrawingPdfJob, connectionId : {Context.ConnectionId}");
 
-            _userResolver.Token = token;
+            _profileProvider.Token = token;
 
             // create job and run it
             var job = new ExportDrawingPdfJobItem(_logger, projectId, hash, _projectWork, _linkGenerator);
@@ -195,10 +197,10 @@ namespace WebApplication.Controllers
         {
             _logger.LogInformation($"invoked CreateDrawingPdfJob, connectionId : {Context.ConnectionId}");
 
-            _userResolver.Token = token;
+            _profileProvider.Token = token;
 
             // create job and run it
-            var job = new AdoptProjectWithParametersJobItem(_logger, _adoptProjectService, payload, _dtoGenerator);
+            var job = new AdoptProjectWithParametersJobItem(_logger, _projectService, payload, _dtoGenerator);
             await RunJobAsync(job);
         }
 

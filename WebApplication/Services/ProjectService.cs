@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Autodesk.Forge.Client;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Polly;
+using Polly.Retry;
 using WebApplication.Definitions;
 using WebApplication.Processing;
 using WebApplication.Services.Exceptions;
@@ -16,98 +20,75 @@ namespace WebApplication.Services
     {
         private readonly ILogger<ProjectService> _logger;
         private readonly UserResolver _userResolver;
-        private readonly Uploads _uploads;
         private readonly ProjectWork _projectWork;
+        private readonly RetryPolicy _waitForBucketPolicy;
 
-        public ProjectService(ILogger<ProjectService> logger, UserResolver userResolver, Uploads uploads, ProjectWork projectWork)
+        public ProjectService(ILogger<ProjectService> logger, UserResolver userResolver, ProjectWork projectWork)
         {
             _logger = logger;
             _userResolver = userResolver;
-            _uploads = uploads;
             _projectWork = projectWork;
+
+            _waitForBucketPolicy = Policy
+                .Handle<ApiException>(e => e.ErrorCode == StatusCodes.Status404NotFound)
+                .WaitAndRetryAsync(
+                    retryCount: 4,
+                    retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                    (exception, timeSpan) => _logger.LogWarning("Cannot get fresh OSS bucket. Repeating")
+                );
         }
 
-        public async Task<string> CreateProject(NewProjectModel projectModel)
+        /// <summary>
+        /// https://jira.autodesk.com/browse/INVGEN-45256
+        /// </summary>
+        /// <param name="payload">project configuration with parameters</param>
+        /// <returns>project storage</returns>
+        public async Task<ProjectStorage> AdoptProjectWithParametersAsync(AdoptProjectWithParametersPayload payload)
         {
-            var projectName = Path.GetFileNameWithoutExtension(projectModel.package.FileName);
-
-            // Check if project already exists
-            var projectNames = await GetProjectNamesAsync();
-            foreach (var existingProjectName in projectNames)
+            if (!await DoesProjectAlreadyExistAsync(payload.Name))
             {
-                if (projectName == existingProjectName) 
-                    throw new ProjectAlreadyExistsException(projectName);
+                var bucket = await _userResolver.GetBucketAsync();
+                var signedUrl = await TransferProjectToOssAsync(bucket, payload);
+                await _projectWork.AdoptAsync(payload, signedUrl);
+            }
+            else
+            {
+                _logger.LogInformation($"project with name {payload.Name} already exists");
             }
 
-            var projectInfo = new ProjectInfo
-            {
-                Name = projectName,
-                TopLevelAssembly = projectModel.root
-            };
+            await _projectWork.DoSmartUpdateAsync(payload.Config, payload.Name);
 
-            // download file locally (a place to improve... would be good to stream it directly to OSS)
-            var fileName = Path.GetTempFileName();
-            await using (var fileWriteStream = System.IO.File.OpenWrite(fileName))
-            {
-                await projectModel.package.CopyToAsync(fileWriteStream);
-            }
-
-            var packageId = Guid.NewGuid().ToString();
-            _uploads.AddUploadData(packageId, projectInfo, fileName);
-
-            _logger.LogInformation($"created project with packageId {packageId}");
-
-            return packageId;
+            return await _userResolver.GetProjectStorageAsync(payload.Name);
         }
 
-        public async Task<ProjectStorage> AdoptProject(ProjectInfo projectInfo, string fileName, string id)
+        private async Task<bool> DoesProjectAlreadyExistAsync(string projectName)
         {
-            using var scope = _logger.BeginScope("Project Adoption ({id})");
+            var existingProjects = await GetProjectNamesAsync();
 
-            _logger.LogInformation($"Adopt {id} for project {projectInfo.Name} started.");
-
-            // upload the file to OSS
-            var bucket = await _userResolver.GetBucketAsync(true);
-            ProjectStorage projectStorage = await _userResolver.GetProjectStorageAsync(projectInfo.Name);
-
-            string ossSourceModel = projectStorage.Project.OSSSourceModel;
-
-            await bucket.SmartUploadAsync(fileName, ossSourceModel);
-
-            // cleanup before adoption
-            File.Delete(fileName);
-
-            // adopt the project
-            bool adopted = false;
-            try
-            {
-                string signedUploadedUrl = await bucket.CreateSignedUrlAsync(ossSourceModel);
-
-                await _projectWork.AdoptAsync(projectInfo, signedUploadedUrl);
-
-                adopted = true;
-            }
-            catch (FdaProcessingException fpe)
-            {
-                throw;
-                //await resultSender.SendErrorAsync(id, fpe.ReportUrl);
-            }
-            finally
-            {
-                // on any failure during adoption we consider that project adoption failed and it's not usable
-                if (!adopted)
-                {
-                    _logger.LogInformation($"Adoption failed. Removing '{ossSourceModel}' OSS object.");
-                    await bucket.DeleteObjectAsync(ossSourceModel);
-                }
-            }
-
-            _logger.LogInformation($"Adopt {id} for project {projectInfo.Name} completed.");
-            //await resultSender.SendSuccessAsync(_dtoGenerator.ToDTO(projectStorage));
-
-            return projectStorage;
+            return existingProjects.Contains(projectName);
         }
 
+        public async Task<string> TransferProjectToOssAsync(OssBucket bucket, DefaultProjectConfiguration projectConfig)
+        {
+            _logger.LogInformation($"Bucket {bucket.BucketKey} created");
+
+            var projectUrl = projectConfig.Url;
+            var project = await _userResolver.GetProjectAsync(projectConfig.Name);
+
+            _logger.LogInformation($"Launching 'TransferData' for {projectUrl}");
+
+            // OSS bucket might be not ready yet, so repeat attempts
+            string signedUrl = await _waitForBucketPolicy.ExecuteAsync(async () =>
+                await bucket.CreateSignedUrlAsync(project.OSSSourceModel, ObjectAccess.ReadWrite));
+
+            // TransferData from s3 to temporary oss url
+            await _projectWork.FileTransferAsync(projectUrl, signedUrl);
+
+            _logger.LogInformation($"'TransferData' for {projectUrl} is done.");
+
+            return signedUrl;
+        }
+        
         /// <summary>
         /// Get list of project names for a bucket.
         /// </summary>
@@ -120,6 +101,53 @@ namespace WebApplication.Services
                 .Select(objDetails => ONC.ToProjectName(objDetails.ObjectKey))
                 .ToList();
             return projectNames;
+        }
+
+        public async Task DeleteProjects(ICollection<string> projectNameList, OssBucket bucket = null)
+        {
+            bucket ??= await _userResolver.GetBucketAsync(true);
+
+            _logger.LogInformation($"deleting projects [{string.Join(", ", projectNameList)}] from bucket {bucket.BucketKey}");
+
+            // collect all oss objects for all provided projects
+            var tasks = new List<Task>();
+
+            foreach (var projectName in projectNameList)
+            {
+                tasks.Add(bucket.DeleteObjectAsync(Project.ExactOssName(projectName)));
+
+                foreach (var searchMask in ONC.ProjectFileMasks(projectName))
+                {
+                    var objects = await bucket.GetObjectsAsync(searchMask);
+                    foreach (var objectDetail in objects)
+                    {
+                        tasks.Add(bucket.DeleteObjectAsync(objectDetail.ObjectKey));
+                    }
+                }
+            }
+
+            // delete the OSS objects
+            await Task.WhenAll(tasks);
+            for (var i = 0; i < tasks.Count; i++)
+            {
+                if (tasks[i].IsFaulted)
+                {
+                    _logger.LogError($"Failed to delete file #{i}");
+                }
+            }
+
+            // delete local cache for all provided projects
+            foreach (var projectName in projectNameList)
+            {
+                var projectStorage = await _userResolver.GetProjectStorageAsync(projectName, ensureDir: false);
+                projectStorage.DeleteLocal();
+            }
+        }
+
+        public async Task DeleteAllProjects()
+        {
+            var projectsNames = await GetProjectNamesAsync();
+            await DeleteProjects(projectsNames);
         }
     }
 }

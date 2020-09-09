@@ -20,9 +20,6 @@ import * as signalR from '@aspnet/signalr';
 import repo from './Repository';
 
 class JobManager {
-    constructor() {
-        this.jobs = new Map();
-    }
 
     async startConnection() {
         const connection = new signalR.HubConnectionBuilder()
@@ -40,12 +37,12 @@ class JobManager {
         if (onStart)
             onStart();
 
-        connection.on("onComplete", (updatedState) => {
+        connection.on("onComplete", (updatedState, stats) => {
             // stop connection
             connection.stop();
 
             if (onComplete)
-                onComplete(updatedState);
+                onComplete(updatedState, stats);
         });
 
         connection.on("onError", (jobId, reportUrl) => {
@@ -65,12 +62,12 @@ class JobManager {
         if (onStart)
             onStart();
 
-        connection.on("onComplete", (newProject) => {
+        connection.on("onComplete", (newProject, stats) => {
             // stop connection
             connection.stop();
 
             if (onComplete)
-                onComplete(newProject);
+                onComplete(newProject,stats);
         });
 
         connection.on("onError", (jobId, reportUrl) => {
@@ -123,7 +120,7 @@ class JobManager {
 
         if (onStart) onStart();
 
-        connection.on("onComplete", downloadUrl => {
+        connection.on("onComplete", (downloadUrl, stats) => {
 
             connection.stop();
 
@@ -132,7 +129,7 @@ class JobManager {
                 if (token) {
                     downloadUrl += "/" + token;
                 }
-                onSuccess(downloadUrl);
+                onSuccess(downloadUrl, stats);
             }
         });
 
@@ -151,12 +148,12 @@ class JobManager {
         if (onStart)
             onStart();
 
-        connection.on("onComplete", (drawingUrl) => {
+        connection.on("onComplete", (drawingUrl, stats) => {
             // stop connection
             connection.stop();
 
             if (onComplete) {
-                onComplete(drawingUrl);
+                onComplete(drawingUrl, stats);
             }
         });
 

@@ -45,13 +45,12 @@ export class ParametersContainer extends Component {
         this.props.invalidateDrawing();
     }
 
-    onProgressCloseClick() {
-        // close is not supported now
-        //this.props.showModalProgress(false);
-    }
-
     onUpdateFailedCloseClick() {
         this.props.showUpdateFailed(false);
+    }
+
+    onModalProgressClose() {
+        this.props.hideModalProgress();
     }
 
     render() {
@@ -92,7 +91,8 @@ export class ParametersContainer extends Component {
                             title="Updating Project"
                             label={this.props.activeProject.id}
                             icon="/Assembly_icon.svg"
-                            onClose={() => this.onProgressCloseClick()}/>
+                            onClose={() => this.onModalProgressClose()}
+                        />
                     }
                     {this.props.updateFailedShowing &&
                         <ModalFail
@@ -121,4 +121,5 @@ export default connect(function (store) {
         projectSourceParameters: getParameters(activeProject.id, store),
         projectUpdateParameters: getUpdateParameters(activeProject.id, store)
     };
-}, { fetchParameters, resetParameters, updateModelWithParameters, showModalProgress, showUpdateFailed, invalidateDrawing })(ParametersContainer);
+}, { fetchParameters, resetParameters, updateModelWithParameters, showModalProgress, showUpdateFailed, invalidateDrawing,
+    hideModalProgress: () => async (dispatch) => { dispatch(showModalProgress(false)); } })(ParametersContainer);

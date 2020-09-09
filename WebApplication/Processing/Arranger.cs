@@ -37,18 +37,18 @@ namespace WebApplication.Processing
         private readonly UserResolver _userResolver;
 
         // generate unique names for files. The files will be moved to correct places after hash generation.
-        public readonly string Parameters = $"{Guid.NewGuid():N}.json";
-        public readonly string Thumbnail = $"{Guid.NewGuid():N}.png";
-        public readonly string SVF = $"{Guid.NewGuid():N}.zip";
-        public readonly string InputParams = $"{Guid.NewGuid():N}.json";
-        public readonly string OutputModelIAM = $"{Guid.NewGuid():N}.zip";
-        public readonly string OutputModelIPT = $"{Guid.NewGuid():N}.ipt";
-        public readonly string OutputSAT = $"{Guid.NewGuid():N}.sat";
-        public readonly string OutputRFA = $"{Guid.NewGuid():N}.rfa";
-        public readonly string BomJson = $"{Guid.NewGuid():N}.bom.json";
-        public readonly string OutputDrawing = $"{Guid.NewGuid():N}.drawing.zip";
-        public readonly string OutputDrawingPdf = $"{Guid.NewGuid():N}.drawing.pdf";
-        public readonly string UploadedModel = $"{Guid.NewGuid():N}.upload";
+        // it's recommended to use easily identifiable file suffixes for debugging reasons
+        public readonly string Parameters = Unique(".params.json");
+        public readonly string Thumbnail = Unique(".thumb.png");
+        public readonly string SVF = Unique(".svf.zip");
+        public readonly string InputParams = Unique(".inputparams.json");
+        public readonly string OutputModelIAM = Unique(".outputiam.zip");
+        public readonly string OutputModelIPT = Unique(".output.ipt");
+        public readonly string OutputSAT = Unique(".sat");
+        public readonly string OutputRFA = Unique(".rfa");
+        public readonly string BomJson = Unique(".bom.json");
+        public readonly string OutputDrawing = Unique(".drawing.zip");
+        public readonly string OutputDrawingPdf = Unique(".drawing.pdf");
 
         /// <summary>
         /// Constructor.
@@ -84,8 +84,8 @@ namespace WebApplication.Processing
                         OutputIAMModelUrl   = urls[3],
                         OutputIPTModelUrl   = urls[4],
                         BomUrl              = urls[5],
-                        TLA = tlaFilename
-            };
+                        TLA                 = tlaFilename
+                    };
         }
 
         /// <summary>
@@ -107,8 +107,7 @@ namespace WebApplication.Processing
                                             bucket.CreateSignedUrlAsync(BomJson, ObjectAccess.Write)
                                             );
 
-            await using var jsonStream = Json.ToStream(parameters);
-            await bucket.UploadObjectAsync(InputParams, jsonStream);
+            await bucket.UploadAsJsonAsync(InputParams, parameters);
 
             return new UpdateData
                     {
@@ -143,7 +142,7 @@ namespace WebApplication.Processing
                                 bucket.RenameObjectAsync(BomJson, ossNames.Bom),
                                 bucket.RenameObjectAsync(Parameters, ossNames.Parameters),
                                 bucket.RenameObjectAsync(attributes.IsAssembly ? OutputModelIAM : OutputModelIPT, ossNames.GetCurrentModel(attributes.IsAssembly)),
-                                bucket.UploadObjectAsync(project.OssAttributes.Metadata, Json.ToStream(attributes, writeIndented: true)));
+                                bucket.UploadAsJsonAsync(project.OssAttributes.Metadata, attributes, writeIndented: true));
 
             return hashString;
         }
@@ -198,7 +197,6 @@ namespace WebApplication.Processing
         internal async Task<ProcessingArgs> ForDrawingAsync(string inputDocUrl, string topLevelAssembly)
         {
             var bucket = await _userResolver.GetBucketAsync();
-
             var url = await bucket.CreateSignedUrlAsync(OutputDrawing, ObjectAccess.ReadWrite);
 
             return new ProcessingArgs
@@ -274,6 +272,15 @@ namespace WebApplication.Processing
             var stream = await response.Content.ReadAsStreamAsync();
             var parameters = await JsonSerializer.DeserializeAsync<InventorParameters>(stream);
             return Crypto.GenerateObjectHashString(parameters);
+        }
+
+        /// <summary>
+        /// Generate unique filename.
+        /// </summary>
+        /// <param name="suffix">Filename suffix to use</param>
+        private static string Unique(string suffix)
+        {
+            return Guid.NewGuid().ToString("N") + suffix;
         }
     }
 }

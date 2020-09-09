@@ -18,13 +18,12 @@
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { getActiveProject } from '../reducers/mainReducer';
+import { getActiveProject, getDrawingPdfUrl, drawingProgressShowing } from '../reducers/mainReducer';
 import './drawing.css';
 import ForgePdfView from './forgePdfView';
 import { fetchDrawing } from '../actions/downloadActions';
-import { getDrawingPdfUrl } from '../reducers/mainReducer';
-import { drawingProgressShowing } from '../reducers/mainReducer';
 import ModalProgress from './modalProgress';
+import { showDrawingExportProgress } from '../actions/uiFlagsActions';
 
 export class Drawing extends Component {
 
@@ -45,6 +44,10 @@ export class Drawing extends Component {
       }
   }
 
+  onModalProgressClose() {
+    this.props.hideModalProgress();
+  }
+
   render() {
     const initialized = !this.props.activeProject?.hasDrawing || this.props.drawingPdf !== null;
     const isAssembly = this.props.activeProject?.isAssembly;
@@ -63,12 +66,13 @@ export class Drawing extends Component {
           <ForgePdfView/>
         }
         {this.props.drawingProgressShowing &&
-        <ModalProgress
-            open={true}
-            title="Generating Drawing"
-            label={this.props.activeProject.id}
-            icon="/Assembly_icon.svg"
-            onClose={() => {}}/>
+          <ModalProgress
+              open={true}
+              title="Generating Drawing"
+              label={this.props.activeProject.id}
+              icon="/Assembly_icon.svg"
+              onClose={() => this.onModalProgressClose()}
+          />
         }
         </div>
       </div>
@@ -85,4 +89,4 @@ export default connect(function (store) {
     drawingPdf: getDrawingPdfUrl(store),
     drawingProgressShowing: drawingProgressShowing(store)
   };
-}, { fetchDrawing })(Drawing);
+}, { fetchDrawing, hideModalProgress: () => async (dispatch) => { dispatch(showDrawingExportProgress(false)); } })(Drawing);

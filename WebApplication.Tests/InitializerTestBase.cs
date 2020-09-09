@@ -96,14 +96,21 @@ namespace WebApplication.Tests
 
             var fdaClient = new FdaClient(publisher, appBundleZipPathsOptions);
             IOptions<DefaultProjectsConfiguration> defaultProjectsOptions = Options.Create(defaultProjectsConfiguration);
-            var userResolver = new UserResolver(resourceProvider, forgeOSS, forgeConfigOptions, localCache, NullLogger<UserResolver>.Instance, null);
+            var profileProvider = new ProfileProvider(forgeOSS);
+            var bucketPrefixProvider = new BucketPrefixProvider(forgeConfigOptions, null);
+            var bucketKeyProvider = new LoggedInUserBucketKeyProvider(forgeConfigOptions, profileProvider, bucketPrefixProvider);
+            var userResolver = new UserResolver(resourceProvider, forgeOSS, bucketKeyProvider, localCache, NullLogger<UserResolver>.Instance, profileProvider);
             var arranger = new Arranger(httpClientFactory, userResolver);
 
             // TODO: linkGenerator should be mocked
             var dtoGenerator = new DtoGenerator(linkGenerator: null, localCache);
             var projectWork = new ProjectWork(new NullLogger<ProjectWork>(), arranger, fdaClient, dtoGenerator, userResolver);
+
+            var projectService = new ProjectService(new NullLogger<ProjectService>(), userResolver, projectWork);
+
             initializer = new Initializer(new NullLogger<Initializer>(), fdaClient,
-                                            defaultProjectsOptions, projectWork, userResolver, localCache);
+                                            defaultProjectsOptions, projectWork, userResolver, localCache,
+                                            projectService, bucketPrefixProvider);
 
             testFileDirectory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()));
             httpClient = new HttpClient();

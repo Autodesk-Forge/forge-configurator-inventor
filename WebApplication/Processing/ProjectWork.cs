@@ -17,9 +17,11 @@
 /////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Autodesk.Forge.Client;
+using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Shared;
@@ -53,9 +55,9 @@ namespace WebApplication.Processing
         /// <summary>
         /// Adapt the project.
         /// </summary>
-        public async Task AdoptAsync(ProjectInfo projectInfo, string inputDocUrl)
+        public async Task<FdaStatsDTO> AdoptAsync(ProjectInfo projectInfo, string inputDocUrl)
         {
-            _logger.LogInformation("Adopt the project");
+            _logger.LogInformation($"Adopt project '{projectInfo.Name}'");
 
             var projectStorage = await _userResolver.GetProjectStorageAsync(projectInfo.Name);
             var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, projectInfo.TopLevelAssembly);
@@ -63,8 +65,9 @@ namespace WebApplication.Processing
             ProcessingResult result = await _fdaClient.AdoptAsync(adoptionData);
             if (! result.Success)
             {
-                _logger.LogError($"Failed to process '{projectInfo.Name}' project.");
-                throw new FdaProcessingException($"Failed to process '{projectInfo.Name}' project.", result.ReportUrl);
+                var message = $"Failed to process '{projectInfo.Name}' project.";
+                _logger.LogError(message);
+                throw new FdaProcessingException(message, result.ReportUrl);
             }
 
             // rearrange generated data according to the parameters hash
@@ -74,51 +77,61 @@ namespace WebApplication.Processing
             var bucket = await _userResolver.GetBucketAsync();
 
             await projectStorage.EnsureLocalAsync(bucket);
+
+            // save adoption statistics
+            var ossNames = projectStorage.GetOssNames();
+            await bucket.UploadAsJsonAsync(ossNames.StatsAdopt, result.Stats);
+            await bucket.CopyAsync(ossNames.StatsAdopt, ossNames.StatsUpdate);
+            return FdaStatsDTO.All(result.Stats);
         }
 
         /// <summary>
         /// Update project state with the parameters (or take it from cache).
         /// </summary>
-        public async Task<ProjectStateDTO> DoSmartUpdateAsync(InventorParameters parameters, string projectId, bool bForceUpdate = false)
+        public async Task<(ProjectStateDTO dto, FdaStatsDTO stats)> DoSmartUpdateAsync(InventorParameters parameters, string projectId, bool bForceUpdate = false)
         {
             var hash = Crypto.GenerateObjectHashString(parameters);
-            //_logger.LogInformation(JsonSerializer.Serialize(parameters));
             _logger.LogInformation($"Incoming parameters hash is {hash}");
 
             var storage = await _userResolver.GetProjectStorageAsync(projectId);
-            var project = storage.Project;
 
-            var localNames = project.LocalNameProvider(hash);
+            FdaStatsDTO stats;
+            var localNames = storage.GetLocalNames(hash);
 
             // check if the data cached already
             if (Directory.Exists(localNames.SvfDir) && !bForceUpdate)
             {
                 _logger.LogInformation("Found cached data.");
+
+                // restore statistics
+                var bucket = await _userResolver.GetBucketAsync();
+                var statsNative = await bucket.DeserializeAsync<List<Statistics>>(storage.GetOssNames(hash).StatsUpdate);
+                stats = FdaStatsDTO.CreditsOnly(statsNative);
             }
             else
             {
-                var resultingHash = await UpdateAsync(project, storage, parameters, hash, bForceUpdate);
+                string resultingHash;
+                (resultingHash, stats) = await UpdateAsync(storage, parameters, hash, bForceUpdate);
                 if (! hash.Equals(resultingHash, StringComparison.Ordinal))
                 {
                     _logger.LogInformation($"Update returned different parameters. Hash is {resultingHash}.");
-                    await CopyStateAsync(project, resultingHash, hash, storage.IsAssembly);
+                    await CopyStateAsync(storage.Project, resultingHash, hash, storage.IsAssembly);
 
                     // update 
                     hash = resultingHash;
                 }
             }
 
-            var dto = _dtoGenerator.MakeProjectDTO<ProjectStateDTO>(project, hash, storage.IsAssembly, storage.Metadata.HasDrawings);
+            var dto = _dtoGenerator.MakeProjectDTO<ProjectStateDTO>(storage, hash);
             dto.Parameters = Json.DeserializeFile<InventorParameters>(localNames.Parameters);
 
-            return dto;
+            return (dto, stats);
         }
-
 
         /// <summary>
         /// Generate RFA (or take it from cache).
         /// </summary>
-        public async Task GenerateRfaAsync(string projectName, string hash)
+        public async Task<FdaStatsDTO> GenerateRfaAsync(string projectName, string hash)
         {
             _logger.LogInformation($"Generating RFA for hash {hash}");
 
@@ -132,16 +145,18 @@ namespace WebApplication.Processing
             //// *********************************************
 
 
-            var ossNameProvider = project.OssNameProvider(hash);
+            var ossNames = project.OssNameProvider(hash);
 
             var bucket = await _userResolver.GetBucketAsync();
             // check if RFA file is already generated
-            var rfaExists = await bucket.TryToCreateSignedUrlForReadAsync(ossNameProvider.Rfa) != null;
-            if (rfaExists)
-                return;
+            if (await bucket.ObjectExistsAsync(ossNames.Rfa))
+            {
+                var stats = await bucket.DeserializeAsync<Statistics[]>(ossNames.StatsRFA);
+                return FdaStatsDTO.CreditsOnly(stats);
+            }
 
             // OK, nothing in cache - generate it now
-            var inputDocUrl = await bucket.CreateSignedUrlAsync(ossNameProvider.GetCurrentModel(storage.IsAssembly));
+            var inputDocUrl = await bucket.CreateSignedUrlAsync(ossNames.GetCurrentModel(storage.IsAssembly));
             ProcessingArgs satData = await _arranger.ForSatAsync(inputDocUrl, storage.Metadata.TLA);
             ProcessingArgs rfaData = await _arranger.ForRfaAsync(satData.SatUrl);
 
@@ -153,34 +168,43 @@ namespace WebApplication.Processing
             }
 
             await _arranger.MoveRfaAsync(project, hash);
+            await bucket.UploadAsJsonAsync(ossNames.StatsRFA, result.Stats);
+            return FdaStatsDTO.All(result.Stats);
         }
 
-        public async Task<bool> ExportDrawingPdfAsync(string projectName, string hash)
+        public async Task<FdaStatsDTO> ExportDrawingPdfAsync(string projectName, string hash)
         {
             _logger.LogInformation($"Getting drawing pdf for hash {hash}");
 
             ProjectStorage storage = await _userResolver.GetProjectStorageAsync(projectName);
             Project project = storage.Project;
 
-            var ossNameProvider = project.OssNameProvider(hash);
+            var ossNames = project.OssNameProvider(hash);
 
-            bool generated = false;
-            ApiResponse<dynamic> ossObjectResponse = null;
             var bucket = await _userResolver.GetBucketAsync();
             // check if Drawing viewables file is already generated
             try
             {
-                ossObjectResponse = await bucket.GetObjectAsync(ossNameProvider.DrawingPdf);
+                bool generated = false;
+
+                ApiResponse<dynamic> ossObjectResponse = await bucket.GetObjectAsync(ossNames.DrawingPdf);
                 if (ossObjectResponse != null)
                 {
-                    using (Stream objectStream = ossObjectResponse.Data)
-                    {
-                        // zero length means that there is nothing to generate, but processed and do not continue
-                        generated = objectStream.Length > 0;
-                    }
+                    await using Stream objectStream = ossObjectResponse.Data;
+
+                    // zero length means that there is nothing to generate, but processed and do not continue
+                    generated = objectStream.Length > 0;
                 }
 
-                return generated;
+                if (generated)
+                {
+                    var nativeStats = await bucket.DeserializeAsync<List<Statistics>>(ossNames.StatsDrawingPDF);
+                    return FdaStatsDTO.CreditsOnly(nativeStats);
+                }
+                else
+                {
+                    return null;
+                }
             }
             catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
             {
@@ -189,7 +213,7 @@ namespace WebApplication.Processing
             _logger.LogInformation($"Drawing PDF for hash {hash}: generating");
 
             // OK, nothing in cache - generate it now
-            var inputDocUrl = await bucket.CreateSignedUrlAsync(ossNameProvider.GetCurrentModel(storage.IsAssembly));
+            var inputDocUrl = await bucket.CreateSignedUrlAsync(ossNames.GetCurrentModel(storage.IsAssembly));
             ProcessingArgs drawingData = await _arranger.ForDrawingPdfAsync(inputDocUrl, storage.Metadata.TLA);
 
             ProcessingResult result = await _fdaClient.ExportDrawingAsync(drawingData);
@@ -202,44 +226,48 @@ namespace WebApplication.Processing
             // move to the right place
             await _arranger.MoveDrawingPdfAsync(project, hash);
 
-            // check if Drawing viewables file is generated
+            // check if Drawing PDF file is generated
             try
             {
-                await bucket.CreateSignedUrlAsync(ossNameProvider.DrawingPdf);
-                generated = true;
+                await bucket.CreateSignedUrlAsync(ossNames.DrawingPdf);
+
+                // handle statistics
+                await bucket.UploadAsJsonAsync(ossNames.StatsDrawingPDF, result.Stats);
+                _logger.LogInformation($"Drawing PDF for hash {hash} is generated");
+                return FdaStatsDTO.All(result.Stats);
             }
             catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
             {
                 // the file does not exist after generating drawing, so just mark with zero length that we already processed it
-                await bucket.UploadObjectAsync(ossNameProvider.DrawingPdf, new MemoryStream(0));
+                await bucket.UploadObjectAsync(ossNames.DrawingPdf, new MemoryStream(0));
+
+                _logger.LogError($"Drawing PDF for hash {hash} is NOT generated");
+                return null;
             }
-
-            var msg = generated ? "GENERATED" : "NOT GENERATED";
-            _logger.LogInformation($"Drawing viewables for hash {hash} - drawing {msg}");
-
-            return generated;
         }
 
         /// <summary>
         /// Generate Drawing zip with folder structure (or take it from cache).
         /// </summary>
-        public async Task GenerateDrawingAsync(string projectName, string hash)
+        public async Task<FdaStatsDTO> GenerateDrawingAsync(string projectName, string hash)
         {
             _logger.LogInformation($"Generating Drawing for hash {hash}");
 
             ProjectStorage storage = await _userResolver.GetProjectStorageAsync(projectName);
             Project project = storage.Project;
 
-            var ossNameProvider = project.OssNameProvider(hash);
+            var ossNames = project.OssNameProvider(hash);
 
             var bucket = await _userResolver.GetBucketAsync();
             // check if Drawing file is already generated
-            var drawingUrl = await bucket.TryToCreateSignedUrlForReadAsync(ossNameProvider.Drawing);
-            if (drawingUrl != null)
-                return;
+            if (await bucket.ObjectExistsAsync(ossNames.Drawing))
+            {
+                var stats = await bucket.DeserializeAsync<Statistics[]>(ossNames.StatsDrawings);
+                return FdaStatsDTO.CreditsOnly(stats);
+            }
 
             // OK, nothing in cache - generate it now
-            var inputDocUrl = await bucket.CreateSignedUrlAsync(ossNameProvider.GetCurrentModel(storage.IsAssembly));
+            var inputDocUrl = await bucket.CreateSignedUrlAsync(ossNames.GetCurrentModel(storage.IsAssembly));
 
             ProcessingArgs drawingData = await _arranger.ForDrawingAsync(inputDocUrl, storage.Metadata.TLA);
             ProcessingResult result = await _fdaClient.GenerateDrawing(drawingData);
@@ -250,6 +278,9 @@ namespace WebApplication.Processing
             }
 
             await _arranger.MoveDrawingAsync(project, hash);
+
+            await bucket.UploadAsJsonAsync(ossNames.StatsDrawings, result.Stats);
+            return FdaStatsDTO.All(result.Stats);
         }
 
         public async Task FileTransferAsync(string source, string target)
@@ -264,18 +295,23 @@ namespace WebApplication.Processing
         /// Generate project data for the given parameters and cache results locally.
         /// </summary>
         /// <returns>Resulting parameters hash</returns>
-        private async Task<string> UpdateAsync(Project project, ProjectStorage storage, InventorParameters parameters, string hash, bool bForceUpdate = false)
+        private async Task<(string hash, FdaStatsDTO stats)> UpdateAsync(ProjectStorage storage, InventorParameters parameters, string hash, bool bForceUpdate = false)
         {
             _logger.LogInformation("Update the project");
             var bucket = await _userResolver.GetBucketAsync();
 
-            var isUpdateExists = bForceUpdate ? false : await IsGenerated(project, bucket, hash);
+            var isUpdateExists = bForceUpdate ? false : await IsGenerated(bucket, storage.GetOssNames(hash));
+            FdaStatsDTO stats;
             if (isUpdateExists)
             {
                 _logger.LogInformation("Detected existing outputs at OSS");
+                var statsNative = await bucket.DeserializeAsync<List<Statistics>>(storage.GetOssNames(hash).StatsUpdate);
+                stats = FdaStatsDTO.CreditsOnly(statsNative);
             }
             else
             {
+                Project project = storage.Project;
+
                 var inputDocUrl = await bucket.CreateSignedUrlAsync(project.OSSSourceModel);
                 UpdateData updateData = await _arranger.ForUpdateAsync(inputDocUrl, storage.Metadata.TLA, parameters);
 
@@ -291,24 +327,26 @@ namespace WebApplication.Processing
                 // rearrange generated data according to the parameters hash
                 // NOTE: hash might be changed if Inventor adjust them!
                 hash = await _arranger.MoveViewablesAsync(project, storage.IsAssembly);
+
+                // process statistics
+                await bucket.UploadAsJsonAsync(storage.GetOssNames(hash).StatsUpdate, result.Stats);
+                stats = FdaStatsDTO.All(result.Stats);
             }
 
             _logger.LogInformation($"Cache the project locally ({hash})");
 
-            // and now cache the generate stuff locally
-            var projectStorage = new ProjectStorage(project);
-            await projectStorage.EnsureViewablesAsync(bucket, hash);
+            // and now cache the generated stuff locally
+            await storage.EnsureViewablesAsync(bucket, hash);
 
-            return hash;
+            return (hash, stats);
         }
 
         /// <summary>
         /// Checks if project has outputs for the given parameters hash.
         /// NOTE: it checks presence of `parameters.json` only.
         /// </summary>
-        private static async Task<bool> IsGenerated(Project project, OssBucket bucket, string hash)
+        private static async Task<bool> IsGenerated(OssBucket bucket, OSSObjectNameProvider ossNames)
         {
-            var ossNames = project.OssNameProvider(hash);
             return await bucket.ObjectExistsAsync(ossNames.Parameters);
         }
 
@@ -338,7 +376,8 @@ namespace WebApplication.Processing
                 bucket.CopyAsync(ossFrom.Parameters, ossTo.Parameters),
                 bucket.CopyAsync(ossFrom.GetCurrentModel(isAssembly), ossTo.GetCurrentModel(isAssembly)),
                 bucket.CopyAsync(ossFrom.ModelView, ossTo.ModelView),
-                bucket.CopyAsync(ossFrom.Bom, ossTo.Bom));
+                bucket.CopyAsync(ossFrom.Bom, ossTo.Bom),
+                bucket.CopyAsync(ossFrom.StatsUpdate, ossTo.StatsUpdate));
 
             _logger.LogInformation($"Cache the project locally ({hashTo})");
         }

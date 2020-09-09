@@ -26,6 +26,7 @@
 module.exports = {
      xpButtonReset : locate('button').find('span').withText('Reset'),
      xpButtonUpdate : locate('button').find('span').withText('Update'),
+     xpButtonDone: locate('button').find('span').withText('Done'),
      ForgeViewer : '#ForgeViewer',
      xpLinkAdskForge : '//a[@href="https://forge.autodesk.com"]',
      xpComboProjects : '//div[@role="button"] //*[local-name()="svg"]',
@@ -46,5 +47,6 @@ module.exports = {
      drawingTab : locate('li').find('p').withText('Drawing'),
      downloadsTab : locate('li').find('p').withText('Downloads'),
      xpFirstInput : '//div[2]/div[1] //input',
-     xpFirstInputOnModelTab : '//*[@id="model"]/div/div[1]/div[2]/div[1] //input'
+     xpFirstInputOnModelTab : '//*[@id="model"]/div/div[1]/div[2]/div[1] //input',
+     FDAActionTimeout: 600
 };

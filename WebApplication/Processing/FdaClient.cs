@@ -116,6 +116,7 @@ namespace WebApplication.Processing
             {
                 rfaResult.ErrorMessage = "Failed to generate RFA file";
             }
+            rfaResult.Stats.AddRange(satResult.Stats);
 
             return rfaResult;
         }
