@@ -89,7 +89,7 @@ namespace WebApplication.Tests.Integration
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         }
 
-        [Theory]//(Skip = "not a real test, just for development purposes")]
+        [Theory(Skip = "not a real test, just for development purposes")]
         [ClassData(typeof(AdoptProjectWithParametersDataProvider))]
         public void AdoptProjectWithParameters(AdoptProjectWithParametersPayload payload)
         {
@@ -98,7 +98,7 @@ namespace WebApplication.Tests.Integration
             _output.WriteLine($"adopted project with parameters, project name: {projectStorage.Project.Name}");
         }
 
-        [Fact]//(Skip = "not a real test, just for development purposes")]
+        [Fact(Skip = "not a real test, just for development purposes")]
         public async void DeleteAllProjects()
         {
             await _projectService.DeleteAllProjects();
