@@ -17,6 +17,7 @@
 /////////////////////////////////////////////////////////////////////
 
 using System;
+using System.IO;
 using Autodesk.Forge.Core;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -34,18 +35,21 @@ namespace WebApplication
 
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
-            Log.Logger = new LoggerConfiguration()
-                .WriteTo.File("console.log")
-                .WriteTo.Console()
-                .CreateLogger();
-
-            return Host.CreateDefaultBuilder(args)
-                .UseSerilog()
-                .ConfigureAppConfiguration(builder =>
+            return Host
+                .CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration(configBuilder =>
                 {
-                    builder
-                        .AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true)
+                    configBuilder
+                        .AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: false)
                         .AddForgeAlternativeEnvironmentVariables();
+                })
+                .UseSerilog((context, logConfig) =>
+                {
+                    logConfig
+                        .ReadFrom.Configuration(context.Configuration)
+                        .Enrich.FromLogContext()
+                        .WriteTo.File("console.log")
+                        .WriteTo.Console();
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
