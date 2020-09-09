@@ -74,7 +74,8 @@ namespace ExportDrawingAsPdfPlugin
                     LogTrace("Drawing saved");
                     var pdfPath = System.IO.Path.Combine(dir, "Drawing.pdf");
                     LogTrace("Exporting drawing to: " + pdfPath);
-                    drawingDocument.SaveAs(pdfPath, true);
+                    ExportIDWToPDF(drawingDocument, pdfPath);
+                    //drawingDocument.SaveAs(pdfPath, true);
                     LogTrace("Drawing exported");
                 }
             }
@@ -100,6 +101,65 @@ namespace ExportDrawingAsPdfPlugin
             
             Trace.TraceInformation("Activating default project {0}", project.FullFileName);
             project.Activate(true);
+        }
+
+        // Export Drawing file to PDF format
+        // In case that the Drawing has more sheets -> it will export PDF with pages
+        // Each PDF page represet one Drawing sheet
+        public void ExportIDWToPDF(Document doc, string exportFileName)
+        {
+            if (doc == null)
+            {
+                LogError("Document is null!");
+                return;
+            }
+
+            LogTrace("PDF file full path : " + exportFileName);
+
+            LogTrace("Create PDF Translator Addin");
+            TranslatorAddIn PDFAddIn = (TranslatorAddIn)inventorApplication.ApplicationAddIns.ItemById["{0AC6FD96-2F4D-42CE-8BE0-8AEA580399E4}"];
+
+            if (PDFAddIn == null)
+            {
+                LogError("Error: PDF Translator Addin is null!");
+                return;
+            }
+
+            TranslationContext context = inventorApplication.TransientObjects.CreateTranslationContext();
+            NameValueMap options = inventorApplication.TransientObjects.CreateNameValueMap();
+            if (PDFAddIn.HasSaveCopyAsOptions[doc, context, options])
+            {
+                context.Type = IOMechanismEnum.kFileBrowseIOMechanism;
+                DataMedium dataMedium = inventorApplication.TransientObjects.CreateDataMedium();
+
+                options.Value["Sheet_Range"] = PrintRangeEnum.kPrintAllSheets;
+                options.Value["Vector_Resolution"] = 300;
+
+                options.Value["All_Color_AS_Black"] = false;
+                options.Value["Sheets"] = GetSheetOptions(doc);
+
+                dataMedium.FileName = exportFileName;
+                LogTrace("Processing PDF export ...");
+                PDFAddIn.SaveCopyAs(doc, context, options, dataMedium);
+                LogTrace("Finish processing PDF export ...");
+            }
+        }
+
+        // Check if the Drawing file has more sheets
+        private NameValueMap GetSheetOptions(Document doc)
+        {
+            DrawingDocument drawingDocument = doc as DrawingDocument;
+
+            NameValueMap sheets = inventorApplication.TransientObjects.CreateNameValueMap();
+            foreach (Sheet sheet in drawingDocument.Sheets)
+            {
+                NameValueMap option = inventorApplication.TransientObjects.CreateNameValueMap();
+                option.Add("Name", sheet.Name);
+                option.Add("3DModel", false);
+                sheets.Add("Sheet" + sheets.Count + 1, option);
+            }
+
+            return sheets;
         }
 
         #region Logging utilities
