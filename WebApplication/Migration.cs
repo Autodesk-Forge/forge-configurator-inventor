@@ -84,7 +84,8 @@ namespace MigrationApp
             string bucketKeyNew = _bucketProvider.SetBucketKeyFromOld(bucketKey);
 
             // check attributes file existance in new destination bucket
-            if (await _forgeOSS.DoesObjectExist(bucketKeyNew, attributeFile))
+            OssBucket bucketNew = await _userResolver.GetBucketAsync();
+            if (await bucketNew.ObjectExistsAsync(attributeFile))
                continue;
 
             await _forgeOSS.DownloadFileAsync(bucketKey, attributeFile, "metadata.json");

@@ -121,6 +121,7 @@ namespace WebApplication.Services
                         BucketKey = item.bucketKey,
                         ObjectId = item.objectId,
                         ObjectKey = item.objectKey,
+                        Sha1 = Encoding.ASCII.GetBytes(item.sha1),
                         Size = (int?)item.size,
                         Location = item.location
                     };
@@ -225,23 +226,6 @@ namespace WebApplication.Services
         public async Task<Autodesk.Forge.Client.ApiResponse<dynamic>> GetObjectAsync(string bucketKey, string objectName)
         {
             return await WithObjectsApiAsync(async api => await api.GetObjectAsyncWithHttpInfo(bucketKey, objectName));
-        }
-
-        public async Task<bool> DoesObjectExist(string bucketKey, string objectName)
-        {
-            try
-            {
-                DynamicJsonResponse response = await WithObjectsApiAsync(async api =>
-                {
-                    return await api.GetObjectsAsync(bucketKey, PageSize, objectName, null);
-                });
-
-                return response.Count != 0;
-            }
-            catch (ApiException ex) when (ex.ErrorCode == 404)
-            {
-                return false;
-            }
         }
 
         /// <summary>
