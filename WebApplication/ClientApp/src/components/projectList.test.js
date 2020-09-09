@@ -158,11 +158,5 @@ describe('ProjectList components', () => {
       modalFail.simulate('Close');
       expect(hideUploadFailedMock).toHaveBeenCalledTimes(1);
     });
-
-    it('handles click in delete progress dialog', () => {
-      const modalProgress = wrapper.find('ModalProgress');
-      modalProgress.simulate('Close');
-      expect(showModalProgressMock).toHaveBeenCalledTimes(1);
-    });
   });
 });

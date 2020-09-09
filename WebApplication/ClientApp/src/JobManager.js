@@ -37,12 +37,12 @@ class JobManager {
         if (onStart)
             onStart();
 
-        connection.on("onComplete", (updatedState/*, stats*/) => {
+        connection.on("onComplete", (updatedState, stats) => {
             // stop connection
             connection.stop();
 
             if (onComplete)
-                onComplete(updatedState);
+                onComplete(updatedState, stats);
         });
 
         connection.on("onError", (jobId, reportUrl) => {
@@ -62,12 +62,12 @@ class JobManager {
         if (onStart)
             onStart();
 
-        connection.on("onComplete", (newProject/*, stats*/) => {
+        connection.on("onComplete", (newProject, stats) => {
             // stop connection
             connection.stop();
 
             if (onComplete)
-                onComplete(newProject);
+                onComplete(newProject,stats);
         });
 
         connection.on("onError", (jobId, reportUrl) => {
@@ -96,7 +96,7 @@ class JobManager {
 
         if (onStart) onStart();
 
-        connection.on("onComplete", (downloadUrl/*, stats*/) => {
+        connection.on("onComplete", (downloadUrl, stats) => {
 
             connection.stop();
 
@@ -105,7 +105,7 @@ class JobManager {
                 if (token) {
                     downloadUrl += "/" + token;
                 }
-                onSuccess(downloadUrl);
+                onSuccess(downloadUrl, stats);
             }
         });
 
@@ -124,12 +124,12 @@ class JobManager {
         if (onStart)
             onStart();
 
-        connection.on("onComplete", (drawingUrl/*, stats*/) => {
+        connection.on("onComplete", (drawingUrl, stats) => {
             // stop connection
             connection.stop();
 
             if (onComplete) {
-                onComplete(drawingUrl);
+                onComplete(drawingUrl, stats);
             }
         });
 

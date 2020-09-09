@@ -136,6 +136,9 @@ describe('main reducer', () => {
       }),
       it('gets drawingProgressShowing', () => {
          expect(reducer.drawingProgressShowing(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.drawingProgressShowing);
+      }),
+      it('gets the processing stats', () => {
+         expect(reducer.getStats(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.stats);
       });
    });
 

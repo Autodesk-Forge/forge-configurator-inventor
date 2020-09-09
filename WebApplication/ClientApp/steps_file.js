@@ -25,7 +25,6 @@
 
 require('dotenv').config();
 const locators = require('./src/ui-tests/elements_definition.js');
-const assert = require('assert');
 
 //Authentication
 const inputUserName = '#userName';
@@ -221,6 +220,18 @@ module.exports = function() {
       this.waitForVisible(paramsInputWithName, 10);
       this.clearField(paramsInputWithName);
       this.fillField(paramsInputWithName, paramValue);
+    },
+    updateProject() {
+      // Click on Update button
+      this.waitForVisible(locators.xpButtonUpdate, 10);
+      this.click(locators.xpButtonUpdate);
+
+      // wait for progress bar shows and disappears
+      const updatingProjectProgress = '//p[text()="Updating Project"]';
+      this.waitForVisible(updatingProjectProgress, 10);
+      this.waitForVisible(locators.xpButtonDone, locators.FDAActionTimeout);
+      this.click(locators.xpButtonDone);
+      this.waitForInvisible(updatingProjectProgress, 10);
     },
     waitForForgeViewerToPreventItFromCrashing(timeout)
     {
