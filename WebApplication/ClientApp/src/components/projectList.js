@@ -31,9 +31,10 @@ import DeleteProject from './deleteProject';
 import ModalProgressUpload from './modalProgressUpload';
 import ModalProgress from './modalProgress';
 import ModalFail from './modalFail';
-import { uploadProgressShowing, uploadProgressIsDone, uploadPackageData, uploadFailedShowing,
+import { adoptWithParamsProgressShowing, uploadProgressShowing, uploadProgressIsDone, uploadPackageData, uploadFailedShowing,
   checkedProjects, modalProgressShowing, reportUrl } from '../reducers/mainReducer';
 import CheckboxTable from './checkboxTable';
+import { adoptProjectWithParameters } from '../actions/adoptWithParamsActions';
 
 export class ProjectList extends Component {
 
@@ -76,6 +77,16 @@ export class ProjectList extends Component {
     this.props.hideUploadFailed();
   }
 
+  componentDidMount() {
+    const params = window.location.search.substring(1);
+
+    if (params !== '') {
+      const parsed = JSON.parse(decodeURIComponent(params));
+      const jsPayload = JSON.parse(JSON.stringify(parsed));
+      this.props.adoptProjectWithParameters(jsPayload);
+    }
+  }
+
   render() {
     const uploadButtonVisible = this.props.isLoggedIn;
     const checkedProjects = this.props.checkedProjects && this.props.checkedProjects.length > 0;
@@ -111,6 +122,14 @@ export class ProjectList extends Component {
           />
         </div>
 
+        {this.props.adoptWithParamsProgressShowing &&
+          <ModalProgress
+              open={true}
+              title="Adopting Project"
+              label=" "
+              icon="/Assembly_icon.svg"
+              onClose={() => this.onModalProgressClose()}/>
+        }
         <UploadPackage />
         {showUploadProgress && <ModalProgressUpload
                     open={true}
@@ -153,6 +172,7 @@ export default connect(function (store) {
     uploadPackageData: uploadPackageData(store),
     uploadFailedShowing: uploadFailedShowing(store),
     reportUrl: reportUrl(store),
-    modalProgressShowing: modalProgressShowing(store)
+    modalProgressShowing: modalProgressShowing(store),
+    adoptWithParamsProgressShowing: adoptWithParamsProgressShowing(store)
   };
-}, { showUploadPackage, updateActiveProject, updateActiveTabIndex, setUploadProgressHidden, hideUploadFailed, showDeleteProject, showModalProgress, invalidateDrawing })(ProjectList);
+}, { adoptProjectWithParameters, showUploadPackage, updateActiveProject, updateActiveTabIndex, setUploadProgressHidden, hideUploadFailed, showDeleteProject, showModalProgress, invalidateDrawing })(ProjectList);

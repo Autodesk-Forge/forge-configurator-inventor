@@ -41,6 +41,7 @@ export const initialState = {
    showDeleteProject: false,
    checkedProjects: [],
    drawingProgressShowing: false,
+   adoptWithParamsProgressShowing: false,
    drawingUrl: null,
    stats: null
 };
@@ -125,6 +126,10 @@ export const drawingProgressShowing = function(state) {
    return state.drawingProgressShowing;
 };
 
+export const adoptWithParamsProgressShowing = function(state) {
+   return state.adoptWithParamsProgressShowing;
+}
+
 export const getStats = function(state) {
    return state.stats;
 };
@@ -175,6 +180,8 @@ export default function(state = initialState, action) {
          return { ...state, projectAlreadyExists: action.exists};
       case uiFlagsActionTypes.SHOW_DELETE_PROJECT:
          return { ...state, showDeleteProject: action.visible};
+      case uiFlagsActionTypes.SHOW_ADOPT_WITH_PROPERTIES_PROGRESS:
+         return { ...state, adoptWithParamsProgressShowing: action.visible};
       case uiFlagsActionTypes.SET_PROJECT_CHECKED:
          {
             const idx = state.checkedProjects.indexOf(action.projectId);

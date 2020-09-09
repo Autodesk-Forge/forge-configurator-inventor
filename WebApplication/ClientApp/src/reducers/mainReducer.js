@@ -165,6 +165,10 @@ export const drawingProgressShowing = function(state) {
     return uiFlags.drawingProgressShowing(state.uiFlags);
 };
 
+export const adoptWithParamsProgressShowing = function(state) {
+    return uiFlags.adoptWithParamsProgressShowing(state.uiFlags);
+};
+
 export const getStats = function(state) {
     return uiFlags.getStats(state.uiFlags);
 };
