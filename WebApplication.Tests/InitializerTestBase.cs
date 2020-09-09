@@ -76,7 +76,7 @@ namespace WebApplication.Tests
 
             localCache = new LocalCache();
             var bucketPrefixProvider = new BucketPrefixProvider(forgeConfigOptions, configuration);
-            var resourceProvider = new ResourceProvider(forgeConfigOptions, designAutomationClient, null, bucketPrefixProvider);
+            var resourceProvider = new ResourceProvider(forgeConfigOptions, designAutomationClient, configuration, bucketPrefixProvider, projectsBucketKey);
             var postProcessing = new PostProcessing(httpClientFactory, new NullLogger<PostProcessing>(), localCache, Options.Create(new ProcessingOptions()));
             var publisher = new Publisher(designAutomationClient, new NullLogger<Publisher>(), resourceProvider, postProcessing);
 
