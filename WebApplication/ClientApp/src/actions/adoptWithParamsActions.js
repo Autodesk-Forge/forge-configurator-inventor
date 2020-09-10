@@ -3,6 +3,7 @@ import { Jobs } from '../JobManager';
 import { showAdoptWithParametersProgress, updateActiveTabIndex } from './uiFlagsActions';
 import { updateActiveProject } from '../actions/projectListActions';
 import { addProject } from './projectListActions';
+import { adaptParameters, updateParameters } from './parametersActions';
 
 export const adoptProjectWithParameters = (parameters) => async (dispatch) => {
     dispatch(addLog('adoptProjectWithParameters invoked'));
@@ -24,6 +25,8 @@ export const adoptProjectWithParameters = (parameters) => async (dispatch) => {
                 // hide modal dialog
                 dispatch(showAdoptWithParametersProgress(false));
                 dispatch(addProject(newProject));
+                //const adaptedParams = adaptParameters(parameters);
+                //dispatch(updateParameters(newProject.id, adaptedParams));
                 dispatch(updateActiveTabIndex(1));
                 dispatch(updateActiveProject(newProject.id));
             },
