@@ -75,11 +75,10 @@ namespace MigrationApp
 
       private async Task ScanBucket(List<MigrationJob> migrationJobs, string bucketKey)
       {
-         List<ObjectDetails> ossProjectFiles = await _forgeOSS.GetBucketObjectsAsync(bucketKey, "projects/");
-         foreach (ObjectDetails file in ossProjectFiles)
+         _bucketProvider.SetBucket(bucketKey);
+         List<string> projectNames = (List<string>) await _userResolver.GetProjectNames();
+         foreach (string projectName in projectNames)
          {
-            string projectUrl = file.ObjectKey;
-            string projectName = projectUrl.Split('/')[1];
             string attributeFile = "attributes/" + projectName + "/metadata.json";
             string bucketKeyNew = _bucketProvider.SetBucketKeyFromOld(bucketKey);
 
@@ -95,7 +94,7 @@ namespace MigrationApp
             projectInfo.Name = projectName;
             projectInfo.TopLevelAssembly = projectMetadata.TLA;
 
-            migrationJobs.Add(new MigrationJob(JobType.CopyAndAdopt, bucketKey, projectInfo, projectUrl));
+            migrationJobs.Add(new MigrationJob(JobType.CopyAndAdopt, bucketKey, projectInfo, ONC.ProjectUrl(projectName)));
          }
       }
 

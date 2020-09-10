@@ -16,7 +16,9 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Autodesk.Forge.Client;
 using Microsoft.AspNetCore.Http;
@@ -73,6 +75,14 @@ namespace WebApplication.State
             }
 
             return bucket;
+        }
+
+        public async Task<ICollection<string>> GetProjectNames()
+        {
+            OssBucket bucket = await GetBucketAsync();
+            return (await bucket.GetObjectsAsync(ONC.ProjectsMask))
+                                .Select(objDetails =>  ONC.ToProjectName(objDetails.ObjectKey))
+                                .ToList();
         }
 
         public async Task<Project> GetProjectAsync(string projectName, bool ensureDir = true)

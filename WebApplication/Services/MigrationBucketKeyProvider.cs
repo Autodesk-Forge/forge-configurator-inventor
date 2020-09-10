@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using WebApplication.Utilities;
 
 namespace WebApplication.Services
@@ -40,5 +41,10 @@ namespace WebApplication.Services
 
             return BucketKey;
         }
-    }
+
+      internal void SetBucket(string bucketKey)
+      {
+         BucketKey = bucketKey;
+      }
+   }
 }

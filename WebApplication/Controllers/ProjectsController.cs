@@ -169,9 +169,7 @@ namespace WebApplication.Controllers
         /// </summary>
         private async Task<ICollection<string>> GetProjectNamesAsync(OssBucket bucket)
         {
-            return (await bucket.GetObjectsAsync(ONC.ProjectsMask))
-                                .Select(objDetails =>  ONC.ToProjectName(objDetails.ObjectKey))
-                                .ToList();
+            return await _userResolver.GetProjectNames();
         }
     }
 }
