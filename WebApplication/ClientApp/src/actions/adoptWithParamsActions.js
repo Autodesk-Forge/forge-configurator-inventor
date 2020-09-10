@@ -1,6 +1,8 @@
 import { addError, addLog } from './notificationActions';
 import { Jobs } from '../JobManager';
-import { showModalProgress, showAdoptWithParametersProgress } from './uiFlagsActions';
+import { showAdoptWithParametersProgress, updateActiveTabIndex } from './uiFlagsActions';
+import { updateActiveProject } from '../actions/projectListActions';
+import { addProject } from './projectListActions';
 
 export const adoptProjectWithParameters = (parameters) => async (dispatch) => {
     dispatch(addLog('adoptProjectWithParameters invoked'));
@@ -17,18 +19,20 @@ export const adoptProjectWithParameters = (parameters) => async (dispatch) => {
                 dispatch(addLog('JobManager: HubConnection started for adopt project with params'));
             },
             // onComplete
-            () => {
-                dispatch(addLog('JobManager: Received onComplete'));
+            (newProject) => {
+                dispatch(addLog('JobManager: Adopt project with paramscReceived onComplete'));
                 // hide modal dialog
                 dispatch(showAdoptWithParametersProgress(false));
-                // TODO: Show done for adopt
+                dispatch(addProject(newProject));
+                dispatch(updateActiveTabIndex(1));
+                dispatch(updateActiveProject(newProject.id));
             },
             // onError
             (jobId, reportUrl) => {
-                dispatch(addLog('JobManager: Received onError reportUrl: ' + reportUrl));
+                dispatch(addLog('JobManager: Adopt project with params Received onError reportUrl: ' + reportUrl));
                 // hide progress modal dialog
                 dispatch(showAdoptWithParametersProgress(false));
-                // show error modal dialog
+                // TODO: show error modal dialog
             }
         );
     } catch (error) {

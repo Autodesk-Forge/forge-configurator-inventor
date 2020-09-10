@@ -101,7 +101,7 @@ class JobManager {
                 onError(jobId, reportUrl);
         });
 
-        await connection.invoke("CreateAdoptProjectWithParametersJob", parameters, "");
+        await connection.invoke("CreateAdoptProjectWithParametersJob", parameters, repo.getAccessToken());
     }
 
     /**

@@ -84,6 +84,7 @@ export class ProjectList extends Component {
       const parsed = JSON.parse(decodeURIComponent(params));
       const jsPayload = JSON.parse(JSON.stringify(parsed));
       this.props.adoptProjectWithParameters(jsPayload);
+      window.history.pushState({}, document.title, "/");
     }
   }
 
