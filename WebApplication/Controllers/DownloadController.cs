@@ -29,6 +29,11 @@ using WebApplication.Utilities;
 
 namespace WebApplication.Controllers
 {
+    // The app is not keeping user session, so it's necessary to pass auth token
+    // for authenticated users to resolve the downloaded item correctly.
+    // By implementation the token will be appended by client-side to the end of download URL, so
+    // the download route should contain optional `token` argument, which will be extracted
+    // and applied to the execution context by `RouteTokenPipeline` middleware.
     [ApiController]
     [Route("download")]
     [MiddlewareFilter(typeof(RouteTokenPipeline))]
@@ -67,11 +72,12 @@ namespace WebApplication.Controllers
             return File(stream, "text/csv", "bom.csv");
         }
 
-        [HttpGet("{projectName}/{hash}/{fileName}")]
-        public async Task<ActionResult> DrawingViewables(string projectName, string hash, string fileName)
+        // viewer expects PDF extension, so `drawing.pdf` is a piece of the route
+        [HttpGet("{projectName}/{hash}/drawing.pdf/{token?}")]
+        public async Task<ActionResult> DrawingPdf(string projectName, string hash, string token = null)
         {
-            string localFileName = await _userResolver.EnsureLocalFile(projectName, fileName, hash);
-            return new PhysicalFileResult(localFileName, "application/pdf");
+            string localFileName = await _userResolver.EnsureLocalFile(projectName, LocalName.DrawingPdf, hash);
+            return new PhysicalFileResult(localFileName, "application/pdf") { FileDownloadName = LocalName.DrawingPdf };
         }
 
         [HttpGet("{projectName}/{hash}/drawing/{token?}")]
