@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using System.Net.Http;
+using Microsoft.Extensions.Logging;
 using Serilog.Extensions.Logging;
 using WebApplication.Services;
 using Xunit;
@@ -10,6 +12,11 @@ namespace WebApplication.Tests.Integration
     {
         private readonly ITestOutputHelper _output;
         private readonly AdoptProjectWithParametersPayloadProvider _adoptProjectWithParametersPayloadProvider;
+        
+        private class DefaultHttpClientFactory : IHttpClientFactory
+        {
+            public HttpClient CreateClient(string name) => new HttpClient();
+        }
 
         public AdoptProjectWithParametersPayloadProviderTest(ITestOutputHelper output)
         {
@@ -17,13 +24,14 @@ namespace WebApplication.Tests.Integration
             XUnitUtils.RedirectConsoleToXUnitOutput(output);
 
             ILogger<AdoptProjectWithParametersPayloadProvider> logger = new SerilogLoggerFactory().CreateLogger<AdoptProjectWithParametersPayloadProvider>();
-            _adoptProjectWithParametersPayloadProvider = new AdoptProjectWithParametersPayloadProvider(logger);
+            _adoptProjectWithParametersPayloadProvider = new AdoptProjectWithParametersPayloadProvider(logger, new DefaultHttpClientFactory());
         }
 
-        [Fact(Skip = "just for development purposes")]
-        public void GetParameters()
+        //[Fact(Skip = "just for development purposes")]
+        [Fact]
+        public async void GetParametersAsync()
         {
-            var payload = _adoptProjectWithParametersPayloadProvider.GetParameters("http://localhost:5080/fileprovider/fileContent");
+            var payload = await _adoptProjectWithParametersPayloadProvider.GetParametersAsync("http://localhost:5080/fileprovider/fileContent");
 
             _output.WriteLine($"{payload.Name}");
         }

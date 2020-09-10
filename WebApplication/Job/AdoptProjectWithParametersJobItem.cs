@@ -49,7 +49,7 @@ namespace WebApplication.Job
 
             try
             {
-                AdoptProjectWithParametersPayload payload = _adoptProjectWithParametersPayloadProvider.GetParameters(_payloadUrl);
+                AdoptProjectWithParametersPayload payload = await _adoptProjectWithParametersPayloadProvider.GetParametersAsync(_payloadUrl);
 
                 Logger.LogInformation($"ProcessJob (AdoptProjectWithParameters) {Id} for project {payload.Name} started.");
 
@@ -57,7 +57,7 @@ namespace WebApplication.Job
 
                 Logger.LogInformation($"ProcessJob (AdoptProjectWithParameters) {Id} for project {payload.Name} completed.");
                 
-                await resultSender.SendSuccessAsync(payload);
+                await resultSender.SendSuccessAsync(Tuple.Create(projectStorage, payload));
             }
             catch (Exception ex)
             {
