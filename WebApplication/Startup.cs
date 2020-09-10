@@ -111,6 +111,7 @@ namespace WebApplication
             services.AddSingleton<LocalCache>();
             services.AddSingleton<Uploads>();
             services.AddScoped<ProjectService>();
+            services.AddSingleton<AdoptProjectWithParametersPayloadProvider>();
 
             if (Configuration.GetValue<bool>("migration"))
             {
