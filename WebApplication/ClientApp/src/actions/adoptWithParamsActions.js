@@ -3,7 +3,7 @@ import { Jobs } from '../JobManager';
 import { showAdoptWithParametersProgress, updateActiveTabIndex } from './uiFlagsActions';
 import { updateActiveProject } from '../actions/projectListActions';
 import { addProject } from './projectListActions';
-import { adaptParameters, updateParameters } from './parametersActions';
+//import { adaptParameters, updateParameters } from './parametersActions';
 
 export const adoptProjectWithParameters = (parameters) => async (dispatch) => {
     dispatch(addLog('adoptProjectWithParameters invoked'));
