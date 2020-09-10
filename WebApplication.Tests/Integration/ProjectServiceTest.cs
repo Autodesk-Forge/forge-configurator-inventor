@@ -33,7 +33,6 @@ namespace WebApplication.Tests.Integration
                     new AdoptProjectWithParametersPayload()
                     {
                         Name = "TestWrench",
-                        //Name = Guid.NewGuid().ToString(),
                         Url = "https://sdra-default-projects.s3-us-west-2.amazonaws.com/Wrench_2021.zip",
                         TopLevelAssembly = "Wrench.iam",
                         Config = new InventorParameters()
@@ -41,44 +40,25 @@ namespace WebApplication.Tests.Integration
                             {
                                 "WrenchSz", new InventorParameter()
                                 {
-                                    Value = "\"Large\"",
-                                    Values = new [] {
-                                        "\"Large\"",
-                                        "\"Medium\"",
-                                        "\"Small\""
-                                    },
-                                    Unit = "Text"
+                                    Value = "\"Large\""
                                 }
                             },
                             {
                                 "JawOffset", new InventorParameter()
                                 {
-                                    Value = "11 mm",
-                                    Unit = "mm",
-                                    Values = new string [] {}
+                                    Value = "11 mm"
                                 }
                             },
                             {
                                 "PartMaterial", new InventorParameter()
                                 {
-                                    Value = "\"Steel\"",
-                                    Values = new [] {
-                                        "\"Cast Bronze\"",
-                                        "\"Cast Iron\"",
-                                        "\"Copper\"",
-                                        "\"Gray Iron\"",
-                                        "\"Stainless Steel\"",
-                                        "\"Steel\""
-                                    },
-                                    Unit = "Text"
+                                    Value = "\"Steel\""
                                 }
                             },
                             {
                                 "iTrigger0", new InventorParameter()
                                 {
-                                    Value = "2 ul",
-                                    Unit = "ul",
-                                    Values = new string [] {}
+                                    Value = "2 ul"
                                 }
                             }
                         }
