@@ -155,8 +155,6 @@ namespace WebApplication
                 app.UseHsts();
             }
 
-            app.UseSerilogRequestLogging();
-
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -164,6 +162,11 @@ namespace WebApplication
             localCache.Serve(app);
 
             app.UseSpaStaticFiles();
+
+            // Use Serilog middleware to log ASP.NET requests. To not pollute logs with requests about
+            // static file the middleware registered after middleware for serving static files.
+            app.UseSerilogRequestLogging();
+
             app.UseMiddleware<HeaderTokenHandler>();
 
             app.UseRouting();
