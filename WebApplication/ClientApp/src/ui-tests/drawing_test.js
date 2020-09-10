@@ -19,6 +19,7 @@
 /* eslint-disable no-undef */
 const noDrawingElement = '.drawingEmptyText';
 const locators = require('./elements_definition.js');
+const viewCubeElement = '//div[@id="ForgePdfViewer"] //div[@class="viewcubeWrapper"]';
 
 Before((I) => {
     I.amOnPage('/');
@@ -45,8 +46,7 @@ Scenario('should check that Drawing tab shows drawing for an Assembly', async (I
     I.click(locators.xpButtonDone);
 
     // wait for drawing to be displayed
-    const viewCubeElement = '//div[@id="ForgePdfViewer"] //div[@class="viewcubeWrapper"]';
-    I.waitForVisible(viewCubeElement, 30);
+    I.waitForVisible(viewCubeElement, locators.FDAActionTimeout);
 
 });
 
@@ -62,6 +62,52 @@ Scenario('should check if an Assembly do not have any drawings then No data page
     // wait for no drawing page to be displayed
     I.waitForVisible(noDrawingElement, locators.FDAActionTimeout);
     I.see("You don't have any drawings in package.", noDrawingElement);
+
+});
+
+Scenario('should check id a drawing has more sheet is will show arrow buttons', async (I) => {
+
+    I.signIn();
+
+    I.uploadProject('src/ui-tests/dataset/SimpleBox2asm.zip', 'Assembly1.iam');
+
+    // select project in the Project Switcher
+    I.selectProject('SimpleBox2asm');
+
+    // click on drawing tab
+    I.waitForForgeViewerToPreventItFromCrashing(30);
+    I.goToDrawingTab();
+
+    // check the dialog will appear with Done button
+    const drawingProgress = '//p[text()="Generating Drawing"]';
+    I.waitForVisible(drawingProgress, 10);
+    I.waitForVisible(locators.xpButtonDone, locators.FDAActionTimeout);
+    I.click(locators.xpButtonDone);
+
+    // wait for drawing page to be displayed with extra arrow buttons
+    const customDrwToolbar = '//div[@id="custom-drawing-toolbar"]';
+    const prevButtonEnabled = '//div[@id="drawing-button-prev" and not(contains(@class,"disabled"))]';
+    const nextButtonEnabled = '//div[@id="drawing-button-next" and not(contains(@class,"disabled"))]';
+    const prevButtonDisabled = '//div[@id="drawing-button-prev" and contains(@class,"disabled")]';
+    const nextButtonDisabled = '//div[@id="drawing-button-next" and contains(@class,"disabled")]';
+
+    I.waitForVisible(customDrwToolbar, locators.FDAActionTimeout);
+    I.waitForVisible(prevButtonDisabled, locators.FDAActionTimeout);
+    I.waitForVisible(nextButtonEnabled, locators.FDAActionTimeout);
+
+    // show next sheet
+    I.click(nextButtonEnabled);
+
+    // check button states
+    I.seeElement(prevButtonEnabled);
+    I.seeElement(nextButtonEnabled);
+
+    // show next sheet
+    I.click(nextButtonEnabled);
+
+    // check button states
+    I.seeElement(prevButtonEnabled);
+    I.seeElement(nextButtonDisabled);
 
 });
 
@@ -88,4 +134,5 @@ Scenario('Delete the project', (I) => {
 
     I.signIn();
     I.deleteProject('EndCap');
+    I.deleteProject('SimpleBox2asm');
 });

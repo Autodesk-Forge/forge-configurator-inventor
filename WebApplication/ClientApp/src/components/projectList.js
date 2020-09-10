@@ -81,9 +81,11 @@ export class ProjectList extends Component {
     const params = window.location.search.substring(1);
 
     if (params !== '') {
-      const parsed = JSON.parse(decodeURIComponent(params));
-      const jsPayload = JSON.parse(JSON.stringify(parsed));
-      this.props.adoptProjectWithParameters(jsPayload);
+      //const parsed = JSON.parse(decodeURIComponent(params));
+      //const jsPayload = JSON.parse(JSON.stringify(parsed));
+
+      const url = decodeURIComponent(params);
+      this.props.adoptProjectWithParameters(params);
       window.history.pushState({}, document.title, "/");
     }
   }

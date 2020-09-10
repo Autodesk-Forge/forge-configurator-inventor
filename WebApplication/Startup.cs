@@ -27,6 +27,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Serilog;
 using WebApplication.Definitions;
 using WebApplication.Middleware;
 using WebApplication.Processing;
@@ -110,6 +111,7 @@ namespace WebApplication
             services.AddSingleton<LocalCache>();
             services.AddSingleton<Uploads>();
             services.AddScoped<ProjectService>();
+            services.AddSingleton<AdoptProjectWithParametersPayloadProvider>();
 
             if (Configuration.GetValue<bool>("migration"))
             {
@@ -154,6 +156,8 @@ namespace WebApplication
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            app.UseSerilogRequestLogging();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

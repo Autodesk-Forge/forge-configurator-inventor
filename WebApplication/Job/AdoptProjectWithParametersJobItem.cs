@@ -16,6 +16,7 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
+using System;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using WebApplication.State;
@@ -28,35 +29,39 @@ namespace WebApplication.Job
     internal class AdoptProjectWithParametersJobItem : JobItemBase
     {
         private readonly ProjectService _projectService;
-        private readonly AdoptProjectWithParametersPayload _payload;
+        private readonly string _payloadUrl;
         private readonly DtoGenerator _dtoGenerator;
+        private readonly AdoptProjectWithParametersPayloadProvider _adoptProjectWithParametersPayloadProvider;
 
-        public AdoptProjectWithParametersJobItem(ILogger logger, ProjectService projectService, AdoptProjectWithParametersPayload payload, 
-            DtoGenerator dtoGenerator)
+        public AdoptProjectWithParametersJobItem(ILogger logger, ProjectService projectService, string payloadUrl, 
+            DtoGenerator dtoGenerator, AdoptProjectWithParametersPayloadProvider adoptProjectWithParametersPayloadProvider)
             : base(logger, null, null)
         {
             _projectService = projectService;
-            _payload = payload;
+            _payloadUrl = payloadUrl;
             _dtoGenerator = dtoGenerator;
+            _adoptProjectWithParametersPayloadProvider = adoptProjectWithParametersPayloadProvider;
         }
 
         public override async Task ProcessJobAsync(IResultSender resultSender)
         {
             using var scope = Logger.BeginScope("Project Adoption ({Id})");
 
-            Logger.LogInformation($"ProcessJob (AdoptProjectWithParameters) {Id} for project {_payload.Name} started.");
-            
             try
             {
-                ProjectStorage projectStorage = await _projectService.AdoptProjectWithParametersAsync(_payload);
+                AdoptProjectWithParametersPayload payload = _adoptProjectWithParametersPayloadProvider.GetParameters(_payloadUrl);
 
-                Logger.LogInformation($"ProcessJob (AdoptProjectWithParameters) {Id} for project {_payload.Name} completed.");
+                Logger.LogInformation($"ProcessJob (AdoptProjectWithParameters) {Id} for project {payload.Name} started.");
+
+                ProjectStorage projectStorage = await _projectService.AdoptProjectWithParametersAsync(payload);
+
+                Logger.LogInformation($"ProcessJob (AdoptProjectWithParameters) {Id} for project {payload.Name} completed.");
                 
-                await resultSender.SendSuccessAsync(_dtoGenerator.ToDTO(projectStorage));
+                await resultSender.SendSuccessAsync(payload);
             }
-            catch (FdaProcessingException fpe)
+            catch (Exception ex)
             {
-                await resultSender.SendErrorAsync(Id, fpe.ReportUrl);
+                await resultSender.SendErrorAsync(Id, ex.Message);
             }
         }
     }

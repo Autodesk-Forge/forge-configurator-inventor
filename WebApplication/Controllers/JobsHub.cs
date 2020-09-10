@@ -119,11 +119,11 @@ namespace WebApplication.Controllers
         private readonly Uploads _uploads;
         private readonly DtoGenerator _dtoGenerator;
         private readonly ProjectService _projectService;
-        private readonly IConfiguration _configuration;
+        private readonly AdoptProjectWithParametersPayloadProvider _adoptProjectWithParametersPayloadProvider;
 
         public JobsHub(ILogger<JobsHub> logger, ProjectWork projectWork, LinkGenerator linkGenerator, UserResolver userResolver, 
             ProfileProvider profileProvider, Uploads uploads, DtoGenerator dtoGenerator, ProjectService projectService,
-            IConfiguration configuration)
+            AdoptProjectWithParametersPayloadProvider adoptProjectWithParametersPayloadProvider)
         {
             _logger = logger;
             _projectWork = projectWork;
@@ -133,7 +133,7 @@ namespace WebApplication.Controllers
             _uploads = uploads;
             _dtoGenerator = dtoGenerator;
             _projectService = projectService;
-            _configuration = configuration;
+            _adoptProjectWithParametersPayloadProvider = adoptProjectWithParametersPayloadProvider;
 
             _sender = new Sender(this);
         }
@@ -197,20 +197,14 @@ namespace WebApplication.Controllers
             await RunJobAsync(job);
         }
 
-        public async Task CreateAdoptProjectWithParametersJob(AdoptProjectWithParametersPayload payload, string token = null)
+        public async Task CreateAdoptProjectWithParametersJob(string payloadUrl, string token = null)
         {
-            if (!_configuration.GetValue<bool>("poc"))
-            {
-                _logger.LogInformation("PoC AdoptProjectWithParameters feature is not turned on, quitting");
-                return;
-            }
-
             _logger.LogInformation($"invoked CreateDrawingPdfJob, connectionId : {Context.ConnectionId}");
 
             _profileProvider.Token = token;
 
             // create job and run it
-            var job = new AdoptProjectWithParametersJobItem(_logger, _projectService, payload, _dtoGenerator);
+            var job = new AdoptProjectWithParametersJobItem(_logger, _projectService, payloadUrl, _dtoGenerator, _adoptProjectWithParametersPayloadProvider);
             await RunJobAsync(job);
         }
 

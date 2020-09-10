@@ -89,42 +89,38 @@ namespace WebApplication.Controllers
                 return BadRequest();
             }
 
-            try
+            var projectName = Path.GetFileNameWithoutExtension(projectModel.package.FileName);
+
+            // Check if project already exists
+            var projectNames = await _projectService.GetProjectNamesAsync();
+            foreach (var existingProjectName in projectNames)
             {
-                var projectName = Path.GetFileNameWithoutExtension(projectModel.package.FileName);
-
-                // Check if project already exists
-                var projectNames = await _projectService.GetProjectNamesAsync();
-                foreach (var existingProjectName in projectNames)
+                if (projectName == existingProjectName)
                 {
-                    if (projectName == existingProjectName)
-                        throw new ProjectAlreadyExistsException(projectName);
+                    _logger.LogError($"Found existing '{projectName}' project");
+                    return Conflict();
                 }
-
-                var projectInfo = new ProjectInfo
-                {
-                    Name = projectName,
-                    TopLevelAssembly = projectModel.root
-                };
-
-                // download file locally (a place to improve... would be good to stream it directly to OSS)
-                var fileName = Path.GetTempFileName();
-                await using (var fileWriteStream = System.IO.File.OpenWrite(fileName))
-                {
-                    await projectModel.package.CopyToAsync(fileWriteStream);
-                }
-
-                var packageId = Guid.NewGuid().ToString();
-                _uploads.AddUploadData(packageId, projectInfo, fileName);
-
-                _logger.LogInformation($"created project with packageId {packageId}");
-
-                return Ok(packageId);
             }
-            catch (ProjectAlreadyExistsException)
+
+            var projectInfo = new ProjectInfo
             {
-                return Conflict();
+                Name = projectName,
+                TopLevelAssembly = projectModel.root
+            };
+
+            // download file locally (a place to improve... would be good to stream it directly to OSS)
+            var fileName = Path.GetTempFileName();
+            await using (var fileWriteStream = System.IO.File.OpenWrite(fileName))
+            {
+                await projectModel.package.CopyToAsync(fileWriteStream);
             }
+
+            var packageId = Guid.NewGuid().ToString();
+            _uploads.AddUploadData(packageId, projectInfo, fileName);
+
+            _logger.LogInformation($"created project with packageId {packageId}");
+
+            return Ok(packageId);
         }
 
         [HttpDelete]
