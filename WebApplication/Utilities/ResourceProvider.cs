@@ -32,6 +32,7 @@ namespace WebApplication.Utilities
         /// Bucket key for anonymous user.
         /// </summary>
         public string BucketKey { get; }
+        public static readonly string projectsTag = "projects";
 
         public Task<string> Nickname => _nickname.Value;
         private readonly Lazy<Task<string>> _nickname;
@@ -53,7 +54,7 @@ namespace WebApplication.Utilities
         public string AnonymousBucketKey(string suffixParam = null)
         {
             string suffix = suffixParam ?? _configuration?.GetValue<string>("BucketKeySuffix") ?? "";
-            return $"projects-{_forgeConfiguration.ClientId.Substring(0, 3)}-{_forgeConfiguration.HashString()}{suffix}".ToLowerInvariant();
+            return $"{projectsTag}-{_forgeConfiguration.ClientId.Substring(0, 3)}-{_forgeConfiguration.HashString()}{suffix}".ToLowerInvariant();
         }
 
         public string LoggedUserBucketKey(string userId, string userHashParam = null)

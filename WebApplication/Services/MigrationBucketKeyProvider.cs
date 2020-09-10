@@ -26,7 +26,7 @@ namespace WebApplication.Services
         {
             string [] splittedBucketKeyOld = bucketKeyOld.Split('-');
 
-            if (splittedBucketKeyOld[0] == "projects")
+            if (splittedBucketKeyOld[0] == ResourceProvider.projectsTag)
             {
                 // anonymous bucket key
                 BucketKey = AnonymousBucketKey;

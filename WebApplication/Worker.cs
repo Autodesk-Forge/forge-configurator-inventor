@@ -53,7 +53,7 @@ namespace MigrationApp
                 }
                 catch(Exception e)
                 {
-                    _logger.LogError(e.Message);
+                    _logger.LogError($"Fatal error during migration process !!!\n{e.Message}\n{e.StackTrace}");
                 }
 
                 await Task.Delay(1000, stoppingToken);
