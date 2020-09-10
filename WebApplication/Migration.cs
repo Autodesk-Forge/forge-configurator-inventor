@@ -19,7 +19,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Autodesk.Forge.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using WebApplication.Definitions;
