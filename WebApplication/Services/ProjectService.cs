@@ -38,36 +38,6 @@ namespace WebApplication.Services
                 );
         }
 
-        /// <summary>
-        /// https://jira.autodesk.com/browse/INVGEN-45256
-        /// </summary>
-        /// <param name="payload">project configuration with parameters</param>
-        /// <returns>project storage</returns>
-        public async Task<ProjectStorage> AdoptProjectWithParametersAsync(AdoptProjectWithParametersPayload payload)
-        {
-            if (!await DoesProjectAlreadyExistAsync(payload.Name))
-            {
-                var bucket = await _userResolver.GetBucketAsync();
-                var signedUrl = await TransferProjectToOssAsync(bucket, payload);
-                await _projectWork.AdoptAsync(payload, signedUrl);
-            }
-            else
-            {
-                _logger.LogInformation($"project with name {payload.Name} already exists");
-            }
-
-            await _projectWork.DoSmartUpdateAsync(payload.Config, payload.Name);
-
-            return await _userResolver.GetProjectStorageAsync(payload.Name);
-        }
-
-        private async Task<bool> DoesProjectAlreadyExistAsync(string projectName)
-        {
-            var existingProjects = await GetProjectNamesAsync();
-
-            return existingProjects.Contains(projectName);
-        }
-
         public async Task<string> TransferProjectToOssAsync(OssBucket bucket, DefaultProjectConfiguration projectConfig)
         {
             _logger.LogInformation($"Bucket {bucket.BucketKey} created");
@@ -142,12 +112,6 @@ namespace WebApplication.Services
                 var projectStorage = await _userResolver.GetProjectStorageAsync(projectName, ensureDir: false);
                 projectStorage.DeleteLocal();
             }
-        }
-
-        public async Task DeleteAllProjects()
-        {
-            var projectsNames = await GetProjectNamesAsync();
-            await DeleteProjects(projectsNames);
         }
     }
 }

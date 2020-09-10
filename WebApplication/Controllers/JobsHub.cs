@@ -193,17 +193,6 @@ namespace WebApplication.Controllers
             await RunJobAsync(job);
         }
 
-        public async Task CreateAdoptProjectWithParametersJob(AdoptProjectWithParametersPayload payload, string token = null)
-        {
-            _logger.LogInformation($"invoked CreateDrawingPdfJob, connectionId : {Context.ConnectionId}");
-
-            _profileProvider.Token = token;
-
-            // create job and run it
-            var job = new AdoptProjectWithParametersJobItem(_logger, _projectService, payload, _dtoGenerator);
-            await RunJobAsync(job);
-        }
-
         private async Task RunJobAsync(JobItemBase job)
         {
             try
