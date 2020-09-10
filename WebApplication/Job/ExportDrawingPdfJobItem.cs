@@ -52,11 +52,14 @@ namespace WebApplication.Job
             if (stats != null)
             {
                 url = _linkGenerator.GetPathByAction(controller: "Download",
-                                                                action: "DrawingViewables",
-                                                                values: new { projectName = ProjectId, fileName = "drawing.pdf", hash = _hash });
+                                                                action: "DrawingPdf",
+                                                                values: new { projectName = ProjectId, hash = _hash });
 
                 // when local url starts with slash, it does not work, because it is doubled in url
-                url = url.IndexOf("/") == 0 ? url.Substring(1) : url;
+                if (url.StartsWith('/'))
+                {
+                    url = url.Substring(1);
+                }
             }
 
             await resultSender.SendSuccessAsync(url, stats);
