@@ -35,6 +35,10 @@ See [high level diagram](architecture.png)
 ### Web Application Alone
 * From a command prompt, go to the `WebApplication` directory, and run `dotnet build`.
 
+## (Optional) Update the npm packages
+* If you are not running the Application for the first time, but rather getting an update, you may need to install npm packages that were added since your last successfull run:
+1.  Using command line go to `WebApplication/ClientApp` and run `npm install`. See [Adding npm package](#Add-npm-package-to-project) for more information.
+
 ## Run The Web Application Without Debugging
 ### Clear and load initial data during app launch time
  - Create initial data: from the `WebApplication` directory, run `dotnet run initialize=true`
