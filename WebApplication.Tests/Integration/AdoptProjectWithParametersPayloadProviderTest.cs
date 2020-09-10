@@ -27,8 +27,7 @@ namespace WebApplication.Tests.Integration
             _adoptProjectWithParametersPayloadProvider = new AdoptProjectWithParametersPayloadProvider(logger, new DefaultHttpClientFactory());
         }
 
-        //[Fact(Skip = "just for development purposes")]
-        [Fact]
+        [Fact(Skip = "just for development purposes")]
         public async void GetParametersAsync()
         {
             var payload = await _adoptProjectWithParametersPayloadProvider.GetParametersAsync("http://localhost:5080/fileprovider/fileContent");
