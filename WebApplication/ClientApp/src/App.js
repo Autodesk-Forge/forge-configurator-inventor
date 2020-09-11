@@ -37,13 +37,16 @@ export class App extends Component {
   componentDidMount() {
     this.props.fetchShowParametersChanged();
 
-    const params = window.location.search.substring(1);
+    const rawParams = window.location.search.substring(1);
+    if (rawParams !== '') {
+      const params = JSON.parse('{"' + rawParams.replace(/&/g, '","').replace(/=/g,'":"') + '"}', function(key, value) { return key===""?value:decodeURIComponent(value);});
 
-    if (params !== '') {
-      this.props.adoptProjectWithParameters(params);
-      //window.history.pushState({}, document.title, "/");
+      if (params.url) {
+        this.props.adoptProjectWithParameters(params.url);
+      }
     }
   }
+
   render () {
     return (
       <Surface className="fullheight" id="main" level={200}>
