@@ -45,15 +45,15 @@ namespace WebApplication.Job
 
             try
             {
-                AdoptProjectWithParametersPayload payload = await _adoptProjectWithParametersPayloadProvider.GetParametersAsync(_payloadUrl);
+                var payload = await _adoptProjectWithParametersPayloadProvider.GetParametersAsync(_payloadUrl);
 
                 Logger.LogInformation($"ProcessJob (AdoptProjectWithParameters) {Id} for project {payload.Name} started.");
 
-                var projectDto = await _projectService.AdoptProjectWithParametersAsync(payload);
+                var projectWithParameters = await _projectService.AdoptProjectWithParametersAsync(payload);
 
                 Logger.LogInformation($"ProcessJob (AdoptProjectWithParameters) {Id} for project {payload.Name} completed.");
                 
-                await resultSender.SendSuccessAsync(Tuple.Create(projectDto, payload));
+                await resultSender.SendSuccessAsync(projectWithParameters);
             }
             catch (Exception ex)
             {
