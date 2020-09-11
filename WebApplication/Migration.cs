@@ -91,7 +91,7 @@ namespace MigrationApp
             {
                var ossAttributes = new OssAttributes(projectName);
                string metadataFile = ossAttributes.Metadata;
-               // if metadate file is missing for project we consider that project not migrated
+               // if metadata file is missing for project we consider that project not migrated
                if (! await bucketNew.ObjectExistsAsync(metadataFile))
                   projectNamesNew.Remove(projectName);
             }
