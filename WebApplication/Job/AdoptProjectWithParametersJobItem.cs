@@ -57,7 +57,7 @@ namespace WebApplication.Job
 
                 Logger.LogInformation($"ProcessJob (AdoptProjectWithParameters) {Id} for project {payload.Name} completed.");
                 
-                await resultSender.SendSuccessAsync(Tuple.Create(projectStorage, payload));
+                await resultSender.SendSuccessAsync(Tuple.Create(_dtoGenerator.ToDTO(projectStorage), payload));
             }
             catch (Exception ex)
             {
