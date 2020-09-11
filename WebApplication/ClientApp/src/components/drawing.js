@@ -65,7 +65,7 @@ export class Drawing extends Component {
         {!empty &&
           <ForgePdfView/>
         }
-        {this.props.drawingProgressShowing &&
+        {!empty && this.props.drawingProgressShowing &&
           <ModalProgress
               open={true}
               title="Generating Drawing"
