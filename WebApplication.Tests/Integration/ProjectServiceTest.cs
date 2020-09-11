@@ -73,9 +73,9 @@ namespace WebApplication.Tests.Integration
         [ClassData(typeof(AdoptProjectWithParametersDataProvider))]
         public void AdoptProjectWithParameters(AdoptProjectWithParametersPayload payload)
         {
-            var projectStorage = _projectService.AdoptProjectWithParametersAsync(payload).Result;
+            //var projectStorage = _projectService.AdoptProjectWithParametersAsync(payload).Result;
 
-            _output.WriteLine($"adopted project with parameters, project name: {projectStorage.Project.Name}");
+            //_output.WriteLine($"adopted project with parameters, project name: {projectStorage.Project.Name}");
         }
 
         [Fact(Skip = "not a real test, just for development purposes")]

@@ -23,7 +23,8 @@ export const actionTypes = {
     PROJECT_LIST_UPDATED: 'PROJECT_LIST_UPDATED',
     ACTIVE_PROJECT_UPDATED: 'ACTIVE_PROJECT_UPDATED',
     UPDATE_PROJECT: 'UPDATE_PROJECT',
-    ADD_PROJECT: 'ADD_PROJECT'
+    ADD_PROJECT: 'ADD_PROJECT',
+    ADD_OR_UPDATE_PROJECT: 'ADD_OR_UPDATE_PROJECT'
 };
 
 export default actionTypes;
@@ -53,6 +54,13 @@ export const addProject = (newProject) => {
     return {
         type: actionTypes.ADD_PROJECT,
         newProject
+    };
+};
+
+export const addOrUpdateProject = (project) => {
+    return {
+        type: actionTypes.ADD_OR_UPDATE_PROJECT,
+        project
     };
 };
 

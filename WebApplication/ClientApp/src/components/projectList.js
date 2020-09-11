@@ -86,7 +86,7 @@ export class ProjectList extends Component {
 
       const url = decodeURIComponent(params);
       this.props.adoptProjectWithParameters(params);
-      window.history.pushState({}, document.title, "/");
+      //window.history.pushState({}, document.title, "/");
     }
   }
 

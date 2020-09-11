@@ -2,8 +2,8 @@ import { addError, addLog } from './notificationActions';
 import { Jobs } from '../JobManager';
 import { showAdoptWithParametersProgress, updateActiveTabIndex } from './uiFlagsActions';
 import { updateActiveProject } from '../actions/projectListActions';
-import { addProject } from './projectListActions';
-//import { adaptParameters, updateParameters } from './parametersActions';
+import { addOrUpdateProject } from './projectListActions';
+import { adaptParameters, updateParameters } from './parametersActions';
 
 export const adoptProjectWithParameters = (parameters) => async (dispatch) => {
     dispatch(addLog('adoptProjectWithParameters invoked'));
@@ -20,15 +20,19 @@ export const adoptProjectWithParameters = (parameters) => async (dispatch) => {
                 dispatch(addLog('JobManager: HubConnection started for adopt project with params'));
             },
             // onComplete
-            (newProject) => {
+            (tuple) => {
                 dispatch(addLog('JobManager: Adopt project with paramscReceived onComplete'));
+
+                const project = tuple.item1;
+                const params = tuple.item2.config;
+
                 // hide modal dialog
                 dispatch(showAdoptWithParametersProgress(false));
-                dispatch(addProject(newProject));
-                //const adaptedParams = adaptParameters(parameters);
-                //dispatch(updateParameters(newProject.id, adaptedParams));
+                dispatch(addOrUpdateProject(project));
+                const adaptedParams = adaptParameters(params);
+                dispatch(updateParameters(project.id, adaptedParams));
+                dispatch(updateActiveProject(project.id));
                 dispatch(updateActiveTabIndex(1));
-                dispatch(updateActiveProject(newProject.id));
             },
             // onError
             (jobId, reportUrl) => {

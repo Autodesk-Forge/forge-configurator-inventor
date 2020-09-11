@@ -43,7 +43,7 @@ namespace WebApplication.Services
         /// </summary>
         /// <param name="payload">project configuration with parameters</param>
         /// <returns>project storage</returns>
-        public async Task<ProjectStorage> AdoptProjectWithParametersAsync(AdoptProjectWithParametersPayload payload)
+        public async Task<ProjectDTO> AdoptProjectWithParametersAsync(AdoptProjectWithParametersPayload payload, DtoGenerator dtoGenerator)
         {
             if (!await DoesProjectAlreadyExistAsync(payload.Name))
             {
@@ -56,9 +56,18 @@ namespace WebApplication.Services
                 _logger.LogInformation($"project with name {payload.Name} already exists");
             }
 
-            await _projectWork.DoSmartUpdateAsync(payload.Config, payload.Name);
+            var updateDto = (await _projectWork.DoSmartUpdateAsync(payload.Config, payload.Name)).dto;
+            var projectDto = dtoGenerator.ToDTO(await _userResolver.GetProjectStorageAsync(payload.Name));
 
-            return await _userResolver.GetProjectStorageAsync(payload.Name);
+            projectDto.Svf = updateDto.Svf;
+            projectDto.BomDownloadUrl = updateDto.BomDownloadUrl;
+            projectDto.BomJsonUrl = updateDto.BomJsonUrl;
+            projectDto.ModelDownloadUrl = updateDto.ModelDownloadUrl;
+            projectDto.Hash = updateDto.Hash;
+            projectDto.IsAssembly = updateDto.IsAssembly;
+            projectDto.HasDrawing = updateDto.HasDrawing;
+
+            return projectDto;
         }
 
         private async Task<bool> DoesProjectAlreadyExistAsync(string projectName)

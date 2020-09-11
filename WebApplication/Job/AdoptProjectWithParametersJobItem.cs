@@ -53,11 +53,11 @@ namespace WebApplication.Job
 
                 Logger.LogInformation($"ProcessJob (AdoptProjectWithParameters) {Id} for project {payload.Name} started.");
 
-                ProjectStorage projectStorage = await _projectService.AdoptProjectWithParametersAsync(payload);
+                var projectDto = await _projectService.AdoptProjectWithParametersAsync(payload, _dtoGenerator);
 
                 Logger.LogInformation($"ProcessJob (AdoptProjectWithParameters) {Id} for project {payload.Name} completed.");
                 
-                await resultSender.SendSuccessAsync(Tuple.Create(projectStorage, payload));
+                await resultSender.SendSuccessAsync(Tuple.Create(projectDto, payload));
             }
             catch (Exception ex)
             {
