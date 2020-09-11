@@ -23,15 +23,15 @@ namespace MigrationApp
 {
    public class MigrationJob
    {
-      public enum JobType {CopyAndAdopt};
+      public enum JobType {CopyAndAdopt, RemoveNew };
       public JobType jobType;
-      public OssBucket bucketOld;
+      public OssBucket bucket;
       public ProjectInfo projectInfo;
       public string projectUrl;
-      public MigrationJob(JobType jobTypeParam, OssBucket bucketOldParam, ProjectInfo projectInfoParam, string projectUrlParam)
+      public MigrationJob(JobType jobTypeParam, OssBucket bucketParam, ProjectInfo projectInfoParam, string projectUrlParam)
       {
          jobType = jobTypeParam;
-         bucketOld = bucketOldParam;
+         bucket = bucketParam;
          projectInfo = projectInfoParam;
          projectUrl = projectUrlParam;
       }
