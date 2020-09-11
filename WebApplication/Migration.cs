@@ -40,8 +40,9 @@ namespace MigrationApp
       private readonly UserResolver _userResolver;
       private readonly ProjectWork _projectWork;
       private readonly ILogger<Migration> _logger;
+      private readonly OssBucketFactory _bucketFactory;
 
-      public Migration(IConfiguration configuration, BucketPrefixProvider bucketPrefix, IForgeOSS forgeOSS, MigrationBucketKeyProvider bucketProvider, UserResolver userResolver, ProjectWork projectWork, ILogger<Migration> logger, ResourceProvider resourceProvider)
+      public Migration(IConfiguration configuration, BucketPrefixProvider bucketPrefix, IForgeOSS forgeOSS, MigrationBucketKeyProvider bucketProvider, UserResolver userResolver, ProjectWork projectWork, ILogger<Migration> logger, ResourceProvider resourceProvider, OssBucketFactory bucketFactory)
       {
          _forgeOSS = forgeOSS;
          _configuration = configuration;
@@ -51,6 +52,7 @@ namespace MigrationApp
          _projectWork = projectWork;
          _logger = logger;
          _resourceProvider = resourceProvider;
+         _bucketFactory = bucketFactory;
       }
       public async Task<List<MigrationJob>> ScanBuckets()
       {
@@ -72,28 +74,28 @@ namespace MigrationApp
          return migrationJobs;
       }
 
-      private async Task ScanBucket(List<MigrationJob> migrationJobs, string bucketKey)
+      private async Task ScanBucket(List<MigrationJob> migrationJobs, string bucketKeyOld)
       {
-         _bucketProvider.SetBucket(bucketKey);
-         List<string> projectNames = (List<string>) await _userResolver.GetProjectNames();
+         OssBucket bucketOld = _bucketFactory.CreateBucket(bucketKeyOld);
+         OssBucket bucketNew = _bucketFactory.CreateBucket(_bucketProvider.GetBucketKeyFromOld(bucketKeyOld));
+
+         List<string> projectNames = (List<string>) await _userResolver.GetProjectNames(bucketOld);
          foreach (string projectName in projectNames)
          {
-            string attributeFile = "attributes/" + projectName + "/metadata.json";
-            string bucketKeyNew = _bucketProvider.SetBucketKeyFromOld(bucketKey);
+            var ossAttributes = new OssAttributes(projectName);
+            string attributeFile = ossAttributes.Metadata;
 
             // check attributes file existance in new destination bucket
-            OssBucket bucketNew = await _userResolver.GetBucketAsync();
             if (await bucketNew.ObjectExistsAsync(attributeFile))
                continue;
 
-            await _forgeOSS.DownloadFileAsync(bucketKey, attributeFile, "metadata.json");
-            ProjectMetadata projectMetadata = Json.DeserializeFile<ProjectMetadata>("metadata.json");
+            ProjectMetadata projectMetadata = await bucketOld.DeserializeAsync<ProjectMetadata>(attributeFile);
 
             ProjectInfo projectInfo = new ProjectInfo();
             projectInfo.Name = projectName;
             projectInfo.TopLevelAssembly = projectMetadata.TLA;
 
-            migrationJobs.Add(new MigrationJob(JobType.CopyAndAdopt, bucketKey, projectInfo, ONC.ProjectUrl(projectName)));
+            migrationJobs.Add(new MigrationJob(JobType.CopyAndAdopt, bucketOld, projectInfo, ONC.ProjectUrl(projectName)));
          }
       }
 
@@ -101,10 +103,10 @@ namespace MigrationApp
       {
          foreach (MigrationJob job in migrationJobs)
          {            
-            _bucketProvider.SetBucketKeyFromOld(job.bucketKey);
+            _bucketProvider.SetBucketKeyFromOld(job.bucketOld.BucketKey);
             OssBucket bucketNew = await _userResolver.GetBucketAsync(true);
 
-            string signedUrlOld = await _forgeOSS.CreateSignedUrlAsync(job.bucketKey, job.projectUrl, ObjectAccess.Read);
+            string signedUrlOld = await job.bucketOld.CreateSignedUrlAsync(job.projectUrl, ObjectAccess.Read);
             string signedUrlNew = await bucketNew.CreateSignedUrlAsync(job.projectUrl, ObjectAccess.ReadWrite);
 
             try

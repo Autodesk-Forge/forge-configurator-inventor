@@ -77,9 +77,9 @@ namespace WebApplication.State
             return bucket;
         }
 
-        public async Task<ICollection<string>> GetProjectNames()
+        public async Task<ICollection<string>> GetProjectNames(OssBucket bucketParam = null)
         {
-            OssBucket bucket = await GetBucketAsync();
+            OssBucket bucket = bucketParam ?? await GetBucketAsync();
             return (await bucket.GetObjectsAsync(ONC.ProjectsMask))
                                 .Select(objDetails =>  ONC.ToProjectName(objDetails.ObjectKey))
                                 .ToList();

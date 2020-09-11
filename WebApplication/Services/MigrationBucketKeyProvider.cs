@@ -24,27 +24,30 @@ namespace WebApplication.Services
         }
         public string SetBucketKeyFromOld(string bucketKeyOld)
         {
+            BucketKey = GetBucketKeyFromOld(bucketKeyOld);
+
+            return BucketKey;
+        }
+
+        public string GetBucketKeyFromOld(string bucketKeyOld)
+        {
+            string bucketKeyNew;
             string [] splittedBucketKeyOld = bucketKeyOld.Split('-');
 
             if (splittedBucketKeyOld[0] == ResourceProvider.projectsTag)
             {
                 // anonymous bucket key
-                BucketKey = AnonymousBucketKey;
+                bucketKeyNew = AnonymousBucketKey;
             }
             else
             {
                 // logged user bucket key
                 string userId = splittedBucketKeyOld[2];
                 string userHash = splittedBucketKeyOld[3];
-                BucketKey = _resourceProvider.LoggedUserBucketKey(userId, userHash);
+                bucketKeyNew = _resourceProvider.LoggedUserBucketKey(userId, userHash);
             }
 
-            return BucketKey;
+            return bucketKeyNew;
         }
-
-      internal void SetBucket(string bucketKey)
-      {
-         BucketKey = bucketKey;
-      }
-   }
+    }
 }

@@ -107,6 +107,7 @@ namespace WebApplication
             services.AddSingleton<BucketPrefixProvider>();
             services.AddSingleton<LocalCache>();
             services.AddSingleton<Uploads>();
+            services.AddSingleton<OssBucketFactory>();
 
             if(Configuration.GetValue<bool>("migration"))
             {

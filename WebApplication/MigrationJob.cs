@@ -17,6 +17,7 @@
 /////////////////////////////////////////////////////////////////////
 
 using WebApplication.Definitions;
+using WebApplication.State;
 
 namespace MigrationApp
 {
@@ -24,13 +25,13 @@ namespace MigrationApp
    {
       public enum JobType {CopyAndAdopt};
       public JobType jobType;
-      public string bucketKey;
+      public OssBucket bucketOld;
       public ProjectInfo projectInfo;
       public string projectUrl;
-      public MigrationJob(JobType jobTypeParam, string bucketKeyParam, ProjectInfo projectInfoParam, string projectUrlParam)
+      public MigrationJob(JobType jobTypeParam, OssBucket bucketOldParam, ProjectInfo projectInfoParam, string projectUrlParam)
       {
          jobType = jobTypeParam;
-         bucketKey = bucketKeyParam;
+         bucketOld = bucketOldParam;
          projectInfo = projectInfoParam;
          projectUrl = projectUrlParam;
       }
