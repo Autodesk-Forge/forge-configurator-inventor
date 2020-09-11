@@ -37,6 +37,15 @@ export class App extends Component {
   componentDidMount() {
     this.props.fetchShowParametersChanged();
 
+    /* we are looking for url parameter that points to configuration JSON file for project adoption / project update
+       the expected format should look like: ?url=www.mydata.com/jsonConfig
+
+       the configuration JSON consists of:
+       "Url": url to your project zip
+       "Name": unique project name
+       "TopLevelAssembly": example.iam
+       "Config": desired parameters for adoption/update
+    */
     const rawParams = window.location.search.substring(1);
     if (rawParams !== '') {
       const params = JSON.parse('{"' + rawParams.replace(/&/g, '","').replace(/=/g,'":"') + '"}', function(key, value) { return key===""?value:decodeURIComponent(value);});
