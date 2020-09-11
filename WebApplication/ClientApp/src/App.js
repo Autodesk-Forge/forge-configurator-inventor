@@ -25,6 +25,9 @@ import TabsContainer from './components/tabsContainer';
 import ProjectSwitcher from './components/projectSwitcher';
 import { fetchShowParametersChanged } from './actions/uiFlagsActions';
 import { detectToken } from './actions/profileActions';
+import ModalProgress from './components/modalProgress';
+import { adoptWithParamsProgressShowing } from './reducers/mainReducer';
+import { adoptProjectWithParameters } from './actions/adoptWithParamsActions';
 
 export class App extends Component {
   constructor(props) {
@@ -33,6 +36,13 @@ export class App extends Component {
   }
   componentDidMount() {
     this.props.fetchShowParametersChanged();
+
+    const params = window.location.search.substring(1);
+
+    if (params !== '') {
+      this.props.adoptProjectWithParameters(params);
+      //window.history.pushState({}, document.title, "/");
+    }
   }
   render () {
     return (
@@ -41,12 +51,23 @@ export class App extends Component {
           <ProjectSwitcher />
         </Toolbar>
         <TabsContainer/>
+        {this.props.adoptWithParamsProgressShowing &&
+          <ModalProgress
+              open={true}
+              title="Adopting Project"
+              label=" "
+              icon="/Assembly_icon.svg"
+              onClose={() => this.onModalProgressClose()}/>
+        }
       </Surface>
     );
   }
 }
 
-export default connect(null, {
-  fetchShowParametersChanged, detectToken
+export default connect(function (store) {
+  return {
+    adoptWithParamsProgressShowing: adoptWithParamsProgressShowing(store)
+  };}, {
+    adoptProjectWithParameters, fetchShowParametersChanged, detectToken
 })(App);
 

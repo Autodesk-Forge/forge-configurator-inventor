@@ -17,6 +17,7 @@
     },
     "forge-configurator-inventor": {
       "commandName": "Project",
+      "commandLineArgs": "poc=true",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
