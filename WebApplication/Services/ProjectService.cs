@@ -22,12 +22,14 @@ namespace WebApplication.Services
         private readonly UserResolver _userResolver;
         private readonly ProjectWork _projectWork;
         private readonly RetryPolicy _waitForBucketPolicy;
+        private readonly DtoGenerator _dtoGenerator;
 
-        public ProjectService(ILogger<ProjectService> logger, UserResolver userResolver, ProjectWork projectWork)
+        public ProjectService(ILogger<ProjectService> logger, UserResolver userResolver, ProjectWork projectWork, DtoGenerator dtoGenerator)
         {
             _logger = logger;
             _userResolver = userResolver;
             _projectWork = projectWork;
+            _dtoGenerator = dtoGenerator;
 
             _waitForBucketPolicy = Policy
                 .Handle<ApiException>(e => e.ErrorCode == StatusCodes.Status404NotFound)
@@ -43,7 +45,7 @@ namespace WebApplication.Services
         /// </summary>
         /// <param name="payload">project configuration with parameters</param>
         /// <returns>project storage</returns>
-        public async Task<ProjectDTO> AdoptProjectWithParametersAsync(AdoptProjectWithParametersPayload payload, DtoGenerator dtoGenerator)
+        public async Task<ProjectDTO> AdoptProjectWithParametersAsync(AdoptProjectWithParametersPayload payload)
         {
             if (!await DoesProjectAlreadyExistAsync(payload.Name))
             {
@@ -57,7 +59,7 @@ namespace WebApplication.Services
             }
 
             var updateDto = (await _projectWork.DoSmartUpdateAsync(payload.Config, payload.Name)).dto;
-            var projectDto = dtoGenerator.ToDTO(await _userResolver.GetProjectStorageAsync(payload.Name));
+            var projectDto = _dtoGenerator.ToDTO(await _userResolver.GetProjectStorageAsync(payload.Name));
 
             projectDto.Svf = updateDto.Svf;
             projectDto.BomDownloadUrl = updateDto.BomDownloadUrl;
