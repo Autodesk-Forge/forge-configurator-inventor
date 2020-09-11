@@ -20,11 +20,21 @@ export const adoptProjectWithParameters = (parameters) => async (dispatch) => {
                 dispatch(addLog('JobManager: HubConnection started for adopt project with params'));
             },
             // onComplete
-            (tuple) => {
+            (projectwithparams) => {
                 dispatch(addLog('JobManager: Adopt project with paramscReceived onComplete'));
 
-                const project = tuple.item1;
-                const params = tuple.item2.config;
+                const project = projectwithparams.project;
+                const projectUpdate = projectwithparams.parameters;
+                const params = projectwithparams.parameters.parameters;
+
+                // Adapt the incoming update directly to our model
+                project.svf = projectUpdate.svf;
+                project.bomDownloadUrl = projectUpdate.bomDownloadUrl;
+                project.bomJsonUrl = projectUpdate.bomJsonUrl;
+                project.modelDownloadUrl = projectUpdate.modelDownloadUrl;
+                project.hash = projectUpdate.hash;
+                project.isAssembly = projectUpdate.isAssembly;
+                project.hasDrawing = projectUpdate.hasDrawing;
 
                 // hide modal dialog
                 dispatch(showAdoptWithParametersProgress(false));
