@@ -229,8 +229,8 @@ module.exports = function() {
       // wait for progress bar shows and disappears
       const updatingProjectProgress = '//p[text()="Updating Project"]';
       this.waitForVisible(updatingProjectProgress, 10);
-      this.waitForVisible(locators.xpButtonDone, locators.FDAActionTimeout);
-      this.click(locators.xpButtonDone);
+      this.waitForVisible(locators.xpButtonOk, locators.FDAActionTimeout);
+      this.click(locators.xpButtonOk);
       this.waitForInvisible(updatingProjectProgress, 10);
     },
     waitForForgeViewerToPreventItFromCrashing(timeout)
