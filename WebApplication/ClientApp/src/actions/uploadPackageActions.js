@@ -54,6 +54,8 @@ export const uploadPackage = () => async (dispatch, getState) => {
                 const reportUrl = (httpStatus === 422) ? e.response.data.reportUrl : null;  // <<<---- the major change
                 dispatch(setUploadFailed(reportUrl));
             }
+
+            return;
         }
 
         const jobManager = Jobs();
