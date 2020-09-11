@@ -110,8 +110,9 @@ namespace WebApplication
             services.AddSingleton<BucketPrefixProvider>();
             services.AddSingleton<LocalCache>();
             services.AddSingleton<Uploads>();
+            services.AddScoped<ProjectService>();
 
-            if(Configuration.GetValue<bool>("migration"))
+            if (Configuration.GetValue<bool>("migration"))
             {
                 services.AddHostedService<MigrationApp.Worker>();
             }

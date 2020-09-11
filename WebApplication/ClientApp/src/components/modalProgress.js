@@ -71,9 +71,9 @@ export class ModalProgress extends Component {
                     <div id="modalDone">
                         <Button className="button" style={
                             { width: '116px', height: '36px', borderRadius: '2px', marginLeft: '12px'}}
-                            type="secondary"
+                            type="primary"
                             size="small"
-                            title="Done"
+                            title="Ok"
                             onClick={this.props.onClose}
                         />
                     </div>

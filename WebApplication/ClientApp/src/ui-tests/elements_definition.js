@@ -26,7 +26,7 @@
 module.exports = {
      xpButtonReset : locate('button').find('span').withText('Reset'),
      xpButtonUpdate : locate('button').find('span').withText('Update'),
-     xpButtonDone: locate('button').find('span').withText('Done'),
+     xpButtonOk: locate('button').find('span').withText('Ok'),
      ForgeViewer : '#ForgeViewer',
      xpLinkAdskForge : '//a[@href="https://forge.autodesk.com"]',
      xpComboProjects : '//div[@role="button"] //*[local-name()="svg"]',

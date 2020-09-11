@@ -55,14 +55,14 @@ describe('modal progress ', () => {
         expect(children[0].props['children']).toBe("Missing label.");
     });
 
-    it('check Done button when specified download url', () => {
+    it('check Ok button when specified download url', () => {
 
         const props = { url: "someUrl" };
 
         const wrapper = shallow(<ModalDownloadProgress {...props} />);
 
         const button = wrapper.find('Button');
-        expect(button.prop('title')).toBe('Done');
+        expect(button.prop('title')).toBe('Ok');
     });
 
     it('check that here is NO button available when not used download url', () => {
@@ -85,13 +85,13 @@ describe('modal progress ', () => {
         expect(buttons.length).toBe(1);
     });
 
-    it('should close when DONE button clicked', () => {
+    it('should close when Ok button clicked', () => {
         const closeMockFn = jest.fn();
         const props = { onClose: closeMockFn, url: 'http://example.com' };
 
         const wrapper = shallow(<ModalDownloadProgress {...props} />);
 
-        const closeButton = wrapper.find({ title: "Done"});
+        const closeButton = wrapper.find({ title: "Ok"});
         expect(closeButton.length).toEqual(1);
 
         closeButton.simulate('click');
