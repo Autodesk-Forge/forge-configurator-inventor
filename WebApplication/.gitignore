@@ -1,3 +1,4 @@
 console.log
 AppBundles/
 appsettings.Local.json
+metadata.json

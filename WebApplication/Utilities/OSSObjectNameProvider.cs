@@ -90,6 +90,11 @@ namespace WebApplication.Utilities
 
         public static readonly string ProjectsMask = ToPathMask(ProjectsFolder);
 
+        public static string ProjectUrl(string projectName)
+        {
+            return Join(ProjectsFolder, projectName);
+        }
+
         /// <summary>
         /// Extract project name from OSS object name.
         /// </summary>

@@ -197,7 +197,7 @@ module.exports = function() {
     deleteProject(projectName) {
       // hover above project
       const projectRowWithName = projectRow.replace('ProjectName', projectName);
-      this.waitForVisible(projectRowWithName, 10);
+      this.waitForVisible(projectRowWithName, 60); // sometimes it takes time to projects to appear
       this.moveCursorTo(projectRowWithName);
 
       // click the checkbox to select project
