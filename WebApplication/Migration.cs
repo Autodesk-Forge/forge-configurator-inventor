@@ -41,8 +41,9 @@ namespace MigrationApp
       private readonly ProjectWork _projectWork;
       private readonly ILogger<Migration> _logger;
       private readonly OssBucketFactory _bucketFactory;
+      private readonly ProjectService _projectService;
 
-      public Migration(IConfiguration configuration, BucketPrefixProvider bucketPrefix, IForgeOSS forgeOSS, MigrationBucketKeyProvider bucketProvider, UserResolver userResolver, ProjectWork projectWork, ILogger<Migration> logger, ResourceProvider resourceProvider, OssBucketFactory bucketFactory)
+      public Migration(IConfiguration configuration, BucketPrefixProvider bucketPrefix, IForgeOSS forgeOSS, MigrationBucketKeyProvider bucketProvider, UserResolver userResolver, ProjectWork projectWork, ILogger<Migration> logger, ResourceProvider resourceProvider, OssBucketFactory bucketFactory, ProjectService projectService)
       {
          _forgeOSS = forgeOSS;
          _configuration = configuration;
@@ -53,6 +54,7 @@ namespace MigrationApp
          _logger = logger;
          _resourceProvider = resourceProvider;
          _bucketFactory = bucketFactory;
+         _projectService = projectService;
       }
       public async Task<List<MigrationJob>> ScanBuckets()
       {
@@ -79,7 +81,7 @@ namespace MigrationApp
          OssBucket bucketOld = _bucketFactory.CreateBucket(bucketKeyOld);
          OssBucket bucketNew = _bucketFactory.CreateBucket(_bucketProvider.GetBucketKeyFromOld(bucketKeyOld));
 
-         List<string> projectNames = (List<string>) await _userResolver.GetProjectNames(bucketOld);
+         List<string> projectNames = (List<string>) await _projectService.GetProjectNamesAsync(bucketOld);
          foreach (string projectName in projectNames)
          {
             var ossAttributes = new OssAttributes(projectName);

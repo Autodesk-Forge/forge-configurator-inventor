@@ -117,9 +117,10 @@ namespace WebApplication.Controllers
         private readonly Sender _sender;
         private readonly Uploads _uploads;
         private readonly DtoGenerator _dtoGenerator;
+        private readonly ProjectService _projectService;
 
         public JobsHub(ILogger<JobsHub> logger, ProjectWork projectWork, LinkGenerator linkGenerator, UserResolver userResolver, 
-            ProfileProvider profileProvider, Uploads uploads, DtoGenerator dtoGenerator)
+            ProfileProvider profileProvider, Uploads uploads, DtoGenerator dtoGenerator, ProjectService projectService)
         {
             _logger = logger;
             _projectWork = projectWork;
@@ -128,6 +129,7 @@ namespace WebApplication.Controllers
             _userResolver = userResolver;
             _uploads = uploads;
             _dtoGenerator = dtoGenerator;
+            _projectService = projectService;
 
             _sender = new Sender(this);
         }

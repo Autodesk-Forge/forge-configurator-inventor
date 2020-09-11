@@ -46,18 +46,21 @@ namespace WebApplication
         private readonly BucketPrefixProvider _bucketPrefixProvider;
         private readonly LocalCache _localCache;
         private readonly OssBucket _bucket;
+        private readonly ProjectService _projectService;
 
         /// <summary>
         /// Constructor.
         /// </summary>
         public Initializer(ILogger<Initializer> logger, FdaClient fdaClient, IOptions<DefaultProjectsConfiguration> optionsAccessor,
-                            ProjectWork projectWork, UserResolver userResolver, LocalCache localCache, BucketPrefixProvider bucketPrefixProvider)
+                            ProjectWork projectWork, UserResolver userResolver, LocalCache localCache, ProjectService projectService,
+                            BucketPrefixProvider bucketPrefixProvider)
         {
             _logger = logger;
             _fdaClient = fdaClient;
             _projectWork = projectWork;
             _userResolver = userResolver;
             _localCache = localCache;
+            _projectService = projectService;
             _defaultProjectsConfiguration = optionsAccessor.Value;
 
             // bucket for anonymous user
@@ -94,28 +97,10 @@ namespace WebApplication
 
             _logger.LogInformation($"Bucket {_bucket.BucketKey} created");
 
-            // OSS bucket might be not ready yet, so repeat attempts
-            var waitForBucketPolicy = Policy
-                .Handle<ApiException>(e => e.ErrorCode == StatusCodes.Status404NotFound)
-                .WaitAndRetryAsync(
-                    retryCount: 4,
-                    retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                    (exception, timeSpan) => _logger.LogWarning("Cannot get fresh OSS bucket. Repeating")
-                );
-
             // publish default project files (specified by the appsettings.json)
             foreach (DefaultProjectConfiguration defaultProjectConfig in _defaultProjectsConfiguration.Projects)
             {
-                var projectUrl = defaultProjectConfig.Url;
-                var project = await _userResolver.GetProjectAsync(defaultProjectConfig.Name);
-
-                _logger.LogInformation($"Launching 'TransferData' for {projectUrl}");
-                string signedUrl = await waitForBucketPolicy.ExecuteAsync(async () => await _bucket.CreateSignedUrlAsync(project.OSSSourceModel, ObjectAccess.ReadWrite));
-
-                // TransferData from s3 to temporary oss url
-                await _projectWork.FileTransferAsync(projectUrl, signedUrl);
-
-                _logger.LogInformation($"'TransferData' for {projectUrl} is done.");
+                var signedUrl = await _projectService.TransferProjectToOssAsync(_bucket, defaultProjectConfig);
 
                 await _projectWork.AdoptAsync(defaultProjectConfig, signedUrl);
             }

@@ -61,11 +61,11 @@ Scenario('should check if all Tabs are loaded after click', async (I) => {
     // click on Drawing tab
     I.click( locators.drawingTab);
 
-    // check the dialog will appear with Done button
+    // check the dialog will appear with Ok button
     const drawingProgress = '//p[text()="Generating Drawing"]';
     I.waitForVisible(drawingProgress, 10);
-    I.waitForVisible(locators.xpButtonDone, locators.FDAActionTimeout);
-    I.click(locators.xpButtonDone);
+    I.waitForVisible(locators.xpButtonOk, locators.FDAActionTimeout);
+    I.click(locators.xpButtonOk);
 
     // check that Drawing tab has correct content
     I.waitForVisible( locators.DrawingContainer, 10);

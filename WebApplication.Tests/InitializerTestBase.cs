@@ -105,8 +105,12 @@ namespace WebApplication.Tests
             // TODO: linkGenerator should be mocked
             var dtoGenerator = new DtoGenerator(linkGenerator: null, localCache);
             var projectWork = new ProjectWork(new NullLogger<ProjectWork>(), arranger, fdaClient, dtoGenerator, userResolver);
+
+            var projectService = new ProjectService(new NullLogger<ProjectService>(), userResolver, projectWork);
+
             initializer = new Initializer(new NullLogger<Initializer>(), fdaClient,
-                                            defaultProjectsOptions, projectWork, userResolver, localCache, bucketPrefixProvider);
+                                            defaultProjectsOptions, projectWork, userResolver, localCache,
+                                            projectService, bucketPrefixProvider);
 
             testFileDirectory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()));
             httpClient = new HttpClient();

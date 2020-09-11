@@ -77,14 +77,6 @@ namespace WebApplication.State
             return bucket;
         }
 
-        public async Task<ICollection<string>> GetProjectNames(OssBucket bucketParam = null)
-        {
-            OssBucket bucket = bucketParam ?? await GetBucketAsync();
-            return (await bucket.GetObjectsAsync(ONC.ProjectsMask))
-                                .Select(objDetails =>  ONC.ToProjectName(objDetails.ObjectKey))
-                                .ToList();
-        }
-
         public async Task<Project> GetProjectAsync(string projectName, bool ensureDir = true)
         {
             var userFullDirName = await GetFullUserDir();

@@ -109,7 +109,7 @@ namespace WebApplication
             services.AddSingleton<Uploads>();
             services.AddSingleton<OssBucketFactory>();
 
-            if(Configuration.GetValue<bool>("migration"))
+            if (Configuration.GetValue<bool>("migration"))
             {
                 services.AddHostedService<MigrationApp.Worker>();
                 services.AddSingleton<MigrationBucketKeyProvider>();
@@ -120,12 +120,14 @@ namespace WebApplication
                 services.AddSingleton<UserResolver>();
                 services.AddSingleton<ProfileProvider>();
                 services.AddSingleton<Migration>();
+                services.AddSingleton<ProjectService>();
             }
             else
             {
                 services.AddScoped<IBucketKeyProvider, LoggedInUserBucketKeyProvider>();
                 services.AddScoped<UserResolver>();
                 services.AddScoped<ProfileProvider>();
+                services.AddScoped<ProjectService>();
             }
         }
 
