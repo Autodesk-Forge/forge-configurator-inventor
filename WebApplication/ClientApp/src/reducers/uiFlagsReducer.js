@@ -151,6 +151,8 @@ export default function(state = initialState, action) {
          return { ...state, reportUrl: action.url};
       case uiFlagsActionTypes.SHOW_DOWNLOAD_PROGRESS:
          return { ...state, downloadProgressShowing: action.visible, downloadUrl: null, downloadProgressTitle: action.title };
+      case uiFlagsActionTypes.HIDE_DOWNLOAD_PROGRESS:
+         return { ...state, downloadProgressShowing: false };
       case uiFlagsActionTypes.SET_DOWNLOAD_LINK:
          return { ...state, downloadUrl: action.url};
       case uiFlagsActionTypes.SHOW_UPLOAD_PACKAGE:

@@ -18,7 +18,7 @@
 
 import { addError, addLog } from './notificationActions';
 import { Jobs } from '../JobManager';
-import { showDownloadProgress, showDownloadFailed, setDownloadLink, setReportUrlLink, setStats } from './uiFlagsActions';
+import { showDownloadProgress, showDownloadFailed, setDownloadLink, setReportUrlLink, setStats, hideDownloadProgress } from './uiFlagsActions';
 import { showDrawingExportProgress, setDrawingPdfUrl } from './uiFlagsActions';
 
 /**
@@ -40,7 +40,7 @@ export const getDownloadLink = (methodName, projectId, hash, dialogTitle) => asy
     const jobManager = Jobs();
 
     // show progress
-    dispatch(showDownloadProgress(true, dialogTitle)); // TODO: split Show and Hide
+    dispatch(showDownloadProgress(true, dialogTitle));
 
     // launch signalR to generate download and wait for result
     try {
@@ -61,7 +61,7 @@ export const getDownloadLink = (methodName, projectId, hash, dialogTitle) => asy
             (jobId, reportUrl) => {
                 dispatch(addLog('JobManager.doDownloadJob: Received onError with jobId: ' + jobId + ' and reportUrl: ' + reportUrl));
                 // hide progress modal dialog
-                dispatch(showDownloadProgress(false, null));
+                dispatch(hideDownloadProgress());
                 // show error modal dialog
                 dispatch(setReportUrlLink(reportUrl));
                 dispatch(showDownloadFailed(true));

@@ -100,6 +100,11 @@ class JobManager {
 
             connection.stop();
 
+            if (! downloadUrl && ! stats) {
+                if (onError) onError("no outputs", "Failed to generate downloads");
+                return;
+            }
+
             if (onSuccess) {
                 const token = repo.getAccessToken();
                 if (token) {
