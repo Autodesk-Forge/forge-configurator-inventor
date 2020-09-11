@@ -57,7 +57,7 @@ export class App extends Component {
         {this.props.adoptWithParamsProgressShowing &&
           <ModalProgress
               open={true}
-              title="Adopting Project"
+              title="Loading Content"
               label=" "
               icon="/Assembly_icon.svg"
               onClose={() => this.onModalProgressClose()}/>
