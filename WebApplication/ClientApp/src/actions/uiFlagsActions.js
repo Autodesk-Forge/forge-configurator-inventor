@@ -45,7 +45,7 @@ export const actionTypes = {
     SET_DRAWING_URL: 'SET_DRAWING_URL',
     INVALIDATE_DRAWING: 'INVALIDATE_DRAWING',
     SET_STATS: 'SET_STATS',
-    SET_ENABLE_EMBEDED_MODE: 'SET_ENABLE_EMBEDED_MODE',
+    SET_ENABLE_EMBEDDED_MODE: 'SET_ENABLE_EMBEDDED_MODE',
 };
 
 export default actionTypes;
@@ -244,9 +244,9 @@ export const setStats = (stats) => {
     };
 };
 
-export const setEnableEmbededMode = (enabled) => {
+export const setEnableEmbeddedMode = (enabled) => {
     return {
-        type: actionTypes.SET_ENABLE_EMBEDED_MODE,
+        type: actionTypes.SET_ENABLE_EMBEDDED_MODE,
         enabled
     };
 };

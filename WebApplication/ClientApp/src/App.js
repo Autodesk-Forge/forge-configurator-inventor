@@ -23,10 +23,10 @@ import './app.css';
 import Toolbar from './components/toolbar';
 import TabsContainer from './components/tabsContainer';
 import ProjectSwitcher from './components/projectSwitcher';
-import { showAdoptWithParamsFailed, setEnableEmbededMode, fetchShowParametersChanged } from './actions/uiFlagsActions';
+import { showAdoptWithParamsFailed, setEnableEmbeddedMode, fetchShowParametersChanged } from './actions/uiFlagsActions';
 import { detectToken } from './actions/profileActions';
 import ModalProgress from './components/modalProgress';
-import { adoptWithParamsFailed, embededModeEnabled, adoptWithParamsProgressShowing } from './reducers/mainReducer';
+import { adoptWithParamsFailed, embeddedModeEnabled, adoptWithParamsProgressShowing } from './reducers/mainReducer';
 import { adoptProjectWithParameters } from './actions/adoptWithParamsActions';
 import ModalFail from './components/modalFail';
 
@@ -58,15 +58,15 @@ export class App extends Component {
       }
     }
     // ugly way to do this, just for POC demo
-    this.props.setEnableEmbededMode(pocEnabled);
+    this.props.setEnableEmbeddedMode(pocEnabled);
   }
 
   render () {
-    const showToolbar = this.props.embededModeEnabled;
+    const showToolbar = !this.props.embeddedModeEnabled;
 
     return (
       <Surface className="fullheight" id="main" level={200}>
-        { !showToolbar &&
+        { showToolbar &&
           <Toolbar>
             <ProjectSwitcher />
           </Toolbar>
@@ -95,8 +95,8 @@ export default connect(function (store) {
   return {
     adoptWithParamsProgressShowing: adoptWithParamsProgressShowing(store),
     adoptWithParamsFailed: adoptWithParamsFailed(store),
-    embededModeEnabled: embededModeEnabled(store)
+    embeddedModeEnabled: embeddedModeEnabled(store)
   };}, {
-    showAdoptWithParamsFailed, adoptProjectWithParameters, setEnableEmbededMode, fetchShowParametersChanged, detectToken
+    showAdoptWithParamsFailed, adoptProjectWithParameters, setEnableEmbeddedMode, fetchShowParametersChanged, detectToken
 })(App);
 

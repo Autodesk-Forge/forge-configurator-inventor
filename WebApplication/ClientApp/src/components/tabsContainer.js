@@ -25,7 +25,7 @@ import ParametersContainer from './parametersContainer';
 import Bom from './bom';
 import Downloads from './downloads';
 import './tabs.css';
-import { embededModeEnabled, activeTabIndex } from '../reducers/mainReducer';
+import { embeddedModeEnabled, activeTabIndex } from '../reducers/mainReducer';
 import { updateActiveTabIndex } from '../actions/uiFlagsActions';
 import Drawing from './drawing';
 
@@ -38,8 +38,8 @@ export class TabsContainer extends Component {
     render() {
 
         const idx = this.props.activeTabIndex;
-        const showProjectsTab = this.props.embededModeEnabled;
-        const showParameters = this.props.embededModeEnabled;
+        const showProjectsTab = this.props.embeddedModeEnabled;
+        const showParameters = this.props.embeddedModeEnabled;
 
         return (
             <div className="tabsContainer">
@@ -93,6 +93,6 @@ export class TabsContainer extends Component {
 export default connect(function (store){
   return {
     activeTabIndex: activeTabIndex(store),
-    embededModeEnabled: embededModeEnabled(store)
+    embeddedModeEnabled: embeddedModeEnabled(store)
   };
 }, { updateActiveTabIndex } )(TabsContainer);

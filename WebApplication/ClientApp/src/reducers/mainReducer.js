@@ -177,6 +177,6 @@ export const getStats = function(state) {
     return uiFlags.getStats(state.uiFlags);
 };
 
-export const embededModeEnabled = function(state) {
-    return uiFlags.embededModeEnabled(state.uiFlags);
+export const embeddedModeEnabled = function(state) {
+    return uiFlags.embeddedModeEnabled(state.uiFlags);
 };
