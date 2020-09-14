@@ -169,6 +169,10 @@ export const adoptWithParamsProgressShowing = function(state) {
     return uiFlags.adoptWithParamsProgressShowing(state.uiFlags);
 };
 
+export const adoptWithParamsFailed = function(state) {
+    return uiFlags.adoptWithParamsFailed(state.uiFlags);
+};
+
 export const getStats = function(state) {
     return uiFlags.getStats(state.uiFlags);
 };

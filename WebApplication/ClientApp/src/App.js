@@ -23,11 +23,12 @@ import './app.css';
 import Toolbar from './components/toolbar';
 import TabsContainer from './components/tabsContainer';
 import ProjectSwitcher from './components/projectSwitcher';
-import { setEnableEmbededMode, fetchShowParametersChanged } from './actions/uiFlagsActions';
+import { showAdoptWithParamsFailed, setEnableEmbededMode, fetchShowParametersChanged } from './actions/uiFlagsActions';
 import { detectToken } from './actions/profileActions';
 import ModalProgress from './components/modalProgress';
-import { embededModeEnabled, adoptWithParamsProgressShowing } from './reducers/mainReducer';
+import { adoptWithParamsFailed, embededModeEnabled, adoptWithParamsProgressShowing } from './reducers/mainReducer';
 import { adoptProjectWithParameters } from './actions/adoptWithParamsActions';
+import ModalFail from './components/modalFail';
 
 export class App extends Component {
   constructor(props) {
@@ -76,10 +77,16 @@ export class App extends Component {
               open={true}
               title="Loading Content"
               label=" "
-              icon="/Assembly_icon.svg"
-              onClose={() => this.onModalProgressClose()}/>
+              icon="/Assembly_icon.svg"/>
         }
-      </Surface>
+        {this.props.adoptWithParamsFailed &&
+          <ModalFail
+              open={true}
+              title={ "Content loading failed" }
+              contentName=""
+              label="See console for more details"
+              onClose={ () => this.props.showAdoptWithParamsFailed(false) } />}
+          </Surface>
     );
   }
 }
@@ -87,8 +94,9 @@ export class App extends Component {
 export default connect(function (store) {
   return {
     adoptWithParamsProgressShowing: adoptWithParamsProgressShowing(store),
+    adoptWithParamsFailed: adoptWithParamsFailed(store),
     embededModeEnabled: embededModeEnabled(store)
   };}, {
-    adoptProjectWithParameters, setEnableEmbededMode, fetchShowParametersChanged, detectToken
+    showAdoptWithParamsFailed, adoptProjectWithParameters, setEnableEmbededMode, fetchShowParametersChanged, detectToken
 })(App);
 
