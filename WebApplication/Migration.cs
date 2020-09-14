@@ -19,6 +19,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Autodesk.Forge.Client;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using WebApplication.Definitions;
@@ -81,55 +83,98 @@ namespace MigrationApp
          OssBucket bucketOld = _bucketFactory.CreateBucket(bucketKeyOld);
          OssBucket bucketNew = _bucketFactory.CreateBucket(_bucketProvider.GetBucketKeyFromOld(bucketKeyOld));
 
-         List<string> projectNames = (List<string>) await _projectService.GetProjectNamesAsync(bucketOld);
-         foreach (string projectName in projectNames)
+         List<string> projectNamesNew = new List<string>();
+         try
          {
-            var ossAttributes = new OssAttributes(projectName);
-            string attributeFile = ossAttributes.Metadata;
+            projectNamesNew = (List<string>) await _projectService.GetProjectNamesAsync(bucketNew);
+            foreach (string projectName in projectNamesNew)
+            {
+               var ossAttributes = new OssAttributes(projectName);
+               string metadataFile = ossAttributes.Metadata;
+               // if metadata file is missing for project we consider that project not migrated
+               if (! await bucketNew.ObjectExistsAsync(metadataFile))
+                  projectNamesNew.Remove(projectName);
+            }
+         }
+         catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
+         {
+            // swallow non existing item
+         }
 
-            // check attributes file existance in new destination bucket
-            if (await bucketNew.ObjectExistsAsync(attributeFile))
-               continue;
+         List<string> projectNamesOld = (List<string>) await _projectService.GetProjectNamesAsync(bucketOld);
+         foreach (string projectName in projectNamesOld)
+         {
+            if (!projectNamesNew.Contains(projectName))
+            {
+               // new project list does not contain old project => lets copy and adopt
+               var ossAttributes = new OssAttributes(projectName);
+               string metadataFile = ossAttributes.Metadata;
+               ProjectMetadata projectMetadata = await bucketOld.DeserializeAsync<ProjectMetadata>(metadataFile);
+               ProjectInfo projectInfo = new ProjectInfo();
+               projectInfo.Name = projectName;
+               projectInfo.TopLevelAssembly = projectMetadata.TLA;
 
-            ProjectMetadata projectMetadata = await bucketOld.DeserializeAsync<ProjectMetadata>(attributeFile);
+               migrationJobs.Add(new MigrationJob(JobType.CopyAndAdopt, bucketOld, projectInfo, ONC.ProjectUrl(projectName)));
+            }
+         }
 
-            ProjectInfo projectInfo = new ProjectInfo();
-            projectInfo.Name = projectName;
-            projectInfo.TopLevelAssembly = projectMetadata.TLA;
-
-            migrationJobs.Add(new MigrationJob(JobType.CopyAndAdopt, bucketOld, projectInfo, ONC.ProjectUrl(projectName)));
+         // check if any of migrated projects were deleted in old bucket
+         // (user deleted them after migration started)
+         foreach (string projectName in projectNamesNew)
+         {
+            if (!projectNamesOld.Contains(projectName))
+               migrationJobs.Add(new MigrationJob(JobType.RemoveNew, bucketNew, new ProjectInfo(projectName), null));
          }
       }
 
       public async Task Migrate(List<MigrationJob> migrationJobs)
       {
          foreach (MigrationJob job in migrationJobs)
-         {            
-            _bucketProvider.SetBucketKeyFromOld(job.bucketOld.BucketKey);
-            OssBucket bucketNew = await _userResolver.GetBucketAsync(true);
+         {
+            switch (job.jobType)
+            {
+               case JobType.CopyAndAdopt:
+                  await CopyAndAdopt(job);
+                  break;
+               case JobType.RemoveNew:
+                  await RemoveNew(job);
+                  break;
+            }
+         }
+      }
 
-            string signedUrlOld = await job.bucketOld.CreateSignedUrlAsync(job.projectUrl, ObjectAccess.Read);
-            string signedUrlNew = await bucketNew.CreateSignedUrlAsync(job.projectUrl, ObjectAccess.ReadWrite);
+      private async Task RemoveNew(MigrationJob job)
+      {
+         List<string> projectList = new List<string>() {job.projectInfo.Name};
+         await _projectService.DeleteProjects(projectList, job.bucket);
+      }
 
-            try
-            {
-               await _projectWork.FileTransferAsync(signedUrlOld, signedUrlNew);
-            }
-            catch(Exception e)
-            {
-               _logger.LogError("Project " + job.projectInfo.Name + " cannot be copied\nException:" + e.Message);
-               continue;
-            }
+      private async Task CopyAndAdopt(MigrationJob job)
+      {
+         _bucketProvider.SetBucketKeyFromOld(job.bucket.BucketKey);
+         OssBucket bucketNew = await _userResolver.GetBucketAsync(true);
 
-            try
-            {
-               await _projectWork.AdoptAsync(job.projectInfo, signedUrlNew);
-               _logger.LogInformation("Project " + job.projectInfo.Name + " was adopted");
-            }
-            catch(Exception e)
-            {
-               _logger.LogError("Project " + job.projectInfo.Name + " was not adopted\nException:" + e.Message);
-            }
+         string signedUrlOld = await job.bucket.CreateSignedUrlAsync(job.projectUrl, ObjectAccess.Read);
+         string signedUrlNew = await bucketNew.CreateSignedUrlAsync(job.projectUrl, ObjectAccess.ReadWrite);
+
+         try
+         {
+            await _projectWork.FileTransferAsync(signedUrlOld, signedUrlNew);
+         }
+         catch(Exception e)
+         {
+            _logger.LogError(e, $"Project {job.projectInfo.Name} cannot be copied.");
+            return;
+         }
+
+         try
+         {
+            await _projectWork.AdoptAsync(job.projectInfo, signedUrlNew);
+            _logger.LogInformation($"Project {job.projectInfo.Name} was adopted");
+         }
+         catch(Exception e)
+         {
+            _logger.LogError(e, $"Project {job.projectInfo.Name} was not adopted");
          }
       }
 
