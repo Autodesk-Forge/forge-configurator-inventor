@@ -83,6 +83,7 @@ namespace WebApplication.Tests
             var appBundleZipPathsConfiguration = new AppBundleZipPaths
             {
                 EmptyExe = "../../../../WebApplication/AppBundles/EmptyExePlugin.bundle.zip",
+                DrawingsList = "../../../../WebApplication/AppBundles/DrawingsListPlugin.bundle.zip",
                 CreateSVF = "../../../../WebApplication/AppBundles/CreateSVFPlugin.bundle.zip",
                 CreateThumbnail = "../../../../WebApplication/AppBundles/CreateThumbnailPlugin.bundle.zip",
                 ExtractParameters = "../../../../WebApplication/AppBundles/ExtractParametersPlugin.bundle.zip",
