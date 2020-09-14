@@ -43,7 +43,8 @@ export const initialState = {
    drawingProgressShowing: false,
    adoptWithParamsProgressShowing: false,
    drawingUrl: null,
-   stats: null
+   stats: null,
+   embededModeEnabled: true
 };
 
 export const modalProgressShowing = function(state) {
@@ -128,10 +129,14 @@ export const drawingProgressShowing = function(state) {
 
 export const adoptWithParamsProgressShowing = function(state) {
    return state.adoptWithParamsProgressShowing;
-}
+};
 
 export const getStats = function(state) {
    return state.stats;
+};
+
+export const embededModeEnabled = function(state) {
+   return state.embededModeEnabled;
 };
 
 export default function(state = initialState, action) {
@@ -212,6 +217,8 @@ export default function(state = initialState, action) {
          return { ...state, drawingUrl: null };
       case uiFlagsActionTypes.SET_STATS:
          return { ...state, stats: action.stats };
+      case uiFlagsActionTypes.SET_ENABLE_EMBEDED_MODE:
+         return { ...state, embededModeEnabled: action.enabled };
       default:
          return state;
   }

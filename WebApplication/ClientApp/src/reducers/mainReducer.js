@@ -172,3 +172,7 @@ export const adoptWithParamsProgressShowing = function(state) {
 export const getStats = function(state) {
     return uiFlags.getStats(state.uiFlags);
 };
+
+export const embededModeEnabled = function(state) {
+    return uiFlags.embededModeEnabled(state.uiFlags);
+};

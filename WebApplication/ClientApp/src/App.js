@@ -23,10 +23,10 @@ import './app.css';
 import Toolbar from './components/toolbar';
 import TabsContainer from './components/tabsContainer';
 import ProjectSwitcher from './components/projectSwitcher';
-import { fetchShowParametersChanged } from './actions/uiFlagsActions';
+import { setEnableEmbededMode, fetchShowParametersChanged } from './actions/uiFlagsActions';
 import { detectToken } from './actions/profileActions';
 import ModalProgress from './components/modalProgress';
-import { adoptWithParamsProgressShowing } from './reducers/mainReducer';
+import { embededModeEnabled, adoptWithParamsProgressShowing } from './reducers/mainReducer';
 import { adoptProjectWithParameters } from './actions/adoptWithParamsActions';
 
 export class App extends Component {
@@ -47,21 +47,29 @@ export class App extends Component {
        "Config": desired parameters for adoption/update
     */
     const rawParams = window.location.search.substring(1);
+    let pocEnabled = false;
     if (rawParams !== '') {
       const params = JSON.parse('{"' + rawParams.replace(/&/g, '","').replace(/=/g,'":"') + '"}', function(key, value) { return key===""?value:decodeURIComponent(value);});
 
       if (params.url) {
+        pocEnabled = true;
         this.props.adoptProjectWithParameters(params.url);
       }
     }
+    // ugly way to do this, just for POC demo
+    this.props.setEnableEmbededMode(pocEnabled);
   }
 
   render () {
+    const showToolbar = this.props.embededModeEnabled;
+
     return (
       <Surface className="fullheight" id="main" level={200}>
-        <Toolbar>
-          <ProjectSwitcher />
-        </Toolbar>
+        { !showToolbar &&
+          <Toolbar>
+            <ProjectSwitcher />
+          </Toolbar>
+        }
         <TabsContainer/>
         {this.props.adoptWithParamsProgressShowing &&
           <ModalProgress
@@ -78,8 +86,9 @@ export class App extends Component {
 
 export default connect(function (store) {
   return {
-    adoptWithParamsProgressShowing: adoptWithParamsProgressShowing(store)
+    adoptWithParamsProgressShowing: adoptWithParamsProgressShowing(store),
+    embededModeEnabled: embededModeEnabled(store)
   };}, {
-    adoptProjectWithParameters, fetchShowParametersChanged, detectToken
+    adoptProjectWithParameters, setEnableEmbededMode, fetchShowParametersChanged, detectToken
 })(App);
 

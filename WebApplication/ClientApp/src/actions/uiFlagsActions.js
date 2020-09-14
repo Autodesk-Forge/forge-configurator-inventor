@@ -43,7 +43,8 @@ export const actionTypes = {
     SHOW_ADOPT_WITH_PROPERTIES_PROGRESS: 'SHOW_ADOPT_WITH_PROPERTIES_PROGRESS',
     SET_DRAWING_URL: 'SET_DRAWING_URL',
     INVALIDATE_DRAWING: 'INVALIDATE_DRAWING',
-    SET_STATS: 'SET_STATS'
+    SET_STATS: 'SET_STATS',
+    SET_ENABLE_EMBEDED_MODE: 'SET_ENABLE_EMBEDED_MODE',
 };
 
 export default actionTypes;
@@ -232,5 +233,12 @@ export const setStats = (stats) => {
     return {
         type: actionTypes.SET_STATS,
         stats
+    };
+};
+
+export const setEnableEmbededMode = (enabled) => {
+    return {
+        type: actionTypes.SET_ENABLE_EMBEDED_MODE,
+        enabled
     };
 };

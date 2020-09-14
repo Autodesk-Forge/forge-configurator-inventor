@@ -42,7 +42,7 @@ export const adoptProjectWithParameters = (parameters) => async (dispatch) => {
                 const adaptedParams = adaptParameters(params);
                 dispatch(updateParameters(project.id, adaptedParams));
                 dispatch(updateActiveProject(project.id));
-                dispatch(updateActiveTabIndex(1));
+                dispatch(updateActiveTabIndex(0));
             },
             // onError
             (jobId, reportUrl) => {

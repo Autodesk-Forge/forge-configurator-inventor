@@ -25,7 +25,7 @@ import ParametersContainer from './parametersContainer';
 import Bom from './bom';
 import Downloads from './downloads';
 import './tabs.css';
-import { activeTabIndex } from '../reducers/mainReducer';
+import { embededModeEnabled, activeTabIndex } from '../reducers/mainReducer';
 import { updateActiveTabIndex } from '../actions/uiFlagsActions';
 import Drawing from './drawing';
 
@@ -38,6 +38,8 @@ export class TabsContainer extends Component {
     render() {
 
         const idx = this.props.activeTabIndex;
+        const showProjectsTab = this.props.embededModeEnabled;
+        const showParameters = this.props.embededModeEnabled;
 
         return (
             <div className="tabsContainer">
@@ -49,15 +51,19 @@ export class TabsContainer extends Component {
               onTabClose={() => {}}
               activeTabIndex={idx}
             >
-              <Tab label="Projects">
-                <div id="project-list" className="tabContent fullheight">
-                  <ProjectList/>
-                </div>
-              </Tab>
+              {!showProjectsTab &&
+                <Tab label="Projects">
+                  <div id="project-list" className="tabContent fullheight">
+                    <ProjectList/>
+                  </div>
+                </Tab>
+              }
               <Tab label="Model" >
                 <div id="model" className='tabContent fullheight'>
                   <div className='inRow fullheight'>
-                    <ParametersContainer/>
+                    { !showParameters &&
+                      <ParametersContainer/>
+                    }
                     <ForgeView/>
                   </div>
                 </div>
@@ -86,6 +92,7 @@ export class TabsContainer extends Component {
 /* istanbul ignore next */
 export default connect(function (store){
   return {
-    activeTabIndex: activeTabIndex(store)
+    activeTabIndex: activeTabIndex(store),
+    embededModeEnabled: embededModeEnabled(store)
   };
 }, { updateActiveTabIndex } )(TabsContainer);
