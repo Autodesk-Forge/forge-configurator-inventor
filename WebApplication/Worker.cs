@@ -20,15 +20,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Autodesk.Forge.Model;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using WebApplication.Definitions;
-using WebApplication.Processing;
-using WebApplication.Services;
-using WebApplication.State;
-using WebApplication.Utilities;
 
 namespace MigrationApp
 {
@@ -53,7 +46,7 @@ namespace MigrationApp
                 }
                 catch(Exception e)
                 {
-                    _logger.LogError($"Fatal error during migration process !!!\n{e.Message}\n{e.StackTrace}");
+                    _logger.LogError(e, "Fatal error during migration process !!!");
                 }
 
                 await Task.Delay(1000, stoppingToken);
@@ -62,8 +55,11 @@ namespace MigrationApp
 
         private async Task MigrateAll()
         {
+            _logger.LogInformation("Scanning buckets for migration");
             List<MigrationJob> jobs = await _migration.ScanBuckets();
+            _logger.LogInformation($"Migration is performing {jobs.Count} operations");
             await _migration.Migrate(jobs);
+            _logger.LogInformation("Migration finished");
         }
     }
 }
