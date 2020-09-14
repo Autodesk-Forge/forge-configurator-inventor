@@ -101,7 +101,7 @@ class JobManager {
             connection.stop();
 
             if (! downloadUrl && ! stats) {
-                if (onError) onError("no outputs", "Failed to generate downloads");
+                if (onError) onError("no outputs", "Downloads are not found");
                 return;
             }
 
