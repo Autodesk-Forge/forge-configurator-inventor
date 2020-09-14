@@ -17,6 +17,7 @@
 /////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -49,6 +50,7 @@ namespace WebApplication.Processing
         public readonly string BomJson = Unique(".bom.json");
         public readonly string OutputDrawing = Unique(".drawing.zip");
         public readonly string OutputDrawingPdf = Unique(".drawing.pdf");
+        public readonly string DrawingsList = Unique(".drawingsList.json");
 
         /// <summary>
         /// Constructor.
@@ -73,7 +75,8 @@ namespace WebApplication.Processing
                                             bucket.CreateSignedUrlAsync(Parameters, ObjectAccess.Write),
                                             bucket.CreateSignedUrlAsync(OutputModelIAM, ObjectAccess.Write),
                                             bucket.CreateSignedUrlAsync(OutputModelIPT, ObjectAccess.Write),
-                                            bucket.CreateSignedUrlAsync(BomJson, ObjectAccess.Write));
+                                            bucket.CreateSignedUrlAsync(BomJson, ObjectAccess.Write),
+                                            bucket.CreateSignedUrlAsync(DrawingsList, ObjectAccess.Write));
 
             return new AdoptionData
                     {
@@ -84,6 +87,7 @@ namespace WebApplication.Processing
                         OutputIAMModelUrl   = urls[3],
                         OutputIPTModelUrl   = urls[4],
                         BomUrl              = urls[5],
+                        DrawingsListUrl     = urls[6],
                         TLA                 = tlaFilename
                     };
         }
@@ -130,14 +134,17 @@ namespace WebApplication.Processing
         public async Task<string> MoveProjectAsync(Project project, string tlaFilename)
         {
             var hashString = await GenerateParametersHashAsync();
+
             var bucket = await _userResolver.GetBucketAsync();
-            var hasDrawings = true; // TBD , we will make it probably part of the story to list all drawings in drawing tab
+            var drawings = await bucket.DeserializeAsync<List<string>>(DrawingsList);
+            var hasDrawings = drawings.Count > 0;
             var attributes = new ProjectMetadata { Hash = hashString, TLA = tlaFilename, HasDrawings = hasDrawings };
 
             var ossNames = project.OssNameProvider(hashString);
 
             // move data to expected places
             await Task.WhenAll(bucket.RenameObjectAsync(Thumbnail, project.OssAttributes.Thumbnail),
+                                bucket.RenameObjectAsync(DrawingsList, project.OssAttributes.DrawingsList),
                                 bucket.RenameObjectAsync(SVF, ossNames.ModelView),
                                 bucket.RenameObjectAsync(BomJson, ossNames.Bom),
                                 bucket.RenameObjectAsync(Parameters, ossNames.Parameters),

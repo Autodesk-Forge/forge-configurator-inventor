@@ -33,7 +33,8 @@ namespace WebApplication.Processing
         private const string OutputModelIPTParameterName = "OutputModelIPTFile";
 
         public AdoptProject(Publisher publisher) :
-            base(publisher,
+            base(publisher, 
+                    new DrawingsList(publisher),
                     new CreateSVF(publisher),
                     new CreateThumbnail(publisher),
                     new CreateBOM(publisher),
