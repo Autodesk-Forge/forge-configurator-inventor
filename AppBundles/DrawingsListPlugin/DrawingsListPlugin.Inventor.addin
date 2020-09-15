@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Addin Type="Plugin">
+  <ClassId>{ae8a3c51-4366-42b3-8ba3-f78ea849584a}</ClassId>
+  <ClientId>{ae8a3c51-4366-42b3-8ba3-f78ea849584a}</ClientId>
+  <DisplayName>DrawingsListPlugin</DisplayName>
+  <Description>a DrawingsListPlugin</Description>
+  <Assembly>DrawingsListPlugin.dll</Assembly>
+</Addin>
