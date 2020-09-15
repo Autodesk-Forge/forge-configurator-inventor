@@ -148,16 +148,6 @@ export class Downloads extends Component {
                         link: deadEndLink('Drawing'),
                         clickHandler: async () => this.props.getDownloadLink('CreateDrawingDownloadJob', project.id, project.hash, 'Preparing Drawings')
                     });
-
-                data.push(
-                    {
-                        id: 'pdf',
-                        icon: 'products-and-services-24.svg',
-                        type: 'PDF',
-                        env: 'Drawing',
-                        link: deadEndLink('Drawing PDF'),
-                        clickHandler: async () => this.props.getDownloadLink('CreateDrawingPdfJob', project.id, project.hash, 'Preparing Drawing PDF')
-                    });
             }
         }
 
