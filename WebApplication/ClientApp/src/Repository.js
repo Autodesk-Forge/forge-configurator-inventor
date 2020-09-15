@@ -101,16 +101,9 @@ class Repository {
     }
 
     /** Get list of drawings */
-    async loadDrawingsList(projectName) {
-        const response = //await axios.get("/drawingsList/" + projectName");
+    async loadDrawingsList(drawingsListUrl) {
+        const response = await axios.get(drawingsListUrl);
 
-        { data : [
-            "FirstLevel\\Part1.idw",
-            "FirstLevel\\SecodLevel\\MultiDrawings.idw",
-            "FirstLevel\\SecodLevel\\Part1.idw",
-            "IDW\\MultiDrawings.idw",
-            "MultiDrawings.dwg"] };
-            
         return response.data;
     }
 }

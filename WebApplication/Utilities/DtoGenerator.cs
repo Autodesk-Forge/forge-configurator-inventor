@@ -56,10 +56,15 @@ namespace WebApplication.Utilities
                                                                     action: "GetBOM",
                                                                     values: new { projectName = project.Name, hash });
 
+            var drawingsListUrl = _linkGenerator?.GetPathByAction(controller: "ProjectData",
+                                                                    action: "DrawingsList",
+                                                                    values: new { projectName = project.Name });
+
             var localNames = project.LocalNameProvider(hash);
             return new TProjectDTOBase
-                    {
-                        Svf = _localCache.ToDataUrl(localNames.SvfDir),
+            {
+                Svf = _localCache.ToDataUrl(localNames.SvfDir),
+                        DrawingsListUrl = drawingsListUrl,
                         BomDownloadUrl = bomDownloadUrl,
                         BomJsonUrl = bomJsonUrl,
                         ModelDownloadUrl = modelDownloadUrl,

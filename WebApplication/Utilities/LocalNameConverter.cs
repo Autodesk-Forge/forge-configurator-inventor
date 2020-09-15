@@ -81,6 +81,11 @@ namespace WebApplication.Utilities
         /// </summary>
         public string BOM => ToFullName(LocalName.BOM);
 
+        /// <summary>
+        /// Filename for JSON with DrawingsList.
+        /// </summary>
+        public string DrawingsList => ToFullName(LocalName.DrawingsList);
+
         public LocalNameProvider(string projectDir, string hash) : base(Path.Combine(projectDir, hash))
         {
         }

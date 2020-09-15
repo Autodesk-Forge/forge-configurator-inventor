@@ -57,5 +57,10 @@ namespace WebApplication.Definitions
         /// HasDrawing
         /// </summary>
         public bool HasDrawing { get; set; }
+
+        /// <summary>
+        /// URL to DrawingsList JSON.
+        /// </summary>
+        public string DrawingsListUrl { get; set; }
     }
 }

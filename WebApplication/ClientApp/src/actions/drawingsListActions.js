@@ -41,13 +41,15 @@ export const updateDrawingsList = drawingsList => {
 };
 
 // eslint-disable-next-line no-unused-vars
-export const fetchDrawingsList = () => async (dispatch, getState) => {
+export const fetchDrawingsList = (project) => async (dispatch) => {
+    if(!project.id) return;
+
     dispatch(addLog('Load Drawings list invoked'));
     try {
-        const data = await repo.loadDrawingsList();
-        dispatch(addLog('Load Drawings list received'));
-        dispatch(updateDrawingsList(data));
+        const data = await repo.loadDrawingsList(project.drawingsListUrl);
+        dispatch(addLog('Drawings list received'));
+        dispatch(updateDrawingsList(project.id, data));
     } catch (error) {
-        dispatch(addError('Failed to get Drawings list. (' + error + ')'));
+        dispatch(addError('Failed to get Drawings list for ' + project.id + '. (' + error + ')'));
     }
 };
