@@ -21,12 +21,15 @@ using WebApplication.Definitions;
 namespace WebApplication.Processing
 {
     /// <summary>
-    /// Drawings List.
+    /// Universal plugin to extract different kinds of data during adoption:
+    /// - drawings list
+    /// - unsupported plugins
+    /// - (NYI) missing references
     /// </summary>
-    public class DrawingsList : ForgeAppBase
+    public class DataChecker : ForgeAppBase
     {
-        public override string Id => nameof(DrawingsList);
-        public override string Description => "Gets list of drawings in the package";
+        public override string Id => nameof(DataChecker);
+        public override string Description => "Data checker during adoption";
 
         protected override string OutputUrl(ProcessingArgs projectData) => projectData.DrawingsListUrl;
         protected override string OutputName => "drawingsList.json";
@@ -35,6 +38,6 @@ namespace WebApplication.Processing
         /// <summary>
         /// Constructor.
         /// </summary>
-        public DrawingsList(Publisher publisher) : base(publisher) {}
+        public DataChecker(Publisher publisher) : base(publisher) {}
     }
 }
