@@ -39,7 +39,7 @@ exports.config = {
   },
   bootstrap: null,
   teardown: "./teardown.js",
-  mocha: {},
+  mocha: { bail: process.env.STOP_AFTER_FAIL },
   name: 'ClientApp',
   plugins: {
     retryFailedStep: {
