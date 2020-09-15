@@ -24,6 +24,7 @@ import updateParametersReducer, * as updateParams from './updateParametersReduce
 import uiFlagsReducer, * as uiFlags from './uiFlagsReducer';
 import profileReducer from './profileReducer';
 import bomReducer, * as bom from './bomReducer';
+import drawingsListReducer, * as drawing from './drawingsListReducers';
 
 export const mainReducer = combineReducers({
     projectList: projectListReducer,
@@ -32,7 +33,8 @@ export const mainReducer = combineReducers({
     updateParameters: updateParametersReducer,
     uiFlags: uiFlagsReducer,
     profile: profileReducer,
-    bom: bomReducer
+    bom: bomReducer,
+    drawing: drawingsListReducer
 });
 
 export const getActiveProject = function(state) {
@@ -167,4 +169,12 @@ export const drawingProgressShowing = function(state) {
 
 export const getStats = function(state) {
     return uiFlags.getStats(state.uiFlags);
+};
+
+export const getDrawingsList = function(state) {
+    return drawing.getDrawingsList(state.drawing);
+};
+
+export const getActiveDrawing = function(state) {
+    return drawing.getActiveDrawing(state.drawing);
 };

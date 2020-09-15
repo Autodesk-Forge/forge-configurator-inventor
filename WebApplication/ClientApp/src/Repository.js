@@ -99,6 +99,20 @@ class Repository {
         const response = await axios.get(bomUrl);
         return response.data;
     }
+
+    /** Get list of drawings */
+    async loadDrawingsList(projectName) {
+        const response = //await axios.get("/drawingsList/" + projectName");
+
+        { data : [
+            "FirstLevel\\Part1.idw",
+            "FirstLevel\\SecodLevel\\MultiDrawings.idw",
+            "FirstLevel\\SecodLevel\\Part1.idw",
+            "IDW\\MultiDrawings.idw",
+            "MultiDrawings.dwg"] };
+            
+        return response.data;
+    }
 }
 
 /** Singleton with repo */

@@ -24,6 +24,7 @@ import ForgePdfView from './forgePdfView';
 import { fetchDrawing } from '../actions/downloadActions';
 import ModalProgress from './modalProgress';
 import { showDrawingExportProgress } from '../actions/uiFlagsActions';
+import DrawingsContainer from './drawingsContainer';
 
 export class Drawing extends Component {
 
@@ -63,7 +64,12 @@ export class Drawing extends Component {
           <div className="drawingEmptyText">You don&apos;t have any drawings in package.</div>
         }
         {!empty &&
-          <ForgePdfView/>
+          // <div id="drawings" className='drawingsContent fullheight'>
+            <div className='inRow fullheight'>
+              <DrawingsContainer/>
+              {/* <ForgePdfView/> */}
+            </div>
+          // </div>
         }
         {!empty && this.props.drawingProgressShowing &&
           <ModalProgress

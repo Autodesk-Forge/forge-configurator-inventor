@@ -16,28 +16,46 @@
 * UNINTERRUPTED OR ERROR FREE.
 */
 
-.drawingContainer {
-    height: 100%;
+.drawingsListContainer {
+    display: flex;
+    flex-flow: column;
+    width: 296px;
+    min-width: 296px;
+    background-color: white;
 }
 
-.drawingContainer.empty {
-    background-image: url('/empty_state.svg');
-    background-position: center;
-    background-repeat: no-repeat;
+.drawingsList {
+    overflow: auto;
+    padding: 16px;
+    flex: auto;
 }
 
-.drawingEmptyText {
-    transform: translateY(55vh);
-    color: rgb(60, 60, 60);
-    font-size: 20px;
-    font-family: ArtifaktElement-Medium;
-    font-weight: 500;
-    text-align: center;
-    line-height: 26px;
+.pencilContainer {
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
-.drawingsContent {
-    border-style: solid;
-    border-width: 8px;
-    border-color: red;/*#D9D9D9;*/
+.drawingsListSeparator {
+    margin-top: 8px;
+    margin-bottom: 0;
+    width: calc(100% - 16px);
+}
+
+.drawingsList {
+    padding-bottom: 16px;
+    font-size: 12px;
+    font-family: ArtifaktElement, sans-serif;
+    font-weight: 300;
+    color: #3c3c3c;
+    line-height: 18px;
+}
+
+.buttonsContainer.hidden {
+    display: none;
+}
+
+.buttonsContainer {
+    display: flex;
+    padding: 16px;
 }
