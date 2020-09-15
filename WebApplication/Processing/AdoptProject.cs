@@ -34,7 +34,7 @@ namespace WebApplication.Processing
 
         public AdoptProject(Publisher publisher) :
             base(publisher, 
-                    new DrawingsList(publisher),
+                    new DataChecker(publisher),
                     new CreateSVF(publisher),
                     new CreateThumbnail(publisher),
                     new CreateBOM(publisher),
