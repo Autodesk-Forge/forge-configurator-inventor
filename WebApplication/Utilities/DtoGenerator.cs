@@ -57,7 +57,7 @@ namespace WebApplication.Utilities
                                                                     values: new { projectName = project.Name, hash });
 
             var drawingsListUrl = _linkGenerator?.GetPathByAction(controller: "ProjectData",
-                                                                    action: "DrawingsList",
+                                                                    action: "GetDrawingsList",
                                                                     values: new { projectName = project.Name });
 
             var localNames = project.LocalNameProvider(hash);
