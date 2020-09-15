@@ -73,8 +73,6 @@ namespace WebApplication.Processing
 
         private async Task PostAppBundleAsync(string packagePathname, ForgeAppBase config)
         {
-            if (! config.HasBundle) return;
-
             if (!File.Exists(packagePathname))
                 throw new Exception($"App Bundle with package is not found ({packagePathname}).");
 
@@ -145,8 +143,15 @@ namespace WebApplication.Processing
         /// <param name="config"></param>
         public async Task InitializeAsync(string packagePathname, ForgeAppBase config)
         {
-            await PostAppBundleAsync(packagePathname, config);
-            await PublishActivityAsync(config);
+            if (config.HasBundle)
+            {
+                await PostAppBundleAsync(packagePathname, config);
+            }
+
+            if (config.HasActivity)
+            {
+                await PublishActivityAsync(config);
+            }
         }
 
         /// <summary>
@@ -155,8 +160,11 @@ namespace WebApplication.Processing
         public async Task CleanUpAsync(ForgeAppBase config)
         {
             //remove activity
-            Trace($"Removing '{config.ActivityId}' activity.");
-            await _client.ActivitiesApi.DeleteActivityAsync(config.ActivityId, null, null, false);
+            if (config.HasActivity)
+            {
+                Trace($"Removing '{config.ActivityId}' activity.");
+                await _client.ActivitiesApi.DeleteActivityAsync(config.ActivityId, null, null, false);
+            }
 
             if (config.HasBundle)
             {
