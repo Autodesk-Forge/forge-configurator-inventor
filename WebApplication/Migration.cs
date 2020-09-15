@@ -86,14 +86,14 @@ namespace MigrationApp
          List<string> projectNamesNew = new List<string>();
          try
          {
-            projectNamesNew = (List<string>) await _projectService.GetProjectNamesAsync(bucketNew);
-            foreach (string projectName in projectNamesNew)
+            List<string> projectNamesNewFromOss = (List<string>) await _projectService.GetProjectNamesAsync(bucketNew);
+            foreach (string projectName in projectNamesNewFromOss)
             {
                var ossAttributes = new OssAttributes(projectName);
                string metadataFile = ossAttributes.Metadata;
                // if metadata file is missing for project we consider that project not migrated
-               if (! await bucketNew.ObjectExistsAsync(metadataFile))
-                  projectNamesNew.Remove(projectName);
+               if (await bucketNew.ObjectExistsAsync(metadataFile))
+                  projectNamesNew.Add(projectName);
             }
          }
          catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
