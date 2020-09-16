@@ -18,27 +18,7 @@
 
 import repo from '../Repository';
 import {addError, addLog} from './notificationActions';
-
-export const actionTypes = {
-    ACTIVE_DRAWING_UPDATED: 'ACTIVE_DRAWING_UPDATED',
-    DRAWING_LIST_UPDATED: 'DRAWING_LIST_UPDATED'
-};
-
-export default actionTypes;
-
-export const updateActiveDrawing = activeDrawing => {
-    return {
-        type: actionTypes.ACTIVE_DRAWING_UPDATED,
-        activeDrawing
-    };
-};
-
-export const updateDrawingsList = drawingsList => {
-    return {
-        type: actionTypes.DRAWING_LIST_UPDATED,
-        drawingsList
-    };
-};
+import {updateDrawingsList} from './uiFlagsActions';
 
 // eslint-disable-next-line no-unused-vars
 export const fetchDrawingsList = (project) => async (dispatch) => {
@@ -48,7 +28,7 @@ export const fetchDrawingsList = (project) => async (dispatch) => {
     try {
         const data = await repo.loadDrawingsList(project.drawingsListUrl);
         dispatch(addLog('Drawings list received'));
-        dispatch(updateDrawingsList(project.id, data));
+        dispatch(updateDrawingsList(data));
     } catch (error) {
         dispatch(addError('Failed to get Drawings list for ' + project.id + '. (' + error + ')'));
     }

@@ -123,18 +123,18 @@ class JobManager {
         await connection.invoke(methodName, projectId, hash, repo.getAccessToken());
     }
 
-    async doDrawingExportJob(projectId, hash, onStart, onComplete, onError) {
+    async doDrawingExportJob(projectId, hash, drawingKey, onStart, onComplete, onError) {
         const connection = await this.startConnection();
 
         if (onStart)
             onStart();
 
-        connection.on("onComplete", (drawingUrl, stats) => {
+        connection.on("onComplete", (drawingKey, drawingUrl, stats) => {
             // stop connection
             connection.stop();
 
             if (onComplete) {
-                onComplete(drawingUrl, stats);
+                onComplete(drawingKey, drawingUrl, stats);
             }
         });
 
@@ -145,7 +145,7 @@ class JobManager {
                 onError(jobId, reportUrl);
         });
 
-        await connection.invoke('CreateDrawingPdfJob', projectId, hash, repo.getAccessToken());
+        await connection.invoke('CreateDrawingPdfJob', projectId, hash, drawingKey, repo.getAccessToken());
     }
 }
 

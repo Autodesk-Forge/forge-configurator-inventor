@@ -23,6 +23,7 @@ import Button from '@hig/button';
 import { getActiveProject, getDrawingsList, getActiveDrawing } from '../reducers/mainReducer';
 import { getDownloadLink } from '../actions/downloadActions';
 import { fetchDrawingsList } from '../actions/drawingsListActions';
+import { updateActiveDrawing } from '../actions/uiFlagsActions';
 import BaseTable, { AutoResizer, Column } from 'react-base-table';
 import 'react-base-table/styles.css';
 import styled from 'styled-components';
@@ -83,7 +84,13 @@ export class DrawingsContainer extends Component {
     }
 
     onRowClick( rowData) {
-        alert(rowData.id);
+        console.log('active: ' + this.props.activeDrawing + '\n' +
+              'clicked: ' + rowData.id);
+
+        if (this.props.activeDrawing === rowData.id)
+            return;
+
+        this.props.updateActiveDrawing(rowData.id);
     }
 
     render() {
@@ -157,4 +164,4 @@ export default connect(function (store) {
         activeDrawing: getActiveDrawing(store),
         drawingsList: getDrawingsList(store)
     };
-}, { getDownloadLink, fetchDrawingsList })(DrawingsContainer);
+}, { getDownloadLink, fetchDrawingsList, updateActiveDrawing })(DrawingsContainer);

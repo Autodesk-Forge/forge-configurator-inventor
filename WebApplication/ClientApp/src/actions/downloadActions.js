@@ -72,8 +72,8 @@ export const getDownloadLink = (methodName, projectId, hash, dialogTitle) => asy
     }
 };
 
-export const fetchDrawing = (project) => async (dispatch) => {
-    if (! project.id) return;
+export const fetchDrawing = (project, drawingKey) => async (dispatch) => {
+    if (! project.id || !drawingKey) return;
 
     dispatch(addLog('fetchDrawing invoked'));
 
@@ -84,19 +84,19 @@ export const fetchDrawing = (project) => async (dispatch) => {
 
     // launch signalR to export drawing and wait for result
     try {
-        await jobManager.doDrawingExportJob(project.id, project.hash,
+        await jobManager.doDrawingExportJob(project.id, project.hash, drawingKey,
             // start job
             () => {
-                dispatch(addLog('JobManager.doDrawingExportJob: HubConnection started for project : ' + project.id));
+                dispatch(addLog('JobManager.doDrawingExportJob: HubConnection started for project : ' + project.id + ' (drawing: ' + drawingKey + ')'));
                 dispatch(setStats(null));
                 //dispatch(setReportUrlLink(null)); // cleanup url link
             },
             // onComplete
-            (drawingPdfUrl, stats) => {
+            (drawingKey, drawingPdfUrl, stats) => {
                 dispatch(addLog('JobManager.doDrawingExportJob: Received onComplete'));
                 // store drawings link
-                dispatch(setDrawingPdfUrl(drawingPdfUrl));
-                dispatch(setStats(stats));
+                dispatch(setDrawingPdfUrl(drawingKey, drawingPdfUrl));
+                dispatch(setStats(stats, drawingKey));
             },
             // onError
             (jobId, reportUrl) => {

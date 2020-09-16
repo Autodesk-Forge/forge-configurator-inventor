@@ -31,12 +31,14 @@ namespace WebApplication.Job
     {
         private readonly string _hash;
         private readonly LinkGenerator _linkGenerator;
+        private readonly string _drawingKey;
 
-        public ExportDrawingPdfJobItem(ILogger logger, string projectId, string hash, ProjectWork projectWork, LinkGenerator linkGenerator)
+        public ExportDrawingPdfJobItem(ILogger logger, string projectId, string hash, string drawingKey, ProjectWork projectWork, LinkGenerator linkGenerator)
             : base(logger, projectId, projectWork)
         {
             _hash = hash;
             _linkGenerator = linkGenerator;
+            _drawingKey = drawingKey;
         }
 
         public override async Task ProcessJobAsync(IResultSender resultSender)
@@ -44,7 +46,7 @@ namespace WebApplication.Job
             using var scope = Logger.BeginScope("Export Drawing PDF ({Id})");
             Logger.LogInformation($"ProcessJob (ExportDrawingPDF) {Id} for project {ProjectId} started.");
 
-            FdaStatsDTO stats = await ProjectWork.ExportDrawingPdfAsync(ProjectId, _hash);
+            (FdaStatsDTO stats, int drawingIndex) = await ProjectWork.ExportDrawingPdfAsync(ProjectId, _hash, _drawingKey);
 
             Logger.LogInformation($"ProcessJob (ExportDrawingPDF) {Id} for project {ProjectId} completed.");
 
@@ -53,7 +55,7 @@ namespace WebApplication.Job
             {
                 url = _linkGenerator.GetPathByAction(controller: "Download",
                                                                 action: "DrawingPdf",
-                                                                values: new { projectName = ProjectId, hash = _hash });
+                                                                values: new { projectName = ProjectId, hash = _hash, index = drawingIndex });
 
                 // when local url starts with slash, it does not work, because it is doubled in url
                 if (url.StartsWith('/'))
@@ -62,7 +64,7 @@ namespace WebApplication.Job
                 }
             }
 
-            await resultSender.SendSuccessAsync(url, stats);
+            await resultSender.SendSuccessAsync(_drawingKey, url, stats);
         }
     }
 }

@@ -24,7 +24,6 @@ import updateParametersReducer, * as updateParams from './updateParametersReduce
 import uiFlagsReducer, * as uiFlags from './uiFlagsReducer';
 import profileReducer from './profileReducer';
 import bomReducer, * as bom from './bomReducer';
-import drawingsListReducer, * as drawing from './drawingsListReducers';
 
 export const mainReducer = combineReducers({
     projectList: projectListReducer,
@@ -33,8 +32,7 @@ export const mainReducer = combineReducers({
     updateParameters: updateParametersReducer,
     uiFlags: uiFlagsReducer,
     profile: profileReducer,
-    bom: bomReducer,
-    drawing: drawingsListReducer
+    bom: bomReducer
 });
 
 export const getActiveProject = function(state) {
@@ -160,21 +158,21 @@ export const getBom = function(projectId, state) {
 };
 
 export const getDrawingPdfUrl = function(state) {
-    return uiFlags.getDrawingPdfUrl(state.uiFlags);
+    return uiFlags.getDrawingPdfUrl(state.uiFlags.activeDrawing, state.uiFlags);
 };
 
 export const drawingProgressShowing = function(state) {
     return uiFlags.drawingProgressShowing(state.uiFlags);
 };
 
-export const getStats = function(state) {
-    return uiFlags.getStats(state.uiFlags);
+export const getStats = function(state, key) {
+    return uiFlags.getStats(state.uiFlags, key);
 };
 
 export const getDrawingsList = function(state) {
-    return drawing.getDrawingsList(state.drawing);
+    return uiFlags.getDrawingsList(state.uiFlags);
 };
 
 export const getActiveDrawing = function(state) {
-    return drawing.getActiveDrawing(state.drawing);
+    return uiFlags.getActiveDrawing(state.uiFlags);
 };

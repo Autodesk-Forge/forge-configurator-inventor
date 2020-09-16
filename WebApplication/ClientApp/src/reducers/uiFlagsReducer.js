@@ -41,8 +41,10 @@ export const initialState = {
    showDeleteProject: false,
    checkedProjects: [],
    drawingProgressShowing: false,
-   drawingUrl: null,
-   stats: null
+   drawingUrls: {},
+   stats: {},
+   activeDrawing: null,
+   drawings: null
 };
 
 export const modalProgressShowing = function(state) {
@@ -117,16 +119,27 @@ export const checkedProjects = function(state) {
    return state.checkedProjects;
 };
 
-export const getDrawingPdfUrl = function(state) {
-   return state.drawingUrl;
+export const getDrawingPdfUrl = function(drawingKey, state) {
+   return state.drawingUrls[drawingKey] === undefined ? null : state.drawingUrls[drawingKey];
 };
 
 export const drawingProgressShowing = function(state) {
    return state.drawingProgressShowing;
 };
 
-export const getStats = function(state) {
-   return state.stats;
+export const getStats = function(state, key) {
+   if (key != null)
+      return state.stats[key];
+   else
+      return state.stats;
+};
+
+export const getDrawingsList = function(state) {
+   return state.drawings;
+};
+
+export const getActiveDrawing = function(state) {
+   return state.activeDrawing;
 };
 
 export default function(state = initialState, action) {
@@ -202,11 +215,33 @@ export default function(state = initialState, action) {
       case uiFlagsActionTypes.SHOW_DRAWING_PROGRESS:
          return { ...state, drawingProgressShowing: action.visible};
       case uiFlagsActionTypes.SET_DRAWING_URL:
-         return { ...state, drawingUrl: action.url };
+         {
+            const drawingUrls = state.drawingUrls;
+            drawingUrls[action.drawingKey] = action.url;
+
+            return { ...state, drawingUrls: drawingUrls };
+         }
       case uiFlagsActionTypes.INVALIDATE_DRAWING:
-         return { ...state, drawingUrl: null };
+         return { ...state, drawingUrls: {}, activeDrawing: null, drawings: null };
       case uiFlagsActionTypes.SET_STATS:
-         return { ...state, stats: action.stats };
+         {
+            if (action.key != null) {
+               const stats = state.stats;
+               stats[action.key] = action.stats;
+               return { ...state, stats: stats };
+            } else {
+               const stats = action.stats === null ? {} : action.stats;
+               return { ...state, stats: stats };
+            }
+         }
+      case uiFlagsActionTypes.DRAWING_LIST_UPDATED: {
+
+         const firstDrawing = action.drawingsList[0];
+         return { ...state, activeDrawing: firstDrawing, drawings: action.drawingsList };
+      }
+      case uiFlagsActionTypes.ACTIVE_DRAWING_UPDATED: {
+         return { ...state, activeDrawing: action.activeDrawing};
+      }
       default:
          return state;
   }
