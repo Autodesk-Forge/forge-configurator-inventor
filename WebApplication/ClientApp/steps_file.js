@@ -197,7 +197,7 @@ module.exports = function() {
     deleteProject(projectName) {
       // hover above project
       const projectRowWithName = projectRow.replace('ProjectName', projectName);
-      this.waitForVisible(projectRowWithName, 10);
+      this.waitForVisible(projectRowWithName, 60); // sometimes it takes time to projects to appear
       this.moveCursorTo(projectRowWithName);
 
       // click the checkbox to select project
@@ -229,8 +229,8 @@ module.exports = function() {
       // wait for progress bar shows and disappears
       const updatingProjectProgress = '//p[text()="Updating Project"]';
       this.waitForVisible(updatingProjectProgress, 10);
-      this.waitForVisible(locators.xpButtonDone, locators.FDAActionTimeout);
-      this.click(locators.xpButtonDone);
+      this.waitForVisible(locators.xpButtonOk, locators.FDAActionTimeout);
+      this.click(locators.xpButtonOk);
       this.waitForInvisible(updatingProjectProgress, 10);
     },
     waitForForgeViewerToPreventItFromCrashing(timeout)

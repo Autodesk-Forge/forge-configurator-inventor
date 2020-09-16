@@ -131,7 +131,7 @@ export class Downloads extends Component {
                     id: 'bom',
                     icon: 'products-and-services-24.svg',
                     type: 'BOM',
-                    env: 'Model',
+                    env: 'BOM',
                     link: bomJsx,
                     clickHandler: () => downloadHyperlink.click()
                 });
@@ -144,7 +144,7 @@ export class Downloads extends Component {
                         id: 'drawing',
                         icon: 'products-and-services-24.svg',
                         type: 'IDW',
-                        env: 'Model',
+                        env: 'Drawing',
                         link: deadEndLink('Drawing'),
                         clickHandler: async () => this.props.getDownloadLink('CreateDrawingDownloadJob', project.id, project.hash, 'Preparing Drawings')
                     });
@@ -154,7 +154,7 @@ export class Downloads extends Component {
                         id: 'pdf',
                         icon: 'products-and-services-24.svg',
                         type: 'PDF',
-                        env: 'Model',
+                        env: 'Drawing',
                         link: deadEndLink('Drawing PDF'),
                         clickHandler: async () => this.props.getDownloadLink('CreateDrawingPdfJob', project.id, project.hash, 'Preparing Drawing PDF')
                     });

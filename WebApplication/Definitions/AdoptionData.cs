@@ -31,6 +31,8 @@ namespace WebApplication.Definitions
         public string SvfUrl { get; set; }
         public string ParametersJsonUrl { get; set; }
 
+        public string DrawingsListUrl { get; set; }
+
         /// <summary>
         /// If job data contains assembly.
         /// </summary>

@@ -27,6 +27,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MigrationApp;
 using Serilog;
 using WebApplication.Definitions;
 using WebApplication.Middleware;
@@ -103,19 +104,32 @@ namespace WebApplication
                                         return new DesignAutomationClient(forgeService);
                                     });
             services.AddSingleton<Publisher>();
-            services.AddScoped<ProfileProvider>();
-            services.AddScoped<IBucketKeyProvider, LoggedInUserBucketKeyProvider>();
-            //services.AddScoped<MigrationBucketKeyProvider>();
-            services.AddScoped<UserResolver>();
             services.AddSingleton<BucketPrefixProvider>();
             services.AddSingleton<LocalCache>();
             services.AddSingleton<Uploads>();
             services.AddScoped<ProjectService>();
             services.AddSingleton<AdoptProjectWithParametersPayloadProvider>();
+            services.AddSingleton<OssBucketFactory>();
 
             if (Configuration.GetValue<bool>("migration"))
             {
                 services.AddHostedService<MigrationApp.Worker>();
+                services.AddSingleton<MigrationBucketKeyProvider>();
+                services.AddSingleton<IBucketKeyProvider>(provider =>
+                {
+                    return provider.GetService<MigrationBucketKeyProvider>();
+                });
+                services.AddSingleton<UserResolver>();
+                services.AddSingleton<ProfileProvider>();
+                services.AddSingleton<Migration>();
+                services.AddSingleton<ProjectService>();
+            }
+            else
+            {
+                services.AddScoped<IBucketKeyProvider, LoggedInUserBucketKeyProvider>();
+                services.AddScoped<UserResolver>();
+                services.AddScoped<ProfileProvider>();
+                services.AddScoped<ProjectService>();
             }
         }
 
@@ -157,8 +171,6 @@ namespace WebApplication
                 app.UseHsts();
             }
 
-            app.UseSerilogRequestLogging();
-
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -166,6 +178,11 @@ namespace WebApplication
             localCache.Serve(app);
 
             app.UseSpaStaticFiles();
+
+            // Use Serilog middleware to log ASP.NET requests. To not pollute logs with requests about
+            // static file the middleware registered after middleware for serving static files.
+            app.UseSerilogRequestLogging();
+
             app.UseMiddleware<HeaderTokenHandler>();
 
             app.UseRouting();

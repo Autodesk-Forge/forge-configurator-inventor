@@ -19,6 +19,7 @@
 using System;
 using System.IO;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.Extensions.Logging;
@@ -74,12 +75,22 @@ namespace WebApplication.Processing
             _logger.LogInformation($"Saving {wiStatus.Id} report to {reportName}");
             try
             {
-                // download report
-                var client = _clientFactory.CreateClient();
+                // download and save report
+                HttpClient client = _clientFactory.CreateClient();
 
-                await using var stream = await client.GetStreamAsync(wiStatus.ReportUrl);
-                await using var fs = new FileStream(reportFullname, FileMode.CreateNew);
-                await stream.CopyToAsync(fs);
+                await using var reportStream = await client.GetStreamAsync(wiStatus.ReportUrl);
+                await using var reportFileStream = new FileStream(reportFullname, FileMode.CreateNew);
+                await reportStream.CopyToAsync(reportFileStream);
+
+                // save statistics
+                if (wiStatus.Stats != null)
+                {
+                    var statsFullName = Path.ChangeExtension(reportFullname, ".stats.json");
+
+                    await using var statsFileStream = new FileStream(statsFullName, FileMode.CreateNew);
+                    await using var jsonWriter = new Utf8JsonWriter(statsFileStream);
+                    JsonSerializer.Serialize(jsonWriter, wiStatus.Stats);
+                }
             }
             catch (Exception e)
             {

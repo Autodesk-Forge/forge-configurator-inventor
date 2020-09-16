@@ -1,4 +1,4 @@
-﻿/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
 // Copyright (c) Autodesk, Inc. All rights reserved
 // Written by Forge Design Automation team for Inventor
 //
@@ -16,17 +16,25 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-namespace WebApplication.Definitions
-{
-    public class ProjectInfo
-    {
-        public string Name { get; set; }
-        public string TopLevelAssembly { get; set; }
+using WebApplication.Definitions;
 
-        public ProjectInfo(string NameParam = null, string TopLevelAssemblyParam = null)
-        {
-            Name = NameParam;
-            TopLevelAssembly = TopLevelAssemblyParam;
-        }
+namespace WebApplication.Processing
+{
+    /// <summary>
+    /// Drawings List.
+    /// </summary>
+    public class DrawingsList : ForgeAppBase
+    {
+        public override string Id => nameof(DrawingsList);
+        public override string Description => "Gets list of drawings in the package";
+
+        protected override string OutputUrl(ProcessingArgs projectData) => projectData.DrawingsListUrl;
+        protected override string OutputName => "drawingsList.json";
+        protected override bool IsOutputZip => false;
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public DrawingsList(Publisher publisher) : base(publisher) {}
     }
 }

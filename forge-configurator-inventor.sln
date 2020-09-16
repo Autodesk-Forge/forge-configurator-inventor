@@ -36,6 +36,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateDrawingsPlugin", "App
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExportDrawingAsPdfPlugin", "Appbundles\ExportDrawingAsPdfPlugin\ExportDrawingAsPdfPlugin.csproj", "{96BECCEC-D943-46C7-ACD7-E8A5C6F0650D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrawingsListPlugin", "AppBundles\DrawingsListPlugin\DrawingsListPlugin.csproj", "{EB3C5EA6-26EC-44D2-90B3-08929CE9D6DE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -90,6 +92,10 @@ Global
 		{96BECCEC-D943-46C7-ACD7-E8A5C6F0650D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96BECCEC-D943-46C7-ACD7-E8A5C6F0650D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{96BECCEC-D943-46C7-ACD7-E8A5C6F0650D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB3C5EA6-26EC-44D2-90B3-08929CE9D6DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB3C5EA6-26EC-44D2-90B3-08929CE9D6DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB3C5EA6-26EC-44D2-90B3-08929CE9D6DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB3C5EA6-26EC-44D2-90B3-08929CE9D6DE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -105,6 +111,7 @@ Global
 		{44631F33-F8E1-44DC-90E7-4CBEA85DB2F6} = {BE4037E8-BD5B-4F31-8F23-1FC907D31CEC}
 		{BE07866C-4667-4819-BDFE-629DC36BF3CC} = {BE4037E8-BD5B-4F31-8F23-1FC907D31CEC}
 		{96BECCEC-D943-46C7-ACD7-E8A5C6F0650D} = {BE4037E8-BD5B-4F31-8F23-1FC907D31CEC}
+		{EB3C5EA6-26EC-44D2-90B3-08929CE9D6DE} = {BE4037E8-BD5B-4F31-8F23-1FC907D31CEC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CFF460A7-ACD6-4D4D-BC60-953D66925F4E}

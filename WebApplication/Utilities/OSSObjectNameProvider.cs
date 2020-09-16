@@ -39,6 +39,8 @@ namespace WebApplication.Utilities
         /// </summary>
         public const string Thumbnail = "thumbnail.png";
 
+        public const string DrawingsList = "drawingsList.json";
+
         /// <summary>
         /// ZIP archive with SVF model.
         /// </summary>
@@ -89,6 +91,11 @@ namespace WebApplication.Utilities
 
 
         public static readonly string ProjectsMask = ToPathMask(ProjectsFolder);
+
+        public static string ProjectUrl(string projectName)
+        {
+            return Join(ProjectsFolder, projectName);
+        }
 
         /// <summary>
         /// Extract project name from OSS object name.
@@ -221,6 +228,8 @@ namespace WebApplication.Utilities
         /// Filename of JSON file with project metadata.
         /// </summary>
         public string Metadata => ToFullName(LocalName.Metadata);
+
+        public string DrawingsList => ToFullName(LocalName.DrawingsList);
 
         /// <summary>
         /// Constructor.

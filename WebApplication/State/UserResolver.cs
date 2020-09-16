@@ -16,7 +16,9 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Autodesk.Forge.Client;
 using Microsoft.AspNetCore.Http;
@@ -53,14 +55,11 @@ namespace WebApplication.State
             _bucketKeyProvider = bucketKeyProvider;
             _profileProvider = profileProvider;
 
-            AnonymousBucket = new OssBucket(_forgeOSS, resourceProvider.BucketKey, logger);
+            AnonymousBucket = new OssBucket(_forgeOSS, _bucketKeyProvider.AnonymousBucketKey, logger);
         }
-
 
         public async Task<OssBucket> GetBucketAsync(bool tryToCreate = false)
         {
-            if (!_profileProvider.IsAuthenticated) return AnonymousBucket;
-
             var bucket = new OssBucket(_forgeOSS, await _bucketKeyProvider.GetBucketKeyAsync(), _logger);
             if (tryToCreate)
             {

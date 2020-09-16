@@ -128,19 +128,7 @@ namespace WebApplication.Services
                     objects.Add(details);
                 }
 
-                startAt = null;
-
-                // check if there is a next page with projects
-                if (response.Dictionary.TryGetValue("next", out var nextPage))
-                {
-                    string nextPageUrl = (string)nextPage;
-                    if (!string.IsNullOrEmpty(nextPageUrl))
-                    {
-                        Uri nextUri = new Uri(nextPageUrl, UriKind.Absolute);
-                        Dictionary<string, StringValues> query = QueryHelpers.ParseNullableQuery(nextUri.Query);
-                        startAt = query["startAt"];
-                    }
-                }
+                startAt = GetNextStartAt(response.Dictionary);
 
             } while (startAt != null);
 
@@ -154,25 +142,50 @@ namespace WebApplication.Services
         public async Task<List<string>> GetBucketsAsync()
         {
             var buckets = new List<string>();
+            string startAt = null;
 
-            dynamic bucketList = await WithBucketApiAsync(async api =>
+            do
             {
-                 return await api.GetBucketsAsync(/* use default (US region) */ null);
-            });
+                dynamic bucketList = await WithBucketApiAsync(async api =>
+                {
+                    return await api.GetBucketsAsync(/* use default (US region) */ null, PageSize, startAt);
+                });
 
-            foreach (KeyValuePair<string, dynamic> bucketInfo in new DynamicDictionaryItems(bucketList.items))
-            {
-                buckets.Add(bucketInfo.Value.bucketKey);
-            }
+                foreach (KeyValuePair<string, dynamic> bucketInfo in new DynamicDictionaryItems(bucketList.items))
+                {
+                    buckets.Add(bucketInfo.Value.bucketKey);
+                }
+
+                startAt = GetNextStartAt(bucketList.Dictionary);
+
+            } while (startAt != null);
 
             return buckets;
         }
 
-        /// <summary>
-        /// Create bucket with given name
-        /// </summary>
-        /// <param name="bucketKey">The bucket name.</param>
-        public async Task CreateBucketAsync(string bucketKey)
+        private string GetNextStartAt(Dictionary<string, object> dict)
+        {
+            string startAt = null;
+            // check if there is a next page with projects
+            if (dict.TryGetValue("next", out var nextPage))
+            {
+                string nextPageUrl = (string)nextPage;
+                if (!string.IsNullOrEmpty(nextPageUrl))
+                {
+                    Uri nextUri = new Uri(nextPageUrl, UriKind.Absolute);
+                    Dictionary<string, StringValues> query = QueryHelpers.ParseNullableQuery(nextUri.Query);
+                    startAt = query["startAt"];
+                }
+            }
+
+            return startAt;
+        }
+
+      /// <summary>
+      /// Create bucket with given name
+      /// </summary>
+      /// <param name="bucketKey">The bucket name.</param>
+      public async Task CreateBucketAsync(string bucketKey)
         {
             await WithBucketApiAsync(async api =>
             {

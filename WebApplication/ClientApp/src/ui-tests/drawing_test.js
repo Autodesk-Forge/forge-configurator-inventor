@@ -39,11 +39,11 @@ Scenario('should check that Drawing tab shows drawing for an Assembly', async (I
     I.waitForForgeViewerToPreventItFromCrashing(30);
     I.goToDrawingTab();
 
-    // check the dialog will appear with Done button
+    // check the dialog will appear with Ok button
     const drawingProgress = '//p[text()="Generating Drawing"]';
     I.waitForVisible(drawingProgress, 10);
-    I.waitForVisible(locators.xpButtonDone, locators.FDAActionTimeout);
-    I.click(locators.xpButtonDone);
+    I.waitForVisible(locators.xpButtonOk, locators.FDAActionTimeout);
+    I.click(locators.xpButtonOk);
 
     // wait for drawing to be displayed
     I.waitForVisible(viewCubeElement, locators.FDAActionTimeout);
@@ -78,11 +78,11 @@ Scenario('should check id a drawing has more sheet is will show arrow buttons', 
     I.waitForForgeViewerToPreventItFromCrashing(30);
     I.goToDrawingTab();
 
-    // check the dialog will appear with Done button
+    // check the dialog will appear with Ok button
     const drawingProgress = '//p[text()="Generating Drawing"]';
     I.waitForVisible(drawingProgress, 10);
-    I.waitForVisible(locators.xpButtonDone, locators.FDAActionTimeout);
-    I.click(locators.xpButtonDone);
+    I.waitForVisible(locators.xpButtonOk, locators.FDAActionTimeout);
+    I.click(locators.xpButtonOk);
 
     // wait for drawing page to be displayed with extra arrow buttons
     const customDrwToolbar = '//div[@id="custom-drawing-toolbar"]';

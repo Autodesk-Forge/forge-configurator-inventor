@@ -50,6 +50,7 @@ namespace WebApplication.Processing
         public async Task InitializeAsync()
         {
             // create bundles and activities
+            await new DrawingsList(_publisher).InitializeAsync(_paths.DrawingsList);
             await new CreateSVF(_publisher).InitializeAsync(_paths.CreateSVF);
             await new CreateThumbnail(_publisher).InitializeAsync(_paths.CreateThumbnail);
             await new ExtractParameters(_publisher).InitializeAsync(_paths.ExtractParameters);
@@ -70,6 +71,7 @@ namespace WebApplication.Processing
         public async Task CleanUpAsync()
         {
             // delete bundles and activities
+            await new DrawingsList(_publisher).CleanUpAsync();
             await new CreateSVF(_publisher).CleanUpAsync();
             await new CreateThumbnail(_publisher).CleanUpAsync();
             await new ExtractParameters(_publisher).CleanUpAsync();

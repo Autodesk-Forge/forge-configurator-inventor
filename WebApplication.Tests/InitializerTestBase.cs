@@ -75,13 +75,15 @@ namespace WebApplication.Tests
             projectsBucketKey = Guid.NewGuid().ToString();
 
             localCache = new LocalCache();
-            var resourceProvider = new ResourceProvider(forgeConfigOptions, designAutomationClient, null, projectsBucketKey);
+            var bucketPrefixProvider = new BucketPrefixProvider(forgeConfigOptions, configuration);
+            var resourceProvider = new ResourceProvider(forgeConfigOptions, designAutomationClient, configuration, bucketPrefixProvider, projectsBucketKey);
             var postProcessing = new PostProcessing(httpClientFactory, new NullLogger<PostProcessing>(), localCache, Options.Create(new ProcessingOptions()));
             var publisher = new Publisher(designAutomationClient, new NullLogger<Publisher>(), resourceProvider, postProcessing);
 
             var appBundleZipPathsConfiguration = new AppBundleZipPaths
             {
                 EmptyExe = "../../../../WebApplication/AppBundles/EmptyExePlugin.bundle.zip",
+                DrawingsList = "../../../../WebApplication/AppBundles/DrawingsListPlugin.bundle.zip",
                 CreateSVF = "../../../../WebApplication/AppBundles/CreateSVFPlugin.bundle.zip",
                 CreateThumbnail = "../../../../WebApplication/AppBundles/CreateThumbnailPlugin.bundle.zip",
                 ExtractParameters = "../../../../WebApplication/AppBundles/ExtractParametersPlugin.bundle.zip",
@@ -97,8 +99,7 @@ namespace WebApplication.Tests
             var fdaClient = new FdaClient(publisher, appBundleZipPathsOptions);
             IOptions<DefaultProjectsConfiguration> defaultProjectsOptions = Options.Create(defaultProjectsConfiguration);
             var profileProvider = new ProfileProvider(forgeOSS);
-            var bucketPrefixProvider = new BucketPrefixProvider(forgeConfigOptions, null);
-            var bucketKeyProvider = new LoggedInUserBucketKeyProvider(forgeConfigOptions, profileProvider, bucketPrefixProvider);
+            var bucketKeyProvider = new LoggedInUserBucketKeyProvider(forgeConfigOptions, profileProvider, bucketPrefixProvider, resourceProvider);
             var userResolver = new UserResolver(resourceProvider, forgeOSS, bucketKeyProvider, localCache, NullLogger<UserResolver>.Instance, profileProvider);
             var arranger = new Arranger(httpClientFactory, userResolver);
 

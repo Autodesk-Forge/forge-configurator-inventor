@@ -33,6 +33,22 @@ namespace WebApplication.State
     /// <summary>
     /// Wrapper to work with OSS bucket.
     /// </summary>
+
+    public class OssBucketFactory
+    {
+        private readonly IForgeOSS _forgeOSS;
+        private readonly ILogger<OssBucketFactory> _logger;
+        public OssBucketFactory(IForgeOSS forgeOSS, ILogger<OssBucketFactory> logger)
+        {
+            _forgeOSS = forgeOSS;
+            _logger = logger;
+        }
+        public OssBucket CreateBucket(string bucketKey)
+        {
+            return new OssBucket(_forgeOSS, bucketKey, _logger);
+        }
+
+    }
     public class OssBucket
     {
         public string BucketKey { get; }

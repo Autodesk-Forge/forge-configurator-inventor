@@ -1,4 +1,4 @@
-﻿/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
 // Copyright (c) Autodesk, Inc. All rights reserved
 // Written by Forge Design Automation team for Inventor
 //
@@ -16,17 +16,24 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-namespace WebApplication.Definitions
-{
-    public class ProjectInfo
-    {
-        public string Name { get; set; }
-        public string TopLevelAssembly { get; set; }
+using WebApplication.Definitions;
+using WebApplication.State;
 
-        public ProjectInfo(string NameParam = null, string TopLevelAssemblyParam = null)
-        {
-            Name = NameParam;
-            TopLevelAssembly = TopLevelAssemblyParam;
-        }
-    }
+namespace MigrationApp
+{
+   public class MigrationJob
+   {
+      public enum JobType {CopyAndAdopt, RemoveNew };
+      public JobType jobType;
+      public OssBucket bucket;
+      public ProjectInfo projectInfo;
+      public string projectUrl;
+      public MigrationJob(JobType jobTypeParam, OssBucket bucketParam, ProjectInfo projectInfoParam, string projectUrlParam)
+      {
+         jobType = jobTypeParam;
+         bucket = bucketParam;
+         projectInfo = projectInfoParam;
+         projectUrl = projectUrlParam;
+      }
+   }
 }

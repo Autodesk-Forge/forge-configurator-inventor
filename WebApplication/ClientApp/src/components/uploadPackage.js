@@ -53,7 +53,7 @@ export class UploadPackage extends Component {
 
         const {entries} = await unzip(file);
         Object.entries(entries).forEach(([name]) => {
-            if (name.toLowerCase().endsWith('.iam') && !name.toLowerCase().includes(path.sep + 'oldversions' + path.sep)) {
+            if (name.toLowerCase().endsWith('.iam') && !name.toLowerCase().includes('oldversions' + path.sep)) {
                 assemblies.push(name);
             }
         });

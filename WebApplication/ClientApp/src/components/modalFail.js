@@ -91,7 +91,6 @@ export class ModalFail extends Component {
                     {(reportUrlOrMessage && ! isUrl) &&
                         <div>
                             <Typography className="errorMessage">
-                                Internal error. Try to repeat your last action and please report the following message: <br/>
                                 { reportUrlOrMessage }
                             </Typography>
                         </div>

@@ -230,7 +230,9 @@ namespace WebApplication.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e, $"Processing failed for {job.Id}");
-                await _sender.SendErrorAsync(job.Id, e.Message);
+
+                var message = $"Internal error. Try to repeat your last action and please report the following message: {e.Message}";
+                await _sender.SendErrorAsync(job.Id, message);
             }
         }
     }

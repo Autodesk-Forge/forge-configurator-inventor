@@ -29,6 +29,7 @@ export const actionTypes = {
     SHOW_DOWNLOAD_FAILED: 'SHOW_DOWNLOAD_FAILED',
     SET_REPORT_URL: 'SET_REPORT_URL',
     SHOW_DOWNLOAD_PROGRESS: 'SHOW_DOWNLOAD_PROGRESS',
+    HIDE_DOWNLOAD_PROGRESS: 'HIDE_DOWNLOAD_PROGRESS',
     SET_DOWNLOAD_LINK: 'SET_DOWNLOAD_LINK',
     SHOW_UPLOAD_PACKAGE: 'SHOW_UPLOAD_PACKAGE',
     PACKAGE_FILE_EDITED: 'PACKAGE_FILE_EDITED',
@@ -122,6 +123,12 @@ export const showDownloadProgress = (visible, title) => {
         type: actionTypes.SHOW_DOWNLOAD_PROGRESS,
         visible,
         title
+    };
+};
+
+export const hideDownloadProgress = () => {
+    return {
+        type: actionTypes.HIDE_DOWNLOAD_PROGRESS
     };
 };
 

@@ -22,6 +22,7 @@ import { addProject } from './projectListActions';
 import { setProjectAlreadyExists, showUploadPackage, setStats } from './uiFlagsActions';
 import { addError, addLog } from './notificationActions';
 import { Jobs } from '../JobManager';
+import { resetParameters } from "./parametersActions";
 
 const actionTypes = {
     SET_UPLOAD_PROGRESS_VISIBLE: 'SET_UPLOAD_PROGRESS_VISIBLE',
@@ -54,6 +55,8 @@ export const uploadPackage = () => async (dispatch, getState) => {
                 const reportUrl = (httpStatus === 422) ? e.response.data.reportUrl : null;  // <<<---- the major change
                 dispatch(setUploadFailed(reportUrl));
             }
+
+            return;
         }
 
         const jobManager = Jobs();
@@ -66,6 +69,7 @@ export const uploadPackage = () => async (dispatch, getState) => {
                 // onComplete
                 (newProject, stats) => {
                     dispatch(addLog('JobManager: Received onComplete'));
+                    dispatch(resetParameters(newProject.id, null));
                     dispatch(addProject(newProject));
                     dispatch(setStats(stats));
                     dispatch(setUploadProgressDone());
