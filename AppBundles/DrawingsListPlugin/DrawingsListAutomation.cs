@@ -46,7 +46,7 @@ namespace DrawingsListPlugin
     public class DrawingsListAutomation
     {
         private readonly InventorServer inventorApplication;
-        private List<Message> _messages = new List<Message>();
+        private readonly List<Message> _messages = new List<Message>();
 
         public DrawingsListAutomation(InventorServer inventorApp)
         {
@@ -65,6 +65,7 @@ namespace DrawingsListPlugin
             using (new HeartBeat())
             {
                 ExtractDrawingList();
+                SaveMessages();
             }
         }
 
@@ -82,19 +83,32 @@ namespace DrawingsListPlugin
                 .Select(path => path.Substring(index))
                 .ToArray();
 
-            using (StreamWriter file = File.CreateText(@"drawingsList.json"))
-            {
-                JsonSerializer serializer = new JsonSerializer();
-                //serialize object directly into file stream
-                serializer.Serialize(file, drawings);
-            }
+            SaveAsJson(drawings, "drawingsList.json");
 
             AddMessage($"Found {drawings.Length} drawings", Severity.Info);
+        }
+
+        private void SaveMessages()
+        {
+            SaveAsJson(_messages, "messages.json");
         }
 
         private void AddMessage(string message, Severity severity)
         {
             _messages.Add(new Message { Text = message, Severity = severity });
+        }
+
+        /// <summary>
+        /// Serialize data to JSON file.
+        /// </summary>
+        private void SaveAsJson<T>(T data, string fileName)
+        {
+            using (StreamWriter file = File.CreateText(fileName))
+            {
+                var serializer = new JsonSerializer();
+                //serialize object directly into file stream
+                serializer.Serialize(file, data);
+            }
         }
 
         #region Logging utilities
