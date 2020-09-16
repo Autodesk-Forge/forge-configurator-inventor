@@ -65,13 +65,13 @@ background-color: blue;
 export class DrawingsContainer extends Component {
 
     componentDidMount() {
-        this.props.fetchDrawingsList(this.props.activeProject.id);
+        this.props.fetchDrawingsList(this.props.activeProject);
     }
 
     componentDidUpdate(prevProps) {
         // fetch drawings list when tab was active before projects initialized
         if (this.props.activeProject.id !== prevProps.activeProject.id)
-            this.props.fetchDrawingsList(this.props.activeProject.id);
+            this.props.fetchDrawingsList(this.props.activeProject);
     }
 
     onDownloadPDF() {
