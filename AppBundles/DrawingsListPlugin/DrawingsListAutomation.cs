@@ -16,24 +16,37 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
 using System.Collections.Generic;
-
-using Inventor;
-using Autodesk.Forge.DesignAutomation.Inventor.Utils;
-using Autodesk.Forge.DesignAutomation.Inventor.Utils.Helpers;
-using System.Linq;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices;
+using Autodesk.Forge.DesignAutomation.Inventor.Utils;
+using Inventor;
 using Newtonsoft.Json;
+using File = System.IO.File;
+using Path = System.IO.Path;
 
 namespace DrawingsListPlugin
 {
+    public enum Severity
+    {
+        Info = 0,
+        Warning = 1,
+        Error = 2
+    }
+
+    public class Message
+    {
+        public string Text { get; set; }
+        public Severity Severity { get; set; }
+    }
+
     [ComVisible(true)]
     public class DrawingsListAutomation
     {
         private readonly InventorServer inventorApplication;
+        private List<Message> _messages = new List<Message>();
 
         public DrawingsListAutomation(InventorServer inventorApp)
         {
@@ -47,25 +60,41 @@ namespace DrawingsListPlugin
 
         public void RunWithArguments(Document doc, NameValueMap map)
         {
+            // mask to exclude Inventor backup dirs
+
             using (new HeartBeat())
             {
-                var rootDir = System.IO.Directory.GetCurrentDirectory();
-                var drawingExtensions = new List<string> { ".idw", ".dwg" };
-                var oldVersion = @"oldversions\";
-                var drawings = System.IO.Directory.GetFiles(rootDir, "*.*", System.IO.SearchOption.AllDirectories)
-                                    .Where(file => drawingExtensions.IndexOf(System.IO.Path.GetExtension(file.ToLower())) >= 0 &&
-                                    !file.ToLower().Contains(oldVersion));
-
-                var index = System.IO.Path.Combine(rootDir, "unzippedIam").Length + 1;
-                drawings = drawings.Select(path => path.Substring(index));
-
-                using (StreamWriter file = System.IO.File.CreateText(@"drawingsList.json"))
-                {
-                    JsonSerializer serializer = new JsonSerializer();
-                    //serialize object directly into file stream
-                    serializer.Serialize(file, drawings);
-                };
+                ExtractDrawingList();
             }
+        }
+
+        private void ExtractDrawingList()
+        {
+            const string oldVersionMask = @"oldversions\";
+            var drawingExtensions = new List<string> {".idw", ".dwg"};
+
+            var rootDir = Directory.GetCurrentDirectory();
+            var index = Path.Combine(rootDir, "unzippedIam").Length + 1;
+
+            var drawings = Directory.GetFiles(rootDir, "*.*", SearchOption.AllDirectories)
+                .Where(file => drawingExtensions.IndexOf(Path.GetExtension(file.ToLower())) >= 0 &&
+                               !file.ToLower().Contains(oldVersionMask))
+                .Select(path => path.Substring(index))
+                .ToArray();
+
+            using (StreamWriter file = File.CreateText(@"drawingsList.json"))
+            {
+                JsonSerializer serializer = new JsonSerializer();
+                //serialize object directly into file stream
+                serializer.Serialize(file, drawings);
+            }
+
+            AddMessage($"Found {drawings.Length} drawings", Severity.Info);
+        }
+
+        private void AddMessage(string message, Severity severity)
+        {
+            _messages.Add(new Message { Text = message, Severity = severity });
         }
 
         #region Logging utilities
