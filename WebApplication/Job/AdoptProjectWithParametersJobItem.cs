@@ -19,9 +19,7 @@
 using System;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
-using WebApplication.State;
 using WebApplication.Definitions;
-using WebApplication.Utilities;
 using WebApplication.Services;
 
 namespace WebApplication.Job
@@ -30,16 +28,14 @@ namespace WebApplication.Job
     {
         private readonly ProjectService _projectService;
         private readonly string _payloadUrl;
-        private readonly DtoGenerator _dtoGenerator;
         private readonly AdoptProjectWithParametersPayloadProvider _adoptProjectWithParametersPayloadProvider;
 
         public AdoptProjectWithParametersJobItem(ILogger logger, ProjectService projectService, string payloadUrl, 
-            DtoGenerator dtoGenerator, AdoptProjectWithParametersPayloadProvider adoptProjectWithParametersPayloadProvider)
+            AdoptProjectWithParametersPayloadProvider adoptProjectWithParametersPayloadProvider)
             : base(logger, null, null)
         {
             _projectService = projectService;
             _payloadUrl = payloadUrl;
-            _dtoGenerator = dtoGenerator;
             _adoptProjectWithParametersPayloadProvider = adoptProjectWithParametersPayloadProvider;
         }
 
@@ -49,15 +45,15 @@ namespace WebApplication.Job
 
             try
             {
-                AdoptProjectWithParametersPayload payload = await _adoptProjectWithParametersPayloadProvider.GetParametersAsync(_payloadUrl);
+                var payload = await _adoptProjectWithParametersPayloadProvider.GetParametersAsync(_payloadUrl);
 
                 Logger.LogInformation($"ProcessJob (AdoptProjectWithParameters) {Id} for project {payload.Name} started.");
 
-                ProjectStorage projectStorage = await _projectService.AdoptProjectWithParametersAsync(payload);
+                var projectWithParameters = await _projectService.AdoptProjectWithParametersAsync(payload);
 
                 Logger.LogInformation($"ProcessJob (AdoptProjectWithParameters) {Id} for project {payload.Name} completed.");
                 
-                await resultSender.SendSuccessAsync(Tuple.Create(_dtoGenerator.ToDTO(projectStorage), payload));
+                await resultSender.SendSuccessAsync(projectWithParameters);
             }
             catch (Exception ex)
             {

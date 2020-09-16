@@ -22,12 +22,14 @@ namespace WebApplication.Services
         private readonly UserResolver _userResolver;
         private readonly ProjectWork _projectWork;
         private readonly RetryPolicy _waitForBucketPolicy;
+        private readonly DtoGenerator _dtoGenerator;
 
-        public ProjectService(ILogger<ProjectService> logger, UserResolver userResolver, ProjectWork projectWork)
+        public ProjectService(ILogger<ProjectService> logger, UserResolver userResolver, ProjectWork projectWork, DtoGenerator dtoGenerator)
         {
             _logger = logger;
             _userResolver = userResolver;
             _projectWork = projectWork;
+            _dtoGenerator = dtoGenerator;
 
             _waitForBucketPolicy = Policy
                 .Handle<ApiException>(e => e.ErrorCode == StatusCodes.Status404NotFound)
@@ -43,7 +45,7 @@ namespace WebApplication.Services
         /// </summary>
         /// <param name="payload">project configuration with parameters</param>
         /// <returns>project storage</returns>
-        public async Task<ProjectStorage> AdoptProjectWithParametersAsync(AdoptProjectWithParametersPayload payload)
+        public async Task<ProjectWithParametersDTO> AdoptProjectWithParametersAsync(AdoptProjectWithParametersPayload payload)
         {
             if (!await DoesProjectAlreadyExistAsync(payload.Name))
             {
@@ -56,9 +58,10 @@ namespace WebApplication.Services
                 _logger.LogInformation($"project with name {payload.Name} already exists");
             }
 
-            await _projectWork.DoSmartUpdateAsync(payload.Config, payload.Name);
+            var updateDto = (await _projectWork.DoSmartUpdateAsync(payload.Config, payload.Name)).dto;
+            var projectDto = _dtoGenerator.ToDTO(await _userResolver.GetProjectStorageAsync(payload.Name));
 
-            return await _userResolver.GetProjectStorageAsync(payload.Name);
+            return new ProjectWithParametersDTO(projectDto, updateDto);
         }
 
         private async Task<bool> DoesProjectAlreadyExistAsync(string projectName)

@@ -40,9 +40,12 @@ export const actionTypes = {
     SET_CHECKED_PROJECTS: 'SET_CHECKED_PROJECTS',
     CLEAR_CHECKED_PROJECTS: 'CLEAR_CHECKED_PROJECTS',
     SHOW_DRAWING_PROGRESS: 'SHOW_DRAWING_PROGRESS',
+    SHOW_ADOPT_WITH_PROPERTIES_PROGRESS: 'SHOW_ADOPT_WITH_PROPERTIES_PROGRESS',
+    SHOW_ADOPT_WITH_PARAMS_FAILED: 'SHOW_ADOPT_WITH_PARAMS_FAILED',
     SET_DRAWING_URL: 'SET_DRAWING_URL',
     INVALIDATE_DRAWING: 'INVALIDATE_DRAWING',
-    SET_STATS: 'SET_STATS'
+    SET_STATS: 'SET_STATS',
+    SET_ENABLE_EMBEDDED_MODE: 'SET_ENABLE_EMBEDDED_MODE',
 };
 
 export default actionTypes;
@@ -207,6 +210,20 @@ export const showDrawingExportProgress = (visible) => {
     };
 };
 
+export const showAdoptWithParametersProgress = (visible) => {
+    return {
+        type: actionTypes.SHOW_ADOPT_WITH_PROPERTIES_PROGRESS,
+        visible
+    };
+};
+
+export const showAdoptWithParamsFailed = (visible) => {
+    return {
+        type: actionTypes.SHOW_ADOPT_WITH_PARAMS_FAILED,
+        visible
+    };
+};
+
 export const setDrawingPdfUrl = (url) => {
     return {
         type: actionTypes.SET_DRAWING_URL,
@@ -224,5 +241,12 @@ export const setStats = (stats) => {
     return {
         type: actionTypes.SET_STATS,
         stats
+    };
+};
+
+export const setEnableEmbeddedMode = (enabled) => {
+    return {
+        type: actionTypes.SET_ENABLE_EMBEDDED_MODE,
+        enabled
     };
 };

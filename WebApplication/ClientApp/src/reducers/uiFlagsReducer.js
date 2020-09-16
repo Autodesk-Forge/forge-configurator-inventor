@@ -41,8 +41,11 @@ export const initialState = {
    showDeleteProject: false,
    checkedProjects: [],
    drawingProgressShowing: false,
+   adoptWithParamsProgressShowing: false,
+   adoptWithParamsFailed: false,
    drawingUrl: null,
-   stats: null
+   stats: null,
+   embeddedModeEnabled: true
 };
 
 export const modalProgressShowing = function(state) {
@@ -125,8 +128,20 @@ export const drawingProgressShowing = function(state) {
    return state.drawingProgressShowing;
 };
 
+export const adoptWithParamsProgressShowing = function(state) {
+   return state.adoptWithParamsProgressShowing;
+};
+
+export const adoptWithParamsFailed = function(state) {
+   return state.adoptWithParamsFailed;
+};
+
 export const getStats = function(state) {
    return state.stats;
+};
+
+export const embeddedModeEnabled = function(state) {
+   return state.embeddedModeEnabled;
 };
 
 export default function(state = initialState, action) {
@@ -175,6 +190,10 @@ export default function(state = initialState, action) {
          return { ...state, projectAlreadyExists: action.exists};
       case uiFlagsActionTypes.SHOW_DELETE_PROJECT:
          return { ...state, showDeleteProject: action.visible};
+      case uiFlagsActionTypes.SHOW_ADOPT_WITH_PROPERTIES_PROGRESS:
+         return { ...state, adoptWithParamsProgressShowing: action.visible};
+      case uiFlagsActionTypes.SHOW_ADOPT_WITH_PARAMS_FAILED:
+         return { ...state, adoptWithParamsFailed: action.visible};
       case uiFlagsActionTypes.SET_PROJECT_CHECKED:
          {
             const idx = state.checkedProjects.indexOf(action.projectId);
@@ -205,6 +224,8 @@ export default function(state = initialState, action) {
          return { ...state, drawingUrl: null };
       case uiFlagsActionTypes.SET_STATS:
          return { ...state, stats: action.stats };
+      case uiFlagsActionTypes.SET_ENABLE_EMBEDDED_MODE:
+         return { ...state, embeddedModeEnabled: action.enabled };
       default:
          return state;
   }

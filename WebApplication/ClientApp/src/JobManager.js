@@ -80,6 +80,30 @@ class JobManager {
         await connection.invoke('CreateAdoptJob', packageId, repo.getAccessToken());
     }
 
+    async doAdoptWithParameters(parameters, onStart, onComplete, onError) {
+        const connection = await this.startConnection();
+
+        if (onStart)
+            onStart();
+
+        connection.on("onComplete", (newProject) => {
+            // stop connection
+            connection.stop();
+
+            if (onComplete)
+                onComplete(newProject);
+        });
+
+        connection.on("onError", (jobId, reportUrl) => {
+            connection.stop();
+
+            if (onError)
+                onError(jobId, reportUrl);
+        });
+
+        await connection.invoke("CreateAdoptProjectWithParametersJob", parameters, repo.getAccessToken());
+    }
+
     /**
      * Generic way to generate a download and get URL to it.
      *

@@ -76,7 +76,7 @@ export const resetParameters = (projectId, parameters) => {
  *       }
  * }
  */
-function adaptParameters(rawParameters) {
+export function adaptParameters(rawParameters) {
     const unquote = function(input) {
         if (input == null || input.length < 2)
             return input;

@@ -71,11 +71,11 @@ namespace WebApplication.Tests.Integration
 
         [Theory(Skip = "not a real test, just for development purposes")]
         [ClassData(typeof(AdoptProjectWithParametersDataProvider))]
-        public void AdoptProjectWithParameters(AdoptProjectWithParametersPayload payload)
+        public async void AdoptProjectWithParametersAsync(AdoptProjectWithParametersPayload payload)
         {
-            var projectStorage = _projectService.AdoptProjectWithParametersAsync(payload).Result;
+            var projectWithParameters = await _projectService.AdoptProjectWithParametersAsync(payload);
 
-            _output.WriteLine($"adopted project with parameters, project name: {projectStorage.Project.Name}");
+            _output.WriteLine($"adopted project with parameters, project label: {projectWithParameters.Project.Label}");
         }
 
         [Fact(Skip = "not a real test, just for development purposes")]

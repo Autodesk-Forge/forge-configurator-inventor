@@ -212,7 +212,7 @@ namespace WebApplication.Controllers
             _profileProvider.Token = token;
 
             // create job and run it
-            var job = new AdoptProjectWithParametersJobItem(_logger, _projectService, payloadUrl, _dtoGenerator, _adoptProjectWithParametersPayloadProvider);
+            var job = new AdoptProjectWithParametersJobItem(_logger, _projectService, payloadUrl, _adoptProjectWithParametersPayloadProvider);
             await RunJobAsync(job);
         }
 
