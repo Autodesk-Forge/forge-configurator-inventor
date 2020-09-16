@@ -88,7 +88,6 @@ export const fetchDrawing = (project) => async (dispatch) => {
             // start job
             () => {
                 dispatch(addLog('JobManager.doDrawingExportJob: HubConnection started for project : ' + project.id));
-                dispatch(setStats(null));
                 //dispatch(setReportUrlLink(null)); // cleanup url link
             },
             // onComplete
