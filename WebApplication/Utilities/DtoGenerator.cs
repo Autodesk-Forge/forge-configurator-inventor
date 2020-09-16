@@ -56,21 +56,14 @@ namespace WebApplication.Utilities
                                                                     action: "GetBOM",
                                                                     values: new { projectName = project.Name, hash });
 
-            var drawingsListUrl = _linkGenerator?.GetPathByAction(controller: "ProjectData",
-                                                                    action: "GetDrawingsList",
-                                                                    values: new { projectName = project.Name });
-
             var localNames = project.LocalNameProvider(hash);
             return new TProjectDTOBase
             {
                 Svf = _localCache.ToDataUrl(localNames.SvfDir),
-                        DrawingsListUrl = drawingsListUrl,
                         BomDownloadUrl = bomDownloadUrl,
                         BomJsonUrl = bomJsonUrl,
                         ModelDownloadUrl = modelDownloadUrl,
                         Hash = hash,
-                        IsAssembly = projectStorage.IsAssembly,
-                        HasDrawing = projectStorage.Metadata.HasDrawings
                     };
         }
 
@@ -85,6 +78,9 @@ namespace WebApplication.Utilities
             dto.Id = project.Name;
             dto.Label = project.Name;
             dto.Image = _localCache.ToDataUrl(project.LocalAttributes.Thumbnail);
+            dto.IsAssembly = projectStorage.IsAssembly;
+            dto.HasDrawing = projectStorage.Metadata.HasDrawings;
+            dto.DrawingsListUrl = _localCache.ToDataUrl(project.LocalAttributes.DrawingsList);
             return dto;
         }
     }

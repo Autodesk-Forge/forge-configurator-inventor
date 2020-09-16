@@ -51,13 +51,6 @@ namespace WebApplication.Controllers
             return await SendLocalFileContent(projectName, LocalName.BOM);
         }
 
-
-        [HttpGet("drawingslist/{projectName}")]
-        public async Task<ActionResult> GetDrawingsList(string projectName)
-        {
-            return await SendLocalFileContent(projectName, LocalName.DrawingsList);
-        }
-
         [HttpGet("bom/{projectName}/{hash}")]
         public async Task<ActionResult> GetBOM(string projectName, string hash)
         {

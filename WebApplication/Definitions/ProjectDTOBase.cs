@@ -47,20 +47,5 @@ namespace WebApplication.Definitions
         /// Parameters hash
         /// </summary>
         public string Hash { get; set; }
-
-        /// <summary>
-        /// IsAssembly
-        /// </summary>
-        public bool IsAssembly { get; set; }
-        
-        /// <summary>
-        /// HasDrawing
-        /// </summary>
-        public bool HasDrawing { get; set; }
-
-        /// <summary>
-        /// URL to DrawingsList JSON.
-        /// </summary>
-        public string DrawingsListUrl { get; set; }
     }
 }
