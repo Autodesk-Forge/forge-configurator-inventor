@@ -128,6 +128,8 @@ namespace DrawingsListPlugin
 
             foreach (DocumentInterest di in doc.DocumentInterests)
             {
+                if (di.InterestType != DocumentInterestTypeEnum.kInterested) continue;
+
                 _interests.Add(di.ClientId);
             }
         }
