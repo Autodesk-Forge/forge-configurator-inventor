@@ -32,6 +32,7 @@ namespace WebApplication.Definitions
         public string ParametersJsonUrl { get; set; }
 
         public string DrawingsListUrl { get; set; }
+        public string AdoptMessagesUrl { get; set; }
 
         /// <summary>
         /// If job data contains assembly.

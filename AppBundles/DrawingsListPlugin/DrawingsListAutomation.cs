@@ -78,19 +78,23 @@ namespace DrawingsListPlugin
             var index = Path.Combine(rootDir, "unzippedIam").Length + 1;
 
             var drawings = Directory.GetFiles(rootDir, "*.*", SearchOption.AllDirectories)
-                .Where(file => drawingExtensions.IndexOf(Path.GetExtension(file.ToLower())) >= 0 &&
-                               !file.ToLower().Contains(oldVersionMask))
+                .Where(file =>
+                {
+                    var lowName = file.ToLower();
+                    return drawingExtensions.IndexOf(Path.GetExtension(lowName)) >= 0 &&
+                           !lowName.Contains(oldVersionMask);
+                })
                 .Select(path => path.Substring(index))
                 .ToArray();
 
-            SaveAsJson(drawings, "drawingsList.json");
+            SaveAsJson(drawings, "drawings-list.json"); // the file name must be in sync with activity definition
 
             AddMessage($"Found {drawings.Length} drawings", Severity.Info);
         }
 
         private void SaveMessages()
         {
-            SaveAsJson(_messages, "messages.json");
+            SaveAsJson(_messages, "adopt-messages.json"); // the file name must be in sync with activity definition
         }
 
         private void AddMessage(string message, Severity severity)
