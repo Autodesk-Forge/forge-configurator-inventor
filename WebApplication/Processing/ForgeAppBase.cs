@@ -49,6 +49,7 @@ namespace WebApplication.Processing
 
         /// <summary>
         /// What to register at Forge.
+        /// NOTE: by default it registers AppBundle only!
         /// </summary>
         protected internal virtual ForgeRegistration Registration { get; } = ForgeRegistration.AppBundle;
 
@@ -143,17 +144,15 @@ namespace WebApplication.Processing
 
             if (HasOutput)
             {
-                AddOutputArgs(args, data);
+                args.Add(OutputParameterName, new XrefTreeArgument { Verb = Verb.Put, Url = OutputUrl(data), Optional = IsOutputOptional });
             }
 
             return args;
         }
 
-        protected virtual void AddOutputArgs(IDictionary<string, IArgument> args, ProcessingArgs data)
-        {
-            args.Add(OutputParameterName, new XrefTreeArgument { Verb = Verb.Put, Url = OutputUrl(data), Optional = IsOutputOptional });
-        }
-
+        /// <summary>
+        /// Add input arguments for work item.
+        /// </summary>
         protected virtual void AddInputArgs(IDictionary<string, IArgument> args, ProcessingArgs data)
         {
             if (data.IsAssembly)
