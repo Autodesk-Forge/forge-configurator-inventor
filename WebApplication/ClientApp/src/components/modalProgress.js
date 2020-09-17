@@ -47,7 +47,8 @@ export class ModalProgress extends Component {
             backgroundImage: 'url(' + this.props.icon + ')',
           };
 
-        const done = getStats(this.props.store, this.props.statsKey);
+        const stats = this.props.statsKey == null ? this.props.stats : this.props.stats[this.props.statsKey];
+        const done = stats != null;
 
         return (
             <Modal
@@ -89,6 +90,6 @@ export class ModalProgress extends Component {
 /* istanbul ignore next */
 export default connect(function (store){
     return {
-      store: store
+      stats: getStats(store)
     };
 })(ModalProgress);

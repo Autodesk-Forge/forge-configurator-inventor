@@ -157,7 +157,8 @@ export class DrawingsContainer extends Component {
                     label={project.id}
                     icon='/Archive.svg'
                     onClose={ () => this.props.showDownloadProgress(false) }
-                    url={ this.props.downloadUrl } />}
+                    url={ this.props.downloadUrl }
+                    statsKey={ this.props.activeDrawing } />}
 
                 {this.props.downloadFailedShowing && <ModalFail
                     open={true}

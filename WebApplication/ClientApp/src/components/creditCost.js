@@ -27,7 +27,7 @@ import { significantDigits } from '../utils/conversion';
 export class CreditCost extends Component {
     render() {
 
-        const stats = getStats(this.props.store, this.props.statsKey);
+        const stats = this.props.statsKey == null ? this.props.stats : this.props.stats[this.props.statsKey];
 
         return (
             <div>
@@ -59,6 +59,6 @@ export class CreditCost extends Component {
 /* istanbul ignore next */
 export default connect(function (store){
     return {
-      store: store
+      stats: getStats(store)
     };
 })(CreditCost);

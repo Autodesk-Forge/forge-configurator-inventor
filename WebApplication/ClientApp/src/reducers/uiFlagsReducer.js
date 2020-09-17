@@ -127,11 +127,8 @@ export const drawingProgressShowing = function(state) {
    return state.drawingProgressShowing;
 };
 
-export const getStats = function(state, key) {
-   if (key != null)
-      return state.stats[key];
-   else
-      return state.stats;
+export const getStats = function(state) {
+   return state.stats;
 };
 
 export const getDrawingsList = function(state) {
@@ -226,9 +223,9 @@ export default function(state = initialState, action) {
       case uiFlagsActionTypes.SET_STATS:
          {
             if (action.key != null) {
-               const stats = state.stats;
-               stats[action.key] = action.stats;
-               return { ...state, stats: stats };
+               const new_stats = { ...state.stats };
+               new_stats[action.key] = action.stats;
+               return { ...state, stats: new_stats };
             } else {
                const stats = action.stats === null ? {} : action.stats;
                return { ...state, stats: stats };
