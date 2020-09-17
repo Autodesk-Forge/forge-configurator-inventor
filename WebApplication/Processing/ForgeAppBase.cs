@@ -137,6 +137,9 @@ namespace WebApplication.Processing
             return RunAsync(args);
         }
 
+        /// <summary>
+        /// Add input and output arguments for the work item.
+        /// </summary>
         public virtual Dictionary<string, IArgument> ToWorkItemArgs(ProcessingArgs data)
         {
             var args = new Dictionary<string, IArgument>();

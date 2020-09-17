@@ -33,12 +33,12 @@ namespace WebApplication.Processing
         public override string Id => nameof(DataChecker);
         public override string Description => "Data checker during adoption";
 
-        // first output argument is JSON with list of drawings in the project
+        // first output argument: JSON with list of drawings in the project
         protected override string OutputUrl(ProcessingArgs projectData) => projectData.DrawingsListUrl;
         protected override string OutputName => "drawings-list.json";
         protected override bool IsOutputZip => false;
 
-        // second output argument is JSON with adoption messages
+        // second output argument: JSON with adoption messages
         private const string MessagesFileName = "adopt-messages.json";
         private const string MessagesParamName = nameof(DataChecker) + "Messages";
 
@@ -49,15 +49,16 @@ namespace WebApplication.Processing
 
         public override Dictionary<string, IArgument> ToWorkItemArgs(ProcessingArgs data)
         {
-            var args = base.ToWorkItemArgs(data);
-            args.Add(MessagesParamName, new XrefTreeArgument { Verb = Verb.Put, Url = data.AdoptMessagesUrl, Optional = false });
+            var args = base.ToWorkItemArgs(data); // includes only first output arg
 
+            args.Add(MessagesParamName, new XrefTreeArgument { Verb = Verb.Put, Url = data.AdoptMessagesUrl, Optional = false });
             return args;
         }
 
         public override Dictionary<string, Parameter> GetActivityParams()
         {
-            var activityParams = base.GetActivityParams();
+            var activityParams = base.GetActivityParams(); // includes only first output arg
+
             activityParams.Add(MessagesParamName, new Parameter { Verb = Verb.Put, LocalName = MessagesFileName, Zip = false });
             return activityParams;
         }
