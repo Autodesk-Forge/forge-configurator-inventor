@@ -177,10 +177,10 @@ describe('uiFlags reducer', () => {
          expect(uiFlagsReducer({}, uiFlagsActions.showDrawingExportProgress(true)).drawingProgressShowing).toEqual(true);
       }),
       it('sets the drawingUrl', () => {
-         expect(uiFlagsReducer({}, uiFlagsActions.setDrawingPdfUrl('drawing name', 'pdf link')).drawingUrl).toEqual('pdf link');
+         expect(uiFlagsReducer({}, uiFlagsActions.setDrawingPdfUrl('drawingName', 'pdf link')).drawingUrls['drawingName']).toEqual('pdf link');
       }),
       it('invalidates the drawingUrl', () => {
-         expect(uiFlagsReducer({}, uiFlagsActions.invalidateDrawing()).drawingUrl).toEqual(null);
+         expect(uiFlagsReducer({}, uiFlagsActions.invalidateDrawing()).drawingUrls).toEqual({});
       }),
       it('sets the processing stats', () => {
          const theStats = { credits: 7, processing: 13 };

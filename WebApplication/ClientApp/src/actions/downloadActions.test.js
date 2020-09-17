@@ -96,7 +96,7 @@ describe('downloadActions', () => {
 
     describe('Drawing', () => {
         it('check fetchDrawing action', async () => {
-            await store.dispatch(downloadActions.fetchDrawing({ id: "ProjectId" }));
+            await store.dispatch(downloadActions.fetchDrawing({ id: "ProjectId" }, "DrawingKey"));
             connectionMock.simulateComplete(aLink, theStats);
 
             // check expected store actions
@@ -109,7 +109,7 @@ describe('downloadActions', () => {
         });
 
         it('check fetchDrawing error handling', async () => {
-            await store.dispatch(downloadActions.fetchDrawing({ id: "ProjectId" }));
+            await store.dispatch(downloadActions.fetchDrawing({ id: "ProjectId" }, "DrawingKey"));
             connectionMock.simulateError(jobId,errorReportLink);
 
             // check expected store actions

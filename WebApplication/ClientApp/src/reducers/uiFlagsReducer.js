@@ -213,10 +213,10 @@ export default function(state = initialState, action) {
          return { ...state, drawingProgressShowing: action.visible};
       case uiFlagsActionTypes.SET_DRAWING_URL:
          {
-            const drawingUrls = state.drawingUrls;
-            drawingUrls[action.drawingKey] = action.url;
+            const new_drawingUrls = { ...state.drawingUrls };
+            new_drawingUrls[action.drawingKey] = action.url;
 
-            return { ...state, drawingUrls: drawingUrls };
+            return { ...state, drawingUrls: new_drawingUrls };
          }
       case uiFlagsActionTypes.INVALIDATE_DRAWING:
          return { ...state, drawingUrls: {}, activeDrawing: null, drawings: null };

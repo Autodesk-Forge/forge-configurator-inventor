@@ -132,7 +132,7 @@ describe('main reducer', () => {
          expect(reducer.checkedProjects(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.checkedProjects);
       }),
       it('gets getDrawingPdfUrl', () => {
-         expect(reducer.getDrawingPdfUrl(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.drawingUrl); /* method and flag name differ */
+         expect(reducer.getDrawingPdfUrl(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.drawingUrls[uiFlagsTestState.uiFlags.activeDrawing]); /* method and flag name differ */
       }),
       it('gets drawingProgressShowing', () => {
          expect(reducer.drawingProgressShowing(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.drawingProgressShowing);

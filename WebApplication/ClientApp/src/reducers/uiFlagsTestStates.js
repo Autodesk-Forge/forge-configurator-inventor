@@ -37,8 +37,10 @@ export const testState = {
     showDeleteProject: 19,
     checkedProjects: [20],
     drawingProgressShowing: 21,
-    drawingUrl: 22,
-    stats: { credits: 3, processing: 2 }
+    drawingUrls: { "1" : "url1", "2" : "url2" },
+    stats: { "1" : { credits: 3, processing: 2 }},
+    activeDrawing: "1",
+    drawings: null
 };
 
  export const fullState = {
