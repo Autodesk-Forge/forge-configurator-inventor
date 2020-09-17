@@ -17,7 +17,7 @@
 /////////////////////////////////////////////////////////////////////
 
 import React from 'react';
-import Enzyme, { shallow, mount } from 'enzyme';
+import Enzyme, { shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 
 // prepare mock for Repository module
@@ -25,7 +25,6 @@ jest.mock('../Repository');
 import mockedRepo from '../Repository';
 
 import { DrawingsContainer, drawingColumns } from './drawingsContainer';
-import { updateActiveDrawing } from '../actions/uiFlagsActions';
 
 Enzyme.configure({ adapter: new Adapter() });
 
@@ -41,7 +40,8 @@ const showDownloadFailedMock = jest.fn();
 
 const props = {
     activeProject: {
-        id: 'foo'
+        id: 'foo',
+        hash: '123'
     },
     downloadProgressShowing: false,
     downloadProgressTitle: "",
@@ -111,6 +111,39 @@ describe('DrawingsContainer component', () => {
                 expect(row.id).toEqual(drawingsList[index]);
                 expect(row.label).toEqual(drawingsList[index]);
             });
+        });
+
+        it('Base table sets row class name for activeDrawing', () => {
+            const wrapper = shallow(<DrawingsContainer { ...props } />);
+            const as = wrapper.find('AutoResizer');
+            const bt = as.renderProp('children')( {width: 100, height: 200} );
+            expect(bt.prop('rowClassName')({ rowData: { id: drawingsList[1] }})).toEqual('drawing-selected');
+        });
+
+        it('Base table does not set row class name for non-activeDrawing', () => {
+            const wrapper = shallow(<DrawingsContainer { ...props } />);
+            const as = wrapper.find('AutoResizer');
+            const bt = as.renderProp('children')( {width: 100, height: 200} );
+            expect(bt.prop('rowClassName')({ rowData: { id: drawingsList[2] }})).toEqual('');
+        });
+    });
+
+    describe('Downloads and updates', () => {
+        it('Downloads correct PDF', () => {
+            const wrapper = shallow(<DrawingsContainer { ...props } />);
+            const exportButton = wrapper.find('.buttonsContainer Button');
+            exportButton.simulate('click');
+            expect(getDownloadLinkMock).toHaveBeenCalledWith('CreateDrawingPdfJob', props.activeProject.id, props.activeProject.hash, 'Preparing Drawing PDF', props.activeDrawing);
+        });
+
+        it('Fetches new drawing on component update', () => {
+            const wrapper = shallow(<DrawingsContainer { ...props } />);
+
+            const newActiveProject = { id: 'new Foo', hash: '345' };
+            const updatedProps = { ...props, activeProject: newActiveProject };
+            wrapper.setProps(updatedProps);
+
+            expect(fetchDrawingsListMock).toHaveBeenCalledWith(newActiveProject);
         });
     });
 
