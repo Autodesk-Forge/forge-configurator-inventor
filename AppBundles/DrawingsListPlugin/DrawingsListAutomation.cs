@@ -16,6 +16,7 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -48,6 +49,17 @@ namespace DrawingsListPlugin
         private readonly InventorServer inventorApplication;
         private readonly List<Message> _messages = new List<Message>();
 
+        private readonly HashSet<string> _interests = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        private static readonly Dictionary<string, string> _notSupported = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                                                                    {
+                                                                       { "{AC211AE0-A7A5-4589-916D-81C529DA6D17}", "Frame Generator" },
+                                                                       { "{4D39D5F1-0985-4783-AA5A-FC16C288418C}", "Tube & Pipe" },
+                                                                       { "{C6107C9D-C53F-4323-8768-F65F857F9F5A}", "Cable & Harness" },
+                                                                       { "{24E39891-3782-448F-8C33-0D8D137148AC}", "Mold Design" },
+                                                                       { "{3D88D7B5-6DD8-4205-A2B5-2B51F7BF74A7}", "Content Center" },
+                                                                       { "{BB8FE430-83BF-418D-8DF9-9B323D3DB9B9}", "Design Accelerator" },
+                                                                    };
+
         public DrawingsListAutomation(InventorServer inventorApp)
         {
             inventorApplication = inventorApp;
@@ -60,17 +72,74 @@ namespace DrawingsListPlugin
 
         public void RunWithArguments(Document doc, NameValueMap map)
         {
-            // mask to exclude Inventor backup dirs
-
             using (new HeartBeat())
             {
                 ExtractDrawingList();
+                DetectUnsupportedAddins(doc);
+
                 SaveMessages();
             }
         }
 
+        private void DetectUnsupportedAddins(Document doc)
+        {
+            LogTrace("Detecting unsupported addins");
+
+            // collect interests for the hierarchy
+            GetInterests(doc);
+            foreach (Document d in doc.AllReferencedDocuments)
+            {
+                GetInterests(d);
+            }
+
+            // check if non-supported addins are in the list
+            var addinNames = new List<string>();
+            foreach (var addinId in _interests)
+            {
+                if (_notSupported.TryGetValue(addinId, out string name))
+                {
+                    addinNames.Add(name);
+                }
+            }
+
+            // log message (if necessary)
+            switch (addinNames.Count)
+            {
+                case 1:
+                    AddMessage($"Detected unsupported plugin: {addinNames[0]}", Severity.Warning);
+                    break;
+                case 0:
+                    break;
+                default:
+                    AddMessage($"Detected unsupported plugins: {string.Join(",", addinNames)}", Severity.Warning);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Extract interests for the document.
+        /// </summary>
+        private void GetInterests(Document doc)
+        {
+            // process only assemblies and parts
+            var docType = doc.DocumentType;
+            if (docType != DocumentTypeEnum.kAssemblyDocumentObject && docType != DocumentTypeEnum.kPartDocumentObject)
+                return;
+
+            foreach (DocumentInterest di in doc.DocumentInterests)
+            {
+                _interests.Add(di.ClientId);
+            }
+        }
+
+        /// <summary>
+        /// Collect relative paths for drawings.
+        /// </summary>
         private void ExtractDrawingList()
         {
+            LogTrace("Extracting drawings list");
+
+            // mask to exclude Inventor backup dirs
             const string oldVersionMask = @"oldversions\";
             var drawingExtensions = new List<string> {".idw", ".dwg"};
 
@@ -95,6 +164,9 @@ namespace DrawingsListPlugin
         private void SaveMessages()
         {
             SaveAsJson(_messages, "adopt-messages.json"); // the file name must be in sync with activity definition
+
+            LogTrace("Collected user messages:");
+            LogTrace(JsonConvert.SerializeObject(_messages, Formatting.Indented));
         }
 
         private void AddMessage(string message, Severity severity)
