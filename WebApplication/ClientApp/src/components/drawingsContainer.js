@@ -78,9 +78,6 @@ export class DrawingsContainer extends Component {
     }
 
     onRowClick( rowData) {
-        console.log('active: ' + this.props.activeDrawing + '\n' +
-              'clicked: ' + rowData.id);
-
         if (this.props.activeDrawing === rowData.id)
             return;
 
@@ -182,7 +179,6 @@ export default connect(function (store) {
         downloadFailedShowing: downloadFailedShowing(store),
         downloadUrl: downloadUrl(store),
         reportUrl: reportUrl(store),
-        drawingDownloadFailedShowing: downloadDrawingFailedShowing(store),
         activeDrawing: getActiveDrawing(store),
         drawingsList: getDrawingsList(store)
     };
