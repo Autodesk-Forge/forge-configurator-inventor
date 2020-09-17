@@ -20,13 +20,16 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import './drawingsContainer.css';
 import Button from '@hig/button';
-import { getActiveProject, getDrawingsList, getActiveDrawing } from '../reducers/mainReducer';
+import { getActiveProject, getDrawingsList, getActiveDrawing, downloadProgressShowing, downloadProgressTitle, downloadUrl, downloadFailedShowing, reportUrl, downloadDrawingFailedShowing } from '../reducers/mainReducer';
 import { getDownloadLink } from '../actions/downloadActions';
+import { showDownloadProgress, showDownloadFailed } from '../actions/uiFlagsActions';
 import { fetchDrawingsList } from '../actions/drawingsListActions';
 import { updateActiveDrawing } from '../actions/uiFlagsActions';
 import BaseTable, { AutoResizer, Column } from 'react-base-table';
 import 'react-base-table/styles.css';
 import styled from 'styled-components';
+import ModalDownloadProgress from './modalDownloadProgress';
+import ModalFail from './modalFail';
 
 const Icon = ({ iconname }) => (
     <div>
@@ -79,7 +82,7 @@ export class DrawingsContainer extends Component {
         const project = this.props.activeProject;
         if (project?.id) {
             // generate/download selected drawing PDF
-            this.props.getDownloadLink('CreateDrawingPdfJob', project.id, project.hash, 'Preparing Drawing PDF');
+            this.props.getDownloadLink('CreateDrawingPdfJob', project.id, project.hash, 'Preparing Drawing PDF', this.props.activeDrawing);
         }
     }
 
@@ -96,6 +99,8 @@ export class DrawingsContainer extends Component {
     render() {
         const drawingsList = this.props.activeProject ? this.props.drawingsList : [];
         const buttonsContainerClass = drawingsList ? "buttonsContainer" : "buttonsContainer hidden";
+
+        const project = this.props.activeProject;
 
         // drawings for table
         let data = [];
@@ -151,6 +156,21 @@ export class DrawingsContainer extends Component {
                         disabled={!this.props.activeDrawing}
                     />
                 </div>
+                {this.props.downloadProgressShowing && <ModalDownloadProgress
+                    open={true}
+                    title={ this.props.downloadProgressTitle }
+                    label={project.id}
+                    icon='/Archive.svg'
+                    onClose={ () => this.props.showDownloadProgress(false) }
+                    url={ this.props.downloadUrl } />}
+
+                {this.props.downloadFailedShowing && <ModalFail
+                    open={true}
+                    title={ `${this.props.downloadProgressTitle} Failed` }
+                    contentName="Project:"
+                    label={project.id}
+                    onClose={ () => this.props.showDownloadFailed(false) }
+                    url={this.props.reportUrl}/>}
             </div>
         );
     }
@@ -161,7 +181,13 @@ export default connect(function (store) {
     const activeProject = getActiveProject(store);
     return {
         activeProject: activeProject,
+        downloadProgressShowing: downloadProgressShowing(store),
+        downloadProgressTitle: downloadProgressTitle(store),
+        downloadFailedShowing: downloadFailedShowing(store),
+        downloadUrl: downloadUrl(store),
+        reportUrl: reportUrl(store),
+        drawingDownloadFailedShowing: downloadDrawingFailedShowing(store),
         activeDrawing: getActiveDrawing(store),
         drawingsList: getDrawingsList(store)
     };
-}, { getDownloadLink, fetchDrawingsList, updateActiveDrawing })(DrawingsContainer);
+}, { getDownloadLink, fetchDrawingsList, updateActiveDrawing, showDownloadProgress, showDownloadFailed })(DrawingsContainer);

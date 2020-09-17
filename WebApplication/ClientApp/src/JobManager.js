@@ -90,7 +90,7 @@ class JobManager {
      * @param onSuccess  Callback to be called on success. Argument: url to the generated download.
      * @param onError    Callback to be called on error. Arguments: job ID, report url.
      * */
-    async doDownloadJob(methodName, projectId, hash, onStart, onSuccess, onError) {
+    async doDownloadJob(methodName, projectId, hash, key, onStart, onSuccess, onError) {
 
         const connection = await this.startConnection();
 
@@ -120,7 +120,10 @@ class JobManager {
             if (onError) onError(jobId, reportUrl);
         });
 
-        await connection.invoke(methodName, projectId, hash, repo.getAccessToken());
+        if (key != null)
+            await connection.invoke(methodName, projectId, hash, key, repo.getAccessToken());
+        else
+            await connection.invoke(methodName, projectId, hash, repo.getAccessToken());
     }
 
     async doDrawingExportJob(projectId, hash, drawingKey, onStart, onComplete, onError) {
@@ -129,12 +132,12 @@ class JobManager {
         if (onStart)
             onStart();
 
-        connection.on("onComplete", (drawingKey, drawingUrl, stats) => {
+        connection.on("onComplete", (drawingUrl, stats) => {
             // stop connection
             connection.stop();
 
             if (onComplete) {
-                onComplete(drawingKey, drawingUrl, stats);
+                onComplete(drawingUrl, stats);
             }
         });
 

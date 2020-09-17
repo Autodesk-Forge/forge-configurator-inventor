@@ -34,7 +34,7 @@ import { showDrawingExportProgress, setDrawingPdfUrl } from './uiFlagsActions';
  * @param {string} hash        Parameters hash. (passed as a second arg to the SignalR method)
  * @param {string} dialogTitle Title for dialogs.
  */
-export const getDownloadLink = (methodName, projectId, hash, dialogTitle) => async (dispatch) => {
+export const getDownloadLink = (methodName, projectId, hash, dialogTitle, key) => async (dispatch) => {
     dispatch(addLog(`getDownloadLink invoked for ${methodName}`));
 
     const jobManager = Jobs();
@@ -44,7 +44,7 @@ export const getDownloadLink = (methodName, projectId, hash, dialogTitle) => asy
 
     // launch signalR to generate download and wait for result
     try {
-        await jobManager.doDownloadJob(methodName, projectId, hash,
+        await jobManager.doDownloadJob(methodName, projectId, hash, key,
             // start job
             () => {
                 dispatch(addLog(`JobManager.doDownloadJob: '${methodName}' started for project : ${projectId}`));
@@ -92,7 +92,7 @@ export const fetchDrawing = (project, drawingKey) => async (dispatch) => {
                 //dispatch(setReportUrlLink(null)); // cleanup url link
             },
             // onComplete
-            (drawingKey, drawingPdfUrl, stats) => {
+            (drawingPdfUrl, stats) => {
                 dispatch(addLog('JobManager.doDrawingExportJob: Received onComplete'));
                 // store drawings link
                 dispatch(setDrawingPdfUrl(drawingKey, drawingPdfUrl));

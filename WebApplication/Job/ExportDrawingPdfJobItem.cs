@@ -64,7 +64,7 @@ namespace WebApplication.Job
                 }
             }
 
-            await resultSender.SendSuccessAsync(_drawingKey, url, stats);
+            await resultSender.SendSuccessAsync(url, stats);
         }
     }
 }
