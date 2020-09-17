@@ -160,7 +160,6 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
             () => {
                 dispatch(addLog('JobManager: HubConnection started for project : ' + projectId));
                 dispatch(setReportUrlLink(null)); // cleanup url link
-                dispatch(setStats(null));
             },
             // onComplete
             (updatedState, stats) => {
