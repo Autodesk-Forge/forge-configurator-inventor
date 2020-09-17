@@ -20,7 +20,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import './drawingsContainer.css';
 import Button from '@hig/button';
-import { getActiveProject, getDrawingsList, getActiveDrawing, downloadProgressShowing, downloadProgressTitle, downloadUrl, downloadFailedShowing, reportUrl, downloadDrawingFailedShowing } from '../reducers/mainReducer';
+import { getActiveProject, getDrawingsList, getActiveDrawing, downloadProgressShowing, downloadProgressTitle, downloadUrl, downloadFailedShowing, reportUrl } from '../reducers/mainReducer';
 import { getDownloadLink } from '../actions/downloadActions';
 import { showDownloadProgress, showDownloadFailed } from '../actions/uiFlagsActions';
 import { fetchDrawingsList } from '../actions/drawingsListActions';
