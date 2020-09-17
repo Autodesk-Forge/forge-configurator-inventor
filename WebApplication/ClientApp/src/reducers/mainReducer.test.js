@@ -139,6 +139,12 @@ describe('main reducer', () => {
       }),
       it('gets the processing stats', () => {
          expect(reducer.getStats(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.stats);
+      }),
+      it('gets the active drawing stats', () => {
+         expect(reducer.getActiveDrawing(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.activeDrawing);
+      }),
+      it('gets the drawings list', () => {
+         expect(reducer.getDrawingsList(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.drawings); /* method and flag name differ */
       });
    });
 
