@@ -59,3 +59,34 @@
     display: flex;
     padding: 16px;
 }
+
+.drawingList .drawing-selected {
+    background-color: #e1f2fa;
+}
+
+.drawingList .drawing-selected:hover {
+    background-color: #9bdaf8;
+}
+
+.drawingList .BaseTable {
+    box-shadow: none;
+}
+
+.drawingList .BaseTable__table-main {
+    outline: none;
+}
+
+.BaseTable {
+    box-shadow: none;
+}
+
+.drawingList .BaseTable__header-row {
+    border-bottom: none;
+    border-top: none;
+    background-color: white;
+}
+
+.drawingList .BaseTable__row {
+    border-bottom: none;
+    border-top: 1px solid #eeeeee;
+}

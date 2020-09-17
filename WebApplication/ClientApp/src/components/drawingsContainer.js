@@ -27,7 +27,6 @@ import { fetchDrawingsList } from '../actions/drawingsListActions';
 import { updateActiveDrawing } from '../actions/uiFlagsActions';
 import BaseTable, { AutoResizer, Column } from 'react-base-table';
 import 'react-base-table/styles.css';
-import styled from 'styled-components';
 import ModalDownloadProgress from './modalDownloadProgress';
 import ModalFail from './modalFail';
 
@@ -57,14 +56,6 @@ export const drawingColumns = [
         width: 200,
     }
 ];
-
-const SelRow = styled.div`
-background-color: blue;
-
-.row-selected {
-    background-color: red;
-  }
-`;
 
 export class DrawingsContainer extends Component {
 
@@ -114,7 +105,7 @@ export class DrawingsContainer extends Component {
             data = this.props.drawingsList.map((drawing) => (
               {
                 id: drawing,
-                icon: 'Archive.svg',
+                icon: 'document-drawing-24.svg',
                 label: shortName(drawing)
               }
             ));
@@ -128,9 +119,9 @@ export class DrawingsContainer extends Component {
                     <AutoResizer>
                     {({ width, height }) => {
                         // reduce size by 16 (twice the default border of tabContent)
-                        const newWidth = width-16;
+                        const newWidth = width;
                         const newHeight = height-16;
-                        return <BaseTable
+                        return <BaseTable className="drawingList"
                             width={newWidth}
                             height={newHeight}
                             columns={drawingColumns}
@@ -138,9 +129,13 @@ export class DrawingsContainer extends Component {
                             rowEventHandlers={{
                                 onClick: ({ rowData }) => { this.onRowClick(rowData); }
                             }}
-                            rowProps={{
-                                tagName: SelRow // styled div to show/hide row checkbox when hover
-                              }}
+                            rowClassName={({ rowData }) => {
+                                // check if use selected class
+                                if (rowData.id == this.props.activeDrawing)
+                                    return "drawing-selected";
+                                else
+                                    return "";
+                            }}
                         />;
                     }}
                     </AutoResizer>

@@ -236,7 +236,8 @@ export default function(state = initialState, action) {
          }
       case uiFlagsActionTypes.DRAWING_LIST_UPDATED: {
 
-         const firstDrawing = action.drawingsList[0];
+         const prev = state.activeDrawing;
+         const firstDrawing = prev!=null ? prev : action.drawingsList[0];
          return { ...state, activeDrawing: firstDrawing, drawings: action.drawingsList };
       }
       case uiFlagsActionTypes.ACTIVE_DRAWING_UPDATED: {
