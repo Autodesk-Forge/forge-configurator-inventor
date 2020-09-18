@@ -1,4 +1,4 @@
-﻿/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
 // Copyright (c) Autodesk, Inc. All rights reserved
 // Written by Forge Design Automation team for Inventor
 //
@@ -17,20 +17,20 @@
 /////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 namespace WebApplication.Definitions
 {
     /// <summary>
-    /// Exception for FDA processing failures.
-    /// Contains URL to processing report.
+    /// Exception with details on adoption failure.
     /// </summary>
-    public class FdaProcessingException : Exception
+    public class AdoptionException : Exception
     {
-        public string ReportUrl { get; }
+        public IEnumerable<string> ErrorMessages { get; }
 
-        public FdaProcessingException(string message, string reportUrl) : base(message)
+        public AdoptionException(IEnumerable<string> errorMessages)
         {
-            ReportUrl = reportUrl;
+            ErrorMessages = errorMessages;
         }
     }
 }
