@@ -38,7 +38,7 @@ namespace DrawingsListPlugin
 
             // Initialize AddIn members.
             _inventorServer = addInSiteObject.InventorServer;
-            Automation = new DrawingsListAutomation(_inventorServer);
+            Automation = new DataCheckerAutomation(_inventorServer);
         }
 
         public void Deactivate()

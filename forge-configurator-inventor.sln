@@ -27,6 +27,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{4AB642
 	ProjectSection(SolutionItems) = preProject
 		Shared\ExtractedBOM.cs = Shared\ExtractedBOM.cs
 		Shared\InventorParameters.cs = Shared\InventorParameters.cs
+		Shared\Message.cs = Shared\Message.cs
 		Shared\SharedAssemblyInfo.cs = Shared\SharedAssemblyInfo.cs
 	EndProjectSection
 EndProject
