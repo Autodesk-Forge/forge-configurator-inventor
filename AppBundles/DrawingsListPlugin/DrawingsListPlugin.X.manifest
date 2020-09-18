@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
-  <assemblyIdentity name="DrawingsListPlugin" version="1.0.0.0"></assemblyIdentity>
-  <clrClass clsid="{ae8a3c51-4366-42b3-8ba3-f78ea849584a}" progid="DrawingsListPlugin.PluginServer" threadingModel="Both" name="DrawingsListPlugin.PluginServer"></clrClass>
-  <file name="DrawingsListPlugin.dll" hashalg="SHA1"></file>
-</assembly>
