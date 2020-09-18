@@ -23,7 +23,9 @@ using WebApplication.Definitions;
 namespace WebApplication.Processing
 {
     /// <summary>
-    /// Preprocess incoming project:
+    /// Adopt incoming project:
+    /// - validate incoming data
+    /// - extract drawings list
     /// - generate thumbnail, BOM and SVF
     /// - extract parameters
     /// </summary>
