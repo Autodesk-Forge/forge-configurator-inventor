@@ -185,6 +185,20 @@ describe('uiFlags reducer', () => {
       it('sets the processing stats', () => {
          const theStats = { credits: 7, processing: 13 };
          expect(uiFlagsReducer({}, uiFlagsActions.setStats(theStats)).stats).toEqual(theStats);
+      }),
+      it('sets the processing stats with key (for drawings)', () => {
+         const theStats = { credits: 7, processing: 13 };
+         const theKey = '2';
+         expect(uiFlagsReducer({}, uiFlagsActions.setStats(theStats, theKey)).stats).toEqual({ '2': theStats }); // '2' == theKey
+         expect(uiFlagsReducer({}, uiFlagsActions.setStats(theStats, theKey)).stats[theKey]).toEqual(theStats);
+      }),
+      it('sets the active drawing', () => {
+         const activeDrawing = "drawing 2";
+         expect(uiFlagsReducer({}, uiFlagsActions.updateActiveDrawing(activeDrawing)).activeDrawing).toEqual(activeDrawing);
+      }),
+      it('sets the drawing list', () => {
+         const drawingList = [ "drawing 1", "drawing 2"];
+         expect(uiFlagsReducer({}, uiFlagsActions.updateDrawingsList(drawingList)).drawings).toEqual(drawingList);
       });
    });
 });
