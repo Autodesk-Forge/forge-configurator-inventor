@@ -29,7 +29,7 @@ using Shared;
 using File = System.IO.File;
 using Path = System.IO.Path;
 
-namespace DrawingsListPlugin
+namespace DataCheckerPlugin
 {
     [ComVisible(true)]
     public class DataCheckerAutomation

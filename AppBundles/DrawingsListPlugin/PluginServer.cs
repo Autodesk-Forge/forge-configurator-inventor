@@ -22,7 +22,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using Inventor;
 
-namespace DrawingsListPlugin
+namespace DataCheckerPlugin
 {
     [Guid("ae8a3c51-4366-42b3-8ba3-f78ea849584a")]
     public class PluginServer : ApplicationAddInServer
