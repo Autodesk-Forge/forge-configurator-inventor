@@ -225,6 +225,9 @@ FakesAssemblies/
 **/*.Server/ModelManifest.xml
 _Pvt_Extensions
 
+# IntelliJ Rider directory
+.idea
+
 # Paket dependency manager
 .paket/paket.exe
 

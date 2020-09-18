@@ -140,7 +140,7 @@ export default function(state = initialState, action) {
       case uiFlagsActionTypes.REJECT_PARAMETERS_EDITED_MESSAGE:
          return { ...state, parametersEditedMessageRejected: action.show };
       case uiFlagsActionTypes.SHOW_MODAL_PROGRESS:
-         return { ...state, modalProgressShowing: action.visible};
+         return { ...state, modalProgressShowing: action.visible, stats: null };
       case uiFlagsActionTypes.SHOW_UPDATE_FAILED:
          return { ...state, updateFailedShowing: action.visible};
       case uiFlagsActionTypes.SHOW_LOGIN_FAILED:
@@ -150,13 +150,13 @@ export default function(state = initialState, action) {
       case uiFlagsActionTypes.SET_REPORT_URL:
          return { ...state, reportUrl: action.url};
       case uiFlagsActionTypes.SHOW_DOWNLOAD_PROGRESS:
-         return { ...state, downloadProgressShowing: action.visible, downloadUrl: null, downloadProgressTitle: action.title };
+         return { ...state, downloadProgressShowing: action.visible, downloadUrl: null, downloadProgressTitle: action.title, stats: null };
       case uiFlagsActionTypes.HIDE_DOWNLOAD_PROGRESS:
          return { ...state, downloadProgressShowing: false };
       case uiFlagsActionTypes.SET_DOWNLOAD_LINK:
          return { ...state, downloadUrl: action.url};
       case uiFlagsActionTypes.SHOW_UPLOAD_PACKAGE:
-         return { ...state, showUploadPackage: action.visible};
+         return { ...state, showUploadPackage: action.visible, stats: null };
       case uploadPackagesActionTypes.SET_UPLOAD_PROGRESS_VISIBLE:
          return { ...state, uploadProgressShowing: true};
       case uploadPackagesActionTypes.SET_UPLOAD_PROGRESS_HIDDEN:
@@ -200,7 +200,7 @@ export default function(state = initialState, action) {
       case uiFlagsActionTypes.SHOW_DRAWING_DOWNLOAD_FAILED:
          return { ...state, downloadDrawingFailedShowing: action.visible};
       case uiFlagsActionTypes.SHOW_DRAWING_PROGRESS:
-         return { ...state, drawingProgressShowing: action.visible};
+         return { ...state, drawingProgressShowing: action.visible, stats: null };
       case uiFlagsActionTypes.SET_DRAWING_URL:
          return { ...state, drawingUrl: action.url };
       case uiFlagsActionTypes.INVALIDATE_DRAWING:
