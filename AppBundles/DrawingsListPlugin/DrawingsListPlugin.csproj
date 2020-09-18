@@ -46,12 +46,15 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\Shared\Message.cs">
+      <Link>Message.cs</Link>
+    </Compile>
     <Compile Include="..\..\Shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="PluginServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="DrawingsListAutomation.cs" />
+    <Compile Include="DataCheckerAutomation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DrawingsListPlugin.X.manifest" />

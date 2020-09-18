@@ -1,4 +1,4 @@
-﻿/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
 // Copyright (c) Autodesk, Inc. All rights reserved
 // Written by Forge Partner Development
 //
@@ -25,26 +25,14 @@ using System.Runtime.InteropServices;
 using Autodesk.Forge.DesignAutomation.Inventor.Utils;
 using Inventor;
 using Newtonsoft.Json;
+using Shared;
 using File = System.IO.File;
 using Path = System.IO.Path;
 
 namespace DrawingsListPlugin
 {
-    public enum Severity
-    {
-        Info = 0,
-        Warning = 1,
-        Error = 2
-    }
-
-    public class Message
-    {
-        public string Text { get; set; }
-        public Severity Severity { get; set; }
-    }
-
     [ComVisible(true)]
-    public class DrawingsListAutomation
+    public class DataCheckerAutomation
     {
         private readonly InventorServer inventorApplication;
         private readonly List<Message> _messages = new List<Message>();
@@ -60,7 +48,7 @@ namespace DrawingsListPlugin
                                                                        { "{BB8FE430-83BF-418D-8DF9-9B323D3DB9B9}", "Design Accelerator" },
                                                                     };
 
-        public DrawingsListAutomation(InventorServer inventorApp)
+        public DataCheckerAutomation(InventorServer inventorApp)
         {
             inventorApplication = inventorApp;
         }
@@ -106,12 +94,12 @@ namespace DrawingsListPlugin
             switch (addinNames.Count)
             {
                 case 1:
-                    AddMessage($"Detected unsupported plugin: {addinNames[0]}", Severity.Warning);
+                    AddMessage($"Detected unsupported plugin: {addinNames[0]}", Severity.Error);
                     break;
                 case 0:
                     break;
                 default:
-                    AddMessage($"Detected unsupported plugins: {string.Join(",", addinNames)}", Severity.Warning);
+                    AddMessage($"Detected unsupported plugins: {string.Join(", ", addinNames)}", Severity.Error);
                     break;
             }
         }
