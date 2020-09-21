@@ -16,7 +16,6 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using System;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using WebApplication.Processing;
@@ -24,11 +23,32 @@ using WebApplication.State;
 using WebApplication.Definitions;
 using WebApplication.Utilities;
 using System.IO;
-using System.Linq;
-using Shared;
 
 namespace WebApplication.Job
 {
+    public enum ErrorInfoType
+    {
+        ReportUrl = 0,
+        Messages = 1
+    }
+
+    public abstract class ProcessingError
+    {
+        public abstract ErrorInfoType Type { get; }
+    }
+
+    public class ReportUrlError : ProcessingError
+    {
+        public override ErrorInfoType Type { get; } = ErrorInfoType.ReportUrl;
+        public string ReportUrl { get; set; }
+    }
+
+    public class MessagesError : ProcessingError
+    {
+        public override ErrorInfoType Type { get; } = ErrorInfoType.Messages;
+        public string[] Messages { get; set; }
+    }
+
     internal class AdoptJobItem : JobItemBase
     {
         private readonly ProjectInfo _projectInfo;
