@@ -78,7 +78,7 @@ Scenario('should check BOM data after change', async (I) => {
     }
 
     // change parameter - select an item from a listbox
-    const partMaterialParameter = '//div[@class="parameter"][text()="PartMaterial"]//input';
+    const partMaterialParameter = '//div[@class="parameter"][text()="Material"]//input';
     const listbox = '//div[@role="listbox" and .//div[contains(.,"Stainless Steel")]]';
     const optionStainlessSteel = '//div[@role="option" and .//span[contains(.,"Stainless Steel")]]';
     I.click(locators.modelTab);

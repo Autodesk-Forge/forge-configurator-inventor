@@ -280,8 +280,7 @@ describe('fetchParameters', () => {
             const updateProject = actions.find(a => a.type === projectListActionTypes.UPDATE_PROJECT);
             expect(updateProject.activeProjectId).toEqual(projectId);
             expect(updateProject.data).toEqual(projectData);
-            // there are two setStats in the flow: clear (null) and set (theStats)
-            expect(actions.some(a => a.type === uiFlagsActionTypes.SET_STATS && a.stats === null)).toBeTruthy();
+            // verify stats
             expect(actions.some(a => a.type === uiFlagsActionTypes.SET_STATS && a.stats === theStats)).toBeTruthy();
         });
 

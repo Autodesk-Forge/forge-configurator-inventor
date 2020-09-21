@@ -103,8 +103,8 @@ describe('downloadActions', () => {
             const actions = store.getActions();
             const linkAction = actions.find(a => a.type === uiFlagsActionTypes.SET_DRAWING_URL);
             expect(linkAction.url).toEqual(noTokenLink);
-            // there are two setStats in the flow: clear (null) and set (theStats)
-            expect(actions.some(a => a.type === uiFlagsActionTypes.SET_STATS && a.stats === null)).toBeTruthy();
+
+            // check that stats is preset
             expect(actions.some(a => a.type === uiFlagsActionTypes.SET_STATS && a.stats === theStats)).toBeTruthy();
         });
 
