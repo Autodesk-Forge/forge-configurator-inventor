@@ -23,7 +23,7 @@ const { debug } = require('console');
 const parametersElement = '.parameters';
 
 const elements = '//div[@class="parameter" or @class="parameter checkbox"]';
-const iLogicParameterList = ['WheelSize', 'NumberOfSpokes', 'Slot', 'WheelFinish', 'BrakeMaterial', 'CaliperFinish', 'TotalPrice'];
+const iLogicParameterList = ['Wheel Size', 'Number Of Spokes', 'Slot', 'Wheel Finish', 'Brake Material', 'Caliper Finish', 'Total Price'];
 
 const readOnlyElements = '//div[(@class = "parameter" or @class = "parameter checkbox") and .//input[@disabled]]';
 const iLogicReadOnlyParameterList = ['ReadOnly', 'Diameter [mm]'];
