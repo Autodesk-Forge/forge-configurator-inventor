@@ -37,7 +37,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateDrawingsPlugin", "App
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExportDrawingAsPdfPlugin", "Appbundles\ExportDrawingAsPdfPlugin\ExportDrawingAsPdfPlugin.csproj", "{96BECCEC-D943-46C7-ACD7-E8A5C6F0650D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCheckerPlugin", "AppBundles\DrawingsListPlugin\DataCheckerPlugin.csproj", "{EB3C5EA6-26EC-44D2-90B3-08929CE9D6DE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCheckerPlugin", "AppBundles\DataCheckerPlugin\DataCheckerPlugin.csproj", "{EB3C5EA6-26EC-44D2-90B3-08929CE9D6DE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
