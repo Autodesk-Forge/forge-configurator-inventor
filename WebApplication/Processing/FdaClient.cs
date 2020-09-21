@@ -50,7 +50,7 @@ namespace WebApplication.Processing
         public async Task InitializeAsync()
         {
             // create bundles and activities
-            await new DataChecker(_publisher).InitializeAsync(_paths.DrawingsList);
+            await new DataChecker(_publisher).InitializeAsync(_paths.DataChecker);
             await new CreateSVF(_publisher).InitializeAsync(_paths.CreateSVF);
             await new CreateThumbnail(_publisher).InitializeAsync(_paths.CreateThumbnail);
             await new ExtractParameters(_publisher).InitializeAsync(_paths.ExtractParameters);

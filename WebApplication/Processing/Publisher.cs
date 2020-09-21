@@ -74,7 +74,7 @@ namespace WebApplication.Processing
         private async Task PostAppBundleAsync(string packagePathname, ForgeAppBase config)
         {
             if (!File.Exists(packagePathname))
-                throw new Exception($"App Bundle with package is not found ({packagePathname}).");
+                throw new Exception($"App Bundle package is not found ({packagePathname})");
 
             try {
                 // checking existence of the AppBundle
