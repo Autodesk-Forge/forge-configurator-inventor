@@ -47,7 +47,7 @@ export class ModalProgress extends Component {
             backgroundImage: 'url(' + this.props.icon + ')',
           };
 
-        const stats = this.props.statsKey == null ? this.props.stats : this.props.stats[this.props.statsKey];
+        const stats = this.props.statsKey == null ? this.props.stats : (this.props.stats ? this.props.stats[this.props.statsKey] : null);
         const done = stats != null;
 
         return (
