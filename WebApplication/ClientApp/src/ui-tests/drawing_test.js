@@ -230,7 +230,6 @@ Scenario('should check drawing PDF download when "Export PDF" button click', asy
     // validate the Link
     const link = await I.grabAttributeFrom(linkClickHere, 'href');
     assert.strictEqual(true, link.includes('download/Wheel'));
-    debug('link: ' + link);
     assert.match(link, /\/drawing\.pdf$/);
     I.wait(2); // we seem to have a timing issue in test that end with physical file downloads
 });
