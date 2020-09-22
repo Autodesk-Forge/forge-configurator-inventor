@@ -31,6 +31,8 @@ namespace WebApplication.Processing
         protected override string OutputUrl(ProcessingArgs projectData) => projectData.SatUrl;
         protected override string OutputName => "export.sat";
 
+        protected internal override ForgeRegistration Registration { get; } = ForgeRegistration.All;
+
         /// <summary>
         /// Constructor.
         /// </summary>

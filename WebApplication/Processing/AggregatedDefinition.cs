@@ -39,7 +39,7 @@ namespace WebApplication.Processing
             _definitions = items;
         }
 
-        public override bool HasBundle => false;
+        protected internal override ForgeRegistration Registration { get; } = ForgeRegistration.Activity;
 
         public override List<string> ActivityCommandLine
         {

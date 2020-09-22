@@ -34,6 +34,8 @@ namespace WebApplication.Processing
         public override string Id => nameof(TransferData);
         public override string Description => "Transfer input to output";
 
+        protected internal override ForgeRegistration Registration { get; } = ForgeRegistration.All;
+
         public override List<string> ActivityCommandLine =>
             new List<string>
             {

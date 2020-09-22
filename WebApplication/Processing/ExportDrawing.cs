@@ -30,6 +30,8 @@ namespace WebApplication.Processing
         public override string Id => nameof(ExportDrawing);
         public override string Description => "Find the drawing of Inventor document and generate viewables for ForgeViewer";
 
+        protected internal override ForgeRegistration Registration { get; } = ForgeRegistration.All;
+
         protected override string OutputUrl(ProcessingArgs projectData) => projectData.DrawingPdfUrl;
         protected override string OutputName => "Drawing.pdf";
         protected override bool IsOutputZip => false;

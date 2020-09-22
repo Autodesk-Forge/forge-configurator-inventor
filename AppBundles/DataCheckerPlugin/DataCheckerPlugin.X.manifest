@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+  <assemblyIdentity name="DataCheckerPlugin" version="1.0.0.0"></assemblyIdentity>
+  <clrClass clsid="{ae8a3c51-4366-42b3-8ba3-f78ea849584a}" progid="DataCheckerPlugin.PluginServer" threadingModel="Both" name="DataCheckerPlugin.PluginServer"></clrClass>
+  <file name="DataCheckerPlugin.dll" hashalg="SHA1"></file>
+</assembly>

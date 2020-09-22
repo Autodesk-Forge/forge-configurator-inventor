@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Autodesk.Forge.Client;
 using Autodesk.Forge.DesignAutomation.Model;
@@ -75,6 +76,12 @@ namespace WebApplication.Processing
 
             _logger.LogInformation("Cache the project locally");
             var bucket = await _userResolver.GetBucketAsync();
+
+            // check for adoption errors
+            // TECHDEBT: this should be done before `MoveProjectAsync`, but it will left "garbage" at OSS.  Solve it someday.
+            var messages = await bucket.DeserializeAsync<Message[]>(projectStorage.Project.OssAttributes.AdoptMessages);
+            var errors = messages.Where(m => m.Severity == Severity.Error).Select(m => m.Text).ToArray();
+            if (errors.Length > 0) throw new AdoptionException(errors);
 
             await projectStorage.EnsureLocalAsync(bucket);
 

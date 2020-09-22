@@ -35,6 +35,8 @@ namespace WebApplication.Processing
         protected override string OutputUrl(ProcessingArgs projectData) => projectData.RfaUrl;
         protected override string OutputName => "Output.rfa";
 
+        protected internal override ForgeRegistration Registration { get; } = ForgeRegistration.All;
+
         public override List<string> ActivityCommandLine =>
             new List<string>
             {

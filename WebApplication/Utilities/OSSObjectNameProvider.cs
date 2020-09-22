@@ -39,7 +39,15 @@ namespace WebApplication.Utilities
         /// </summary>
         public const string Thumbnail = "thumbnail.png";
 
+        /// <summary>
+        /// Names of drawings in the project.
+        /// </summary>
         public const string DrawingsList = "drawingsList.json";
+
+        /// <summary>
+        /// User-oriented messages after adoption.
+        /// </summary>
+        public const string AdoptMessages = "adopt-messages.json";
 
         /// <summary>
         /// ZIP archive with SVF model.
@@ -230,6 +238,7 @@ namespace WebApplication.Utilities
         public string Metadata => ToFullName(LocalName.Metadata);
 
         public string DrawingsList => ToFullName(LocalName.DrawingsList);
+        public string AdoptMessages => ToFullName(LocalName.AdoptMessages);
 
         /// <summary>
         /// Constructor.

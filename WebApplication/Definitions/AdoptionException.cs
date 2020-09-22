@@ -16,25 +16,21 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using WebApplication.Definitions;
+using System;
+using System.Collections.Generic;
 
-namespace WebApplication.Processing
+namespace WebApplication.Definitions
 {
     /// <summary>
-    /// Drawings List.
+    /// Exception with details on adoption failure.
     /// </summary>
-    public class DrawingsList : ForgeAppBase
+    public class AdoptionException : Exception
     {
-        public override string Id => nameof(DrawingsList);
-        public override string Description => "Gets list of drawings in the package";
+        public IEnumerable<string> ErrorMessages { get; }
 
-        protected override string OutputUrl(ProcessingArgs projectData) => projectData.DrawingsListUrl;
-        protected override string OutputName => "drawingsList.json";
-        protected override bool IsOutputZip => false;
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        public DrawingsList(Publisher publisher) : base(publisher) {}
+        public AdoptionException(IEnumerable<string> errorMessages)
+        {
+            ErrorMessages = errorMessages;
+        }
     }
 }
