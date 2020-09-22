@@ -34,7 +34,7 @@ namespace DataCheckerPlugin
 
         public void Activate(ApplicationAddInSite addInSiteObject, bool firstTime)
         {
-            Trace.TraceInformation(": DrawingsListPlugin (" + Assembly.GetExecutingAssembly().GetName().Version.ToString(4) + "): initializing... ");
+            Trace.TraceInformation(": DataCheckerPlugin (" + Assembly.GetExecutingAssembly().GetName().Version.ToString(4) + "): initializing... ");
 
             // Initialize AddIn members.
             _inventorServer = addInSiteObject.InventorServer;
@@ -43,7 +43,7 @@ namespace DataCheckerPlugin
 
         public void Deactivate()
         {
-            Trace.TraceInformation(": DrawingsListPlugin: deactivating... ");
+            Trace.TraceInformation(": DataCheckerPlugin: deactivating... ");
 
             // Release objects.
             Marshal.ReleaseComObject(_inventorServer);

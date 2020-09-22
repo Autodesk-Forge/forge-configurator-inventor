@@ -195,7 +195,7 @@ namespace WebApplication.Processing
             var localAttributes = project.LocalAttributes;
             // read cached drawingsList
             var drawings = Json.DeserializeFile<List<string>>(localAttributes.DrawingsList);
-            int index = drawings.ToList().IndexOf(drawingKey);
+            int index = drawings.IndexOf(drawingKey);
             var drawingIdx = index >= 0 ? index : 0;
 
             // check if Drawing viewables file is already generated
