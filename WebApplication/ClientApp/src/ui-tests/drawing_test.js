@@ -203,6 +203,38 @@ Scenario('should check if Wheel has more drawings listed in drawing panel and wi
 
 });
 
+Scenario('should check drawing PDF download when "Export PDF" button click', async (I) => {
+
+    I.selectProject('Wheel');
+
+    // click on drawing tab
+    I.waitForForgeViewerToPreventItFromCrashing(30);
+    I.goToDrawingTab();
+
+    // check the dialog will appear with Ok button
+    const drawingProgress = '//p[text()="Generating Drawing"]';
+    I.waitForVisible(drawingProgress, 10);
+    I.waitForVisible(locators.xpButtonOk, locators.FDAActionTimeout);
+    I.click(locators.xpButtonOk);
+
+    // click on 'Export PDF' button
+    I.waitForVisible(locators.xpButtonExportPDF, 10);
+    I.click(locators.xpButtonExportPDF);
+
+    // wait for 'click here' link in progress dialog
+    const linkClickHere = '//article[@role="document"] //a[contains(.,"click here")]';
+    const preparingDrawingsDialog = '//article[@role="document"] //p[text()="Preparing Drawing PDF"]';
+    I.waitForElement(preparingDrawingsDialog, 10);
+    I.waitForElement(linkClickHere, locators.FDAActionTimeout);
+
+    // validate the Link
+    const link = await I.grabAttributeFrom(linkClickHere, 'href');
+    assert.strictEqual(true, link.includes('download/Wheel'));
+    debug('link: ' + link);
+    assert.match(link, /\/drawing\.pdf$/);
+    I.wait(2); // we seem to have a timing issue in test that end with physical file downloads
+});
+
 Scenario('Delete the project', (I) => {
 
     I.signIn();

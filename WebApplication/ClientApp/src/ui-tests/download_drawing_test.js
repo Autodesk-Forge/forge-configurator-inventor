@@ -26,7 +26,6 @@ Before((I) => {
 
 const downloadsData = new DataTable(['linkText', 'dlgTitle', 'urlTail']);
 downloadsData.add(['Drawing', 'Preparing Drawings', /\/drawing$/]);             // ZIP with drawings
-//downloadsData.add(['Drawing PDF', 'Preparing Drawing PDF', /\/drawing\.pdf$/]); // Drawing PDF
 
 Feature('Download drawing');
 
