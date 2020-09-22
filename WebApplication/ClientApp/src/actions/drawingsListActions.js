@@ -16,36 +16,20 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-namespace WebApplication.Definitions
-{
-    /// <summary>
-    /// Common pieces for project-related DTOs
-    /// </summary>
-    public class ProjectDTOBase
-    {
-        /// <summary>
-        /// URL to SVF directory.
-        /// </summary>
-        public string Svf { get; set; }
+import repo from '../Repository';
+import {addError, addLog} from './notificationActions';
+import {updateDrawingsList} from './uiFlagsActions';
 
-        /// <summary>
-        /// URL to BOM JSON.
-        /// </summary>
-        public string BomJsonUrl { get; set; }
+// eslint-disable-next-line no-unused-vars
+export const fetchDrawingsList = (project) => async (dispatch) => {
+    if(!project.id) return;
 
-        /// <summary>
-        /// URL to download BOM CSV.
-        /// </summary>
-        public string BomDownloadUrl { get; set; }
-
-        /// <summary>
-        /// URL to download current model
-        /// </summary>
-        public string ModelDownloadUrl { get; set; }
-
-        /// <summary>
-        /// Parameters hash
-        /// </summary>
-        public string Hash { get; set; }
+    dispatch(addLog('Load Drawings list invoked'));
+    try {
+        const data = await repo.loadDrawingsList(project.drawingsListUrl);
+        dispatch(addLog('Drawings list received'));
+        dispatch(updateDrawingsList(data));
+    } catch (error) {
+        dispatch(addError('Failed to get Drawings list for ' + project.id + '. (' + error + ')'));
     }
-}
+};

@@ -56,6 +56,11 @@ namespace WebApplication.Utilities
         /// </summary>
         public string Metadata => ToFullName(LocalName.Metadata);
 
+        /// <summary>
+        /// Filename of JSON file with drawing names in the project.
+        /// </summary>
+        public string DrawingsList => ToFullName(LocalName.DrawingsList);
+
         public LocalAttributes(string rootDir, string projectDir) : base(Path.Combine(rootDir, projectDir))
         {
         }
@@ -80,6 +85,11 @@ namespace WebApplication.Utilities
         /// Filename for JSON with BOM.
         /// </summary>
         public string BOM => ToFullName(LocalName.BOM);
+
+        /// <summary>
+        /// Filename for JSON with DrawingsList.
+        /// </summary>
+        public string DrawingsList => ToFullName(LocalName.DrawingsList);
 
         public LocalNameProvider(string projectDir, string hash) : base(Path.Combine(projectDir, hash))
         {

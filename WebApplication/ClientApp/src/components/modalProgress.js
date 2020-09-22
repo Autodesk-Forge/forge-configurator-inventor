@@ -47,6 +47,9 @@ export class ModalProgress extends Component {
             backgroundImage: 'url(' + this.props.icon + ')',
           };
 
+        const stats = this.props.statsKey == null ? this.props.stats : (this.props.stats ? this.props.stats[this.props.statsKey] : null);
+        const done = stats != null;
+
         return (
             <Modal
             open={this.props.open}
@@ -60,14 +63,14 @@ export class ModalProgress extends Component {
                         <Typography>
                         {this.props.label ? this.props.label : "Missing label."}
                         </Typography>
-                        {(!this.props.done) &&
+                        {(!done) &&
                             <ProgressBar className="modalProgress"/>
                         }
                     </div>
                 </div>
-                {(this.props.done) &&
+                {(done) &&
                 <React.Fragment>
-                    <CreditCost/>
+                    <CreditCost statsKey={this.props.statsKey}/>
                     <div id="modalDone">
                         <Button className="button" style={
                             { width: '116px', height: '36px', borderRadius: '2px', marginLeft: '12px'}}
@@ -87,6 +90,6 @@ export class ModalProgress extends Component {
 /* istanbul ignore next */
 export default connect(function (store){
     return {
-      done: getStats(store) != null
+      stats: getStats(store)
     };
 })(ModalProgress);

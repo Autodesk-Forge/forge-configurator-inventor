@@ -182,14 +182,14 @@ namespace WebApplication.Controllers
             await RunJobAsync(job);
         }
 
-        public async Task CreateDrawingPdfJob(string projectId, string hash, string token)
+        public async Task CreateDrawingPdfJob(string projectId, string hash, string drawingKey, string token)
         {
             _logger.LogInformation($"invoked CreateDrawingPdfJob, connectionId : {Context.ConnectionId}");
 
             _profileProvider.Token = token;
 
             // create job and run it
-            var job = new ExportDrawingPdfJobItem(_logger, projectId, hash, _projectWork, _linkGenerator);
+            var job = new ExportDrawingPdfJobItem(_logger, projectId, hash, drawingKey, _projectWork, _linkGenerator);
             await RunJobAsync(job);
         }
 

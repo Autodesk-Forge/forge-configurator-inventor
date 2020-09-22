@@ -50,6 +50,15 @@ namespace DrawingsListPlugin
             using (new HeartBeat())
             {
                 var rootDir = System.IO.Directory.GetCurrentDirectory();
+
+                if (doc == null)
+                {
+                    doc = inventorApplication.Documents.Open(map.Item["_1"]);
+                }
+
+                var fullFileName = doc.FullFileName;
+                var fileName = System.IO.Path.GetFileNameWithoutExtension(fullFileName);
+
                 var drawingExtensions = new List<string> { ".idw", ".dwg" };
                 var oldVersion = @"oldversions\";
                 var drawings = System.IO.Directory.GetFiles(rootDir, "*.*", System.IO.SearchOption.AllDirectories)
@@ -57,14 +66,31 @@ namespace DrawingsListPlugin
                                     !file.ToLower().Contains(oldVersion));
 
                 var index = System.IO.Path.Combine(rootDir, "unzippedIam").Length + 1;
-                drawings = drawings.Select(path => path.Substring(index));
+                // order by filename
+                drawings = drawings.Select(path => path.Substring(index)).OrderBy(d => System.IO.Path.GetFileName(d));
+
+                var defaultDrawings = drawings.Where(d => System.IO.Path.GetFileNameWithoutExtension(d) == fileName).ToArray();
+                var defaultDrawing = defaultDrawings.Length > 0 ? defaultDrawings[0] : null;
+                LogTrace("DEFAULT drawing is: " + defaultDrawing);
+
+                var outputDrawingsList = new List<string>();
+
+                // the first one is default when found
+                if (defaultDrawing != null)
+                    outputDrawingsList.Add(defaultDrawing);
+
+                // add the rest
+                outputDrawingsList.AddRange(drawings.Where(d => defaultDrawing==null || d != defaultDrawing));
 
                 using (StreamWriter file = System.IO.File.CreateText(@"drawingsList.json"))
                 {
                     JsonSerializer serializer = new JsonSerializer();
                     //serialize object directly into file stream
-                    serializer.Serialize(file, drawings);
+                    serializer.Serialize(file, outputDrawingsList);
                 };
+
+                foreach(var (d, i) in outputDrawingsList.Select((v, i) => (v, i)))
+                    LogTrace("Drawing {0}: {1}", i, d);
             }
         }
 
