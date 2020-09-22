@@ -75,11 +75,11 @@ export const uploadPackage = () => async (dispatch, getState) => {
                     dispatch(setUploadProgressDone());
                 },
                 // onError
-                (jobId, reportUrl) => {
-                    dispatch(addLog('JobManager: Received onError with jobId: ' + jobId + ' and reportUrl: ' + reportUrl));
+                (jobId, errorData) => {
+                    dispatch(addLog('JobManager: Received onError with jobId: ' + jobId));
                     dispatch(setUploadProgressHidden());
                     // show error modal dialog
-                    dispatch(setUploadFailed(reportUrl));
+                    dispatch(setUploadFailed(errorData));
                 }
             );
         } catch (error) {

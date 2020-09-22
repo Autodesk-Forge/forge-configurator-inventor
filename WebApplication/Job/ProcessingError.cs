@@ -16,25 +16,41 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using System.Threading.Tasks;
+using System;
+using System.Collections.Generic;
 
 namespace WebApplication.Job
 {
-    /// <summary>
-    /// Interface to send results back.
-    /// </summary>
-    public interface IResultSender
+    public enum ErrorInfoType
     {
-        Task SendSuccessAsync();
-        Task SendSuccessAsync(object arg0);
-        Task SendSuccessAsync(object arg0, object arg1);
-        Task SendSuccessAsync(object arg0, object arg1, object arg2);
+        ReportUrl = 0,
+        Messages = 1
+    }
 
-        /// <summary>
-        /// Send information about failed processing.
-        /// </summary>
-        /// <param name="jobId">ID of the job.</param> // TODO: is it useful?
-        /// <param name="error">Error details</param>
-        Task SendErrorAsync(string jobId, ProcessingError error);
+    public abstract class ProcessingError
+    {
+        public abstract ErrorInfoType ErrorType { get; }
+    }
+
+    public class ReportUrlError : ProcessingError
+    {
+        public override ErrorInfoType ErrorType { get; } = ErrorInfoType.ReportUrl;
+        public string ReportUrl { get; }
+
+        public ReportUrlError(string reportUrl)
+        {
+            ReportUrl = reportUrl;
+        }
+    }
+
+    public class MessagesError : ProcessingError
+    {
+        public override ErrorInfoType ErrorType { get; } = ErrorInfoType.Messages;
+        public IEnumerable<string> Messages { get; }
+
+        public MessagesError(params string[] messages)
+        {
+            Messages = messages ?? Array.Empty<string>();
+        }
     }
 }

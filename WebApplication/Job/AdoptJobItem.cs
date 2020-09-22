@@ -26,29 +26,6 @@ using System.IO;
 
 namespace WebApplication.Job
 {
-    public enum ErrorInfoType
-    {
-        ReportUrl = 0,
-        Messages = 1
-    }
-
-    public abstract class ProcessingError
-    {
-        public abstract ErrorInfoType Type { get; }
-    }
-
-    public class ReportUrlError : ProcessingError
-    {
-        public override ErrorInfoType Type { get; } = ErrorInfoType.ReportUrl;
-        public string ReportUrl { get; set; }
-    }
-
-    public class MessagesError : ProcessingError
-    {
-        public override ErrorInfoType Type { get; } = ErrorInfoType.Messages;
-        public string[] Messages { get; set; }
-    }
-
     internal class AdoptJobItem : JobItemBase
     {
         private readonly ProjectInfo _projectInfo;
@@ -94,12 +71,9 @@ namespace WebApplication.Job
             }
             catch (AdoptionException ae)
             {
-                await resultSender.SendErrorAsync(Id, $"Adopt failed: {string.Join("; ", ae.ErrorMessages)}");
-                return;
-            }
-            catch (FdaProcessingException fpe)
-            {
-                await resultSender.SendErrorAsync(Id, fpe.ReportUrl);
+                var message = $"Adopt failed: {string.Join("; ", ae.ErrorMessages)}";
+
+                await resultSender.SendErrorAsync(Id, new MessagesError(message));
                 return;
             }
             finally
