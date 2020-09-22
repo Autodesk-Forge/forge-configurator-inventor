@@ -62,10 +62,6 @@ namespace DataCheckerPlugin
         {
             using (new HeartBeat())
             {
-                // test for local debugging
-                if (doc == null)
-                    doc = inventorApplication.Documents.Open(map.Item["_1"]);
-
                 ExtractDrawingList(doc);
                 DetectUnsupportedAddins(doc);
 
@@ -181,11 +177,11 @@ namespace DataCheckerPlugin
                 .OrderBy(path => System.IO.Path.GetFileName(path), new DefaultDocComparer(fileName))
                 .ToArray();
 
-            LogTrace("DEFAULT drawing is: " + (drawings.Count()>0 ? drawings[0] : null));
+            LogTrace("DEFAULT drawing is: " + (drawings.Length>0 ? drawings[0] : null));
 
             SaveAsJson(drawings, "drawings-list.json"); // the file name must be in sync with activity definition
 
-            AddMessage($"Found {drawings.Count()} drawings", Severity.Info);
+            AddMessage($"Found {drawings.Length} drawings", Severity.Info);
 
             foreach (var (d, i) in drawings.Select((v, i) => (v, i)))
                 LogTrace("Drawing {0}: {1}", i, d);
