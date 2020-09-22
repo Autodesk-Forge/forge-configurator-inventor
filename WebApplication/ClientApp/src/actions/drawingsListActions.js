@@ -20,7 +20,6 @@ import repo from '../Repository';
 import {addError, addLog} from './notificationActions';
 import {updateDrawingsList} from './uiFlagsActions';
 
-// eslint-disable-next-line no-unused-vars
 export const fetchDrawingsList = (project) => async (dispatch) => {
     if(!project.id) return;
 

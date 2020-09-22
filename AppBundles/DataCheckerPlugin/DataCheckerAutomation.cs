@@ -177,7 +177,7 @@ namespace DataCheckerPlugin
                 .OrderBy(path => System.IO.Path.GetFileName(path), new DefaultDocComparer(fileName))
                 .ToArray();
 
-            LogTrace("DEFAULT drawing is: " + (drawings.Length>0 ? drawings[0] : null));
+            LogTrace($"DEFAULT drawing is {drawings?[0]}");
 
             SaveAsJson(drawings, "drawings-list.json"); // the file name must be in sync with activity definition
 

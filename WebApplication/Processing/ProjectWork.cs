@@ -192,8 +192,9 @@ namespace WebApplication.Processing
             // get drawing index from drawing specified
             var bucket = await _userResolver.GetBucketAsync();
 
-            // ????? cache drawingsList instead of reading it every time ?????
-            var drawings = await bucket.DeserializeAsync<List<string>>(ossAttributes.DrawingsList);
+            var localAttributes = project.LocalAttributes;
+            // read cached drawingsList
+            var drawings = Json.DeserializeFile<List<string>>(localAttributes.DrawingsList);
             int index = drawings.ToList().IndexOf(drawingKey);
             var drawingIdx = index >= 0 ? index : 0;
 
