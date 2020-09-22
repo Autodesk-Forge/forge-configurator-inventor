@@ -48,5 +48,6 @@ module.exports = {
      downloadsTab : locate('li').find('p').withText('Downloads'),
      xpFirstInput : '//div[2]/div[1] //input',
      xpFirstInputOnModelTab : '//*[@id="model"]/div/div[1]/div[2]/div[1] //input',
-     FDAActionTimeout: 600
+     FDAActionTimeout: 600,
+     xpButtonExportPDF : locate('button').find('span').withText('Export PDF')
 };
