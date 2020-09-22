@@ -62,7 +62,11 @@ namespace DataCheckerPlugin
         {
             using (new HeartBeat())
             {
-                ExtractDrawingList();
+                // test for local debugging
+                if (doc == null)
+                    doc = inventorApplication.Documents.Open(map.Item["_1"]);
+
+                ExtractDrawingList(doc);
                 DetectUnsupportedAddins(doc);
 
                 SaveMessages();
@@ -122,10 +126,40 @@ namespace DataCheckerPlugin
             }
         }
 
+        class DefaultDocComparer : IComparer<string>
+        {
+            private readonly string _defaultDoc;
+            private string _found = null;
+            public DefaultDocComparer(string defaultDoc) { _defaultDoc = defaultDoc; }
+            public int Compare(string x, string y)
+            {
+                var filenameX = System.IO.Path.GetFileNameWithoutExtension(x).ToLower();
+                var filenameY = System.IO.Path.GetFileNameWithoutExtension(y).ToLower();
+
+                if (filenameX.Equals(filenameY))
+                    return 0;
+
+                // special handling for default filename ( remember the first one )
+                if (filenameX == _defaultDoc && (_found == null || _found == x))
+                {
+                    _found = x;
+                    return -1;
+                }
+                if (filenameY == _defaultDoc && (_found == null || _found == y))
+                {
+                    _found = y;
+                    return 1;
+                }
+
+                // default compare
+                return x.CompareTo(y);
+            }
+        }
+
         /// <summary>
         /// Collect relative paths for drawings.
         /// </summary>
-        private void ExtractDrawingList()
+        private void ExtractDrawingList(Document doc)
         {
             LogTrace("Extracting drawings list");
 
@@ -135,7 +169,7 @@ namespace DataCheckerPlugin
 
             var rootDir = Directory.GetCurrentDirectory();
             var index = Path.Combine(rootDir, "unzippedIam").Length + 1;
-
+            var fileName = System.IO.Path.GetFileNameWithoutExtension(doc.FullFileName).ToLower();
             var drawings = Directory.GetFiles(rootDir, "*.*", SearchOption.AllDirectories)
                 .Where(file =>
                 {
@@ -144,11 +178,17 @@ namespace DataCheckerPlugin
                            !lowName.Contains(oldVersionMask);
                 })
                 .Select(path => path.Substring(index))
+                .OrderBy(path => System.IO.Path.GetFileName(path), new DefaultDocComparer(fileName))
                 .ToArray();
+
+            LogTrace("DEFAULT drawing is: " + (drawings.Count()>0 ? drawings[0] : null));
 
             SaveAsJson(drawings, "drawings-list.json"); // the file name must be in sync with activity definition
 
-            AddMessage($"Found {drawings.Length} drawings", Severity.Info);
+            AddMessage($"Found {drawings.Count()} drawings", Severity.Info);
+
+            foreach (var (d, i) in drawings.Select((v, i) => (v, i)))
+                LogTrace("Drawing {0}: {1}", i, d);
         }
 
         private void SaveMessages()
