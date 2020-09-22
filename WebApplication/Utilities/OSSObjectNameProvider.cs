@@ -42,7 +42,7 @@ namespace WebApplication.Utilities
         /// <summary>
         /// Names of drawings in the project.
         /// </summary>
-        public const string DrawingsList = "drawings-list.json";
+        public const string DrawingsList = "drawingsList.json";
 
         /// <summary>
         /// User-oriented messages after adoption.
