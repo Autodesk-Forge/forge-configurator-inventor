@@ -83,15 +83,18 @@ namespace WebApplication.State
         public async Task EnsureAttributesAsync(OssBucket ossBucket, bool ensureDir = true)
         {
             // ensure the directory exists
+            var localAttributes = Project.LocalAttributes;
             if (ensureDir)
             {
-                Directory.CreateDirectory(Project.LocalAttributes.BaseDir);
+                Directory.CreateDirectory(localAttributes.BaseDir);
             }
 
             // download metadata and thumbnail
+            var ossAttributes = Project.OssAttributes;
             await Task.WhenAll(
-                ossBucket.EnsureFileAsync(Project.OssAttributes.Metadata, Project.LocalAttributes.Metadata),
-                ossBucket.EnsureFileAsync(Project.OssAttributes.Thumbnail, Project.LocalAttributes.Thumbnail)
+                ossBucket.EnsureFileAsync(ossAttributes.Metadata, localAttributes.Metadata),
+                ossBucket.EnsureFileAsync(ossAttributes.Thumbnail, localAttributes.Thumbnail),
+                ossBucket.EnsureFileAsync(ossAttributes.DrawingsList, localAttributes.DrawingsList)
             );
         }
 

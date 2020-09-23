@@ -32,6 +32,7 @@ namespace WebApplication.Definitions
         public string ParametersJsonUrl { get; set; }
 
         public string DrawingsListUrl { get; set; }
+        public string AdoptMessagesUrl { get; set; }
 
         /// <summary>
         /// If job data contains assembly.
@@ -61,5 +62,13 @@ namespace WebApplication.Definitions
     public class UpdateData : ProcessingArgs
     {
         public string InputParamsUrl { get; set; }
+    }
+
+    /// <summary>
+    /// All data required for drawing pdf export.
+    /// </summary>
+    public class DrawingPdfData : ProcessingArgs
+    {
+        public string DrawingToGenerate { get; set; }
     }
 }

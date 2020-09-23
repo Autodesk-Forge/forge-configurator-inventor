@@ -22,7 +22,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using Inventor;
 
-namespace DrawingsListPlugin
+namespace DataCheckerPlugin
 {
     [Guid("ae8a3c51-4366-42b3-8ba3-f78ea849584a")]
     public class PluginServer : ApplicationAddInServer
@@ -34,16 +34,16 @@ namespace DrawingsListPlugin
 
         public void Activate(ApplicationAddInSite addInSiteObject, bool firstTime)
         {
-            Trace.TraceInformation(": DrawingsListPlugin (" + Assembly.GetExecutingAssembly().GetName().Version.ToString(4) + "): initializing... ");
+            Trace.TraceInformation(": DataCheckerPlugin (" + Assembly.GetExecutingAssembly().GetName().Version.ToString(4) + "): initializing... ");
 
             // Initialize AddIn members.
             _inventorServer = addInSiteObject.InventorServer;
-            Automation = new DrawingsListAutomation(_inventorServer);
+            Automation = new DataCheckerAutomation(_inventorServer);
         }
 
         public void Deactivate()
         {
-            Trace.TraceInformation(": DrawingsListPlugin: deactivating... ");
+            Trace.TraceInformation(": DataCheckerPlugin: deactivating... ");
 
             // Release objects.
             Marshal.ReleaseComObject(_inventorServer);

@@ -16,6 +16,7 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
+using System;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using WebApplication.Processing;
@@ -23,6 +24,8 @@ using WebApplication.State;
 using WebApplication.Definitions;
 using WebApplication.Utilities;
 using System.IO;
+using System.Linq;
+using Shared;
 
 namespace WebApplication.Job
 {
@@ -67,8 +70,12 @@ namespace WebApplication.Job
                 string signedUploadedUrl = await bucket.CreateSignedUrlAsync(ossSourceModel);
 
                 stats = await ProjectWork.AdoptAsync(_projectInfo, signedUploadedUrl);
-
                 adopted = true;
+            }
+            catch (AdoptionException ae)
+            {
+                await resultSender.SendErrorAsync(Id, $"Adopt failed: {string.Join("; ", ae.ErrorMessages)}");
+                return;
             }
             catch (FdaProcessingException fpe)
             {

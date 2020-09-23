@@ -16,25 +16,19 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using WebApplication.Definitions;
+import repo from '../Repository';
+import {addError, addLog} from './notificationActions';
+import {updateDrawingsList} from './uiFlagsActions';
 
-namespace WebApplication.Processing
-{
-    /// <summary>
-    /// Drawings List.
-    /// </summary>
-    public class DrawingsList : ForgeAppBase
-    {
-        public override string Id => nameof(DrawingsList);
-        public override string Description => "Gets list of drawings in the package";
+export const fetchDrawingsList = (project) => async (dispatch) => {
+    if(!project.id) return;
 
-        protected override string OutputUrl(ProcessingArgs projectData) => projectData.DrawingsListUrl;
-        protected override string OutputName => "drawingsList.json";
-        protected override bool IsOutputZip => false;
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        public DrawingsList(Publisher publisher) : base(publisher) {}
+    dispatch(addLog('Load Drawings list invoked'));
+    try {
+        const data = await repo.loadDrawingsList(project.drawingsListUrl);
+        dispatch(addLog('Drawings list received'));
+        dispatch(updateDrawingsList(data));
+    } catch (error) {
+        dispatch(addError('Failed to get Drawings list for ' + project.id + '. (' + error + ')'));
     }
-}
+};

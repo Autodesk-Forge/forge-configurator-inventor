@@ -27,6 +27,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{4AB642
 	ProjectSection(SolutionItems) = preProject
 		Shared\ExtractedBOM.cs = Shared\ExtractedBOM.cs
 		Shared\InventorParameters.cs = Shared\InventorParameters.cs
+		Shared\Message.cs = Shared\Message.cs
 		Shared\SharedAssemblyInfo.cs = Shared\SharedAssemblyInfo.cs
 	EndProjectSection
 EndProject
@@ -36,7 +37,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateDrawingsPlugin", "App
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExportDrawingAsPdfPlugin", "Appbundles\ExportDrawingAsPdfPlugin\ExportDrawingAsPdfPlugin.csproj", "{96BECCEC-D943-46C7-ACD7-E8A5C6F0650D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrawingsListPlugin", "AppBundles\DrawingsListPlugin\DrawingsListPlugin.csproj", "{EB3C5EA6-26EC-44D2-90B3-08929CE9D6DE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCheckerPlugin", "AppBundles\DataCheckerPlugin\DataCheckerPlugin.csproj", "{EB3C5EA6-26EC-44D2-90B3-08929CE9D6DE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

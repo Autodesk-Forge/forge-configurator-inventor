@@ -16,21 +16,33 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using System;
+// Data types from this file are shared between .NET 4.7+ and netcore projects,
+// so we need to have different attributes for Newtonsoft and netcore Json libraries.
 
-namespace WebApplication.Definitions
+#if NETCOREAPP
+using JsonProperty = System.Text.Json.Serialization.JsonPropertyNameAttribute;
+#else
+using JsonProperty = Newtonsoft.Json.JsonPropertyAttribute;
+#endif
+
+namespace Shared
 {
     /// <summary>
-    /// Exception for FDA processing failures.
-    /// Contains URL to processing report.
+    /// Message severity.
     /// </summary>
-    public class FdaProcessingException : Exception
+    public enum Severity
     {
-        public string ReportUrl { get; }
+        Info = 0,
+        Warning = 1,
+        Error = 2
+    }
 
-        public FdaProcessingException(string message, string reportUrl) : base(message)
-        {
-            ReportUrl = reportUrl;
-        }
+    public class Message
+    {
+        [JsonProperty("text")]
+        public string Text { get; set; }
+
+        [JsonProperty("severity")]
+        public Severity Severity { get; set; }
     }
 }

@@ -80,6 +80,7 @@ export class ForgePdfView extends Component {
     componentDidUpdate(prevProps) {
         if (this.viewer && Autodesk && (this.props.drawingPdf !== prevProps.drawingPdf)) {
             this.viewer.loadModel( this.props.drawingPdf, { page: 1 }); // load page 1 by default
+            this.viewer.unloadModel(prevProps.drawingPdf);
         }
     }
 

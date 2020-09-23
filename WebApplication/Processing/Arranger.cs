@@ -42,15 +42,16 @@ namespace WebApplication.Processing
         public readonly string Parameters = Unique(".params.json");
         public readonly string Thumbnail = Unique(".thumb.png");
         public readonly string SVF = Unique(".svf.zip");
-        public readonly string InputParams = Unique(".inputparams.json");
-        public readonly string OutputModelIAM = Unique(".outputiam.zip");
+        public readonly string InputParams = Unique(".input-params.json");
+        public readonly string OutputModelIAM = Unique(".output-iam.zip");
         public readonly string OutputModelIPT = Unique(".output.ipt");
         public readonly string OutputSAT = Unique(".sat");
         public readonly string OutputRFA = Unique(".rfa");
         public readonly string BomJson = Unique(".bom.json");
         public readonly string OutputDrawing = Unique(".drawing.zip");
         public readonly string OutputDrawingPdf = Unique(".drawing.pdf");
-        public readonly string DrawingsList = Unique(".drawingsList.json");
+        public readonly string DrawingsList = Unique(".drawings-list.json");
+        public readonly string AdoptMessages = Unique(".adopt-messages.json");
 
         /// <summary>
         /// Constructor.
@@ -76,7 +77,8 @@ namespace WebApplication.Processing
                                             bucket.CreateSignedUrlAsync(OutputModelIAM, ObjectAccess.Write),
                                             bucket.CreateSignedUrlAsync(OutputModelIPT, ObjectAccess.Write),
                                             bucket.CreateSignedUrlAsync(BomJson, ObjectAccess.Write),
-                                            bucket.CreateSignedUrlAsync(DrawingsList, ObjectAccess.Write));
+                                            bucket.CreateSignedUrlAsync(DrawingsList, ObjectAccess.Write),
+                                            bucket.CreateSignedUrlAsync(AdoptMessages, ObjectAccess.Write));
 
             return new AdoptionData
                     {
@@ -88,6 +90,7 @@ namespace WebApplication.Processing
                         OutputIPTModelUrl   = urls[4],
                         BomUrl              = urls[5],
                         DrawingsListUrl     = urls[6],
+                        AdoptMessagesUrl    = urls[7],
                         TLA                 = tlaFilename
                     };
         }
@@ -145,6 +148,7 @@ namespace WebApplication.Processing
             // move data to expected places
             await Task.WhenAll(bucket.RenameObjectAsync(Thumbnail, project.OssAttributes.Thumbnail),
                                 bucket.RenameObjectAsync(DrawingsList, project.OssAttributes.DrawingsList),
+                                bucket.RenameObjectAsync(AdoptMessages, project.OssAttributes.AdoptMessages),
                                 bucket.RenameObjectAsync(SVF, ossNames.ModelView),
                                 bucket.RenameObjectAsync(BomJson, ossNames.Bom),
                                 bucket.RenameObjectAsync(Parameters, ossNames.Parameters),
@@ -169,12 +173,12 @@ namespace WebApplication.Processing
         /// <summary>
         /// Move generated Drawing PDF OSS file to the correct place.
         /// </summary>
-        internal async Task MoveDrawingPdfAsync(Project project, string hash)
+        internal async Task MoveDrawingPdfAsync(Project project, int drawingIdx, string hash)
         {
             var bucket = await _userResolver.GetBucketAsync();
 
             var ossNames = project.OssNameProvider(hash);
-            await bucket.RenameObjectAsync(OutputDrawingPdf, ossNames.DrawingPdf, true);
+            await bucket.RenameObjectAsync(OutputDrawingPdf, ossNames.DrawingPdf(drawingIdx), true);
         }
 
         internal async Task MoveDrawingAsync(Project project, string hash)
@@ -226,14 +230,15 @@ namespace WebApplication.Processing
             };
         }
 
-        internal async Task<ProcessingArgs> ForDrawingPdfAsync(string inputDocUrl, string topLevelAssembly)
+        internal async Task<ProcessingArgs> ForDrawingPdfAsync(string inputDocUrl, string drawingKey, string topLevelAssembly)
         {
             var bucket = await _userResolver.GetBucketAsync();
             var drawingPdfUrl = await bucket.CreateSignedUrlAsync(OutputDrawingPdf, ObjectAccess.Write);
 
-            return new ProcessingArgs
+            return new DrawingPdfData
             {
                 InputDocUrl = inputDocUrl,
+                DrawingToGenerate = drawingKey,
                 DrawingPdfUrl = drawingPdfUrl,
                 TLA = topLevelAssembly
             };

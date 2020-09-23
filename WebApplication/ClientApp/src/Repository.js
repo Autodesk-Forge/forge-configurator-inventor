@@ -99,6 +99,13 @@ class Repository {
         const response = await axios.get(bomUrl);
         return response.data;
     }
+
+    /** Get list of drawings */
+    async loadDrawingsList(drawingsListUrl) {
+        const response = await axios.get(drawingsListUrl);
+
+        return response.data;
+    }
 }
 
 /** Singleton with repo */

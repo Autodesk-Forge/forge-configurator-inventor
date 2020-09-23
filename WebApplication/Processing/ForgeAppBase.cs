@@ -24,6 +24,18 @@ using WebApplication.Definitions;
 
 namespace WebApplication.Processing
 {
+    [Flags]
+    public enum ForgeRegistration
+    {
+        AppBundle = 0x1,
+        Activity  = 0x2,
+
+        /// <summary>
+        /// Register both app bundle and activity.
+        /// </summary>
+        All = AppBundle | Activity
+    }
+
     /// <summary>
     /// Abstract class for Forge App definition.
     /// Override the class and provide data which is specific for your forge app.
@@ -36,9 +48,20 @@ namespace WebApplication.Processing
         public abstract string Description { get; }
 
         /// <summary>
-        /// Set to <c>false</c> for aggregated activity, which uses external bundles.
+        /// What to register at Forge.
+        /// NOTE: by default it registers AppBundle only!
         /// </summary>
-        public virtual bool HasBundle => true;
+        protected internal virtual ForgeRegistration Registration { get; } = ForgeRegistration.AppBundle;
+
+        /// <summary>
+        /// If processing needs to register app bundle.
+        /// </summary>
+        public bool HasBundle => (Registration & ForgeRegistration.AppBundle) != 0;
+
+        /// <summary>
+        /// If processing needs to register app bundle.
+        /// </summary>
+        public bool HasActivity => (Registration & ForgeRegistration.Activity) != 0;
 
         public AppBundle Bundle
         {
@@ -114,6 +137,9 @@ namespace WebApplication.Processing
             return RunAsync(args);
         }
 
+        /// <summary>
+        /// Add input and output arguments for the work item.
+        /// </summary>
         public virtual Dictionary<string, IArgument> ToWorkItemArgs(ProcessingArgs data)
         {
             var args = new Dictionary<string, IArgument>();
@@ -121,17 +147,15 @@ namespace WebApplication.Processing
 
             if (HasOutput)
             {
-                AddOutputArgs(args, data);
+                args.Add(OutputParameterName, new XrefTreeArgument { Verb = Verb.Put, Url = OutputUrl(data), Optional = IsOutputOptional });
             }
 
             return args;
         }
 
-        protected virtual void AddOutputArgs(IDictionary<string, IArgument> args, ProcessingArgs data)
-        {
-            args.Add(OutputParameterName, new XrefTreeArgument { Verb = Verb.Put, Url = OutputUrl(data), Optional = IsOutputOptional });
-        }
-
+        /// <summary>
+        /// Add input arguments for work item.
+        /// </summary>
         protected virtual void AddInputArgs(IDictionary<string, IArgument> args, ProcessingArgs data)
         {
             if (data.IsAssembly)
