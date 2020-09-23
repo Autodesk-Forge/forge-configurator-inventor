@@ -19,7 +19,6 @@
 const Autodesk = window.Autodesk;
 
 function ForgePdfViewExtension(viewer, options) {
-    this.initialized = false;
     Autodesk.Viewing.Extension.call(this, viewer, options);
 }
 
@@ -47,14 +46,8 @@ ForgePdfViewExtension.prototype.onToolbarCreated = function () {
 };
 
 ForgePdfViewExtension.prototype.createUI = function() {
-    if (this.initialized === true)
-        return;
-
-    this.initialized = true;
     const viewer = this.viewer;
-    const urn = viewer.getState().seedURN;
     const numPages = viewer.model.loader.pdf.numPages;
-    let actualPage = 1;
 
     if (numPages === 1) // skip buttons when only one page is available
         return;
@@ -64,18 +57,33 @@ ForgePdfViewExtension.prototype.createUI = function() {
     // next button
     const nextbutton = new Autodesk.Viewing.UI.Button('drawing-button-next');
 
-    // initially disabled prev button on the first page
-    prevbutton.setState(Autodesk.Viewing.UI.Button.State.DISABLED);
+    let actualPage = 1;
+
+    const model = viewer.model;
+    if(model && model.getDocumentNode()) {
+        // read actual page
+        actualPage = model.getDocumentNode().data.page;
+    }
+
+    // disable prev button on the first page and next on the last one
+    const prevState = actualPage === 1 ? Autodesk.Viewing.UI.Button.State.DISABLED : Autodesk.Viewing.UI.Button.State.INACTIVE;
+    prevbutton.setState(prevState);
+    const nextState = actualPage === numPages ? Autodesk.Viewing.UI.Button.State.DISABLED : Autodesk.Viewing.UI.Button.State.INACTIVE;
+    nextbutton.setState(nextState);
+
+    const switchToPage = function(pageToShow) {
+        const model = viewer.model;
+        if(model && model.getDocumentNode()) {
+            const rootNode = model.getDocumentNode().getRootNode();
+            const bubbleNode = rootNode.children[pageToShow - 1];
+            viewer.loadDocumentNode(rootNode.getDocument(), bubbleNode);
+        }
+    };
 
     prevbutton.onClick = function () {
 
         actualPage -= 1;
-        const state = actualPage === 1 ? Autodesk.Viewing.UI.Button.State.DISABLED : Autodesk.Viewing.UI.Button.State.INACTIVE;
-
-        prevbutton.setState(state);
-        nextbutton.setState(Autodesk.Viewing.UI.Button.State.INACTIVE);
-
-        viewer.loadModel( urn, { page: actualPage });
+        switchToPage(actualPage);
     };
 
     prevbutton.addClass('drawing-button-prev');
@@ -85,12 +93,7 @@ ForgePdfViewExtension.prototype.createUI = function() {
     nextbutton.onClick = function () {
 
         actualPage += 1;
-        const state = actualPage === numPages ? Autodesk.Viewing.UI.Button.State.DISABLED : Autodesk.Viewing.UI.Button.State.INACTIVE;
-
-        prevbutton.setState(Autodesk.Viewing.UI.Button.State.INACTIVE);
-        nextbutton.setState(state);
-
-        viewer.loadModel( urn, { page: actualPage });
+        switchToPage(actualPage);
     };
 
     nextbutton.addClass('drawing-button-next');
