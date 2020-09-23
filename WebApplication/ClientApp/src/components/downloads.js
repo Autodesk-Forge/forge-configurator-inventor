@@ -183,7 +183,7 @@ export class Downloads extends Component {
                     contentName="Project:"
                     label={project.id}
                     onClose={ () => this.props.showDownloadFailed(false) }
-                    url={this.props.errorData}/>}
+                    errorData={this.props.errorData}/>}
 
         </React.Fragment>
         );

@@ -46,33 +46,34 @@ export class ModalFail extends Component {
             });
 
 
-        let reportUrlOrMessage;
-        let isUrl;
+        let reportUrlOrMessage, errorTitle;
+        let isUrl = false;
 
         const errorData = this.props.errorData;
-        if (typeof errorData === "string") { // obsolete way
+        if (typeof errorData === "string") { // handle obsolete way for backward compatibility (TODO: remove someday)
 
             reportUrlOrMessage = errorData;
             isUrl = reportUrlOrMessage?.match(urlRegex);
         } else if (typeof errorData === "object" && errorData.errorType) {
 
             switch (errorData.errorType) {
-                case 1:
+                case 1: // WebApplication.Job.ErrorInfoType.ReportUrl
                     isUrl = true;
                     reportUrlOrMessage = errorData.reportUrl;
                     break;
-                case 2:
+                case 2: // WebApplication.Job.ErrorInfoType.Messages
                     isUrl = false;
+                    errorTitle = errorData.title;
                     reportUrlOrMessage = errorData.messages.join(", ");
                     break;
 
                 default:
-                    console.error("Unsupported error type: " + JSON.stringify(errorData, null, 2));
+                    reportUrlOrMessage = "Unexpected error: " + JSON.stringify(errorData, null, 2);
                 break;
             }
 
         } else {
-            console.error("Unsupported error: " + JSON.stringify(errorData, null, 2));
+            reportUrlOrMessage = "Unexpected error: " + JSON.stringify(errorData, null, 2);
         }
 
 

@@ -58,12 +58,12 @@ export const getDownloadLink = (methodName, projectId, hash, dialogTitle, key) =
                 dispatch(setStats(stats));
             },
             // onError
-            (jobId, reportUrl) => {
-                dispatch(addLog('JobManager.doDownloadJob: Received onError with jobId: ' + jobId + ' and reportUrl: ' + reportUrl));
+            (errorData) => {
+                dispatch(addLog('JobManager.doDownloadJob: Received onError with jobId: ' + errorData.jobId));
                 // hide progress modal dialog
                 dispatch(hideDownloadProgress());
                 // show error modal dialog
-                dispatch(setReportUrlLink(reportUrl));
+                dispatch(setReportUrlLink(errorData));
                 dispatch(showDownloadFailed(true));
             }
         );
@@ -98,8 +98,8 @@ export const fetchDrawing = (project, drawingKey) => async (dispatch) => {
                 dispatch(setStats(stats, drawingKey));
             },
             // onError
-            (jobId, reportUrl) => {
-                dispatch(addLog('JobManager: Received onError with jobId: ' + jobId + ' and reportUrl: ' + reportUrl));
+            (errorData) => {
+                dispatch(addLog('JobManager: Received onError with jobId: ' + errorData.jobId));
                 // hide progress modal dialog
                 dispatch(showDrawingExportProgress(false));
             }

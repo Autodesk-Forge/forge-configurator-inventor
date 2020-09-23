@@ -110,10 +110,10 @@ export const showDownloadFailed = (visible) => {
     };
 };
 
-export const setReportUrlLink = (url) => {
+export const setReportUrlLink = (errorData) => {
     return {
         type: actionTypes.SET_REPORT_URL,
-        url
+        errorData
     };
 };
 

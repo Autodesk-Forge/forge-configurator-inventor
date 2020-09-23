@@ -176,12 +176,12 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
                 dispatch(updateProject(projectId, baseProjectState));
             },
             // onError
-            (jobId, reportUrl) => {
-                dispatch(addLog('JobManager: Received onError with jobId: ' + jobId + ' and reportUrl: ' + reportUrl));
+            (errorData) => {
+                dispatch(addLog('JobManager: Received onError with jobId: ' + errorData.jobId));
                 // hide progress modal dialog
                 dispatch(showModalProgress(false));
                 // show error modal dialog
-                dispatch(setReportUrlLink(reportUrl));
+                dispatch(setReportUrlLink(errorData));
                 dispatch(showUpdateFailed(true));
             }
         );

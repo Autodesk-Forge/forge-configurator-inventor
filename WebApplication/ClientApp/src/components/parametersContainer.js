@@ -101,7 +101,7 @@ export class ParametersContainer extends Component {
                             contentName="Project:"
                             label={this.props.activeProject.id}
                             onClose={() => this.onUpdateFailedCloseClick()}
-                            url={this.props.errorData}/>
+                            errorData={this.props.errorData}/>
                     }
                 </div>
             </div>

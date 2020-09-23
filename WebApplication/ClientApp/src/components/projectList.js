@@ -128,7 +128,7 @@ export class ProjectList extends Component {
                     contentName="Package:"
                     label={this.props.uploadPackageData.file.name}
                     onClose={() => this.onUploadFailedCloseClick()}
-                    url={this.props.errorData}/>}
+                    errorData={this.props.errorData}/>}
 
         <DeleteProject />
         {this.props.modalProgressShowing && <ModalProgress

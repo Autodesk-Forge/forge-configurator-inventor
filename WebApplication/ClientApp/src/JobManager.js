@@ -45,11 +45,11 @@ class JobManager {
                 onComplete(updatedState, stats);
         });
 
-        connection.on("onError", (jobId, reportUrl) => {
+        connection.on("onError", (errorData) => {
             connection.stop();
 
             if (onError)
-                onError(jobId, reportUrl);
+                onError(errorData);
         });
 
         await connection.invoke('CreateUpdateJob', projectId, parameters, repo.getAccessToken());
@@ -114,10 +114,10 @@ class JobManager {
             }
         });
 
-        connection.on("onError", (jobId, reportUrl) => {
+        connection.on("onError", (errorData) => {
 
             connection.stop();
-            if (onError) onError(jobId, reportUrl);
+            if (onError) onError(errorData);
         });
 
         if (key != null)
@@ -141,11 +141,11 @@ class JobManager {
             }
         });
 
-        connection.on("onError", (jobId, reportUrl) => {
+        connection.on("onError", (errorData) => {
             connection.stop();
 
             if (onError)
-                onError(jobId, reportUrl);
+                onError(errorData);
         });
 
         await connection.invoke('CreateDrawingPdfJob', projectId, hash, drawingKey, repo.getAccessToken());
