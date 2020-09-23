@@ -43,7 +43,9 @@ export const actionTypes = {
     SHOW_DRAWING_PROGRESS: 'SHOW_DRAWING_PROGRESS',
     SET_DRAWING_URL: 'SET_DRAWING_URL',
     INVALIDATE_DRAWING: 'INVALIDATE_DRAWING',
-    SET_STATS: 'SET_STATS'
+    SET_STATS: 'SET_STATS',
+    ACTIVE_DRAWING_UPDATED: 'ACTIVE_DRAWING_UPDATED',
+    DRAWING_LIST_UPDATED: 'DRAWING_LIST_UPDATED'
 };
 
 export default actionTypes;
@@ -214,9 +216,10 @@ export const showDrawingExportProgress = (visible) => {
     };
 };
 
-export const setDrawingPdfUrl = (url) => {
+export const setDrawingPdfUrl = (drawingKey, url) => {
     return {
         type: actionTypes.SET_DRAWING_URL,
+        drawingKey,
         url
     };
 };
@@ -227,9 +230,24 @@ export const invalidateDrawing = () => {
     };
 };
 
-export const setStats = (stats) => {
+export const setStats = (stats, key) => {
     return {
         type: actionTypes.SET_STATS,
-        stats
+        stats,
+        key
+    };
+};
+
+export const updateActiveDrawing = activeDrawing => {
+    return {
+        type: actionTypes.ACTIVE_DRAWING_UPDATED,
+        activeDrawing
+    };
+};
+
+export const updateDrawingsList = drawingsList => {
+    return {
+        type: actionTypes.DRAWING_LIST_UPDATED,
+        drawingsList
     };
 };

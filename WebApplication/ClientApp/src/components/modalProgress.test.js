@@ -58,7 +58,7 @@ describe('modal progress ', () => {
     it('should call method provided for Done button', () => {
         const doneHandlerMock = jest.fn();
         const props = {
-            done: true,
+            stats: {},
             onClose: doneHandlerMock
         };
 

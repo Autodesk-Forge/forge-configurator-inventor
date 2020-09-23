@@ -67,7 +67,7 @@ namespace WebApplication.Utilities
         /// <summary>
         /// Drawing in format ForgeView can load and show
         /// </summary>
-        public const string DrawingPdf = "drawing.pdf";
+        public static string DrawingPdf(int index) => $"drawing_{index}.pdf";
 
         /// <summary>
         /// Files with statistics.
@@ -77,7 +77,7 @@ namespace WebApplication.Utilities
             public const string Adopt = "stats.adopt.json";
             public const string Update = "stats.update.json";
             public const string RFA = "stats.rfa.json";
-            public const string DrawingPDF = "stats.drawing.pdf.json";
+            public static string DrawingPDF(int index) => $"stats.drawing_{index}.pdf.json";
             public const string Drawings = "stats.drawing.zip.json";
         }
     }
@@ -208,17 +208,22 @@ namespace WebApplication.Utilities
         /// </summary>
         public string Bom => ToFullName(LocalName.BOM);
 
+        /// <summary>
+        /// Filename for JSON with BOM data.
+        /// </summary>
+        public string DrawingsList => ToFullName(LocalName.DrawingsList);
+
         public string Drawing => ToFullName("drawing.zip");
 
         /// <summary>
         /// Filename for PDF with drawing.
         /// </summary>
-        public string DrawingPdf => ToFullName(LocalName.DrawingPdf);
+        public string DrawingPdf(int idx) => ToFullName(LocalName.DrawingPdf(idx));
 
         public string StatsAdopt => ToFullName(LocalName.Stats.Adopt);
         public string StatsUpdate => ToFullName(LocalName.Stats.Update);
         public string StatsRFA => ToFullName(LocalName.Stats.RFA);
-        public string StatsDrawingPDF => ToFullName(LocalName.Stats.DrawingPDF);
+        public string StatsDrawingPDF(int index) => ToFullName(LocalName.Stats.DrawingPDF(index));
         public string StatsDrawings => ToFullName(LocalName.Stats.Drawings);
     }
 

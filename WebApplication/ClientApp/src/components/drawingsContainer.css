@@ -1,0 +1,92 @@
+/*
+* Copyright (c) Autodesk, Inc. All rights reserved
+* Written by Forge Design Automation team for Inventor
+*
+* Permission to use, copy, modify, and distribute this software in
+* object code form for any purpose and without fee is hereby granted,
+* provided that the above copyright notice appears in all copies and
+* that both that copyright notice and the limited warranty and
+* restricted rights notice below appear in all supporting
+* documentation.
+*
+* AUTODESK PROVIDES THIS PROGRAM "AS IS" AND WITH ALL FAULTS.
+* AUTODESK SPECIFICALLY DISCLAIMS ANY IMPLIED WARRANTY OF
+* MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE.  AUTODESK, INC.
+* DOES NOT WARRANT THAT THE OPERATION OF THE PROGRAM WILL BE
+* UNINTERRUPTED OR ERROR FREE.
+*/
+
+.drawingsListContainer {
+    display: flex;
+    flex-flow: column;
+    width: 296px;
+    min-width: 296px;
+    background-color: white;
+}
+
+.drawingsList {
+    overflow: auto;
+    padding: 16px;
+    flex: auto;
+}
+
+.pencilContainer {
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.drawingsListSeparator {
+    margin-top: 8px;
+    margin-bottom: 0;
+    width: calc(100% - 16px);
+}
+
+.drawingsList {
+    padding-bottom: 16px;
+    font-size: 12px;
+    font-family: ArtifaktElement, sans-serif;
+    font-weight: 300;
+    color: #3c3c3c;
+    line-height: 18px;
+}
+
+.buttonsContainer.hidden {
+    display: none;
+}
+
+.buttonsContainer {
+    display: flex;
+    padding: 16px;
+}
+
+.drawingList .drawing-selected {
+    background-color: #e1f2fa;
+}
+
+.drawingList .drawing-selected:hover {
+    background-color: #9bdaf8;
+}
+
+.drawingList .BaseTable {
+    box-shadow: none;
+}
+
+.drawingList .BaseTable__table-main {
+    outline: none;
+}
+
+.BaseTable {
+    box-shadow: none;
+}
+
+.drawingList .BaseTable__header-row {
+    border-bottom: none;
+    border-top: none;
+    background-color: white;
+}
+
+.drawingList .BaseTable__row {
+    border-bottom: none;
+    border-top: 1px solid #eeeeee;
+}

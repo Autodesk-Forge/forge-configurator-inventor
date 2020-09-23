@@ -68,14 +68,15 @@ export class ForgePdfView extends Component {
 
         this.viewer.loadExtension('Autodesk.PDF');
 
-        this.viewer.loadModel( this.props.drawingPdf);
+        this.viewer.loadModel(this.props.drawingPdf);
         //this.viewer.loadExtension("Autodesk.Viewing.MarkupsCore")
         //this.viewer.loadExtension("Autodesk.Viewing.MarkupsGui")
     }
 
     componentDidUpdate(prevProps) {
         if (this.viewer && Autodesk && (this.props.drawingPdf !== prevProps.drawingPdf)) {
-            this.viewer.loadModel( this.props.drawingPdf);
+            this.viewer.unloadModel(prevProps.drawingPdf);
+            this.viewer.loadModel(this.props.drawingPdf);
         }
     }
 

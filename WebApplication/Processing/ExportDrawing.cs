@@ -27,6 +27,7 @@ namespace WebApplication.Processing
     /// </summary>
     public class ExportDrawing : ForgeAppBase
     {
+        private const string DrawingParameter = "DrawingParameter";
         public override string Id => nameof(ExportDrawing);
         public override string Description => "Find the drawing of Inventor document and generate viewables for ForgeViewer";
 
@@ -43,12 +44,31 @@ namespace WebApplication.Processing
         public override List<string> ActivityCommandLine =>
             new List<string>
             {
-                $"$(engine.path)\\InventorCoreConsole.exe /al $(appbundles[{ActivityId}].path) \"$(args[{InputDocParameterName}].path)\" "
+                $"$(engine.path)\\InventorCoreConsole.exe /al $(appbundles[{ActivityId}].path) \"$(args[{InputDocParameterName}].path)\" \"$(args[{DrawingParameter}].value)\""
             };
 
         /// <summary>
         /// Constructor.
         /// </summary>
         public ExportDrawing(Publisher publisher) : base(publisher) {}
+
+        public override Dictionary<string, Parameter> GetActivityParams()
+        {
+            var activityParams = base.GetActivityParams();
+
+            activityParams.Add(DrawingParameter, new Parameter { Verb = Verb.Read, Description = "Drawing to generate" });
+
+            return activityParams;
+        }
+
+        public override Dictionary<string, IArgument> ToWorkItemArgs(ProcessingArgs data)
+        {
+            var workItemArgs = base.ToWorkItemArgs(data);
+
+            DrawingPdfData projectData = data as DrawingPdfData;
+            workItemArgs.Add(DrawingParameter, new StringArgument { Value = projectData.DrawingToGenerate });
+
+            return workItemArgs;
+        }
     }
 }

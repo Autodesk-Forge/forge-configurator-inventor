@@ -16,6 +16,8 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
+using System;
+
 namespace WebApplication.Definitions
 {
     public class ProjectDTO : ProjectDTOBase
@@ -27,5 +29,21 @@ namespace WebApplication.Definitions
         /// Thumbnail URL.
         /// </summary>
         public string Image { get; set; }
+
+        /// <summary>
+        /// If project is assembly.
+        /// </summary>
+        public bool IsAssembly { get; set; }
+        
+        /// <summary>
+        /// If project has drawings
+        /// </summary>
+        [Obsolete]
+        public bool HasDrawing { get; set; }
+
+        /// <summary>
+        /// URL to DrawingsList JSON.
+        /// </summary>
+        public string DrawingsListUrl { get; set; }
     }
 }
