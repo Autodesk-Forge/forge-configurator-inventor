@@ -24,7 +24,7 @@ export const testState = {
     loginFailedShowing: 5,
     downloadFailedShowing: 6,
     downloadDrawingFailedShowing: 7,
-    reportUrl: 8,
+    errorData: { type:1, reportUrl: 'https://foo' },
     downloadProgressShowing: 9,
     downloadUrl: 11,
     showUploadPackage: 13,

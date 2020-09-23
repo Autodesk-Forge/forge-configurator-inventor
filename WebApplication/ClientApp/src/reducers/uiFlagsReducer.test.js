@@ -61,10 +61,10 @@ describe('uiFlags reducer', () => {
       });
 
       it('Sets the upload failed', () => {
-         const reportUrl = 'some url';
-         const uploadFailedState = uiFlagsReducer(uiFlags.initialState, setUploadFailed(reportUrl));
+         const anyData = 'some url';
+         const uploadFailedState = uiFlagsReducer(uiFlags.initialState, setUploadFailed(anyData));
          expect(uploadFailedState.uploadFailedShowing).toEqual(true);
-         expect(uploadFailedState.reportUrl).toEqual(reportUrl);
+         expect(uploadFailedState.errorData).toEqual(anyData);
       });
 
       it('Hides the upload failed', () => {

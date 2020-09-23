@@ -95,8 +95,8 @@ describe('main reducer', () => {
       it('gets downloadDrawingFailedShowing', () => {
          expect(reducer.downloadDrawingFailedShowing(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.downloadDrawingFailedShowing);
       }),
-      it('gets reportUrl', () => {
-         expect(reducer.reportUrl(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.reportUrl);
+      it('gets errorData', () => {
+         expect(reducer.errorData(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.errorData);
       }),
       it('gets downloadProgressShowing', () => {
          expect(reducer.downloadProgressShowing(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.downloadProgressShowing);

@@ -29,7 +29,7 @@ import { DrawingsContainer, drawingColumns } from './drawingsContainer';
 Enzyme.configure({ adapter: new Adapter() });
 
 const downloadUrl = "downloadUrl";
-const reportUrl = "reportUrl";
+const errorData = { errorType: 1, reportUrl: "reportUrl"};
 const drawingsList = [ "drawing0", "drawing1", "drawing2" ];
 
 const getDownloadLinkMock = jest.fn();
@@ -47,7 +47,7 @@ const props = {
     downloadProgressTitle: "",
     downloadFailedShowing: false,
     downloadUrl: downloadUrl,
-    reportUrl: reportUrl,
+    errorData: errorData,
     activeDrawing: drawingsList[1],
     drawingsList: drawingsList,
     getDownloadLink: getDownloadLinkMock,
@@ -150,7 +150,7 @@ describe('DrawingsContainer component', () => {
     describe('Popup windows', () => {
         const dlgTitle = "The Title";
         const okProps = { ...props, downloadProgressShowing:true, downloadUrl: downloadUrl, showDownloadProgress: showDownloadProgressMock, downloadProgressTitle: dlgTitle };
-        const failedProps = { ...props, downloadFailedShowing:true, reportUrl: reportUrl, showDownloadFailed: showDownloadFailedMock, downloadProgressTitle: dlgTitle };
+        const failedProps = { ...props, downloadFailedShowing:true, errorData, showDownloadFailed: showDownloadFailedMock, downloadProgressTitle: dlgTitle };
 
         it('Shows progress dialog', () => {
             const wrapper = shallow(<DrawingsContainer { ...okProps} />);
@@ -173,7 +173,7 @@ describe('DrawingsContainer component', () => {
             const dlg = wrapper.find('ModalFail');
             expect(dlg.prop('label')).toEqual(props.activeProject.id);
             expect(dlg.prop('title')).toContain(dlgTitle);
-            expect(dlg.prop('url')).toEqual(reportUrl);
+            expect(dlg.prop('url')).toEqual(errorData);
         });
 
         it('Handles failed dialog Close click', () => {
