@@ -20,7 +20,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import './drawingsContainer.css';
 import Button from '@hig/button';
-import { getActiveProject, getDrawingsList, getActiveDrawing, downloadProgressShowing, downloadProgressTitle, downloadUrl, downloadFailedShowing, reportUrl } from '../reducers/mainReducer';
+import { getActiveProject, getDrawingsList, getActiveDrawing, downloadProgressShowing, downloadProgressTitle, downloadUrl, downloadFailedShowing, errorData } from '../reducers/mainReducer';
 import { getDownloadLink } from '../actions/downloadActions';
 import { showDownloadProgress, showDownloadFailed } from '../actions/uiFlagsActions';
 import { fetchDrawingsList } from '../actions/drawingsListActions';
@@ -163,7 +163,7 @@ export class DrawingsContainer extends Component {
                     contentName="Project:"
                     label={project.id}
                     onClose={ () => this.props.showDownloadFailed(false) }
-                    url={this.props.reportUrl}/>}
+                    url={this.props.errorData}/>}
             </div>
         );
     }
@@ -178,7 +178,7 @@ export default connect(function (store) {
         downloadProgressTitle: downloadProgressTitle(store),
         downloadFailedShowing: downloadFailedShowing(store),
         downloadUrl: downloadUrl(store),
-        reportUrl: reportUrl(store),
+        errorData: errorData(store),
         activeDrawing: getActiveDrawing(store),
         drawingsList: getDrawingsList(store)
     };

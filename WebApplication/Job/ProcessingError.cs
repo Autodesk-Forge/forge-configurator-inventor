@@ -16,15 +16,15 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 namespace WebApplication.Job
 {
     public enum ErrorInfoType
     {
-        ReportUrl = 0,
-        Messages = 1
+        Unknown = 0,
+        ReportUrl = 1,
+        Messages = 2
     }
 
     public abstract class ProcessingError

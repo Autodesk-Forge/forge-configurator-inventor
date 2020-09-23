@@ -27,7 +27,7 @@ export const initialState = {
    updateFailedShowing: false,
    loginFailedShowing: false,
    downloadFailedShowing: false,
-   reportUrl: null,
+   errorData: null,
    downloadProgressShowing: null,
    downloadProgressTitle: null,
    downloadUrl: null,
@@ -67,8 +67,8 @@ export const downloadDrawingFailedShowing = function(state) {
    return state.downloadDrawingFailedShowing;
 };
 
-export const reportUrl = function(state) {
-   return state.reportUrl;
+export const errorData = function(state) {
+   return state.errorData;
 };
 
 export const downloadProgressShowing = function(state) {
@@ -174,7 +174,7 @@ export default function(state = initialState, action) {
       case uploadPackagesActionTypes.SET_UPLOAD_PROGRESS_DONE:
          return { ...state, uploadProgressStatus: "done"};
       case uploadPackagesActionTypes.SET_UPLOAD_FAILED:
-         return { ...state, uploadFailedShowing: true, reportUrl: action.reportUrl };
+         return { ...state, uploadFailedShowing: true, errorData: action.errorData };
       case uploadPackagesActionTypes.HIDE_UPLOAD_FAILED:
          return { ...state, uploadFailedShowing: false };
       case uiFlagsActionTypes.PACKAGE_FILE_EDITED:

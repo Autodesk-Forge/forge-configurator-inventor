@@ -48,8 +48,37 @@ export class ModalFail extends Component {
         // TECHDEBT: originally the dialog expected report URL only, but in some _rare_ situations
         // backend can send a message to show (see `JobsHub.RunJobAsync()` implementation).
         // Someday it should be rewritten, so backend passes error type as well. Now use a hack to detect error "type".
-        const reportUrlOrMessage = this.props.url;
-        const isUrl = reportUrlOrMessage?.match(urlRegex);
+
+        let reportUrlOrMessage;
+        let isUrl;
+
+        const errorData = this.props.url;
+        if (typeof errorData === "string") {
+
+            reportUrlOrMessage = this.props.url;
+            isUrl = reportUrlOrMessage?.match(urlRegex);
+        } else if (typeof errorData === "object" && errorData.errorType) {
+
+            switch (errorData.errorType) {
+                case 1:
+                    isUrl = true;
+                    reportUrlOrMessage = errorData.reportUrl;
+                    break;
+                case 2:
+                    isUrl = false;
+                    reportUrlOrMessage = errorData.messages.join(", ");
+                    break;
+
+                default:
+                    console.error("Unsupported error type: " + JSON.stringify(errorData, null, 2));
+                break;
+            }
+
+        } else {
+            console.error("Unsupported error: " + JSON.stringify(errorData, null, 2));
+        }
+
+
 
         return (
             <Modal

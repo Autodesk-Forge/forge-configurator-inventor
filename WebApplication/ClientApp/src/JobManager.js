@@ -70,11 +70,11 @@ class JobManager {
                 onComplete(newProject,stats);
         });
 
-        connection.on("onError", (jobId, errorData) => {
+        connection.on("onError", (errorData) => {
             connection.stop();
 
             if (onError)
-                onError(jobId, errorData);
+                onError(errorData);
         });
 
         await connection.invoke('CreateAdoptJob', packageId, repo.getAccessToken());
