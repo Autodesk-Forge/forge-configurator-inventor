@@ -71,7 +71,7 @@ describe('modal update failed ', () => {
         'HTTPS://example.com', // HTTPS different case
     ])('should link to the reportUrl in the props (%s)', (url) => {
 
-        const wrapper = shallow(<ModalFail url={ url } />);
+        const wrapper = shallow(<ModalFail errorData={ url } />);
 
         const wrapperComponent = wrapper.find('.logContainer');
         const children = wrapperComponent.prop('children');
@@ -86,7 +86,7 @@ describe('modal update failed ', () => {
         'httpppp' // should allow url-looking strings
     ])('should detect and show error message (%s)', (message) => {
 
-        const wrapper = shallow(<ModalFail url={ message } />);
+        const wrapper = shallow(<ModalFail errorData={ message } />);
 
         const errorMessageBlock = wrapper.find('.errorMessage');
         const text = errorMessageBlock.render().text();

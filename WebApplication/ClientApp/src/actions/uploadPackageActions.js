@@ -52,8 +52,7 @@ export const uploadPackage = () => async (dispatch, getState) => {
             if (httpStatus === 409) {
                 dispatch(setProjectAlreadyExists(true));
             } else {
-                const reportUrl = (httpStatus === 422) ? e.response.data.reportUrl : null;  // <<<---- the major change
-                dispatch(setUploadFailed(reportUrl));
+                dispatch(setUploadFailed(`Upload failed with ${httpStatus} error`));
             }
 
             return;
