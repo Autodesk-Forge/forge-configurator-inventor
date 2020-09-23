@@ -69,13 +69,6 @@ namespace WebApplication.Job
                 stats = await ProjectWork.AdoptAsync(_projectInfo, signedUploadedUrl);
                 adopted = true;
             }
-            catch (AdoptionException ae)
-            {
-                var message = $"Adopt failed: {string.Join("; ", ae.ErrorMessages)}";
-
-                await resultSender.SendErrorAsync(Id, new MessagesError(message));
-                return;
-            }
             finally
             {
                 // on any failure during adoption we consider that project adoption failed and it's not usable

@@ -81,7 +81,10 @@ namespace WebApplication.Processing
             // TECHDEBT: this should be done before `MoveProjectAsync`, but it will left "garbage" at OSS.  Solve it someday.
             var messages = await bucket.DeserializeAsync<Message[]>(projectStorage.Project.OssAttributes.AdoptMessages);
             var errors = messages.Where(m => m.Severity == Severity.Error).Select(m => m.Text).ToArray();
-            if (errors.Length > 0) throw new AdoptionException(errors);
+            if (errors.Length > 0)
+            {
+                throw new ProcessingException("Adoption failed", errors);
+            }
 
             await projectStorage.EnsureLocalAsync(bucket);
 

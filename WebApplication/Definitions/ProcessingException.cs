@@ -17,20 +17,23 @@
 /////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 
 namespace WebApplication.Definitions
 {
     /// <summary>
-    /// Exception with details on adoption failure.
+    /// Exception to report about processing problems.
+    /// Use it if you want to pass message to client to be shown in UI.
+    /// 
     /// </summary>
-    public class AdoptionException : Exception
+    public class ProcessingException : Exception
     {
-        public IEnumerable<string> ErrorMessages { get; }
+        public string Title { get; }
+        public string[] Messages { get; }
 
-        public AdoptionException(IEnumerable<string> errorMessages)
+        public ProcessingException(string title, string[] messages)
         {
-            ErrorMessages = errorMessages;
+            Title = title;
+            Messages = messages;
         }
     }
 }

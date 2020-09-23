@@ -86,9 +86,9 @@ namespace WebApplication.Controllers
                 await Destination.SendAsync(OnComplete, arg0, arg1, arg2);
             }
 
-            public async Task SendErrorAsync(string jobId, ProcessingError error)
+            public async Task SendErrorAsync(ProcessingError error)
             {
-                await Destination.SendAsync(OnError, jobId, error);
+                await Destination.SendAsync(OnError, error);
             }
         }
 
@@ -185,14 +185,18 @@ namespace WebApplication.Controllers
             catch (FdaProcessingException fpe)
             {
                 _logger.LogError(fpe, $"Processing failed for {job.Id}");
-                await _sender.SendErrorAsync(job.Id, new ReportUrlError(fpe.ReportUrl));
+                await _sender.SendErrorAsync(new ReportUrlError(job.Id, fpe.ReportUrl));
+            }
+            catch (ProcessingException pe)
+            {
+                await _sender.SendErrorAsync(new MessagesError(job.Id, pe.Title, pe.Messages));
             }
             catch (Exception e)
             {
                 _logger.LogError(e, $"Processing failed for {job.Id}");
 
-                var message = $"Internal error. Try to repeat your last action and please report the following message: {e.Message}";
-                await _sender.SendErrorAsync(job.Id, new MessagesError(message));
+                var message = $"Try to repeat your last action and please report the following message: {e.Message}";
+                await _sender.SendErrorAsync(new MessagesError(job.Id, "Internal error", new[]{ message }));
             }
         }
     }

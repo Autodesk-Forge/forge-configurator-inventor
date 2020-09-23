@@ -30,14 +30,21 @@ namespace WebApplication.Job
     public abstract class ProcessingError
     {
         public abstract ErrorInfoType ErrorType { get; }
+        public string JobId { get; }
+
+        protected ProcessingError(string jobId)
+        {
+            JobId = jobId;
+        }
     }
 
     public class ReportUrlError : ProcessingError
     {
         public override ErrorInfoType ErrorType { get; } = ErrorInfoType.ReportUrl;
+
         public string ReportUrl { get; }
 
-        public ReportUrlError(string reportUrl)
+        public ReportUrlError(string jobId, string reportUrl) : base(jobId)
         {
             ReportUrl = reportUrl;
         }
@@ -46,11 +53,14 @@ namespace WebApplication.Job
     public class MessagesError : ProcessingError
     {
         public override ErrorInfoType ErrorType { get; } = ErrorInfoType.Messages;
+
+        public string Title { get; }
         public IEnumerable<string> Messages { get; }
 
-        public MessagesError(params string[] messages)
+        public MessagesError(string jobId, string title, IEnumerable<string> messages) : base(jobId)
         {
-            Messages = messages ?? Array.Empty<string>();
+            Title = title;
+            Messages = messages;
         }
     }
 }

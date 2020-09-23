@@ -35,6 +35,6 @@ namespace WebApplication.Job
         /// </summary>
         /// <param name="jobId">ID of the job.</param> // TODO: is it useful?
         /// <param name="error">Error details</param>
-        Task SendErrorAsync(string jobId, ProcessingError error);
+        Task SendErrorAsync(ProcessingError error);
     }
 }
