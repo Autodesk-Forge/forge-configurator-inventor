@@ -63,4 +63,12 @@ namespace WebApplication.Definitions
     {
         public string InputParamsUrl { get; set; }
     }
+
+    /// <summary>
+    /// All data required for drawing pdf export.
+    /// </summary>
+    public class DrawingPdfData : ProcessingArgs
+    {
+        public string DrawingToGenerate { get; set; }
+    }
 }

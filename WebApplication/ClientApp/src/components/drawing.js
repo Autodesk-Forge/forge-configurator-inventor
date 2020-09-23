@@ -18,12 +18,13 @@
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { getActiveProject, getDrawingPdfUrl, drawingProgressShowing } from '../reducers/mainReducer';
+import { getActiveProject, getActiveDrawing, getDrawingPdfUrl, drawingProgressShowing } from '../reducers/mainReducer';
 import './drawing.css';
 import ForgePdfView from './forgePdfView';
 import { fetchDrawing } from '../actions/downloadActions';
 import ModalProgress from './modalProgress';
 import { showDrawingExportProgress } from '../actions/uiFlagsActions';
+import DrawingsContainer from './drawingsContainer';
 
 export class Drawing extends Component {
 
@@ -31,16 +32,18 @@ export class Drawing extends Component {
     const isAssembly = this.props.activeProject?.isAssembly;
     const hasDrawing = this.props.activeProject?.hasDrawing;
     if (isAssembly === true && hasDrawing === true && this.props.drawingPdf === null)
-      this.props.fetchDrawing(this.props.activeProject);
+      this.props.fetchDrawing(this.props.activeProject, this.props.activeDrawing);
   }
 
   componentDidUpdate(prevProps) {
     // refresh drawing data when Drawing tab was clicked before projects initialized
     const isAssembly = this.props.activeProject?.isAssembly;
     const hasDrawing = this.props.activeProject?.hasDrawing;
-    if (isAssembly === true && hasDrawing === true && this.props.activeProject !== prevProps.activeProject) {
-          if (this.props.drawingPdf === null)
-            this.props.fetchDrawing(this.props.activeProject);
+    if (isAssembly === true && hasDrawing === true) {
+      const projectChanged = this.props.activeProject !== prevProps.activeProject;
+      const drawingChanged = this.props.activeDrawing !== prevProps.activeDrawing;
+      if ((projectChanged || drawingChanged) && this.props.drawingPdf === null)
+            this.props.fetchDrawing(this.props.activeProject, this.props.activeDrawing);
       }
   }
 
@@ -63,7 +66,12 @@ export class Drawing extends Component {
           <div className="drawingEmptyText">You don&apos;t have any drawings in package.</div>
         }
         {!empty &&
-          <ForgePdfView/>
+          // <div id="drawings" className='drawingsContent fullheight'>
+            <div className='inRow fullheight'>
+              <DrawingsContainer/>
+              <ForgePdfView/>
+            </div>
+          // </div>
         }
         {!empty && this.props.drawingProgressShowing &&
           <ModalProgress
@@ -72,6 +80,7 @@ export class Drawing extends Component {
               label={this.props.activeProject.id}
               icon="/Assembly_icon.svg"
               onClose={() => this.onModalProgressClose()}
+              statsKey={this.props.activeDrawing}
           />
         }
         </div>
@@ -83,9 +92,11 @@ export class Drawing extends Component {
 /* istanbul ignore next */
 export default connect(function (store) {
   const activeProject = getActiveProject(store);
+  const activeDrawing = getActiveDrawing(store);
   return {
     activeProject: activeProject,
-    drawingPdfUrl: getDrawingPdfUrl(store),
+    activeDrawing: activeDrawing,
+    //drawingPdfUrl: getDrawingPdfUrl(store),
     drawingPdf: getDrawingPdfUrl(store),
     drawingProgressShowing: drawingProgressShowing(store)
   };

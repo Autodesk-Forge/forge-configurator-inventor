@@ -49,7 +49,10 @@ export class ForgePdfView extends Component {
         }
 
         const container = this.viewerDiv.current;
-        this.viewer = new Autodesk.Viewing.GuiViewer3D(container, { extensions: ['ForgePdfViewExtension'] });
+        this.viewer = new Autodesk.Viewing.GuiViewer3D(container,
+            { extensions: ['ForgePdfViewExtension'],
+              // these options (enableBrowserNavigation) are used when switching PDF sheets
+              enableBrowserNavigation: false });
 
         // uncomment this for Viewer debugging
         //this.viewer.debugEvents(true);
@@ -62,20 +65,22 @@ export class ForgePdfView extends Component {
         if (errorCode)
             return;
 
+        // these options (enableBrowserNavigation) are used when switching TAB (creating pdf view)
+        this.viewer.loadExtension('Autodesk.PDF', { enableBrowserNavigation: false });
+
         // skip loading of svf when here is no active project drawingPdf
         if (!this.props.drawingPdf)
             return;
 
-        this.viewer.loadExtension('Autodesk.PDF');
-
-        this.viewer.loadModel( this.props.drawingPdf);
+        this.viewer.loadModel( this.props.drawingPdf, { page: 1 }); // load page 1 by default
         //this.viewer.loadExtension("Autodesk.Viewing.MarkupsCore")
         //this.viewer.loadExtension("Autodesk.Viewing.MarkupsGui")
     }
 
     componentDidUpdate(prevProps) {
         if (this.viewer && Autodesk && (this.props.drawingPdf !== prevProps.drawingPdf)) {
-            this.viewer.loadModel( this.props.drawingPdf);
+            this.viewer.loadModel( this.props.drawingPdf, { page: 1 }); // load page 1 by default
+            this.viewer.unloadModel(prevProps.drawingPdf);
         }
     }
 

@@ -24,6 +24,7 @@ import { ForgePdfView } from './forgePdfView';
 Enzyme.configure({ adapter: new Adapter() });
 
 const loadModelMock = jest.fn();
+const unloadModelMock = jest.fn();
 const loadExtensionMock = jest.fn();
 const viewerFinishMock = jest.fn();
 const adskViewingShutdownMock = jest.fn();
@@ -31,6 +32,7 @@ const adskViewingShutdownMock = jest.fn();
 class GuiViewer3DMock {
   loadExtension(extId) { loadExtensionMock(extId); }
   loadModel(model) { loadModelMock(model); }
+  unloadModel(model) { unloadModelMock(model); }
   start() {}
   finish() { viewerFinishMock(); }
 }
@@ -52,6 +54,7 @@ describe('components', () => {
 
     beforeEach(() => {
         loadModelMock.mockClear();
+        unloadModelMock.mockClear();
         loadExtensionMock.mockClear();
         viewerFinishMock.mockClear();
         adskViewingShutdownMock.mockClear();
@@ -84,6 +87,7 @@ describe('components', () => {
         const updateProps = { drawingPdf: 'newurl.pdf' };
         wrapper.setProps(updateProps);
         expect(loadModelMock).toHaveBeenCalledTimes(2);
+        expect(unloadModelMock).toHaveBeenCalledTimes(1);
     });
 
     it('returns without loading when pdf is null', async () => {

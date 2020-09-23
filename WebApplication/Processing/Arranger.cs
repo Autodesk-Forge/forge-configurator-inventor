@@ -173,12 +173,12 @@ namespace WebApplication.Processing
         /// <summary>
         /// Move generated Drawing PDF OSS file to the correct place.
         /// </summary>
-        internal async Task MoveDrawingPdfAsync(Project project, string hash)
+        internal async Task MoveDrawingPdfAsync(Project project, int drawingIdx, string hash)
         {
             var bucket = await _userResolver.GetBucketAsync();
 
             var ossNames = project.OssNameProvider(hash);
-            await bucket.RenameObjectAsync(OutputDrawingPdf, ossNames.DrawingPdf, true);
+            await bucket.RenameObjectAsync(OutputDrawingPdf, ossNames.DrawingPdf(drawingIdx), true);
         }
 
         internal async Task MoveDrawingAsync(Project project, string hash)
@@ -230,14 +230,15 @@ namespace WebApplication.Processing
             };
         }
 
-        internal async Task<ProcessingArgs> ForDrawingPdfAsync(string inputDocUrl, string topLevelAssembly)
+        internal async Task<ProcessingArgs> ForDrawingPdfAsync(string inputDocUrl, string drawingKey, string topLevelAssembly)
         {
             var bucket = await _userResolver.GetBucketAsync();
             var drawingPdfUrl = await bucket.CreateSignedUrlAsync(OutputDrawingPdf, ObjectAccess.Write);
 
-            return new ProcessingArgs
+            return new DrawingPdfData
             {
                 InputDocUrl = inputDocUrl,
+                DrawingToGenerate = drawingKey,
                 DrawingPdfUrl = drawingPdfUrl,
                 TLA = topLevelAssembly
             };

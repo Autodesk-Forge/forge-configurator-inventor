@@ -182,7 +182,7 @@ namespace WebApplication.Processing
             return FdaStatsDTO.All(result.Stats);
         }
 
-        public async Task<FdaStatsDTO> ExportDrawingPdfAsync(string projectName, string hash)
+        public async Task<(FdaStatsDTO, int)> ExportDrawingPdfAsync(string projectName, string hash, string drawingKey)
         {
             _logger.LogInformation($"Getting drawing pdf for hash {hash}");
 
@@ -190,14 +190,23 @@ namespace WebApplication.Processing
             Project project = storage.Project;
 
             var ossNames = project.OssNameProvider(hash);
+            var ossAttributes = project.OssAttributes;
 
+            // get drawing index from drawing specified
             var bucket = await _userResolver.GetBucketAsync();
+
+            var localAttributes = project.LocalAttributes;
+            // read cached drawingsList
+            var drawings = Json.DeserializeFile<List<string>>(localAttributes.DrawingsList);
+            int index = drawings.IndexOf(drawingKey);
+            var drawingIdx = index >= 0 ? index : 0;
+
             // check if Drawing viewables file is already generated
             try
             {
                 bool generated = false;
 
-                ApiResponse<dynamic> ossObjectResponse = await bucket.GetObjectAsync(ossNames.DrawingPdf);
+                ApiResponse<dynamic> ossObjectResponse = await bucket.GetObjectAsync(ossNames.DrawingPdf(drawingIdx));
                 if (ossObjectResponse != null)
                 {
                     await using Stream objectStream = ossObjectResponse.Data;
@@ -208,12 +217,12 @@ namespace WebApplication.Processing
 
                 if (generated)
                 {
-                    var nativeStats = await bucket.DeserializeAsync<List<Statistics>>(ossNames.StatsDrawingPDF);
-                    return FdaStatsDTO.CreditsOnly(nativeStats);
+                    var nativeStats = await bucket.DeserializeAsync<List<Statistics>>(ossNames.StatsDrawingPDF(drawingIdx));
+                    return (FdaStatsDTO.CreditsOnly(nativeStats), drawingIdx);
                 }
                 else
                 {
-                    return null;
+                    return (null, drawingIdx);
                 }
             }
             catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
@@ -224,7 +233,7 @@ namespace WebApplication.Processing
 
             // OK, nothing in cache - generate it now
             var inputDocUrl = await bucket.CreateSignedUrlAsync(ossNames.GetCurrentModel(storage.IsAssembly));
-            ProcessingArgs drawingData = await _arranger.ForDrawingPdfAsync(inputDocUrl, storage.Metadata.TLA);
+            ProcessingArgs drawingData = await _arranger.ForDrawingPdfAsync(inputDocUrl, drawingKey, storage.Metadata.TLA);
 
             ProcessingResult result = await _fdaClient.ExportDrawingAsync(drawingData);
             if (!result.Success)
@@ -234,25 +243,25 @@ namespace WebApplication.Processing
             }
 
             // move to the right place
-            await _arranger.MoveDrawingPdfAsync(project, hash);
+            await _arranger.MoveDrawingPdfAsync(project, drawingIdx, hash);
 
             // check if Drawing PDF file is generated
             try
             {
-                await bucket.CreateSignedUrlAsync(ossNames.DrawingPdf);
+                await bucket.CreateSignedUrlAsync(ossNames.DrawingPdf(drawingIdx));
 
                 // handle statistics
-                await bucket.UploadAsJsonAsync(ossNames.StatsDrawingPDF, result.Stats);
+                await bucket.UploadAsJsonAsync(ossNames.StatsDrawingPDF(drawingIdx), result.Stats);
                 _logger.LogInformation($"Drawing PDF for hash {hash} is generated");
-                return FdaStatsDTO.All(result.Stats);
+                return (FdaStatsDTO.All(result.Stats), drawingIdx);
             }
             catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
             {
                 // the file does not exist after generating drawing, so just mark with zero length that we already processed it
-                await bucket.UploadObjectAsync(ossNames.DrawingPdf, new MemoryStream(0));
+                await bucket.UploadObjectAsync(ossNames.DrawingPdf(drawingIdx), new MemoryStream(0));
 
                 _logger.LogError($"Drawing PDF for hash {hash} is NOT generated");
-                return null;
+                return (null, drawingIdx);
             }
         }
 

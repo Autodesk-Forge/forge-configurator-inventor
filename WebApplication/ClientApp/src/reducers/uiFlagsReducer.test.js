@@ -177,14 +177,28 @@ describe('uiFlags reducer', () => {
          expect(uiFlagsReducer({}, uiFlagsActions.showDrawingExportProgress(true)).drawingProgressShowing).toEqual(true);
       }),
       it('sets the drawingUrl', () => {
-         expect(uiFlagsReducer({}, uiFlagsActions.setDrawingPdfUrl('pdf link')).drawingUrl).toEqual('pdf link');
+         expect(uiFlagsReducer({}, uiFlagsActions.setDrawingPdfUrl('drawingName', 'pdf link')).drawingUrls['drawingName']).toEqual('pdf link');
       }),
       it('invalidates the drawingUrl', () => {
-         expect(uiFlagsReducer({}, uiFlagsActions.invalidateDrawing()).drawingUrl).toEqual(null);
+         expect(uiFlagsReducer({}, uiFlagsActions.invalidateDrawing()).drawingUrls).toEqual({});
       }),
       it('sets the processing stats', () => {
          const theStats = { credits: 7, processing: 13 };
          expect(uiFlagsReducer({}, uiFlagsActions.setStats(theStats)).stats).toEqual(theStats);
+      }),
+      it('sets the processing stats with key (for drawings)', () => {
+         const theStats = { credits: 7, processing: 13 };
+         const theKey = '2';
+         expect(uiFlagsReducer({}, uiFlagsActions.setStats(theStats, theKey)).stats).toEqual({ '2': theStats }); // '2' == theKey
+         expect(uiFlagsReducer({}, uiFlagsActions.setStats(theStats, theKey)).stats[theKey]).toEqual(theStats);
+      }),
+      it('sets the active drawing', () => {
+         const activeDrawing = "drawing 2";
+         expect(uiFlagsReducer({}, uiFlagsActions.updateActiveDrawing(activeDrawing)).activeDrawing).toEqual(activeDrawing);
+      }),
+      it('sets the drawing list', () => {
+         const drawingList = [ "drawing 1", "drawing 2"];
+         expect(uiFlagsReducer({}, uiFlagsActions.updateDrawingsList(drawingList)).drawings).toEqual(drawingList);
       });
    });
 });
