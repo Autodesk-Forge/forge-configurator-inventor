@@ -102,9 +102,11 @@ describe('modal update failed ', () => {
     describe('"Error message" mode', () => {
 
         it.each([
-            { errorType: 2, messages: ['blah'] },
-            { errorType: 2, messages: ['blah', 'asdf', 'lkfvbsdf43q4', 'http://foo.com'] },
-        ])('should detect and show error message (%s)', (errorData) => {
+            { errorType: 2, messages: ['blah'] }, // single message
+            { errorType: 2, messages: ['blah'], title: 'foo' }, // single message with title
+            { errorType: 2, messages: ['blah', 'asdf', 'lkfvbsdf43q4', 'http://foo.com'] }, // multiple messages
+            { errorType: 2, messages: ['blah', 'asdf'], title: 'foo' }, // multiple messages with title
+        ])('should error message (%s)', (errorData) => {
 
             const wrapper = shallow(<ModalFail errorData={ errorData } />);
 
@@ -114,6 +116,25 @@ describe('modal update failed ', () => {
             // each message should be shown
             errorData.messages.forEach(m => expect(text.indexOf(m)).not.toEqual(-1));
 
+            // validate title
+            const titleBlock = wrapper.find('.errorMessageTitle');
+            expect(titleBlock.exists()).toEqual(!! errorData.title);
+            if (errorData.title) {
+                expect(titleBlock.render().text()).toEqual(errorData.title);
+            }
+
+            expect(wrapper.find('.logContainer').exists()).toEqual(false); // 'Open link' area is not visible
+        });
+
+        it.each([
+            { errorType: 2 }, // no messages (don't fail)
+            { errorType: 2, messages: [] }, // no messages (don't fail)
+        ])('should handle no error message (%s)', (errorData) => {
+
+            const wrapper = shallow(<ModalFail errorData={ errorData } />);
+
+            const errorMessageBlock = wrapper.find('.errorMessage');
+            expect(errorMessageBlock.exists()).toEqual(false);
             expect(wrapper.find('.logContainer').exists()).toEqual(false); // 'Open link' area is not visible
         });
 

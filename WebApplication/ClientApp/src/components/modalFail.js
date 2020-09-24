@@ -60,7 +60,7 @@ export class ModalFail extends Component {
                 case 2: // WebApplication.Job.ErrorInfoType.Messages
                     isUrl = false;
                     errorTitle = errorData.title;
-                    reportUrlOrMessage = errorData.messages.join(", ");
+                    reportUrlOrMessage = errorData.messages?.join(", ");
                     break;
 
                 default:
@@ -72,8 +72,6 @@ export class ModalFail extends Component {
             reportUrlOrMessage = errorData;
             isUrl = reportUrlOrMessage?.match(urlRegex);
         }
-
-
 
         return (
             <Modal
@@ -114,6 +112,9 @@ export class ModalFail extends Component {
                     }
                     {(reportUrlOrMessage && ! isUrl) &&
                         <div>
+                            {errorTitle && // title is optional
+                                <Typography className="errorMessageTitle">{errorTitle}</Typography>
+                            }
                             <Typography className="errorMessage">
                                 { reportUrlOrMessage }
                             </Typography>
