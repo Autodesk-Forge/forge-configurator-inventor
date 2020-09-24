@@ -154,4 +154,17 @@ describe('modal update failed ', () => {
             expect(wrapper.find('.logContainer').exists()).toEqual(false); // 'Open link' area is not visible
         });
     });
+
+    it('should not fail for unknown error type', () => {
+
+        const errorData = { errorType: 999, status: '1234567890' };
+        const wrapper = shallow(<ModalFail errorData={ errorData } />);
+
+        const errorMessageBlock = wrapper.find('.errorMessage');
+        const text = errorMessageBlock.render().text();
+        expect(text).toMatch(/1234567890/);
+        expect(text).toMatch(/Unexpected error/);
+
+        expect(wrapper.find('.logContainer').exists()).toEqual(false); // 'Open link' area is not visible
+    });
 });
