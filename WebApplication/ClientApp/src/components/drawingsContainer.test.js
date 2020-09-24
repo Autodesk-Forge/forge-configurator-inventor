@@ -173,7 +173,7 @@ describe('DrawingsContainer component', () => {
             const dlg = wrapper.find('ModalFail');
             expect(dlg.prop('label')).toEqual(props.activeProject.id);
             expect(dlg.prop('title')).toContain(dlgTitle);
-            expect(dlg.prop('url')).toEqual(errorData);
+            expect(dlg.prop('errorData')).toEqual(errorData);
         });
 
         it('Handles failed dialog Close click', () => {

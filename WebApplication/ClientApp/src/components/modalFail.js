@@ -50,11 +50,7 @@ export class ModalFail extends Component {
         let isUrl = false;
 
         const errorData = this.props.errorData;
-        if (typeof errorData === "string") { // handle obsolete way for backward compatibility (TODO: remove someday)
-
-            reportUrlOrMessage = errorData;
-            isUrl = reportUrlOrMessage?.match(urlRegex);
-        } else if (typeof errorData === "object" && errorData.errorType) {
+        if (typeof errorData === "object" && errorData.errorType) {
 
             switch (errorData.errorType) {
                 case 1: // WebApplication.Job.ErrorInfoType.ReportUrl
@@ -71,9 +67,10 @@ export class ModalFail extends Component {
                     reportUrlOrMessage = "Unexpected error: " + JSON.stringify(errorData, null, 2);
                 break;
             }
+        } else if (typeof errorData === "string") { // handle obsolete way for backward compatibility (TODO: remove someday)
 
-        } else {
-            reportUrlOrMessage = "Unexpected error: " + JSON.stringify(errorData, null, 2);
+            reportUrlOrMessage = errorData;
+            isUrl = reportUrlOrMessage?.match(urlRegex);
         }
 
 

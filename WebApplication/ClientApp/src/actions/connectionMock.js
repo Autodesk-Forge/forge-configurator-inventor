@@ -28,7 +28,7 @@ const connectionMock = {
         this.onHandlers['onComplete'](data, stats);
     },
     simulateError: function(jobId, link) {
-        this.onHandlers['onError'](jobId, link);
+        this.onHandlers['onError']({ jobId, reportUrl: link, errorType: 1 });
     }
 };
 
