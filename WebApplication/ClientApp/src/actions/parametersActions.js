@@ -19,7 +19,7 @@
 import repo from '../Repository';
 import { addError, addLog } from './notificationActions';
 import { Jobs } from '../JobManager';
-import { showModalProgress, showUpdateFailed, setReportUrlLink, setStats } from './uiFlagsActions';
+import { showModalProgress, showUpdateFailed, setErrorData, setStats } from './uiFlagsActions';
 
 import { updateProject } from './projectListActions';
 
@@ -159,7 +159,7 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
             // start job
             () => {
                 dispatch(addLog('JobManager: HubConnection started for project : ' + projectId));
-                dispatch(setReportUrlLink(null)); // cleanup url link
+                dispatch(setErrorData(null)); // cleanup url link
             },
             // onComplete
             (updatedState, stats) => {
@@ -181,7 +181,7 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
                 // hide progress modal dialog
                 dispatch(showModalProgress(false));
                 // show error modal dialog
-                dispatch(setReportUrlLink(errorData));
+                dispatch(setErrorData(errorData));
                 dispatch(showUpdateFailed(true));
             }
         );

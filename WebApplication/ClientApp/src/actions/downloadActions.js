@@ -18,7 +18,7 @@
 
 import { addError, addLog } from './notificationActions';
 import { Jobs } from '../JobManager';
-import { showDownloadProgress, showDownloadFailed, setDownloadLink, setReportUrlLink, setStats, hideDownloadProgress } from './uiFlagsActions';
+import { showDownloadProgress, showDownloadFailed, setDownloadLink, setErrorData, setStats, hideDownloadProgress } from './uiFlagsActions';
 import { showDrawingExportProgress, setDrawingPdfUrl } from './uiFlagsActions';
 
 /**
@@ -48,7 +48,7 @@ export const getDownloadLink = (methodName, projectId, hash, dialogTitle, key) =
             // start job
             () => {
                 dispatch(addLog(`JobManager.doDownloadJob: '${methodName}' started for project : ${projectId}`));
-                dispatch(setReportUrlLink(null)); // cleanup url link
+                dispatch(setErrorData(null)); // cleanup url link
             },
             // onComplete
             (downloadUrl, stats) => {
@@ -63,7 +63,7 @@ export const getDownloadLink = (methodName, projectId, hash, dialogTitle, key) =
                 // hide progress modal dialog
                 dispatch(hideDownloadProgress());
                 // show error modal dialog
-                dispatch(setReportUrlLink(errorData));
+                dispatch(setErrorData(errorData));
                 dispatch(showDownloadFailed(true));
             }
         );

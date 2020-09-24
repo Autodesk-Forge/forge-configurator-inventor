@@ -84,12 +84,12 @@ describe('downloadActions', () => {
 
         it('check getDownloadLink onError action', async () => {
             await store.dispatch(downloadActions.getDownloadLink("Method", "ProjectId", "hash", "title"));
-            connectionMock.simulateError(jobId, errorReportLink);
+            connectionMock.simulateErrorWithReport(jobId, errorReportLink);
 
             // check expected store actions
             const actions = store.getActions();
             // there are two SET_REPORT_URL actions in the list. The first one come from job start and is called with null to clear old data...
-            expect(actions.some(a => (a.type === uiFlagsActionTypes.SET_REPORT_URL && a.errorData?.reportUrl === errorReportLink))).toEqual(true);
+            expect(actions.some(a => (a.type === uiFlagsActionTypes.SET_ERROR_DATA && a.errorData?.reportUrl === errorReportLink))).toEqual(true);
             expect(actions.some(a => a.type === uiFlagsActionTypes.SHOW_DOWNLOAD_FAILED)).toEqual(true);
         });
     });
@@ -110,7 +110,7 @@ describe('downloadActions', () => {
 
         it('check fetchDrawing error handling', async () => {
             await store.dispatch(downloadActions.fetchDrawing({ id: "ProjectId" }, "DrawingKey"));
-            connectionMock.simulateError(jobId,errorReportLink);
+            connectionMock.simulateErrorWithReport(jobId,errorReportLink);
 
             // check expected store actions
             const actions = store.getActions();

@@ -157,7 +157,7 @@ export default function(state = initialState, action) {
          return { ...state, loginFailedShowing: action.visible};
       case uiFlagsActionTypes.SHOW_DOWNLOAD_FAILED:
          return { ...state, downloadFailedShowing: action.visible};
-      case uiFlagsActionTypes.SET_REPORT_URL:
+      case uiFlagsActionTypes.SET_ERROR_DATA:
          return { ...state, errorData: action.errorData};
       case uiFlagsActionTypes.SHOW_DOWNLOAD_PROGRESS:
          return { ...state, downloadProgressShowing: action.visible, downloadUrl: null, downloadProgressTitle: action.title, stats: null };

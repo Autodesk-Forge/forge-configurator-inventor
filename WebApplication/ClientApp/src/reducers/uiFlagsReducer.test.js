@@ -160,8 +160,8 @@ describe('uiFlags reducer', () => {
       it('sets the downloadFailedShowing', () => {
          expect(uiFlagsReducer({}, uiFlagsActions.showDownloadFailed(true)).downloadFailedShowing).toEqual(true);
       }),
-      it('sets the reportUrl', () => {
-         expect(uiFlagsReducer({}, uiFlagsActions.setReportUrlLink('a link')).errorData).toEqual('a link');
+      it('sets the error data', () => {
+         expect(uiFlagsReducer({}, uiFlagsActions.setErrorData('a link')).errorData).toEqual('a link');
       }),
       it('sets the downloadProgressShowing', () => {
          expect(uiFlagsReducer({}, uiFlagsActions.showDownloadProgress(true)).downloadProgressShowing).toEqual(true);
