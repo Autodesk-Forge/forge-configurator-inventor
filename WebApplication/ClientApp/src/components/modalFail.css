@@ -76,3 +76,8 @@ svg.errorIcon path {
     overflow-y: auto;
     height: 90px;
 }
+
+.errorMessageTitle {
+    padding-top: 7px;
+    font-weight: bold;
+}

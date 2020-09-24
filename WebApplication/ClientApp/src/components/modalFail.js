@@ -45,11 +45,33 @@ export class ModalFail extends Component {
                 }
             });
 
-        // TECHDEBT: originally the dialog expected report URL only, but in some _rare_ situations
-        // backend can send a message to show (see `JobsHub.RunJobAsync()` implementation).
-        // Someday it should be rewritten, so backend passes error type as well. Now use a hack to detect error "type".
-        const reportUrlOrMessage = this.props.url;
-        const isUrl = reportUrlOrMessage?.match(urlRegex);
+
+        let reportUrlOrMessage, errorTitle;
+        let isUrl = false;
+
+        const errorData = this.props.errorData;
+        if (typeof errorData === "object" && errorData.errorType) {
+
+            switch (errorData.errorType) {
+                case 1: // WebApplication.Job.ErrorInfoType.ReportUrl
+                    isUrl = true;
+                    reportUrlOrMessage = errorData.reportUrl;
+                    break;
+                case 2: // WebApplication.Job.ErrorInfoType.Messages
+                    isUrl = false;
+                    errorTitle = errorData.title;
+                    reportUrlOrMessage = errorData.messages?.join(", ");
+                    break;
+
+                default:
+                    reportUrlOrMessage = "Unexpected error: " + JSON.stringify(errorData, null, 2);
+                break;
+            }
+        } else if (typeof errorData === "string") { // handle obsolete way for backward compatibility (TODO: remove someday)
+
+            reportUrlOrMessage = errorData;
+            isUrl = reportUrlOrMessage?.match(urlRegex);
+        }
 
         return (
             <Modal
@@ -90,6 +112,9 @@ export class ModalFail extends Component {
                     }
                     {(reportUrlOrMessage && ! isUrl) &&
                         <div>
+                            {errorTitle && // title is optional
+                                <Typography className="errorMessageTitle">{errorTitle}</Typography>
+                            }
                             <Typography className="errorMessage">
                                 { reportUrlOrMessage }
                             </Typography>

@@ -96,8 +96,8 @@ export const downloadDrawingFailedShowing = function(state) {
     return uiFlags.downloadDrawingFailedShowing(state.uiFlags);
 };
 
-export const reportUrl = function(state) {
-    return uiFlags.reportUrl(state.uiFlags);
+export const errorData = function(state) {
+    return uiFlags.errorData(state.uiFlags);
 };
 
 /** If downloads are generating, and "In progress" dialog is shown */

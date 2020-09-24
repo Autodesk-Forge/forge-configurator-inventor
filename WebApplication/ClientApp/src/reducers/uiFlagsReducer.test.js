@@ -61,10 +61,10 @@ describe('uiFlags reducer', () => {
       });
 
       it('Sets the upload failed', () => {
-         const reportUrl = 'some url';
-         const uploadFailedState = uiFlagsReducer(uiFlags.initialState, setUploadFailed(reportUrl));
+         const anyData = 'some url';
+         const uploadFailedState = uiFlagsReducer(uiFlags.initialState, setUploadFailed(anyData));
          expect(uploadFailedState.uploadFailedShowing).toEqual(true);
-         expect(uploadFailedState.reportUrl).toEqual(reportUrl);
+         expect(uploadFailedState.errorData).toEqual(anyData);
       });
 
       it('Hides the upload failed', () => {
@@ -160,8 +160,8 @@ describe('uiFlags reducer', () => {
       it('sets the downloadFailedShowing', () => {
          expect(uiFlagsReducer({}, uiFlagsActions.showDownloadFailed(true)).downloadFailedShowing).toEqual(true);
       }),
-      it('sets the reportUrl', () => {
-         expect(uiFlagsReducer({}, uiFlagsActions.setReportUrlLink('a link')).reportUrl).toEqual('a link');
+      it('sets the error data', () => {
+         expect(uiFlagsReducer({}, uiFlagsActions.setErrorData('a link')).errorData).toEqual('a link');
       }),
       it('sets the downloadProgressShowing', () => {
          expect(uiFlagsReducer({}, uiFlagsActions.showDownloadProgress(true)).downloadProgressShowing).toEqual(true);

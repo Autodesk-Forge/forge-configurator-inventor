@@ -103,11 +103,10 @@ describe('uploadPackage', () => {
     });
 
 
-    it('should handle workitem error', async () => {
+    it('should handle upload error', async () => {
 
-        // set expected value for the mock
-        const reportUrl = 'WI report url';
-        uploadPackageMock.mockImplementation(() => { throw { response: { status: 422, data: { reportUrl: reportUrl}}}; });
+        // emulate HTTP error during upload
+        uploadPackageMock.mockImplementation(() => { throw { response: { status: 422 }}; });
 
         const store = mockStore({ uiFlags: { package: { file: {name: "a.zip"}, root: "a.asm"}} });
 
@@ -119,7 +118,7 @@ describe('uploadPackage', () => {
 
         // check expected actions and their types
         const uploadFailedAction = actions.find(a => a.type === actionTypes.SET_UPLOAD_FAILED);
-        expect(uploadFailedAction.reportUrl).toEqual(reportUrl);
+        expect(uploadFailedAction.errorData).toMatch(/Upload failed with 422 error/);
     });
 
     it('should do nothing when all the form values are empty', async () => {

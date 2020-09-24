@@ -65,33 +65,106 @@ describe('modal update failed ', () => {
         expect(closeMockFn).toHaveBeenCalledTimes(1);
     });
 
-    it.each([
-        'http://example.com', // HTTP
-        'https://example.com', // HTTPS
-        'HTTPS://example.com', // HTTPS different case
-    ])('should link to the reportUrl in the props (%s)', (url) => {
+    describe('"Report URL" mode', () => {
+        it.each([
+            { errorType: 1, reportUrl: 'http://example.com' }, // regular URLs are supported
+            { errorType: 1, reportUrl: 'ftp://example.com' }, // report url can be anything
+            { errorType: 1, reportUrl: 'file:///example.com' }, // report url can be anything
+            { errorType: 1, reportUrl: 'blah' }, // report url can be anything
+        ])('should link to the reportUrl in the errorData of the props (%s)', (errorData) => {
 
-        const wrapper = shallow(<ModalFail url={ url } />);
+            const wrapper = shallow(<ModalFail errorData={ errorData } />);
 
-        const wrapperComponent = wrapper.find('.logContainer');
-        const children = wrapperComponent.prop('children');
+            const wrapperComponent = wrapper.find('.logContainer');
+            const children = wrapperComponent.prop('children');
 
-        expect(children.props).toMatchObject({ link: 'Open log file', href: url });
-        expect(wrapper.find('.errorMessage').exists()).toEqual(false); // error message area is not visible
+            expect(children.props).toMatchObject({ link: 'Open log file', href: errorData.reportUrl });
+            expect(wrapper.find('.errorMessage').exists()).toEqual(false); // error message area is not visible
+        });
+
+        // obsolete way to pass report URL, but still supported (to be removed one day)
+        it.each([
+            'http://example.com', // HTTP
+            'https://example.com', // HTTPS
+            'HTTPS://example.com', // HTTPS different case
+        ])('should link to the reportUrl in the props (%s)', (url) => {
+
+            const wrapper = shallow(<ModalFail errorData={ url } />);
+
+            const wrapperComponent = wrapper.find('.logContainer');
+            const children = wrapperComponent.prop('children');
+
+            expect(children.props).toMatchObject({ link: 'Open log file', href: url });
+            expect(wrapper.find('.errorMessage').exists()).toEqual(false); // error message area is not visible
+        });
     });
 
-    // sometimes `url` field contains error message. See `ModalFail` implementation for more details
-    it.each([
-        'The quick brown fox jumps over the lazy dog',
-        'httpppp' // should allow url-looking strings
-    ])('should detect and show error message (%s)', (message) => {
+    describe('"Error message" mode', () => {
 
-        const wrapper = shallow(<ModalFail url={ message } />);
+        it.each([
+            { errorType: 2, messages: ['blah'] }, // single message
+            { errorType: 2, messages: ['blah'], title: 'foo' }, // single message with title
+            { errorType: 2, messages: ['blah', 'asdf', 'lkfvbsdf43q4', 'http://foo.com'] }, // multiple messages
+            { errorType: 2, messages: ['blah', 'asdf'], title: 'foo' }, // multiple messages with title
+        ])('should error message (%s)', (errorData) => {
+
+            const wrapper = shallow(<ModalFail errorData={ errorData } />);
+
+            const errorMessageBlock = wrapper.find('.errorMessage');
+            const text = errorMessageBlock.render().text();
+
+            // each message should be shown
+            errorData.messages.forEach(m => expect(text.indexOf(m)).not.toEqual(-1));
+
+            // validate title
+            const titleBlock = wrapper.find('.errorMessageTitle');
+            expect(titleBlock.exists()).toEqual(!! errorData.title);
+            if (errorData.title) {
+                expect(titleBlock.render().text()).toEqual(errorData.title);
+            }
+
+            expect(wrapper.find('.logContainer').exists()).toEqual(false); // 'Open link' area is not visible
+        });
+
+        it.each([
+            { errorType: 2 }, // no messages (don't fail)
+            { errorType: 2, messages: [] }, // no messages (don't fail)
+        ])('should handle no error message (%s)', (errorData) => {
+
+            const wrapper = shallow(<ModalFail errorData={ errorData } />);
+
+            const errorMessageBlock = wrapper.find('.errorMessage');
+            expect(errorMessageBlock.exists()).toEqual(false);
+            expect(wrapper.find('.logContainer').exists()).toEqual(false); // 'Open link' area is not visible
+        });
+
+        // obsolete way to pass error message, but still supported (to be removed one day)
+        // sometimes `url` field contains error message. See `ModalFail` implementation for more details
+        it.each([
+            'The quick brown fox jumps over the lazy dog',
+            'httpppp' // should allow url-looking strings
+        ])('should detect and show error message (%s)', (message) => {
+
+            const wrapper = shallow(<ModalFail errorData={ message } />);
+
+            const errorMessageBlock = wrapper.find('.errorMessage');
+            const text = errorMessageBlock.render().text();
+
+            expect(text.indexOf(message)).not.toEqual(-1);
+            expect(wrapper.find('.logContainer').exists()).toEqual(false); // 'Open link' area is not visible
+        });
+    });
+
+    it('should not fail for unknown error type', () => {
+
+        const errorData = { errorType: 999, status: '1234567890' };
+        const wrapper = shallow(<ModalFail errorData={ errorData } />);
 
         const errorMessageBlock = wrapper.find('.errorMessage');
         const text = errorMessageBlock.render().text();
+        expect(text).toMatch(/1234567890/);
+        expect(text).toMatch(/Unexpected error/);
 
-        expect(text.indexOf(message)).not.toEqual(-1);
         expect(wrapper.find('.logContainer').exists()).toEqual(false); // 'Open link' area is not visible
     });
 });

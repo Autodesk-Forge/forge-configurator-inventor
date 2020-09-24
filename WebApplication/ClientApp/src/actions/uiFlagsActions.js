@@ -27,7 +27,7 @@ export const actionTypes = {
     SHOW_UPDATE_FAILED: 'SHOW_UPDATE_FAILED',
     SHOW_LOGIN_FAILED: 'SHOW_LOGIN_FAILED',
     SHOW_DOWNLOAD_FAILED: 'SHOW_DOWNLOAD_FAILED',
-    SET_REPORT_URL: 'SET_REPORT_URL',
+    SET_ERROR_DATA: 'SET_ERROR_DATA',
     SHOW_DOWNLOAD_PROGRESS: 'SHOW_DOWNLOAD_PROGRESS',
     HIDE_DOWNLOAD_PROGRESS: 'HIDE_DOWNLOAD_PROGRESS',
     SET_DOWNLOAD_LINK: 'SET_DOWNLOAD_LINK',
@@ -110,10 +110,10 @@ export const showDownloadFailed = (visible) => {
     };
 };
 
-export const setReportUrlLink = (url) => {
+export const setErrorData = (errorData) => {
     return {
-        type: actionTypes.SET_REPORT_URL,
-        url
+        type: actionTypes.SET_ERROR_DATA,
+        errorData
     };
 };
 

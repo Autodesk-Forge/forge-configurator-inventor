@@ -86,24 +86,9 @@ namespace WebApplication.Controllers
                 await Destination.SendAsync(OnComplete, arg0, arg1, arg2);
             }
 
-            public async Task SendErrorAsync()
+            public async Task SendErrorAsync(ProcessingError error)
             {
-                await Destination.SendAsync(OnError);
-            }
-
-            public async Task SendErrorAsync(object arg0)
-            {
-                await Destination.SendAsync(OnError, arg0);
-            }
-
-            public async Task SendErrorAsync(object arg0, object arg1)
-            {
-                await Destination.SendAsync(OnError, arg0, arg1);
-            }
-
-            public async Task SendErrorAsync(object arg0, object arg1, object arg2)
-            {
-                await Destination.SendAsync(OnError, arg0, arg1, arg2);
+                await Destination.SendAsync(OnError, error);
             }
         }
 
@@ -117,10 +102,9 @@ namespace WebApplication.Controllers
         private readonly Sender _sender;
         private readonly Uploads _uploads;
         private readonly DtoGenerator _dtoGenerator;
-        private readonly ProjectService _projectService;
 
         public JobsHub(ILogger<JobsHub> logger, ProjectWork projectWork, LinkGenerator linkGenerator, UserResolver userResolver, 
-            ProfileProvider profileProvider, Uploads uploads, DtoGenerator dtoGenerator, ProjectService projectService)
+            ProfileProvider profileProvider, Uploads uploads, DtoGenerator dtoGenerator)
         {
             _logger = logger;
             _projectWork = projectWork;
@@ -129,7 +113,6 @@ namespace WebApplication.Controllers
             _userResolver = userResolver;
             _uploads = uploads;
             _dtoGenerator = dtoGenerator;
-            _projectService = projectService;
 
             _sender = new Sender(this);
         }
@@ -202,14 +185,18 @@ namespace WebApplication.Controllers
             catch (FdaProcessingException fpe)
             {
                 _logger.LogError(fpe, $"Processing failed for {job.Id}");
-                await _sender.SendErrorAsync(job.Id, fpe.ReportUrl);
+                await _sender.SendErrorAsync(new ReportUrlError(job.Id, fpe.ReportUrl));
+            }
+            catch (ProcessingException pe)
+            {
+                await _sender.SendErrorAsync(new MessagesError(job.Id, pe.Title, pe.Messages));
             }
             catch (Exception e)
             {
                 _logger.LogError(e, $"Processing failed for {job.Id}");
 
-                var message = $"Internal error. Try to repeat your last action and please report the following message: {e.Message}";
-                await _sender.SendErrorAsync(job.Id, message);
+                var message = $"Try to repeat your last action and please report the following message: {e.Message}";
+                await _sender.SendErrorAsync(new MessagesError(job.Id, "Internal error", new[]{ message }));
             }
         }
     }
