@@ -44,7 +44,6 @@ namespace DataCheckerPlugin
                                                                        { "{4D39D5F1-0985-4783-AA5A-FC16C288418C}", "Tube & Pipe" },
                                                                        { "{C6107C9D-C53F-4323-8768-F65F857F9F5A}", "Cable & Harness" },
                                                                        { "{24E39891-3782-448F-8C33-0D8D137148AC}", "Mold Design" },
-                                                                       { "{3D88D7B5-6DD8-4205-A2B5-2B51F7BF74A7}", "Content Center" },
                                                                        { "{BB8FE430-83BF-418D-8DF9-9B323D3DB9B9}", "Design Accelerator" },
                                                                     };
 
