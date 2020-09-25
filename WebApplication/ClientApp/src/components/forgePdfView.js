@@ -72,15 +72,43 @@ export class ForgePdfView extends Component {
         if (!this.props.drawingPdf)
             return;
 
-        this.viewer.loadModel( this.props.drawingPdf, { page: 1 }); // load page 1 by default
+        this.viewer.loadModel( this.props.drawingPdf, { page: 1 } ); // load page 1 by default
         //this.viewer.loadExtension("Autodesk.Viewing.MarkupsCore")
         //this.viewer.loadExtension("Autodesk.Viewing.MarkupsGui")
     }
 
     componentDidUpdate(prevProps) {
         if (this.viewer && Autodesk && (this.props.drawingPdf !== prevProps.drawingPdf)) {
-            this.viewer.loadModel( this.props.drawingPdf, { page: 1 }); // load page 1 by default
-            this.viewer.unloadModel(prevProps.drawingPdf);
+
+            if (prevProps.drawingPdf != null) {
+                // try to find model in allModels
+                const allModels = this.viewer.getAllModels();
+                allModels.forEach(model => {
+                    const urn = model.getData().urn;
+                    if (urn != prevProps.drawingPdf)
+                        return;
+
+                    this.viewer.hideModel(model);
+                });
+            }
+
+            if (this.props.drawingPdf != null) {
+                let found = null;
+                const allModels = this.viewer.getAllModels();
+                allModels.forEach(model => {
+                    const urn = model.getData().urn;
+                    if (urn != this.props.drawingPdf)
+                        return;
+
+                    if (found == null) {
+                        found = model;
+                        this.viewer.showModel(model);
+                    }
+                });
+                if (found == null) {
+                    this.viewer.loadModel( this.props.drawingPdf, { page: 1 }); // load page 1 by default
+                }
+            }
         }
     }
 
