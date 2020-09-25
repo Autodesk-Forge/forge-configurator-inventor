@@ -51,9 +51,11 @@ const confirmDelete = '//button[@id="delete_ok_button"]';
 // Set param value
 const paramsInput = '//div[@class="parameter"][text()="ParamName"]//input';
 
+// Canvas element in Forge Viewer
+const viewerCanvas = '//div[@id="ForgeViewer"]//canvas';
+
 module.exports = function() {
 
-  const forgeViewerSpinner = '//div[@id="ForgeViewer"]//div[@class="spinner"]';
   const userButton = '//button[@type="button" and (//span) and (//img)]';
   const loggedAnonymousUser = '//button[contains(@type, "button")]//img[contains(@alt, "Avatar image of Anonymous")]';
   const authorizationButton = '.auth-button';
@@ -88,11 +90,8 @@ module.exports = function() {
       // click on Model tab
       this.click(locators.modelTab);
 
-      // wait for spinner element to be visible
-      this.waitForVisible(forgeViewerSpinner, 15);
-
-      // wait for spinner to be hidden
-      this.waitForInvisible(forgeViewerSpinner, 30);
+      // wait for canvas creation in the viewer
+      this.waitForVisible(viewerCanvas, 15);
     },
     clickToAuthorizationButton(){
       // wait for User button
