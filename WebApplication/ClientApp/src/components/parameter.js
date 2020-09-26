@@ -57,18 +57,20 @@ export class Parameter extends Component {
     }
 
     render() {
-        const changedOnUpdateClassName = this.props.parameter.changedOnUpdate == true ? "changedOnUpdate" : "";
+        let parameterInputClassName = this.props.parameter.changedOnUpdate == true ? "changedOnUpdate" : "";
         const tooltipProps = this.props.parameter.changedOnUpdate == true ? {openOnHover: true} : {open: false};
         // for debugging the tooltip, replace the above two lines with these:
-        // const changedOnUpdateClassName = "changedOnUpdate";
+        // const parameterInputClassName = "changedOnUpdate";
         // const tooltipProps = {openOnHover: true};
-
+        if (this.props.parameter.errormessage) {
+            parameterInputClassName += " error";
+        }
         if (this.props.parameter.units === "Boolean")
             return (
                 <div className="parameter checkbox">
                     <Tooltip {...tooltipProps} className="paramTooltip" anchorPoint="top-center" content={paramTooltipRenderer}>
                         <div style={{"display": "flex"}}>
-                            <div className={changedOnUpdateClassName}>
+                            <div className={parameterInputClassName}>
                                 <Checkbox
                                     disabled={this.props.parameter.readonly}
                                     indeterminate={false}
@@ -90,7 +92,7 @@ export class Parameter extends Component {
                 <div className="parameter">
                     {this.props.parameter.label}
                     <Tooltip {...tooltipProps} className="paramTooltip" anchorPoint="top-center" content={paramTooltipRenderer}>
-                        <Dropdown className={changedOnUpdateClassName}
+                        <Dropdown className={parameterInputClassName}
                             variant="box"
                             disabled={this.props.parameter.readonly}
                             error={false}
@@ -109,7 +111,7 @@ export class Parameter extends Component {
             <div className="parameter">
                 {this.props.parameter.label}
                 <Tooltip {...tooltipProps} className="paramTooltip" anchorPoint="top-center" content={paramTooltipRenderer}>
-                    <Input className={changedOnUpdateClassName}
+                    <Input className={parameterInputClassName}
                         disabled={this.props.parameter.readonly}
                         onBlur={null}
                         onChange={this.onEditChange}

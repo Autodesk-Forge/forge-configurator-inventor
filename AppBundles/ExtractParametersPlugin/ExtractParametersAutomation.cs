@@ -128,14 +128,23 @@ namespace ExtractParametersPlugin
             try
             {
                 var parameters = new InventorParameters();
+                var docUnitsOfMeasure = doc.UnitsOfMeasure;
                 foreach (dynamic param in userParameters)
                 {
                     var nominalValue = param.Expression;
+                    string errorMessage = null;
                     try
                     {
-                        var unitType = doc.UnitsOfMeasure.GetTypeFromString(param.Units);
-                        var value = doc.UnitsOfMeasure.GetValueFromExpression(param.Expression, unitType);
-                        nominalValue = doc.UnitsOfMeasure.GetPreciseStringFromValue(value, unitType);
+                        var unitType = docUnitsOfMeasure.GetTypeFromString(param.Units);
+                        if (docUnitsOfMeasure.IsExpressionValid(param.Expression, unitType))
+                        {
+                            var value = docUnitsOfMeasure.GetValueFromExpression(param.Expression, unitType);
+                            nominalValue = docUnitsOfMeasure.GetPreciseStringFromValue(value, unitType);
+                        }
+                        else
+                        {
+                            errorMessage = "Parameter's expression is not valid for its unit type";
+                        }
                     }
                     // not all unitTypes seem to be convertible (e.g. kTextUnits). In that case, we'll go on with param.Expression assigned before.
                     catch (Exception e)
@@ -147,7 +156,8 @@ namespace ExtractParametersPlugin
                     {
                         Unit = param.Units,
                         Value = nominalValue,
-                        Values = param.ExpressionList?.GetExpressionList() ?? new string[0]
+                        Values = param.ExpressionList?.GetExpressionList() ?? new string[0],
+                        ErrorMessage = errorMessage
                     };
                     parameters.Add(param.Name, parameter);
                 }

@@ -47,6 +47,9 @@ namespace Shared
 
         [JsonProperty("label")]
         public string Label { get; set; }
+
+        [JsonProperty("errormessage")]
+        public string ErrorMessage { get; set; }
     }
 
     /// <summary>
