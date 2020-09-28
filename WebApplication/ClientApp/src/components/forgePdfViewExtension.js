@@ -22,8 +22,8 @@ function ForgePdfViewExtension(viewer, options) {
     Autodesk.Viewing.Extension.call(this, viewer, options);
 
     this.subToolbar = null;
-    this.prevbutton = new Autodesk.Viewing.UI.Button('drawing-button-prev');
-    this.nextbutton = new Autodesk.Viewing.UI.Button('drawing-button-next');
+    this.prevButton = new Autodesk.Viewing.UI.Button('drawing-button-prev');
+    this.nextButton = new Autodesk.Viewing.UI.Button('drawing-button-next');
 }
 
 ForgePdfViewExtension.prototype = Object.create(Autodesk.Viewing.Extension.prototype);
@@ -66,28 +66,28 @@ ForgePdfViewExtension.prototype.createUI = function() {
 
     const thisExtension = this;
 
-    this.prevbutton.onClick = function () {
+    this.prevButton.onClick = function () {
         const jumpTo = thisExtension.getActivePage(thisExtension.viewer.model) - 1;
         thisExtension.switchToPage(thisExtension.viewer, jumpTo);
     };
 
-    this.prevbutton.addClass('drawing-button-prev');
-    this.prevbutton.setIcon('drawing-icon-prev');
-    this.prevbutton.setToolTip('Previous Drawing Sheet');
+    this.prevButton.addClass('drawing-button-prev');
+    this.prevButton.setIcon('drawing-icon-prev');
+    this.prevButton.setToolTip('Previous Drawing Sheet');
 
-    this.nextbutton.onClick = function () {
+    this.nextButton.onClick = function () {
         const jumpTo = thisExtension.getActivePage(thisExtension.viewer.model) + 1;
         thisExtension.switchToPage(thisExtension.viewer, jumpTo);
     };
 
-    this.nextbutton.addClass('drawing-button-next');
-    this.nextbutton.setIcon('drawing-icon-next');
-    this.nextbutton.setToolTip('Next Drawing Sheet');
+    this.nextButton.addClass('drawing-button-next');
+    this.nextButton.setIcon('drawing-icon-next');
+    this.nextButton.setToolTip('Next Drawing Sheet');
 
     // SubToolbar
     this.subToolbar = new Autodesk.Viewing.UI.ControlGroup('custom-drawing-toolbar');
-    this.subToolbar.addControl(this.prevbutton);
-    this.subToolbar.addControl(this.nextbutton);
+    this.subToolbar.addControl(this.prevButton);
+    this.subToolbar.addControl(this.nextButton);
 
     this.viewer.toolbar.addControl(this.subToolbar);
 
@@ -127,9 +127,9 @@ ForgePdfViewExtension.prototype.setupButtonsVisibility = function(model) {
 
     // disable prev button on the first page and next on the last one
     const prevState = actualPage === 1 ? Autodesk.Viewing.UI.Button.State.DISABLED : Autodesk.Viewing.UI.Button.State.INACTIVE;
-    this.prevbutton.setState(prevState);
+    this.prevButton.setState(prevState);
     const nextState = actualPage === numPages ? Autodesk.Viewing.UI.Button.State.DISABLED : Autodesk.Viewing.UI.Button.State.INACTIVE;
-    this.nextbutton.setState(nextState);
+    this.nextButton.setState(nextState);
 
     // show buttons
     this.subToolbar.setVisible(true);

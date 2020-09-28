@@ -80,32 +80,35 @@ export class ForgePdfView extends Component {
     componentDidUpdate(prevProps) {
         if (this.viewer && Autodesk && (this.props.drawingPdf !== prevProps.drawingPdf)) {
 
-            if (prevProps.drawingPdf != null) {
-                // try to find model in allModels
-                const allModels = this.viewer.getAllModels();
-                allModels.forEach(model => {
-                    const urn = model.getData().urn;
-                    if (urn != prevProps.drawingPdf)
-                        return;
+            const findModelsForUrn = function(viewer, urn, onlyFirstModel) {
+                const allModels = viewer.getAllModels();
+                const models = [];
+                for (const model of allModels) {
+                    const modelUrn = model.getData().urn;
+                    if (modelUrn != urn)
+                        continue;
 
-                    this.viewer.hideModel(model);
-                });
+                    models.push(model);
+
+                    if (onlyFirstModel === true)
+                        break;
+                }
+
+                return models;
+            };
+
+            if (prevProps.drawingPdf != null) {
+                // try to find model(s) in allModels and hide all of them
+                const modelsToHide = findModelsForUrn(this.viewer, prevProps.drawingPdf);
+                modelsToHide.forEach(model => this.viewer.hideModel(model));
             }
 
             if (this.props.drawingPdf != null) {
-                let found = null;
-                const allModels = this.viewer.getAllModels();
-                allModels.forEach(model => {
-                    const urn = model.getData().urn;
-                    if (urn != this.props.drawingPdf)
-                        return;
-
-                    if (found == null) {
-                        found = model;
-                        this.viewer.showModel(model);
-                    }
-                });
-                if (found == null) {
+                // try to find the first model of specific urn and show it or load
+                const modelToShow = findModelsForUrn(this.viewer, this.props.drawingPdf, true);
+                if (modelToShow.length === 1) {
+                    this.viewer.showModel(modelToShow[0]);
+                } else {
                     this.viewer.loadModel( this.props.drawingPdf, { page: 1 }); // load page 1 by default
                 }
             }
