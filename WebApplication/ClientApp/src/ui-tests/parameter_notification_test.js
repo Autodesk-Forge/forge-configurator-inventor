@@ -22,12 +22,11 @@ const updatedElements = '//div[(@class = "parameter" or @class = "parameter chec
 const tooltipTestNotify = '//div[contains(@class,"paramTooltip__flyout-container")][ancestor::div[contains(@class , "parameter") and contains(text(),"TestNotify")]]';
 const parameterTestNotify = '//div[contains(@class , "parameter") and contains(text(),"TestNotify")]';
 
+Feature('Parameter Notification');
 
 Before((I) => {
     I.amOnPage('/');
 });
-
-Feature('Parameter Notification');
 
 // validate that Parameter notification is displayed
 Scenario('should check parameter notification', async (I) => {

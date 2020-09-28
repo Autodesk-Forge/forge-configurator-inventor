@@ -47,11 +47,11 @@ function compareDrawings(array1, array2)
   return true;
 }
 
+Feature('Drawing Validation');
+
 Before((I) => {
     I.amOnPage('/');
 });
-
-Feature('Drawing Validation');
 
 // this test checks that Drawing tab displays correct data
 // if an assembly has a drawing then the drawing should be displayed

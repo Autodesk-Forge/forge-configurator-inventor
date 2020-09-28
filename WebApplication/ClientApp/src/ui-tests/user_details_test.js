@@ -17,12 +17,11 @@
 /////////////////////////////////////////////////////////////////////
 
 /* eslint-disable no-undef */
+Feature('User Details Control');
 
 Before((I) => {
     I.amOnPage('/');
 });
-
-Feature('User Details Control');
 
 Scenario('should check if user details control has the expected items', async (I) => {
     I.see("USER", locate('div').find('span.user'));

@@ -23,11 +23,11 @@ const updatingDialogTitle = '//div[@role="dialog" and .//p[contains(.,"Updating 
 const failedDialogTitle = '//div[@role="dialog" and .//p[contains(.,"Update Failed")]]';
 const projectShelves = '//div[@role="row"]//div[text()="shelves"]';
 
+Feature('Failed Dialog');
+
 Before((I) => {
     I.amOnPage('/');
 });
-
-Feature('Failed Dialog');
 
 //ensure that Failed Dialog is displayed when iLogic Failed!!!
 Scenario('should check incorrect input to show failed dialog', async (I) => {

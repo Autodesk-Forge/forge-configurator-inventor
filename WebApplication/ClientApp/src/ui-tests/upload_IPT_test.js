@@ -19,11 +19,11 @@
 /* eslint-disable no-console */
 /* eslint-disable no-undef */
 
+Feature('Upload and delete IPT design');
+
 Before((I) => {
     I.amOnPage('/');
  });
-
- Feature('Upload and delete IPT design');
 
  Scenario('upload IPT design workflow', async (I) => {
     await I.signIn();

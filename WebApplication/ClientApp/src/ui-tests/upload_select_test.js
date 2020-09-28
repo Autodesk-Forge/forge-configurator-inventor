@@ -19,20 +19,19 @@
 /* eslint-disable no-console */
 /* eslint-disable no-undef */
 
-Before((I) => {
-   I.amOnPage('/');
-});
-
 Feature('Select Upload Assembly');
 
-Scenario('upload workflow 2nd assembly', async (I) => {
+Before(async (I) => {
+   I.amOnPage('/');
    await I.signIn();
+});
+
+Scenario('upload workflow 2nd assembly', (I) => {
 
    I.uploadProject('src/ui-tests/dataset/SimpleBox2asm.zip', 'Assembly2.iam');
 });
 
-Scenario('delete workflow', async (I) => {
-   await I.signIn();
+Scenario('delete workflow', (I) => {
 
    I.deleteProject('SimpleBox2asm');
 });

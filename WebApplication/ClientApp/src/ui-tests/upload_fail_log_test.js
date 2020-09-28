@@ -19,14 +19,14 @@
 /* eslint-disable no-console */
 /* eslint-disable no-undef */
 
+Feature('Failed Upload Dialog');
+
 Before((I) => {
     I.amOnPage('/');
- });
+});
 
- Feature('Failed Upload Dialog');
-
- Scenario('upload IPT and verify that exists report.txt url', async (I) => {
+Scenario('upload IPT and verify that exists report.txt url', async (I) => {
    await I.signIn();
 
    I.uploadInvalidIPTFile('src/ui-tests/dataset/invalid.ipt');
- });
+});

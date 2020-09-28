@@ -19,11 +19,11 @@
 /* eslint-disable no-console */
 /* eslint-disable no-undef */
 
+Feature('Upload and delete');
+
 Before((I) => {
    I.amOnPage('/');
 });
-
-Feature('Upload and delete');
 
 Scenario('upload workflow', async (I) => {
    await I.signIn();
