@@ -16,7 +16,6 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-/* eslint-disable no-console */
 /* eslint-disable no-undef */
 
 Feature('Failed Upload Dialog');

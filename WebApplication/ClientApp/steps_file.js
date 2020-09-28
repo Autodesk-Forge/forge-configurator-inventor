@@ -164,6 +164,19 @@ module.exports = function() {
       // upload the zip to server
       this.click(uploadButton);
     },
+    uploadProjectFailure(projectZipFile, assemblyLocation, postAction) {
+
+      this.uploadProjectBase(projectZipFile, assemblyLocation, postAction);
+
+      // Wait for Upload Failed dialog
+      this.waitForVisible(uploadFailedDialog, locators.FDAActionTimeout);
+
+      // run post-action
+      if (postAction) postAction();
+
+      // close the dialog
+      this.click(closeButton);
+    },
     uploadIPTFile(IPT_File) {
       // invoke upload UI
       this.waitForVisible(uploadPackageButton);

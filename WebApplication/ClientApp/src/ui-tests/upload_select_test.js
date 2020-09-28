@@ -17,43 +17,50 @@
 /////////////////////////////////////////////////////////////////////
 
 /* eslint-disable no-undef */
+const assert = require('assert');
 
 Feature('Select Upload Assembly');
 
 Before(async (I) => {
-   I.amOnPage('/');
-   await I.signIn();
+    I.amOnPage('/');
+    await I.signIn();
 });
 
 Scenario('upload workflow 2nd assembly', (I) => {
-
-   I.uploadProject('src/ui-tests/dataset/SimpleBox2asm.zip', 'Assembly2.iam');
+    I.uploadProject('src/ui-tests/dataset/SimpleBox2asm.zip', 'Assembly2.iam');
 });
 
 Scenario('delete workflow', (I) => {
-
-   I.deleteProject('SimpleBox2asm');
+    I.deleteProject('SimpleBox2asm');
 });
-
-const uploadFailedDialog = '//p[text()="Upload Failed"]';
-const closeButton = '//button[@title="Close"]';
-
-const locators = require('./elements_definition.js');
-const assert = require('assert');
 
 Scenario('upload assembly with non-supported addins', async (I) => {
 
-   I.uploadProjectBase('src/ui-tests/dataset/NotSupportedAddins.zip', 'notSupportedAddins.iam');
+    I.uploadProjectFailure(
+        'src/ui-tests/dataset/NotSupportedAddins.zip',
+        'notSupportedAddins.iam',
+        async () => {
+            // check the error box title
+            I.see(
+                'Adoption failed',
+                '//div[@class="modalFailContent"]//p[contains(@class,"errorMessageTitle")]'
+            );
 
-   // Wait for Upload Failed dialog
-   I.waitForVisible(uploadFailedDialog, locators.FDAActionTimeout);
-   // const uploadFailLogLink = '//*[contains(@href,"report.txt")]';
-   // I.seeElement(uploadFailLogLink);
+            // get error message
+            const errorMessage = await I.grabTextFrom(
+                '//div[@class="modalFailContent"]//p[contains(@class,"errorMessage")][2]'
+            );
 
-   // const errorTitle = locate('p').withAttr({class: 'errorMessageTitle'});
-   I.see('Adoption failed', '//div[@class="modalFailContent"]//p[contains(@class,"errorMessageTitle")]');
-   const errorMessage = await I.grabTextFrom('//div[@class="modalFailContent"]//p[contains(@class,"errorMessage")][2]');
-   assert.match(errorMessage, /Detected unsupported plugins/);
-
-   I.click(closeButton);
+            // validate if all names of all unsupported plugins are there
+            [
+                /Detected unsupported plugins/,
+                /Frame Generator/,
+                /Tube & Pipe/,
+                /Cable & Harness/,
+                /Mold Design/,
+                /Design Accelerator/,
+                /mimimimi/
+            ].forEach((snippet) => assert.match(errorMessage, snippet));
+        }
+    );
 });
