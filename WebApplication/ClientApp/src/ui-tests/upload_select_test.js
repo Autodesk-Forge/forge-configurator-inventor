@@ -36,31 +36,30 @@ Scenario('delete workflow', (I) => {
 
 Scenario('upload assembly with non-supported addins', async (I) => {
 
-    I.uploadProjectFailure(
+    await I.uploadProjectFailure(
         'src/ui-tests/dataset/NotSupportedAddins.zip',
-        'notSupportedAddins.iam',
-        async () => {
-            // check the error box title
-            I.see(
-                'Adoption failed',
-                '//div[@class="modalFailContent"]//p[contains(@class,"errorMessageTitle")]'
-            );
+        'notSupportedAddins.iam');
 
-            // get error message
-            const errorMessage = await I.grabTextFrom(
-                '//div[@class="modalFailContent"]//p[contains(@class,"errorMessage")][2]'
-            );
-
-            // validate if all names of all unsupported plugins are there
-            [
-                /Detected unsupported plugins/,
-                /Frame Generator/,
-                /Tube & Pipe/,
-                /Cable & Harness/,
-                /Mold Design/,
-                /Design Accelerator/,
-                /mimimimi/
-            ].forEach((snippet) => assert.match(errorMessage, snippet));
-        }
+    // check the error box title
+    I.see(
+        'Adoption failed',
+        '//div[@class="modalFailContent"]//p[contains(@class,"errorMessageTitle")]'
     );
+
+    // get error message
+    const errorMessage = await I.grabTextFrom(
+        '//div[@class="modalFailContent"]//p[contains(@class,"errorMessage")][2]'
+    );
+
+    // validate if all names of all unsupported plugins are there
+    [
+        /Detected unsupported plugins/,
+        /Frame Generator/,
+        /Tube & Pipe/,
+        /Cable & Harness/,
+        /Mold Design/,
+        /Design Accelerator/,
+    ].forEach((snippet) => assert.match(errorMessage, snippet));
+
+    I.closeCompletionDialog();
 });

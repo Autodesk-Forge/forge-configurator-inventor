@@ -148,7 +148,7 @@ module.exports = function() {
 
       // Wait for file to be uploaded
       this.waitForVisible(uploadConfirmationDialog, locators.FDAActionTimeout);
-      this.click(closeButton);
+      this.closeCompletionDialog();
     },
     uploadProjectBase(projectZipFile, projectAssemblyLocation) {
       // invoke upload UI
@@ -164,17 +164,15 @@ module.exports = function() {
       // upload the zip to server
       this.click(uploadButton);
     },
-    uploadProjectFailure(projectZipFile, assemblyLocation, postAction) {
+    uploadProjectFailure(projectZipFile, assemblyLocation) {
 
-      this.uploadProjectBase(projectZipFile, assemblyLocation, postAction);
+      this.uploadProjectBase(projectZipFile, assemblyLocation);
 
       // Wait for Upload Failed dialog
       this.waitForVisible(uploadFailedDialog, locators.FDAActionTimeout);
-
-      // run post-action
-      if (postAction) postAction();
-
-      // close the dialog
+    },
+    /** Close Succeded/Failed dialog (on completion of async operation) */
+    closeCompletionDialog() {
       this.click(closeButton);
     },
     uploadIPTFile(IPT_File) {
@@ -190,7 +188,7 @@ module.exports = function() {
 
       // Wait for file to be uploaded
       this.waitForVisible(uploadConfirmationDialog, locators.FDAActionTimeout);
-      this.click(closeButton);
+      this.closeCompletionDialog();
     },
     uploadInvalidIPTFile(IPT_File) {
       // invoke upload UI
@@ -208,7 +206,7 @@ module.exports = function() {
       // check log url link
       this.seeElement(uploadFailLogLink);
 
-      this.click(closeButton);
+      this.closeCompletionDialog();
     },
     deleteProject(projectName) {
       // hover above project
