@@ -80,34 +80,33 @@ export class ForgePdfView extends Component {
     componentDidUpdate(prevProps) {
         if (this.viewer && Autodesk && (this.props.drawingPdf !== prevProps.drawingPdf)) {
 
-            const findModelsForUrn = function(viewer, urn, onlyFirstModel) {
+            const findModelForUrn = function(viewer, urn) {
                 const allModels = viewer.getAllModels();
-                const models = [];
+                let modelForUrn = null;
                 for (const model of allModels) {
                     const modelUrn = model.getData().urn;
                     if (modelUrn != urn)
                         continue;
 
-                    models.push(model);
-
-                    if (onlyFirstModel)
-                        break;
+                        modelForUrn = model;
+                    break;
                 }
 
-                return models;
+                return modelForUrn;
             };
 
             if (prevProps.drawingPdf != null) {
-                // try to find model(s) in allModels and hide all of them
-                const modelsToHide = findModelsForUrn(this.viewer, prevProps.drawingPdf);
-                modelsToHide.forEach(model => this.viewer.hideModel(model));
+                // try to find model in viewer.allModels and hide it
+                const modelToHide = findModelForUrn(this.viewer, prevProps.drawingPdf);
+                if (modelToHide != null)
+                    this.viewer.hideModel(modelToHide);
             }
 
             if (this.props.drawingPdf != null) {
-                // try to find the first model of specific urn and show it or load
-                const modelToShow = findModelsForUrn(this.viewer, this.props.drawingPdf, true);
-                if (modelToShow.length === 1) {
-                    this.viewer.showModel(modelToShow[0]);
+                // try to find model of specific urn and show it or load
+                const modelToShow = findModelForUrn(this.viewer, this.props.drawingPdf);
+                if (modelToShow != null) {
+                    this.viewer.showModel(modelToShow);
                 } else {
                     this.viewer.loadModel( this.props.drawingPdf, { page: 1 }); // load page 1 by default
                 }
