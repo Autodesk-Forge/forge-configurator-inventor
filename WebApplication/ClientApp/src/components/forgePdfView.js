@@ -90,7 +90,7 @@ export class ForgePdfView extends Component {
 
                     models.push(model);
 
-                    if (onlyFirstModel === true)
+                    if (onlyFirstModel)
                         break;
                 }
 
