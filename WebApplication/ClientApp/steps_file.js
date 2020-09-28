@@ -143,6 +143,14 @@ module.exports = function() {
       this.waitForElement(loggedAnonymousUser, 10);
     },
     uploadProject(projectZipFile, projectAssemblyLocation) {
+
+      this.uploadProjectBase(projectZipFile, projectAssemblyLocation);
+
+      // Wait for file to be uploaded
+      this.waitForVisible(uploadConfirmationDialog, locators.FDAActionTimeout);
+      this.click(closeButton);
+    },
+    uploadProjectBase(projectZipFile, projectAssemblyLocation) {
       // invoke upload UI
       this.waitForVisible(uploadPackageButton);
       this.click(uploadPackageButton);
@@ -155,10 +163,6 @@ module.exports = function() {
 
       // upload the zip to server
       this.click(uploadButton);
-
-      // Wait for file to be uploaded
-      this.waitForVisible(uploadConfirmationDialog, locators.FDAActionTimeout);
-      this.click(closeButton);
     },
     uploadIPTFile(IPT_File) {
       // invoke upload UI

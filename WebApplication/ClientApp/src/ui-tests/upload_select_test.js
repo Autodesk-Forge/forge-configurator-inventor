@@ -16,7 +16,6 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-/* eslint-disable no-console */
 /* eslint-disable no-undef */
 
 Feature('Select Upload Assembly');
@@ -34,4 +33,27 @@ Scenario('upload workflow 2nd assembly', (I) => {
 Scenario('delete workflow', (I) => {
 
    I.deleteProject('SimpleBox2asm');
+});
+
+const uploadFailedDialog = '//p[text()="Upload Failed"]';
+const closeButton = '//button[@title="Close"]';
+
+const locators = require('./elements_definition.js');
+const assert = require('assert');
+
+Scenario('upload assembly with non-supported addins', async (I) => {
+
+   I.uploadProjectBase('src/ui-tests/dataset/NotSupportedAddins.zip', 'notSupportedAddins.iam');
+
+   // Wait for Upload Failed dialog
+   I.waitForVisible(uploadFailedDialog, locators.FDAActionTimeout);
+   // const uploadFailLogLink = '//*[contains(@href,"report.txt")]';
+   // I.seeElement(uploadFailLogLink);
+
+   // const errorTitle = locate('p').withAttr({class: 'errorMessageTitle'});
+   I.see('Adoption failed', '//div[@class="modalFailContent"]//p[contains(@class,"errorMessageTitle")]');
+   const errorMessage = await I.grabTextFrom('//div[@class="modalFailContent"]//p[contains(@class,"errorMessage")][2]');
+   assert.match(errorMessage, /Detected unsupported plugins/);
+
+   I.click(closeButton);
 });
