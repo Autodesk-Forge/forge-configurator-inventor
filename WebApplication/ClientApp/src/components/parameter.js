@@ -27,11 +27,13 @@ import Dropdown from '@hig/dropdown';
 import Tooltip from '@hig/tooltip';
 import Spacer from "@hig/spacer";
 
-const paramTooltipRenderer = () => {
+const paramTooltipRenderer = (parameter) => {
+    const title = parameter.errormessage ? "Parameter Error" : "Parameter has changed";
+    const message = parameter.errormessage || "Inventor Server updated the parameter. Your initial input was overridden.";
     return (<div className="tooltipContent">
-        <div style={{"fontWeight": "bold"}}>Parameter has changed.</div>
+        <div style={{"fontWeight": "bold"}}>{title}</div>
         <Spacer  spacing="s"/>
-        <div>Inventor Server updated the parameter. Your initial input was overridden.</div>
+        <div>{message}</div>
     </div>);
 };
 
@@ -58,7 +60,8 @@ export class Parameter extends Component {
 
     render() {
         let parameterInputClassName = this.props.parameter.changedOnUpdate == true ? "changedOnUpdate" : "";
-        const tooltipProps = this.props.parameter.changedOnUpdate == true ? {openOnHover: true} : {open: false};
+        const showToolTip = this.props.parameter.changedOnUpdate || (this.props.parameter.errormessage !== undefined);
+        const tooltipProps = showToolTip == true ? {openOnHover: true} : {open: false};
         // for debugging the tooltip, replace the above two lines with these:
         // const parameterInputClassName = "changedOnUpdate";
         // const tooltipProps = {openOnHover: true};
@@ -68,7 +71,7 @@ export class Parameter extends Component {
         if (this.props.parameter.units === "Boolean")
             return (
                 <div className="parameter checkbox">
-                    <Tooltip {...tooltipProps} className="paramTooltip" anchorPoint="top-center" content={paramTooltipRenderer}>
+                    <Tooltip {...tooltipProps} className="paramTooltip" anchorPoint="top-center" content={paramTooltipRenderer(this.props.parameter)}>
                         <div style={{"display": "flex"}}>
                             <div className={parameterInputClassName}>
                                 <Checkbox
@@ -91,7 +94,7 @@ export class Parameter extends Component {
             return (
                 <div className="parameter">
                     {this.props.parameter.label}
-                    <Tooltip {...tooltipProps} className="paramTooltip" anchorPoint="top-center" content={paramTooltipRenderer}>
+                    <Tooltip {...tooltipProps} className="paramTooltip" anchorPoint="top-center" content={paramTooltipRenderer(this.props.parameter)}>
                         <Dropdown className={parameterInputClassName}
                             variant="box"
                             disabled={this.props.parameter.readonly}
@@ -110,7 +113,7 @@ export class Parameter extends Component {
             return (
             <div className="parameter">
                 {this.props.parameter.label}
-                <Tooltip {...tooltipProps} className="paramTooltip" anchorPoint="top-center" content={paramTooltipRenderer}>
+                <Tooltip {...tooltipProps} className="paramTooltip" anchorPoint="top-center" content={paramTooltipRenderer(this.props.parameter)}>
                     <Input className={parameterInputClassName}
                         disabled={this.props.parameter.readonly}
                         onBlur={null}
