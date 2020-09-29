@@ -25,7 +25,7 @@ Before((I) => {
     I.amOnPage('/');
 });
 
-Scenario('should check switch to model tab loads the viewer', async (I) => {
+Scenario('should check switch to model tab loads the viewer', (I) => {
 
     const viewerModelSelector = '#ViewerModelStructurePanel';
 

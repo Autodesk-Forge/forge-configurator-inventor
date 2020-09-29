@@ -25,13 +25,13 @@ const projectShelves = '//div[@role="row"]//div[text()="shelves"]';
 
 Feature('Failed Dialog');
 
-Before((I) => {
+Before(async (I) => {
     I.amOnPage('/');
+    await I.signIn();
 });
 
 //ensure that Failed Dialog is displayed when iLogic Failed!!!
-Scenario('should check incorrect input to show failed dialog', async (I) => {
-    await I.signIn();
+Scenario('should check incorrect input to show failed dialog', (I) => {
 
     // uploaded an assembly with iLogic error (missing parts for iLogic)
     I.uploadProject('src/ui-tests/dataset/shelves.zip', 'shelves.iam');
@@ -55,8 +55,7 @@ Scenario('should check incorrect input to show failed dialog', async (I) => {
 
 });
 
-Scenario('delete workflow', async (I) => {
-   await I.signIn();
+Scenario('delete workflow', (I) => {
 
    I.deleteProject('shelves');
 });

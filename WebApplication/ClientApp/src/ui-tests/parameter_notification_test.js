@@ -24,14 +24,13 @@ const parameterTestNotify = '//div[contains(@class , "parameter") and contains(t
 
 Feature('Parameter Notification');
 
-Before((I) => {
+Before(async (I) => {
     I.amOnPage('/');
+    await I.signIn();
 });
 
 // validate that Parameter notification is displayed
 Scenario('should check parameter notification', async (I) => {
-
-    I.signIn();
 
     I.uploadIPTFile('src/ui-tests/dataset/EndCap.ipt');
 
@@ -56,6 +55,5 @@ Scenario('should check parameter notification', async (I) => {
 
   Scenario('Delete the project', (I) => {
 
-    I.signIn();
     I.deleteProject('EndCap');
   });

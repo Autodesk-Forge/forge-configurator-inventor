@@ -20,12 +20,12 @@
 
 Feature('Failed Upload Dialog');
 
-Before((I) => {
+Before(async (I) => {
     I.amOnPage('/');
+    await I.signIn();
 });
 
-Scenario('upload IPT and verify that exists report.txt url', async (I) => {
-   await I.signIn();
+Scenario('upload IPT and verify that exists report.txt url', (I) => {
 
    I.uploadInvalidIPTFile('src/ui-tests/dataset/invalid.ipt');
 });
