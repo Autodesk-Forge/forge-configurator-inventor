@@ -18,6 +18,7 @@
 
 /* eslint-disable no-undef */
 const assert = require('assert');
+const locators = require('./elements_definition.js');
 
 Feature('Select Upload Assembly');
 
@@ -36,20 +37,17 @@ Scenario('delete workflow', (I) => {
 
 Scenario('upload assembly with non-supported addins', async (I) => {
 
-    await I.uploadProjectFailure(
+    I.dontSeeElement(locators.getProject('NotSupportedAddins'));
+
+    I.uploadProjectFailure(
         'src/ui-tests/dataset/NotSupportedAddins.zip',
         'notSupportedAddins.iam');
 
     // check the error box title
-    I.see(
-        'Adoption failed',
-        '//div[@class="modalFailContent"]//p[contains(@class,"errorMessageTitle")]'
-    );
+    I.see('Adoption failed', locators.xpErrorMessageTitle);
 
     // get error message
-    const errorMessage = await I.grabTextFrom(
-        '//div[@class="modalFailContent"]//p[contains(@class,"errorMessage")][2]'
-    );
+    const errorMessage = await I.grabTextFrom(locators.xpErrorMessage);
 
     // validate if all names of all unsupported plugins are there
     [
@@ -62,4 +60,7 @@ Scenario('upload assembly with non-supported addins', async (I) => {
     ].forEach((snippet) => assert.match(errorMessage, snippet));
 
     I.closeCompletionDialog();
+
+    // ensure the project is deleted
+    I.dontSeeElement(locators.getProject('NotSupportedAddins'));
 });

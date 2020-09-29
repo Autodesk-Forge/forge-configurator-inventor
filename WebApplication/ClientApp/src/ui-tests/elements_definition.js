@@ -49,5 +49,8 @@ module.exports = {
      xpFirstInput : '//div[2]/div[1] //input',
      xpFirstInputOnModelTab : '//*[@id="model"]/div/div[1]/div[2]/div[1] //input',
      FDAActionTimeout: 600,
-     xpButtonExportPDF : locate('button').find('span').withText('Export PDF')
+     xpButtonExportPDF: locate('button').find('span').withText('Export PDF'),
+     getProject: (name) => locate('li').find('span').withAttr({role: 'button'}).withText(name),
+     xpErrorMessageTitle: '//div[@class="modalFailContent"]//p[contains(@class,"errorMessageTitle")]',
+     xpErrorMessage: '//div[@class="modalFailContent"]//p[contains(@class,"errorMessage")][2]'
 };

@@ -63,12 +63,6 @@ module.exports = function() {
   const password = process.env.SDRA_PASSWORD;
   const allowButton = '#allow_btn';
 
-  // returns Project name locator
-  function getProjectLocator(name)
-  {
-    return locate('li').find('span').withAttr({role: 'button'}).withText(name);
-  }
-
   return actor({
 
     // Define custom steps here, use 'this' to access default methods of I.
@@ -84,7 +78,7 @@ module.exports = function() {
       this.waitForElement(locators.xpProjectList, 10);
 
       // emulate click to trigger project loading
-      this.click( getProjectLocator(name));
+      this.click( locators.getProject(name));
     },
     clickToModelTab() { // we create this method because we need to wait for viewer - https://jira.autodesk.com/browse/INVGEN-41877
       // click on Model tab
