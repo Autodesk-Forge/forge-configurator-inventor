@@ -22,11 +22,11 @@ const locators = require('./elements_definition.js');
 const projectButton =  '//div[contains(@role, "button") and .//*[local-name()="img"]]';
 const currentProjectName =  locate('p').inside(projectButton);
 
+Feature('Project Switcher');
+
 Before((I) => {
     I.amOnPage('/');
 });
-
-Feature('Project Switcher');
 
 Scenario('should check Project switcher is loaded', async (I) => {
     // wait until project combo is displayed

@@ -20,11 +20,11 @@
 /* eslint-disable no-undef */
 const locators = require('./elements_definition.js');
 
+Feature('Parameters panel');
+
 Before((I) => {
     I.amOnPage('/');
 });
-
-Feature('Parameters panel');
 
 Scenario('should check if Parameter panel has Reset and Update button', async (I) => {
 

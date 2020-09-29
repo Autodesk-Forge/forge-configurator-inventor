@@ -50,11 +50,11 @@ function compareArrays(array1, array2)
   return true;
 }
 
+Feature('iLogic Parameters');
+
 Before((I) => {
     I.amOnPage('/');
 });
-
-Feature('iLogic Parameters');
 
 // validate that all parameters in iLogic form are displayed in the List of Parameters
 Scenario('should check parameters in iLogic Form with list of parameters in Model Tab', async (I) => {
@@ -74,7 +74,7 @@ Scenario('should check parameters in iLogic Form with list of parameters in Mode
 // validate that all Read only parameters in iLogic form are displayed in the List of Parameters
 Scenario('should check parameters in iLogic Form with list of Read Only parameters in Model Tab', async (I) => {
 
-  I.signIn();
+  await I.signIn();
 
   I.uploadIPTFile('src/ui-tests/dataset/EndCap.ipt');
 
@@ -91,8 +91,8 @@ Scenario('should check parameters in iLogic Form with list of Read Only paramete
 
 });
 
-Scenario('Delete the project', (I) => {
+Scenario('Delete the project', async (I) => {
 
-  I.signIn();
+  await I.signIn();
   I.deleteProject('EndCap');
 });

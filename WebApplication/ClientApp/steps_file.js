@@ -63,12 +63,6 @@ module.exports = function() {
   const password = process.env.SDRA_PASSWORD;
   const allowButton = '#allow_btn';
 
-  // returns Project name locator
-  function getProjectLocator(name)
-  {
-    return locate('li').find('span').withAttr({role: 'button'}).withText(name);
-  }
-
   return actor({
 
     // Define custom steps here, use 'this' to access default methods of I.
@@ -84,7 +78,7 @@ module.exports = function() {
       this.waitForElement(locators.xpProjectList, 10);
 
       // emulate click to trigger project loading
-      this.click( getProjectLocator(name));
+      this.click( locators.getProject(name));
     },
     clickToModelTab() { // we create this method because we need to wait for viewer - https://jira.autodesk.com/browse/INVGEN-41877
       // click on Model tab
@@ -143,6 +137,14 @@ module.exports = function() {
       this.waitForElement(loggedAnonymousUser, 10);
     },
     uploadProject(projectZipFile, projectAssemblyLocation) {
+
+      this.uploadProjectBase(projectZipFile, projectAssemblyLocation);
+
+      // Wait for file to be uploaded
+      this.waitForVisible(uploadConfirmationDialog, locators.FDAActionTimeout);
+      this.closeCompletionDialog();
+    },
+    uploadProjectBase(projectZipFile, projectAssemblyLocation) {
       // invoke upload UI
       this.waitForVisible(uploadPackageButton);
       this.click(uploadPackageButton);
@@ -155,9 +157,16 @@ module.exports = function() {
 
       // upload the zip to server
       this.click(uploadButton);
+    },
+    uploadProjectFailure(projectZipFile, assemblyLocation) {
 
-      // Wait for file to be uploaded
-      this.waitForVisible(uploadConfirmationDialog, locators.FDAActionTimeout);
+      this.uploadProjectBase(projectZipFile, assemblyLocation);
+
+      // Wait for Upload Failed dialog
+      this.waitForVisible(uploadFailedDialog, locators.FDAActionTimeout);
+    },
+    /** Close Succeded/Failed dialog (on completion of async operation) */
+    closeCompletionDialog() {
       this.click(closeButton);
     },
     uploadIPTFile(IPT_File) {
@@ -173,7 +182,7 @@ module.exports = function() {
 
       // Wait for file to be uploaded
       this.waitForVisible(uploadConfirmationDialog, locators.FDAActionTimeout);
-      this.click(closeButton);
+      this.closeCompletionDialog();
     },
     uploadInvalidIPTFile(IPT_File) {
       // invoke upload UI
@@ -191,7 +200,7 @@ module.exports = function() {
       // check log url link
       this.seeElement(uploadFailLogLink);
 
-      this.click(closeButton);
+      this.closeCompletionDialog();
     },
     deleteProject(projectName) {
       // hover above project
