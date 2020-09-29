@@ -58,7 +58,6 @@ namespace WebApplication.Controllers
             var projectDTOs = new List<ProjectDTO>();
             foreach (var projectName in await _projectService.GetProjectNamesAsync(bucket))
             {
-                _logger.LogTrace($"Processing '{projectName}' project");
                 // TODO: in future bad projects should not affect project listing. It's a workaround
                 try
                 {
