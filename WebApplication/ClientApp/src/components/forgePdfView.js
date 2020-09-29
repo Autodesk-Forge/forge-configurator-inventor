@@ -72,15 +72,45 @@ export class ForgePdfView extends Component {
         if (!this.props.drawingPdf)
             return;
 
-        this.viewer.loadModel( this.props.drawingPdf, { page: 1 }); // load page 1 by default
+        this.viewer.loadModel( this.props.drawingPdf, { page: 1 } ); // load page 1 by default
         //this.viewer.loadExtension("Autodesk.Viewing.MarkupsCore")
         //this.viewer.loadExtension("Autodesk.Viewing.MarkupsGui")
     }
 
     componentDidUpdate(prevProps) {
         if (this.viewer && Autodesk && (this.props.drawingPdf !== prevProps.drawingPdf)) {
-            this.viewer.loadModel( this.props.drawingPdf, { page: 1 }); // load page 1 by default
-            this.viewer.unloadModel(prevProps.drawingPdf);
+
+            const findModelForUrn = function(viewer, urn) {
+                const allModels = viewer.getAllModels();
+                let modelForUrn = null;
+                for (const model of allModels) {
+                    const modelUrn = model.getData().urn;
+                    if (modelUrn != urn)
+                        continue;
+
+                        modelForUrn = model;
+                    break;
+                }
+
+                return modelForUrn;
+            };
+
+            if (prevProps.drawingPdf != null) {
+                // try to find model in viewer.allModels and hide it
+                const modelToHide = findModelForUrn(this.viewer, prevProps.drawingPdf);
+                if (modelToHide != null)
+                    this.viewer.hideModel(modelToHide);
+            }
+
+            if (this.props.drawingPdf != null) {
+                // try to find model of specific urn and show it or load
+                const modelToShow = findModelForUrn(this.viewer, this.props.drawingPdf);
+                if (modelToShow != null) {
+                    this.viewer.showModel(modelToShow);
+                } else {
+                    this.viewer.loadModel( this.props.drawingPdf, { page: 1 }); // load page 1 by default
+                }
+            }
         }
     }
 
