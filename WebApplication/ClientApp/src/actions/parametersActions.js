@@ -94,7 +94,8 @@ function adaptParameters(rawParameters) {
             allowedValues: (param.values) ? param.values.map( item => unquote(item)) : [],
             units: param.unit,
             label: param.label || key,
-            readonly: !! param.readonly
+            readonly: !! param.readonly,
+            errormessage: param.errormessage
         };
     });
 }
