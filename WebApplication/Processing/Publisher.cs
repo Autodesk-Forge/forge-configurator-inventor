@@ -47,6 +47,14 @@ namespace WebApplication.Processing
 
         public async Task<WorkItemStatus> RunWorkItemAsync(Dictionary<string, IArgument> workItemArgs, ForgeAppBase config)
         {
+            XrefTreeArgument callbackOnComplete = new XrefTreeArgument()
+            {
+                Verb = Verb.Post,
+                Url = "http://deece7bc5a25.ngrok.io/callbacks/onwicomplete"
+            };
+
+            workItemArgs.Add("onComplete", callbackOnComplete);
+
             // create work item
             var wi = new WorkItem
             {
