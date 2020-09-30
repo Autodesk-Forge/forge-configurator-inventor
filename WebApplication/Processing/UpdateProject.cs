@@ -30,8 +30,7 @@ namespace WebApplication.Processing
             base(publisher,
                 new UpdateParameters(publisher),
                 new CreateSVF(publisher),
-                new CreateBOM(publisher),
-                new ExtractParameters(publisher))
+                new CreateBOM(publisher))
         {
         }
 

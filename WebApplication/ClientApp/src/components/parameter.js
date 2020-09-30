@@ -60,7 +60,7 @@ export class Parameter extends Component {
 
     render() {
         let parameterInputClassName = this.props.parameter.changedOnUpdate == true ? "changedOnUpdate" : "";
-        const showToolTip = this.props.parameter.changedOnUpdate || (this.props.parameter.errormessage !== undefined);
+        const showToolTip = this.props.parameter.changedOnUpdate || (this.props.parameter.errormessage != null);
         const tooltipProps = showToolTip == true ? {openOnHover: true} : {open: false};
         // for debugging the tooltip, replace the above two lines with these:
         // const parameterInputClassName = "changedOnUpdate";

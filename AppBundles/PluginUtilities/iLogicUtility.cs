@@ -23,7 +23,7 @@ using Autodesk.iLogic.UiBuilderCore.Storage;
 using Inventor;
 using Shared;
 
-namespace ExtractParametersPlugin
+namespace PluginUtilities
 {
     public class iLogicForm
     {

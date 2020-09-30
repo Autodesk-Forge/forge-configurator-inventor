@@ -35,30 +35,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autodesk.iLogic.Common">
-      <HintPath>$(InventorBinFolder)\Autodesk.iLogic.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Autodesk.iLogic.Core">
-      <HintPath>$(InventorBinFolder)\Autodesk.iLogic.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Autodesk.iLogic.Exec">
-      <HintPath>$(InventorBinFolder)\Autodesk.iLogic.Exec.dll</HintPath>
-    </Reference>
-    <Reference Include="Autodesk.iLogic.Interfaces">
-      <HintPath>$(InventorBinFolder)\Autodesk.iLogic.Interfaces.dll</HintPath>
-    </Reference>
-    <Reference Include="Autodesk.iLogic.Plugin">
-      <HintPath>$(InventorBinFolder)\Autodesk.iLogic.Plugin.dll</HintPath>
-    </Reference>
-    <Reference Include="Autodesk.iLogic.Runtime">
-      <HintPath>$(InventorBinFolder)\Autodesk.iLogic.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="Autodesk.iLogic.Types">
-      <HintPath>$(InventorBinFolder)\Autodesk.iLogic.Types.dll</HintPath>
-    </Reference>
-    <Reference Include="Autodesk.iLogic.UiBuilderCore">
-      <HintPath>$(InventorBinFolder)\Autodesk.iLogic.UiBuilderCore.dll</HintPath>
-    </Reference>
     <Reference Include="Autodesk.Inventor.Interop">
       <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>True</EmbedInteropTypes>
@@ -70,13 +46,9 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\Shared\InventorParameters.cs">
-      <Link>InventorParameters.cs</Link>
-    </Compile>
     <Compile Include="..\..\Shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="iLogicUtility.cs" />
     <Compile Include="PluginServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ExtractParametersAutomation.cs" />
@@ -89,12 +61,15 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json">
-      <Version>11.0.2</Version>
-    </PackageReference>
     <PackageReference Include="Autodesk.Forge.DesignAutomation.Inventor.Utils">
       <Version>1.0.0-beta3</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PluginUtilities\PluginUtilities.csproj">
+      <Project>{1b86189c-d714-4a83-b710-f669091c9c6c}</Project>
+      <Name>PluginUtilities</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

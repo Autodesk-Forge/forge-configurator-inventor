@@ -26,15 +26,16 @@ namespace WebApplication.Processing
     {
         private const string OutputModelIAMParameterName = "OutputModelIAMFile";
         private const string OutputModelIPTParameterName = "OutputModelIPTFile";
+
         /// <summary>
         /// Design Automation parameter name for JSON file with Inventor parameters.
         /// </summary>
         private const string InventorParameters = "InventorParams";
 
         public override string Id => nameof(UpdateParameters);
-        public override string Description => "Update parameters from Inventor document";
-
-        protected override bool HasOutput => false;
+        public override string Description => "Update parameters from Inventor document, and extract the results";
+        protected override string OutputName => "documentParams.json";
+        protected override string OutputUrl(ProcessingArgs projectData) => projectData.ParametersJsonUrl;
 
         public override List<string> ActivityCommandLine =>
             new List<string>
@@ -60,6 +61,10 @@ namespace WebApplication.Processing
                 {
                     OutputModelIPTParameterName,
                     new Parameter { Verb = Verb.Put, LocalName = IptName }
+                },
+                {
+                    OutputParameterName,
+                    new Parameter { Verb = Verb.Put, LocalName = OutputName }
                 }
             };
 
