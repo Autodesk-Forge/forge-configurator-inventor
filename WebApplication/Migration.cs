@@ -109,12 +109,17 @@ namespace MigrationApp
                // new project list does not contain old project => lets copy and adopt
                var ossAttributes = new OssAttributes(projectName);
                string metadataFile = ossAttributes.Metadata;
-               ProjectMetadata projectMetadata = await bucketOld.DeserializeAsync<ProjectMetadata>(metadataFile);
-               ProjectInfo projectInfo = new ProjectInfo();
-               projectInfo.Name = projectName;
-               projectInfo.TopLevelAssembly = projectMetadata.TLA;
+               try {
+                  ProjectMetadata projectMetadata = await bucketOld.DeserializeAsync<ProjectMetadata>(metadataFile);
+                  ProjectInfo projectInfo = new ProjectInfo();
+                  projectInfo.Name = projectName;
+                  projectInfo.TopLevelAssembly = projectMetadata.TLA;
 
-               migrationJobs.Add(new MigrationJob(JobType.CopyAndAdopt, bucketOld, projectInfo, ONC.ProjectUrl(projectName)));
+                  migrationJobs.Add(new MigrationJob(JobType.CopyAndAdopt, bucketOld, projectInfo, ONC.ProjectUrl(projectName)));
+               } catch(Exception e)
+               {
+                  _logger.LogError(e, $"Project {projectName} in bucket {bucketKeyOld} does not have metadata file. Skipping that.");
+               }
             }
          }
 
