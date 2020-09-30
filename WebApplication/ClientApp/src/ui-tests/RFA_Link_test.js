@@ -22,6 +22,8 @@ const locators = require('./elements_definition.js');
 /* eslint-disable no-undef */
 const assert = require('assert');
 
+Feature('Downloads RFA');
+
 Before((I) => {
     I.amOnPage('/');
 });
@@ -32,8 +34,6 @@ const divDownloads = locate('div').withAttr({ id: 'downloads' });
 const titleDataFileForWrench = locate('p').withText('Wrench').inside(progressDialog);
 const linkRFA = locate('a').withText('RFA').inside(rowForRFA);
 //const clickHere = locate('section').find('a').withText('Click here');
-
-Feature('Downloads RFA');
 
 Scenario('should check downloads tab with RFA link for Wrench', async (I) => {
 

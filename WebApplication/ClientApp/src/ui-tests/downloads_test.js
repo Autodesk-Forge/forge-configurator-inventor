@@ -19,11 +19,11 @@
 /* eslint-disable no-undef */
 const locators = require('./elements_definition.js');
 
+Feature('Downloads');
+
 Before((I) => {
     I.amOnPage('/');
 });
-
-Feature('Downloads');
 
 Scenario('should check switch to downloads tab shows the downloads links', async (I) => {
     I.see('Downloads', locators.downloadsTab);

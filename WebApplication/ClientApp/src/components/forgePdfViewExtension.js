@@ -20,6 +20,10 @@ const Autodesk = window.Autodesk;
 
 function ForgePdfViewExtension(viewer, options) {
     Autodesk.Viewing.Extension.call(this, viewer, options);
+
+    this.subToolbar = null;
+    this.prevButton = new Autodesk.Viewing.UI.Button('drawing-button-prev');
+    this.nextButton = new Autodesk.Viewing.UI.Button('drawing-button-next');
 }
 
 ForgePdfViewExtension.prototype = Object.create(Autodesk.Viewing.Extension.prototype);
@@ -36,7 +40,17 @@ ForgePdfViewExtension.prototype.load = function () {
         this.viewer.addEventListener(Autodesk.Viewing.TOOLBAR_CREATED_EVENT, this.onToolbarCreatedBinded);
     }
 
+    this.onModelAdded = this.onModelAdded.bind(this);
+    this.switchToPage = this.switchToPage.bind(this);
+    // listen when added model (switched sheet page)
+    this.viewer.addEventListener(Autodesk.Viewing.MODEL_ADDED_EVENT, this.onModelAdded);
+
     return true;
+};
+
+ForgePdfViewExtension.prototype.onModelAdded = function (event) {
+    // setup prev/next buttons by selected model
+    this.setupButtonsVisibility(event.model);
 };
 
 ForgePdfViewExtension.prototype.onToolbarCreated = function () {
@@ -46,66 +60,79 @@ ForgePdfViewExtension.prototype.onToolbarCreated = function () {
 };
 
 ForgePdfViewExtension.prototype.createUI = function() {
-    const viewer = this.viewer;
-    const numPages = viewer.model.loader.pdf.numPages;
 
-    if (numPages === 1) // skip buttons when only one page is available
+    if (this.subToolbar != null)
         return;
 
-    // prev button
-    const prevbutton = new Autodesk.Viewing.UI.Button('drawing-button-prev');
-    // next button
-    const nextbutton = new Autodesk.Viewing.UI.Button('drawing-button-next');
+    const thisExtension = this;
 
-    let actualPage = 1;
+    this.prevButton.onClick = function () {
+        const jumpTo = thisExtension.getActivePage(thisExtension.viewer.model) - 1;
+        thisExtension.switchToPage(thisExtension.viewer, jumpTo);
+    };
 
-    const model = viewer.model;
+    this.prevButton.addClass('drawing-button-prev');
+    this.prevButton.setIcon('drawing-icon-prev');
+    this.prevButton.setToolTip('Previous Drawing Sheet');
+
+    this.nextButton.onClick = function () {
+        const jumpTo = thisExtension.getActivePage(thisExtension.viewer.model) + 1;
+        thisExtension.switchToPage(thisExtension.viewer, jumpTo);
+    };
+
+    this.nextButton.addClass('drawing-button-next');
+    this.nextButton.setIcon('drawing-icon-next');
+    this.nextButton.setToolTip('Next Drawing Sheet');
+
+    // SubToolbar
+    this.subToolbar = new Autodesk.Viewing.UI.ControlGroup('custom-drawing-toolbar');
+    this.subToolbar.addControl(this.prevButton);
+    this.subToolbar.addControl(this.nextButton);
+
+    this.viewer.toolbar.addControl(this.subToolbar);
+
+    this.setupButtonsVisibility(thisExtension.viewer.model);
+};
+
+ForgePdfViewExtension.prototype.getActivePage = function (model) {
+    let actualPage = 1; // default
     if(model && model.getDocumentNode()) {
         // read actual page
         actualPage = model.getDocumentNode().data.page;
     }
+    return actualPage;
+};
+
+ForgePdfViewExtension.prototype.switchToPage = function(viewer, pageToShow) {
+    const model = viewer.model;
+    if(model && model.getDocumentNode()) {
+        const rootNode = model.getDocumentNode().getRootNode();
+        const bubbleNode = rootNode.children[pageToShow - 1];
+        viewer.loadDocumentNode(rootNode.getDocument(), bubbleNode);
+    }
+};
+
+ForgePdfViewExtension.prototype.setupButtonsVisibility = function(model) {
+    if (this.subToolbar == null)
+        return;
+
+    const numPages = model.getData().getPDF().numPages;
+    if (numPages === 1) {
+        // hide buttons when only one sheet page is available
+        this.subToolbar.setVisible(false);
+        return;
+    }
+
+    const actualPage = this.getActivePage(model);
 
     // disable prev button on the first page and next on the last one
     const prevState = actualPage === 1 ? Autodesk.Viewing.UI.Button.State.DISABLED : Autodesk.Viewing.UI.Button.State.INACTIVE;
-    prevbutton.setState(prevState);
+    this.prevButton.setState(prevState);
     const nextState = actualPage === numPages ? Autodesk.Viewing.UI.Button.State.DISABLED : Autodesk.Viewing.UI.Button.State.INACTIVE;
-    nextbutton.setState(nextState);
+    this.nextButton.setState(nextState);
 
-    const switchToPage = function(pageToShow) {
-        const model = viewer.model;
-        if(model && model.getDocumentNode()) {
-            const rootNode = model.getDocumentNode().getRootNode();
-            const bubbleNode = rootNode.children[pageToShow - 1];
-            viewer.loadDocumentNode(rootNode.getDocument(), bubbleNode);
-        }
-    };
-
-    prevbutton.onClick = function () {
-
-        actualPage -= 1;
-        switchToPage(actualPage);
-    };
-
-    prevbutton.addClass('drawing-button-prev');
-    prevbutton.setIcon('drawing-icon-prev');
-    prevbutton.setToolTip('Previous Drawing Sheet');
-
-    nextbutton.onClick = function () {
-
-        actualPage += 1;
-        switchToPage(actualPage);
-    };
-
-    nextbutton.addClass('drawing-button-next');
-    nextbutton.setIcon('drawing-icon-next');
-    nextbutton.setToolTip('Next Drawing Sheet');
-
-    // SubToolbar
-    this.subToolbar = new Autodesk.Viewing.UI.ControlGroup('custom-drawing-toolbar');
-    this.subToolbar.addControl(prevbutton);
-    this.subToolbar.addControl(nextbutton);
-
-    viewer.toolbar.addControl(this.subToolbar);
+    // show buttons
+    this.subToolbar.setVisible(true);
 };
 
 ForgePdfViewExtension.prototype.unload = function () {

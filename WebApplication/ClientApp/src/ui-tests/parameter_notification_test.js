@@ -22,17 +22,15 @@ const updatedElements = '//div[(@class = "parameter" or @class = "parameter chec
 const tooltipTestNotify = '//div[contains(@class,"paramTooltip__flyout-container")][ancestor::div[contains(@class , "parameter") and contains(text(),"TestNotify")]]';
 const parameterTestNotify = '//div[contains(@class , "parameter") and contains(text(),"TestNotify")]';
 
-
-Before((I) => {
-    I.amOnPage('/');
-});
-
 Feature('Parameter Notification');
+
+Before(async (I) => {
+    I.amOnPage('/');
+    await I.signIn();
+});
 
 // validate that Parameter notification is displayed
 Scenario('should check parameter notification', async (I) => {
-
-    I.signIn();
 
     I.uploadIPTFile('src/ui-tests/dataset/EndCap.ipt');
 
@@ -57,6 +55,5 @@ Scenario('should check parameter notification', async (I) => {
 
   Scenario('Delete the project', (I) => {
 
-    I.signIn();
     I.deleteProject('EndCap');
   });
