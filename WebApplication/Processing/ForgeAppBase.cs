@@ -117,9 +117,13 @@ namespace WebApplication.Processing
         /// Run work item and wait for the completion.
         /// </summary>
         /// <param name="args">Work item arguments.</param>
-        protected async Task<ProcessingResult> RunAsync(Dictionary<string, IArgument> args)
+        protected async Task<ProcessingResult> RunAsync(Dictionary<string, IArgument> args, string clientId = "", string hash = "", string projectId = "", string arrangerPrefix = "")
         {
-            WorkItemStatus status = await Publisher.RunWorkItemAsync(args, this);
+            WorkItemStatus status = await Publisher.RunWorkItemAsync(args, this, clientId, hash, projectId, arrangerPrefix);
+
+            if (status == null)
+                return null;
+
             return new ProcessingResult(status.Stats)
                     {
                         Success = (status.Status == Status.Success),
@@ -130,11 +134,11 @@ namespace WebApplication.Processing
         /// <summary>
         /// Process IPT or Zipped IAM file.
         /// </summary>
-        public Task<ProcessingResult> ProcessAsync(ProcessingArgs data)
+        public Task<ProcessingResult> ProcessAsync(ProcessingArgs data, string clientId = "", string hash = "", string projectId = "", string arrangerPrefix = "")
         {
             var args = ToWorkItemArgs(data);
 
-            return RunAsync(args);
+            return RunAsync(args, clientId, hash, projectId, arrangerPrefix);
         }
 
         /// <summary>

@@ -39,20 +39,35 @@ namespace WebApplication.Processing
 
         // generate unique names for files. The files will be moved to correct places after hash generation.
         // it's recommended to use easily identifiable file suffixes for debugging reasons
-        public readonly string Parameters = Unique(".params.json");
-        public readonly string Thumbnail = Unique(".thumb.png");
-        public readonly string SVF = Unique(".svf.zip");
-        public readonly string InputParams = Unique(".input-params.json");
-        public readonly string OutputModelIAM = Unique(".output-iam.zip");
-        public readonly string OutputModelIPT = Unique(".output.ipt");
-        public readonly string OutputSAT = Unique(".sat");
-        public readonly string OutputRFA = Unique(".rfa");
-        public readonly string BomJson = Unique(".bom.json");
-        public readonly string OutputDrawing = Unique(".drawing.zip");
-        public readonly string OutputDrawingPdf = Unique(".drawing.pdf");
-        public readonly string DrawingsList = Unique(".drawings-list.json");
-        public readonly string AdoptMessages = Unique(".adopt-messages.json");
+        //public readonly string Parameters = Unique(".params.json");
+        //public readonly string Thumbnail = Unique(".thumb.png");
+        //public readonly string SVF = Unique(".svf.zip");
+        //public readonly string InputParams = Unique(".input-params.json");
+        //public readonly string OutputModelIAM = Unique(".output-iam.zip");
+        //public readonly string OutputModelIPT = Unique(".output.ipt");
+        //public readonly string OutputSAT = Unique(".sat");
+        //public readonly string OutputRFA = Unique(".rfa");
+        //public readonly string BomJson = Unique(".bom.json");
+        //public readonly string OutputDrawing = Unique(".drawing.zip");
+        //public readonly string OutputDrawingPdf = Unique(".drawing.pdf");
+        //public readonly string DrawingsList = Unique(".drawings-list.json");
+        //public readonly string AdoptMessages = Unique(".adopt-messages.json");
 
+        public string Parameters => UniquePrefix + ".params.json";
+        public string Thumbnail => UniquePrefix + ".thumb.png";
+        public string SVF => UniquePrefix + ".svf.zip";
+        public string InputParams => UniquePrefix + ".input-params.json";
+        public string OutputModelIAM => UniquePrefix + ".output-iam.zip";
+        public string OutputModelIPT => UniquePrefix + ".output.ipt";
+        public string OutputSAT => UniquePrefix + ".sat";
+        public string OutputRFA => UniquePrefix + ".rfa";
+        public string BomJson => UniquePrefix + ".bom.json";
+        public string OutputDrawing => UniquePrefix + ".drawing.zip";
+        public string OutputDrawingPdf => UniquePrefix + ".drawing.pdf";
+        public string DrawingsList => UniquePrefix + ".drawings-list.json";
+        public string AdoptMessages => UniquePrefix + ".adopt-messages.json";
+
+        public string UniquePrefix;
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -60,6 +75,8 @@ namespace WebApplication.Processing
         {
             _clientFactory = clientFactory;
             _userResolver = userResolver;
+
+            UniquePrefix = Guid.NewGuid().ToString("N");
         }
 
         /// <summary>
@@ -290,9 +307,9 @@ namespace WebApplication.Processing
         /// Generate unique filename.
         /// </summary>
         /// <param name="suffix">Filename suffix to use</param>
-        private static string Unique(string suffix)
-        {
-            return Guid.NewGuid().ToString("N") + suffix;
-        }
+        //private static string Unique(string suffix)
+        //{
+        //    return Guid.NewGuid().ToString("N") + suffix;
+        //}
     }
 }

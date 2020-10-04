@@ -94,9 +94,9 @@ namespace WebApplication.Processing
             return _adoptWork.ProcessAsync(projectData);
         }
 
-        public Task<ProcessingResult> UpdateAsync(UpdateData projectData)
+        public Task<ProcessingResult> UpdateAsync(UpdateData projectData, string clientId = "", string hash = "", string projectId = "", string arrangerPrefix = "")
         {
-            return _updateProjectWork.ProcessAsync(projectData);
+            return _updateProjectWork.ProcessAsync(projectData, clientId, hash, projectId, arrangerPrefix);
         }
 
         internal Task<ProcessingResult> TransferAsync(string source, string target)

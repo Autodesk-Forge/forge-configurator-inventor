@@ -90,6 +90,11 @@ namespace WebApplication.Controllers
             {
                 await Destination.SendAsync(OnError, error);
             }
+
+            public string GetClientId()
+            {
+                return _hub.Context.ConnectionId;
+            }
         }
 
         #endregion

@@ -45,15 +45,21 @@ namespace WebApplication.Processing
             _postProcessing = postProcessing;
         }
 
-        public async Task<WorkItemStatus> RunWorkItemAsync(Dictionary<string, IArgument> workItemArgs, ForgeAppBase config)
+        public async Task<WorkItemStatus> RunWorkItemAsync(Dictionary<string, IArgument> workItemArgs, ForgeAppBase config, string clientId, string hash, string projectId, string arrangerPrefix)
         {
-            XrefTreeArgument callbackOnComplete = new XrefTreeArgument()
-            {
-                Verb = Verb.Post,
-                Url = "http://deece7bc5a25.ngrok.io/callbacks/onwicomplete"
-            };
+            bool useCallback = !String.IsNullOrEmpty(clientId) && !String.IsNullOrEmpty(hash);
 
-            workItemArgs.Add("onComplete", callbackOnComplete);
+            if (useCallback)
+            {
+                string ulr = "http://3848315c0309.ngrok.io/callbacks/onwicomplete?clientId=" + clientId + "&hash=" + hash + "&projectId=" + projectId + "&arrangerPrefix=" + arrangerPrefix;
+                XrefTreeArgument callbackOnComplete = new XrefTreeArgument()
+                {
+                    Verb = Verb.Post,
+                    Url = ulr
+                };
+
+                workItemArgs.Add("onComplete", callbackOnComplete);
+            }
 
             // create work item
             var wi = new WorkItem
@@ -62,21 +68,30 @@ namespace WebApplication.Processing
                 Arguments = workItemArgs
             };
 
-            // run WI and wait for completion
-            System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
-            WorkItemStatus status = await _client.CreateWorkItemAsync(wi);
-            Trace($"Created WI {status.Id}");
-            while (status.Status == Status.Pending || status.Status == Status.Inprogress)
+            // Fire and forget vs wait for results
+            if (useCallback)
             {
-                await Task.Delay(2000);
-                status = await _client.GetWorkitemStatusAsync(status.Id);
+                await _client.CreateWorkItemAsync(wi);
+                return null;
             }
+            else
+            {
+                // run WI and wait for completion
+                System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
+                WorkItemStatus status = await _client.CreateWorkItemAsync(wi);
+                Trace($"Created WI {status.Id}");
+                while (status.Status == Status.Pending || status.Status == Status.Inprogress)
+                {
+                    await Task.Delay(2000);
+                    status = await _client.GetWorkitemStatusAsync(status.Id);
+                }
 
-            Trace($"WI {status.Id} completed with {status.Status} in {sw.ElapsedMilliseconds} ms");
-            Trace($"{status.ReportUrl}");
+                Trace($"WI {status.Id} completed with {status.Status} in {sw.ElapsedMilliseconds} ms");
+                Trace($"{status.ReportUrl}");
 
-            await _postProcessing.HandleStatus(status);
-            return status;
+                await _postProcessing.HandleStatus(status);
+                return status;
+            }
         }
 
         private async Task PostAppBundleAsync(string packagePathname, ForgeAppBase config)

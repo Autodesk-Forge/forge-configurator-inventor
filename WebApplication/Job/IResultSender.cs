@@ -29,6 +29,7 @@ namespace WebApplication.Job
         Task SendSuccessAsync(object arg0);
         Task SendSuccessAsync(object arg0, object arg1);
         Task SendSuccessAsync(object arg0, object arg1, object arg2);
+        string GetClientId();
 
         /// <summary>
         /// Send information about failed processing.
