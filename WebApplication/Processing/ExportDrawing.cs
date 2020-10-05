@@ -44,7 +44,7 @@ namespace WebApplication.Processing
         public override List<string> ActivityCommandLine =>
             new List<string>
             {
-                $"$(engine.path)\\InventorCoreConsole.exe /al $(appbundles[{ActivityId}].path) \"$(args[{InputDocParameterName}].path)\" \"$(args[{DrawingParameter}].value)\""
+                $"$(engine.path)\\InventorCoreConsole.exe /al \"$(appbundles[{ActivityId}].path)\" \"$(args[{InputDocParameterName}].path)\" \"$(args[{DrawingParameter}].value)\""
             };
 
         /// <summary>
