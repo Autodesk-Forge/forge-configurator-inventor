@@ -45,13 +45,14 @@ namespace WebApplication.Processing
             _postProcessing = postProcessing;
         }
 
-        public async Task<WorkItemStatus> RunWorkItemAsync(Dictionary<string, IArgument> workItemArgs, ForgeAppBase config, string clientId, string hash, string projectId, string arrangerPrefix)
+        public async Task<WorkItemStatus> RunWorkItemAsync(Dictionary<string, IArgument> workItemArgs, 
+            ForgeAppBase config, string clientId, string hash, string projectId, string arrangerPrefix)
         {
             bool useCallback = !String.IsNullOrEmpty(clientId) && !String.IsNullOrEmpty(hash);
 
             if (useCallback)
             {
-                string ulr = "http://3848315c0309.ngrok.io/callbacks/onwicomplete?clientId=" + clientId + "&hash=" + hash + "&projectId=" + projectId + "&arrangerPrefix=" + arrangerPrefix;
+                string ulr = "http://322229e01738.ngrok.io/callbacks/onwicomplete?clientId=" + clientId + "&hash=" + hash + "&projectId=" + projectId + "&arrangerPrefix=" + arrangerPrefix;
                 XrefTreeArgument callbackOnComplete = new XrefTreeArgument()
                 {
                     Verb = Verb.Post,

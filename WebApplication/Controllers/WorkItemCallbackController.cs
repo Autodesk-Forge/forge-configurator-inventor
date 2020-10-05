@@ -86,7 +86,13 @@ namespace WebApplication.Controllers
 
                 await _postProcessing.HandleStatus(status);
 
-                (ProjectStateDTO state, FdaStatsDTO stats) = await _projectWork.ProcessUpdateProjectCallback(status, hash, projectId, arrangerPrefix);
+                ProcessingResult result = new ProcessingResult(status.Stats)
+                {
+                    Success = (status.Status == Status.Success),
+                    ReportUrl = status.ReportUrl
+                };
+
+                (ProjectStateDTO state, FdaStatsDTO stats) = await _projectWork.ProcessUpdateProject(result, hash, projectId);
 
                 // Grab the SignalR client for response
                 var client = _hubContext.Clients.Client(clientId);
