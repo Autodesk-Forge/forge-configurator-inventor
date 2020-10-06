@@ -90,8 +90,6 @@ namespace WebApplication
             services.AddSingleton<IForgeOSS, ForgeOSS>();
             services.AddSingleton<FdaClient>();
             services.AddTransient<Initializer>();
-            services.AddTransient<Arranger>();
-            services.AddTransient<ProjectWork>();
             services.AddTransient<DtoGenerator>();
             services.AddSingleton<DesignAutomationClient>(provider =>
                                     {
@@ -108,6 +106,7 @@ namespace WebApplication
             services.AddSingleton<LocalCache>();
             services.AddSingleton<Uploads>();
             services.AddSingleton<OssBucketFactory>();
+            services.AddSingleton<IProjectWorkFactory, ProjectWorkFactory>();
 
             if (Configuration.GetValue<bool>("migration"))
             {

@@ -23,11 +23,11 @@ namespace WebApplication.Services
         private readonly ProjectWork _projectWork;
         private readonly RetryPolicy _waitForBucketPolicy;
 
-        public ProjectService(ILogger<ProjectService> logger, UserResolver userResolver, ProjectWork projectWork)
+        public ProjectService(ILogger<ProjectService> logger, UserResolver userResolver, IProjectWorkFactory projectWorkFactory)
         {
             _logger = logger;
             _userResolver = userResolver;
-            _projectWork = projectWork;
+            _projectWork = projectWorkFactory.CreateProjectWork(String.Empty, userResolver);
 
             _waitForBucketPolicy = Policy
                 .Handle<ApiException>(e => e.ErrorCode == StatusCodes.Status404NotFound)

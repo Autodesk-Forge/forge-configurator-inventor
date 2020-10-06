@@ -46,17 +46,17 @@ namespace WebApplication.Processing
         }
 
         public async Task<WorkItemStatus> RunWorkItemAsync(Dictionary<string, IArgument> workItemArgs, 
-            ForgeAppBase config, string clientId, string hash, string projectId, string arrangerPrefix)
+            ForgeAppBase config, string callbackUrl)
         {
-            bool useCallback = !String.IsNullOrEmpty(clientId) && !String.IsNullOrEmpty(hash);
 
+            // Use callback if the URL was provided
+            bool useCallback = !String.IsNullOrEmpty(callbackUrl);
             if (useCallback)
             {
-                string ulr = "http://322229e01738.ngrok.io/callbacks/onwicomplete?clientId=" + clientId + "&hash=" + hash + "&projectId=" + projectId + "&arrangerPrefix=" + arrangerPrefix;
                 XrefTreeArgument callbackOnComplete = new XrefTreeArgument()
                 {
                     Verb = Verb.Post,
-                    Url = ulr
+                    Url = callbackUrl
                 };
 
                 workItemArgs.Add("onComplete", callbackOnComplete);

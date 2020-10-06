@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Autodesk.Forge.Client;
 using Autodesk.Forge.DesignAutomation.Model;
@@ -43,14 +44,15 @@ namespace WebApplication.Processing
         private readonly DtoGenerator _dtoGenerator;
         private readonly UserResolver _userResolver;
 
-        public ProjectWork(ILogger<ProjectWork> logger, Arranger arranger, FdaClient fdaClient,
-                            DtoGenerator dtoGenerator, UserResolver userResolver)
+        public ProjectWork(ILogger<ProjectWork> logger, FdaClient fdaClient, DtoGenerator dtoGenerator, 
+            UserResolver userResolver, IHttpClientFactory clientFactory, string arrangerUiquePrefix)
         {
             _logger = logger;
-            _arranger = arranger;
             _fdaClient = fdaClient;
             _dtoGenerator = dtoGenerator;
             _userResolver = userResolver;
+
+            _arranger = new Arranger(clientFactory, userResolver, arrangerUiquePrefix);
         }
 
         /// <summary>
@@ -138,61 +140,18 @@ namespace WebApplication.Processing
             return (dto, stats);
         }
 
-        public async Task<(ProjectStateDTO dto, FdaStatsDTO stats)> DoSmartUpdateAsync2(InventorParameters parameters, string projectId, string clientId, bool bForceUpdate = false)
-        {
-            var hash = Crypto.GenerateObjectHashString(parameters);
-            _logger.LogInformation($"Incoming parameters hash is {hash}");
-
-            var storage = await _userResolver.GetProjectStorageAsync(projectId);
-
-            FdaStatsDTO stats;
-            var localNames = storage.GetLocalNames(hash);
-
-            // check if the data cached already
-            if (Directory.Exists(localNames.SvfDir) && !bForceUpdate)
-            {
-                _logger.LogInformation("Found cached data.");
-
-                // restore statistics
-                var bucket = await _userResolver.GetBucketAsync();
-                var statsNative = await bucket.DeserializeAsync<List<Statistics>>(storage.GetOssNames(hash).StatsUpdate);
-                stats = FdaStatsDTO.CreditsOnly(statsNative);
-            }
-            else
-            {
-                string resultingHash;
-                (resultingHash, stats) = await UpdateAsync2(storage, parameters, hash, clientId, projectId, bForceUpdate);
-
-                if (String.IsNullOrEmpty(resultingHash))
-                    return (null, null);
-
-                if (!hash.Equals(resultingHash, StringComparison.Ordinal))
-                {
-                    _logger.LogInformation($"Update returned different parameters. Hash is {resultingHash}.");
-                    await CopyStateAsync(storage.Project, resultingHash, hash, storage.IsAssembly);
-
-                    // update 
-                    hash = resultingHash;
-                }
-            }
-
-            var dto = _dtoGenerator.MakeProjectDTO<ProjectStateDTO>(storage, hash);
-            dto.Parameters = Json.DeserializeFile<InventorParameters>(localNames.Parameters);
-
-            return (dto, stats);
-        }
-
         public async Task<(ProjectStateDTO dto, FdaStatsDTO stats)> DoSmartUpdateAsync3(InventorParameters parameters, string projectId, string clientId, bool bForceUpdate = false)
         {
-            var hash = Crypto.GenerateObjectHashString(parameters); // Move UP in the chain?
-            _logger.LogInformation($"Incoming parameters hash is {hash}");
+            var hash = Crypto.GenerateObjectHashString(parameters);
 
-            // Prepare the return values, they will both be null in case we use request-response rather than polling
-            ProjectStateDTO dto = null;
-            FdaStatsDTO stats = null;
+            _logger.LogInformation($"Incoming parameters hash is {hash}");
 
             var storage = await _userResolver.GetProjectStorageAsync(projectId);
             var localNames = storage.GetLocalNames(hash);
+
+            // Prepare the return values
+            ProjectStateDTO dto = null;
+            FdaStatsDTO stats = null;
 
             // check if the data cached already
             if (Directory.Exists(localNames.SvfDir) && !bForceUpdate)
@@ -209,8 +168,7 @@ namespace WebApplication.Processing
                 _logger.LogInformation("Update the project");
                 var bucket = await _userResolver.GetBucketAsync();
 
-                var isUpdateExists = !bForceUpdate && await IsGenerated(bucket, storage.GetOssNames(hash));
-                if (isUpdateExists)
+                if (!bForceUpdate && await IsGenerated(bucket, storage.GetOssNames(hash)))
                 {
                     _logger.LogInformation("Detected existing outputs at OSS");
                     var statsNative = await bucket.DeserializeAsync<List<Statistics>>(storage.GetOssNames(hash).StatsUpdate);
@@ -219,16 +177,20 @@ namespace WebApplication.Processing
                 else
                 {
                     Project project = storage.Project;
+                    string callbackUrl = String.Format("http://c6705575a04f.ngrok.io/callbacks/onwicomplete?clientId={0}&hash={1}&projectId={2}&arrangerPrefix={3}", 
+                        clientId, hash, projectId, _arranger.UniquePrefix);
 
                     var inputDocUrl = await bucket.CreateSignedUrlAsync(project.OSSSourceModel);
                     UpdateData updateData = await _arranger.ForUpdateAsync(inputDocUrl, storage.Metadata.TLA, parameters);
 
-                    ProcessingResult result = await _fdaClient.UpdateAsync(updateData, clientId, hash, projectId, _arranger.UniquePrefix);
-                    (dto, stats) =  await ProcessUpdateProject(result, hash, projectId);
+                    ProcessingResult result = await _fdaClient.UpdateAsync(updateData, callbackUrl);
+
+                    if (result != null)
+                        (dto, stats) = await ProcessUpdateProject(result, hash, projectId);
                 }
             }
 
-            if (stats != null)
+            if (stats != null && dto == null)
             {
                 dto = _dtoGenerator.MakeProjectDTO<ProjectStateDTO>(storage, hash);
                 dto.Parameters = Json.DeserializeFile<InventorParameters>(localNames.Parameters);
@@ -506,37 +468,6 @@ namespace WebApplication.Processing
             await storage.EnsureViewablesAsync(bucket, hash);
 
             return (hash, stats);
-        }
-
-        private async Task<(string hash, FdaStatsDTO stats)> UpdateAsync2(ProjectStorage storage, InventorParameters parameters, string hash, string clientId, string projectId, bool bForceUpdate = false)
-        {
-            _logger.LogInformation("Update the project");
-            var bucket = await _userResolver.GetBucketAsync();
-
-            var isUpdateExists = bForceUpdate ? false : await IsGenerated(bucket, storage.GetOssNames(hash));
-            FdaStatsDTO stats;
-            if (isUpdateExists)
-            {
-                _logger.LogInformation("Detected existing outputs at OSS");
-                var statsNative = await bucket.DeserializeAsync<List<Statistics>>(storage.GetOssNames(hash).StatsUpdate);
-                stats = FdaStatsDTO.CreditsOnly(statsNative);
-
-                // and now cache the generated stuff locally
-                await storage.EnsureViewablesAsync(bucket, hash);
-
-                return (hash, stats);
-            }
-            else
-            {
-                Project project = storage.Project;
-
-                var inputDocUrl = await bucket.CreateSignedUrlAsync(project.OSSSourceModel);
-                UpdateData updateData = await _arranger.ForUpdateAsync(inputDocUrl, storage.Metadata.TLA, parameters);
-
-                await _fdaClient.UpdateAsync(updateData, clientId, hash, projectId, _arranger.UniquePrefix);
-            }
-
-            return (string.Empty, null);
         }
 
         /// <summary>

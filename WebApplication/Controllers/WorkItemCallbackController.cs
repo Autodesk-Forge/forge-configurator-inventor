@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using Autodesk.Forge.DesignAutomation.Model;
-using Microsoft.AspNetCore.Http;
+﻿using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using WebApplication.Definitions;
 using WebApplication.Processing;
+using WebApplication.Services;
+using WebApplication.State;
 
 namespace WebApplication.Controllers
 {
@@ -47,15 +44,17 @@ namespace WebApplication.Controllers
         private readonly ILogger<WorkItemCallbackController> _logger;
         private readonly IHubContext<JobsHub> _hubContext;
         private readonly IPostProcessing _postProcessing;
-        private readonly ProjectWork _projectWork;
+        private readonly IProjectWorkFactory _projectWorkFactory;
+        private readonly UserResolver _userResolver;
 
         public WorkItemCallbackController(ILogger<WorkItemCallbackController> logger, IHubContext<JobsHub> hubContext, IPostProcessing postProcessing,
-            ProjectWork projectWork)
+            UserResolver userResolver, IProjectWorkFactory projectWorkFactory)
         {
             _logger = logger;
             _hubContext = hubContext;
             _postProcessing = postProcessing;
-            _projectWork = projectWork;
+            _projectWorkFactory = projectWorkFactory;
+            _userResolver = userResolver;
         }
 
         [HttpPost("onwicomplete")]
@@ -92,13 +91,17 @@ namespace WebApplication.Controllers
                     ReportUrl = status.ReportUrl
                 };
 
-                (ProjectStateDTO state, FdaStatsDTO stats) = await _projectWork.ProcessUpdateProject(result, hash, projectId);
+                var projectWork = _projectWorkFactory.CreateProjectWork(arrangerPrefix, _userResolver);
+                (ProjectStateDTO state, FdaStatsDTO stats) = await projectWork.ProcessUpdateProject(result, hash, projectId);
 
                 // Grab the SignalR client for response
                 var client = _hubContext.Clients.Client(clientId);
                 await client.SendAsync("onComplete", state, stats);
             }
-            catch (Exception e) { }
+            catch (Exception e) 
+            {
+                _logger.LogError(e.Message);
+            }
         }
     }
 }

@@ -108,16 +108,16 @@ namespace WebApplication.Controllers
         private readonly Uploads _uploads;
         private readonly DtoGenerator _dtoGenerator;
 
-        public JobsHub(ILogger<JobsHub> logger, ProjectWork projectWork, LinkGenerator linkGenerator, UserResolver userResolver, 
-            ProfileProvider profileProvider, Uploads uploads, DtoGenerator dtoGenerator)
+        public JobsHub(ILogger<JobsHub> logger, LinkGenerator linkGenerator, UserResolver userResolver, ProfileProvider profileProvider, 
+            Uploads uploads, DtoGenerator dtoGenerator, IProjectWorkFactory projectWorkFactory)
         {
             _logger = logger;
-            _projectWork = projectWork;
             _linkGenerator = linkGenerator;
             _profileProvider = profileProvider;
             _userResolver = userResolver;
             _uploads = uploads;
             _dtoGenerator = dtoGenerator;
+            _projectWork = projectWorkFactory.CreateProjectWork(String.Empty, _userResolver);
 
             _sender = new Sender(this);
         }

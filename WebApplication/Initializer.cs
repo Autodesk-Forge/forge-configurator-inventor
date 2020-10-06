@@ -52,16 +52,17 @@ namespace WebApplication
         /// Constructor.
         /// </summary>
         public Initializer(ILogger<Initializer> logger, FdaClient fdaClient, IOptions<DefaultProjectsConfiguration> optionsAccessor,
-                            ProjectWork projectWork, UserResolver userResolver, LocalCache localCache, ProjectService projectService,
+                            IProjectWorkFactory projectWorkFactory, UserResolver userResolver, LocalCache localCache, ProjectService projectService,
                             BucketPrefixProvider bucketPrefixProvider)
         {
             _logger = logger;
             _fdaClient = fdaClient;
-            _projectWork = projectWork;
             _userResolver = userResolver;
             _localCache = localCache;
             _projectService = projectService;
             _defaultProjectsConfiguration = optionsAccessor.Value;
+
+            _projectWork = projectWorkFactory.CreateProjectWork(String.Empty, userResolver);
 
             // bucket for anonymous user
             _bucket = _userResolver.AnonymousBucket;

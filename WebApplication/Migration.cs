@@ -45,19 +45,20 @@ namespace MigrationApp
       private readonly OssBucketFactory _bucketFactory;
       private readonly ProjectService _projectService;
 
-      public Migration(IConfiguration configuration, BucketPrefixProvider bucketPrefix, IForgeOSS forgeOSS, MigrationBucketKeyProvider bucketProvider, UserResolver userResolver, ProjectWork projectWork, ILogger<Migration> logger, ResourceProvider resourceProvider, OssBucketFactory bucketFactory, ProjectService projectService)
+      public Migration(IConfiguration configuration, BucketPrefixProvider bucketPrefix, IForgeOSS forgeOSS, MigrationBucketKeyProvider bucketProvider, UserResolver userResolver, IProjectWorkFactory projectWorkFactory, ILogger<Migration> logger, ResourceProvider resourceProvider, OssBucketFactory bucketFactory, ProjectService projectService)
       {
          _forgeOSS = forgeOSS;
          _configuration = configuration;
          _bucketPrefix = bucketPrefix;
          _bucketProvider = bucketProvider;
          _userResolver = userResolver;
-         _projectWork = projectWork;
          _logger = logger;
          _resourceProvider = resourceProvider;
          _bucketFactory = bucketFactory;
          _projectService = projectService;
-      }
+
+         _projectWork = projectWorkFactory.CreateProjectWork(String.Empty, userResolver);
+        }
       public async Task<List<MigrationJob>> ScanBuckets()
       {
          List<MigrationJob> migrationJobs = new List<MigrationJob>();

@@ -37,22 +37,9 @@ namespace WebApplication.Processing
         private readonly IHttpClientFactory _clientFactory;
         private readonly UserResolver _userResolver;
 
-        // generate unique names for files. The files will be moved to correct places after hash generation.
-        // it's recommended to use easily identifiable file suffixes for debugging reasons
-        //public readonly string Parameters = Unique(".params.json");
-        //public readonly string Thumbnail = Unique(".thumb.png");
-        //public readonly string SVF = Unique(".svf.zip");
-        //public readonly string InputParams = Unique(".input-params.json");
-        //public readonly string OutputModelIAM = Unique(".output-iam.zip");
-        //public readonly string OutputModelIPT = Unique(".output.ipt");
-        //public readonly string OutputSAT = Unique(".sat");
-        //public readonly string OutputRFA = Unique(".rfa");
-        //public readonly string BomJson = Unique(".bom.json");
-        //public readonly string OutputDrawing = Unique(".drawing.zip");
-        //public readonly string OutputDrawingPdf = Unique(".drawing.pdf");
-        //public readonly string DrawingsList = Unique(".drawings-list.json");
-        //public readonly string AdoptMessages = Unique(".adopt-messages.json");
-
+        // unique names for files consisting of prefix + friendly name for debuggin 
+        // the files will be moved to correct places after hash generation.
+        public string UniquePrefix { get; }
         public string Parameters => UniquePrefix + ".params.json";
         public string Thumbnail => UniquePrefix + ".thumb.png";
         public string SVF => UniquePrefix + ".svf.zip";
@@ -67,16 +54,15 @@ namespace WebApplication.Processing
         public string DrawingsList => UniquePrefix + ".drawings-list.json";
         public string AdoptMessages => UniquePrefix + ".adopt-messages.json";
 
-        public string UniquePrefix;
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Arranger(IHttpClientFactory clientFactory, UserResolver userResolver)
+        public Arranger(IHttpClientFactory clientFactory, UserResolver userResolver, string uniquePrefix = "")
         {
             _clientFactory = clientFactory;
             _userResolver = userResolver;
 
-            UniquePrefix = Guid.NewGuid().ToString("N");
+            UniquePrefix = String.IsNullOrEmpty(uniquePrefix) ? Guid.NewGuid().ToString("N") : uniquePrefix;
         }
 
         /// <summary>
