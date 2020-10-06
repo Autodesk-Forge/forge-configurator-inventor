@@ -50,7 +50,7 @@ Scenario('should check parameter notification', async (I) => {
     I.moveCursorTo(parameterTestNotify);
     I.waitForVisible(tooltipTestNotify, 5);
 
-    I.seeTextEquals("Parameter has changed.\nInventor Server updated the parameter. Your initial input was overridden.", tooltipTestNotify);
+    I.seeTextEquals("Parameter has changed\nInventor Server updated the parameter. Your initial input was overridden.", tooltipTestNotify);
   });
 
   Scenario('Delete the project', (I) => {

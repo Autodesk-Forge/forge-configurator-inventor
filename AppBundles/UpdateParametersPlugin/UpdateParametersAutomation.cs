@@ -24,6 +24,7 @@ using Inventor;
 using Autodesk.Forge.DesignAutomation.Inventor.Utils;
 using Newtonsoft.Json;
 using Shared;
+using PluginUtilities;
 
 namespace UpdateParametersPlugin
 {
@@ -86,9 +87,14 @@ namespace UpdateParametersPlugin
                         if (! paramData.Value.Equals(expression))
                         {
                             LogTrace($"Applying '{paramData.Value}' to '{paramName}'");
-                            SetExpression(userParameter, paramData);
-
+                            SetExpression(userParameter, paramData, doc);
                             changed = true;
+                            if (paramData.ErrorMessage != null)
+                            {
+                                // there was an invalid expression the UI will prompt the user to fix, so don't bother changing the rest of the parameters
+                                LogTrace("Skip update for the remaining parameters");
+                                break;
+                            }
                         }
                         else
                         {
@@ -103,25 +109,12 @@ namespace UpdateParametersPlugin
                     }
                 }
 
-                // don't do anything unless parameters really changed
-                if (changed)
-                {
-                    LogTrace("Updating");
-                    doc.Update2();
-
-                    LogTrace("Saving");
-                    doc.Save2(SaveDependents: true);
-                    LogTrace("Closing");
-                    doc.Close(true);
-                }
-                else
-                {
-                    LogTrace("Update is not required.");
-                }
+                var paramsExtractor = new ParametersExtractor();
+                paramsExtractor.Extract(doc, parameters, incomingParams);
             }
         }
 
-        private static void SetExpression(Parameter parameter, InventorParameter paramData)
+        private static void SetExpression(Parameter parameter, InventorParameter paramData, Document doc)
         {
             // using strongly typed `parameter.get_Units()` throws:
             //    "Failed to set 'PartMaterial' parameter. Error is System.Runtime.InteropServices.COMException (0x80020003): Member not found. (Exception from HRESULT: 0x80020003 (DISP_E_MEMBERNOTFOUND))"
@@ -139,9 +132,33 @@ namespace UpdateParametersPlugin
                     LogTrace($"Expression normalized to '{expression}'");
                 }
             }
+            else
+            {
+                // on the other hand, expression validation will fail without the double quotes for text parameters
+                if (!expression.StartsWith("\""))
+                {
+                    expression = "\"" + expression;
+                }
+                if (!expression.EndsWith("\""))
+                {
+                    expression = expression + "\"";
+                }
+            }
 
-            // apply the expression
-            dynParameter.Expression = expression;
+            var docUnitsOfMeasure = doc.UnitsOfMeasure;
+            var unitType = docUnitsOfMeasure.GetTypeFromString(dynParameter.Units);
+            LogTrace($"Checking expression validity on update for {expression} and unit type {dynParameter.Units} / {unitType}");
+            if (docUnitsOfMeasure.IsExpressionValid(expression, unitType))
+            {
+                // apply the expression
+                paramData.ErrorMessage = null;
+                dynParameter.Expression = expression;
+            }
+            else
+            {
+                LogTrace($"Expression '{expression}' invalid for unit type '{unitType}' on update attempt");
+                paramData.ErrorMessage = "Parameter's expression is not valid for its unit type";
+            }
         }
 
         #region Logging utilities

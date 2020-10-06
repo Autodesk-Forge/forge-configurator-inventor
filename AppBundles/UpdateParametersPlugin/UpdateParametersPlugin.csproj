@@ -47,9 +47,6 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\Shared\InventorParameters.cs">
-      <Link>InventorParameters.cs</Link>
-    </Compile>
     <Compile Include="..\..\Shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
@@ -71,6 +68,12 @@
     <PackageReference Include="Autodesk.Forge.DesignAutomation.Inventor.Utils">
       <Version>1.0.0-beta3</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PluginUtilities\PluginUtilities.csproj">
+      <Project>{1B86189C-D714-4A83-B710-F669091C9C6C}</Project>
+      <Name>PluginUtilities</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

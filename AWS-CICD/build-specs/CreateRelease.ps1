@@ -6,7 +6,7 @@ $dotnetCore='netcoreapp3.1'
 
 $release_zip_filename="ForgeConvInv-$targetConfiguration-$targetRuntime-$version.zip"
 
-$githubReleasesApiUrl='https://api.github.com/repos/Developer-Autodesk/forge-configurator-inventor/releases'
+$githubReleasesApiUrl='https://api.github.com/repos/Autodesk-Forge/forge-configurator-inventor/releases'
 
 if ($githubOAuthToken -eq $null)
 {

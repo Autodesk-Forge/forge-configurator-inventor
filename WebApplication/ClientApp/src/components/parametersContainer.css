@@ -93,3 +93,8 @@ div.changedOnUpdate-input-wrapper {
 .tooltipContent {
     margin: 8px;
 }
+
+.parameter input.error__input,
+.parameter input.error-input-wrapper__input {
+    color: red;
+}
