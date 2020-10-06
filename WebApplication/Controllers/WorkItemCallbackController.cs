@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
-using System.Text.Json.Serialization;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using WebApplication.Definitions;
 using WebApplication.Job;
@@ -13,31 +15,6 @@ using WebApplication.State;
 
 namespace WebApplication.Controllers
 {
-    // This construction is temporary
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum SerializableStatus
-    {
-        Pending = 1,
-        Inprogress = 2,
-        Cancelled = 3,
-        FailedLimitDataSize = 4,
-        FailedLimitProcessingTime = 5,
-        FailedDownload = 6,
-        FailedInstructions = 7,
-        FailedUpload = 8,
-        Success = 9
-    }
-
-    public class Response
-    {
-        public SerializableStatus Status { get; set; }
-        public string Progress { get; set; }
-        public string ReportUrl { get; set; }
-        public Statistics Stats { get; set; }
-        public string Id { get; set; }
-    }
-    //
-
     [ApiController]
     [Route("callbacks")]
     public class WorkItemCallbackController : ControllerBase
@@ -59,31 +36,30 @@ namespace WebApplication.Controllers
         }
 
         [HttpPost("onwicomplete")]
-        public async Task<IActionResult> OnWiComplete([FromBody] Response response, [FromQuery] string clientId, 
+        public async Task<IActionResult> OnWiComplete([FromQuery] string clientId,
             [FromQuery] string hash, [FromQuery] string projectId, [FromQuery] string arrangerPrefix, [FromQuery] string jobId)
         {
             // Process response to SignalR as fire and forget in order to respond to web hook quickly to avoid re-tries
-            ProcessResponse(response, clientId, hash, projectId, arrangerPrefix, jobId);
+            ProcessResponse(clientId, hash, projectId, arrangerPrefix, jobId);
 
             // Rsponse accepted
             return Ok();
         }
 
-        private async void ProcessResponse(Response response, string clientId, string hash, string projectId, string arrangerPrefix, string jobId)
+        private async void ProcessResponse(string clientId, string hash, string projectId, string arrangerPrefix, string jobId)
         {
             // Grab the SignalR client for response
             var client = _hubContext.Clients.Client(clientId);
 
             try
             {
-                WorkItemStatus status = new WorkItemStatus()
+                WorkItemStatus status;
+                // This serialization requires newtonsoft JSON because our FDA client uses it, otherwise deserializing te enum would fail
+                using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
                 {
-                    Status = (Status)response.Status,
-                    Progress = response.Progress,
-                    ReportUrl = response.ReportUrl,
-                    Stats = response.Stats,
-                    Id = response.Id
-                };
+                    var bodyStr = await reader.ReadToEndAsync();
+                    status = JsonConvert.DeserializeObject<WorkItemStatus>(bodyStr);
+                }
 
                 status.Stats.TimeFinished = DateTime.Now;
 
