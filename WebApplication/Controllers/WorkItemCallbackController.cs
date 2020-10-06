@@ -6,6 +6,7 @@ using System;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using WebApplication.Definitions;
+using WebApplication.Job;
 using WebApplication.Processing;
 using WebApplication.Services;
 using WebApplication.State;
@@ -59,17 +60,20 @@ namespace WebApplication.Controllers
 
         [HttpPost("onwicomplete")]
         public async Task<IActionResult> OnWiComplete([FromBody] Response response, [FromQuery] string clientId, 
-            [FromQuery] string hash, [FromQuery] string projectId, [FromQuery] string arrangerPrefix)
+            [FromQuery] string hash, [FromQuery] string projectId, [FromQuery] string arrangerPrefix, [FromQuery] string jobId)
         {
             // Process response to SignalR as fire and forget in order to respond to web hook quickly to avoid re-tries
-            ProcessResponse(response, clientId, hash, projectId, arrangerPrefix);
+            ProcessResponse(response, clientId, hash, projectId, arrangerPrefix, jobId);
 
             // Rsponse accepted
             return Ok();
         }
 
-        private async void ProcessResponse(Response response, string clientId, string hash, string projectId, string arrangerPrefix)
+        private async void ProcessResponse(Response response, string clientId, string hash, string projectId, string arrangerPrefix, string jobId)
         {
+            // Grab the SignalR client for response
+            var client = _hubContext.Clients.Client(clientId);
+
             try
             {
                 WorkItemStatus status = new WorkItemStatus()
@@ -94,13 +98,14 @@ namespace WebApplication.Controllers
                 var projectWork = _projectWorkFactory.CreateProjectWork(arrangerPrefix, _userResolver);
                 (ProjectStateDTO state, FdaStatsDTO stats) = await projectWork.ProcessUpdateProject(result, hash, projectId);
 
-                // Grab the SignalR client for response
-                var client = _hubContext.Clients.Client(clientId);
                 await client.SendAsync("onComplete", state, stats);
             }
-            catch (Exception e) 
+            catch (Exception e)
             {
-                _logger.LogError(e.Message);
+                _logger.LogError(e, $"Processing failed for {jobId}");
+
+                var message = $"Try to repeat your last action and please report the following message: {e.Message}";
+                await client.SendAsync("OnError", new MessagesError(jobId, "Internal error", new[] { message }));
             }
         }
     }

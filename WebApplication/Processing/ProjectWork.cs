@@ -140,7 +140,7 @@ namespace WebApplication.Processing
             return (dto, stats);
         }
 
-        public async Task<(ProjectStateDTO dto, FdaStatsDTO stats)> DoSmartUpdateAsync3(InventorParameters parameters, string projectId, string clientId, bool bForceUpdate = false)
+        public async Task<(ProjectStateDTO dto, FdaStatsDTO stats)> DoSmartUpdateAsync3(InventorParameters parameters, string projectId, string clientId, string jobId, bool bForceUpdate = false)
         {
             var hash = Crypto.GenerateObjectHashString(parameters);
             _logger.LogInformation($"Incoming parameters hash is {hash}");
@@ -160,8 +160,8 @@ namespace WebApplication.Processing
 
             // Otherwise - request project update as WI
             Project project = storage.Project;
-            string callbackUrl = String.Format("http://c6705575a04f.ngrok.io/callbacks/onwicomplete?clientId={0}&hash={1}&projectId={2}&arrangerPrefix={3}",
-                clientId, hash, projectId, _arranger.UniquePrefix);
+            string callbackUrl = String.Format("http://c6705575a04f.ngrok.io/callbacks/onwicomplete?clientId={0}&hash={1}&projectId={2}&arrangerPrefix={3}&jobId={4}",
+                clientId, hash, projectId, _arranger.UniquePrefix, jobId);
 
             var inputDocUrl = await bucket.CreateSignedUrlAsync(project.OSSSourceModel);
             UpdateData updateData = await _arranger.ForUpdateAsync(inputDocUrl, storage.Metadata.TLA, parameters);
