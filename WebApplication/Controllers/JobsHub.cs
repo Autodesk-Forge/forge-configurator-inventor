@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Shared;
 using WebApplication.Definitions;
 using WebApplication.Job;
@@ -107,9 +108,10 @@ namespace WebApplication.Controllers
         private readonly Sender _sender;
         private readonly Uploads _uploads;
         private readonly DtoGenerator _dtoGenerator;
+        private readonly bool _useCallbacks;
 
         public JobsHub(ILogger<JobsHub> logger, LinkGenerator linkGenerator, UserResolver userResolver, ProfileProvider profileProvider, 
-            Uploads uploads, DtoGenerator dtoGenerator, IProjectWorkFactory projectWorkFactory)
+            Uploads uploads, DtoGenerator dtoGenerator, IProjectWorkFactory projectWorkFactory, IOptions<CallbackUrls> callbackUrlsConfiguration)
         {
             _logger = logger;
             _linkGenerator = linkGenerator;
@@ -118,6 +120,7 @@ namespace WebApplication.Controllers
             _uploads = uploads;
             _dtoGenerator = dtoGenerator;
             _projectWork = projectWorkFactory.CreateProjectWork(String.Empty, _userResolver);
+            _useCallbacks = callbackUrlsConfiguration.Value.UseCallbacks;
 
             _sender = new Sender(this);
         }
@@ -129,7 +132,7 @@ namespace WebApplication.Controllers
             _profileProvider.Token = token;
 
             // create job and run it
-            var job = new UpdateModelJobItem(_logger, projectId, parameters, _projectWork);
+            var job = new UpdateModelJobItem(_logger, projectId, parameters, _projectWork, _useCallbacks);
             await RunJobAsync(job);
         }
 
@@ -140,7 +143,7 @@ namespace WebApplication.Controllers
             _profileProvider.Token = token;
 
             // create job and run it
-            var job = new RFAJobItem(_logger, projectId, hash, _projectWork, _linkGenerator);
+            var job = new RFAJobItem(_logger, projectId, hash, _projectWork, _linkGenerator, _useCallbacks);
             await RunJobAsync(job);
         }
 
@@ -151,7 +154,7 @@ namespace WebApplication.Controllers
             _profileProvider.Token = token;
 
             // create job and run it
-            var job = new DrawingJobItem(_logger, projectId, hash, _projectWork, _linkGenerator);
+            var job = new DrawingJobItem(_logger, projectId, hash, _projectWork, _linkGenerator, _useCallbacks);
             await RunJobAsync(job);
         }
 
@@ -166,7 +169,7 @@ namespace WebApplication.Controllers
             _uploads.ClearUploadData(packageId);
 
             // create job and run it
-            var job = new AdoptJobItem(_logger, projectInfo, fileName, _projectWork, _dtoGenerator, _userResolver);
+            var job = new AdoptJobItem(_logger, projectInfo, fileName, _projectWork, _dtoGenerator, _userResolver, _useCallbacks);
             await RunJobAsync(job);
         }
 
@@ -177,7 +180,7 @@ namespace WebApplication.Controllers
             _profileProvider.Token = token;
 
             // create job and run it
-            var job = new ExportDrawingPdfJobItem(_logger, projectId, hash, drawingKey, _projectWork, _linkGenerator);
+            var job = new ExportDrawingPdfJobItem(_logger, projectId, hash, drawingKey, _projectWork, _linkGenerator, _useCallbacks);
             await RunJobAsync(job);
         }
 

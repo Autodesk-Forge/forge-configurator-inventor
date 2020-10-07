@@ -28,8 +28,9 @@ namespace WebApplication.Job
     {
         public InventorParameters Parameters { get; }
 
-        public UpdateModelJobItem(ILogger logger, string projectId, InventorParameters parameters, ProjectWork projectWork)
-            : base(logger, projectId, projectWork)
+        public UpdateModelJobItem(ILogger logger, string projectId, InventorParameters parameters, ProjectWork projectWork, 
+            bool useCallbacks)
+            : base(logger, projectId, projectWork, useCallbacks)
         {
             Parameters = parameters;
         }
@@ -40,7 +41,7 @@ namespace WebApplication.Job
 
             Logger.LogInformation($"ProcessJob (Update) {Id} for project {ProjectId} started.");
 
-            (ProjectStateDTO state, FdaStatsDTO stats) = await ProjectWork.DoSmartUpdateAsync(Parameters, ProjectId, resultSender.GetClientId(), Id, true, false);
+            (ProjectStateDTO state, FdaStatsDTO stats) = await ProjectWork.DoSmartUpdateAsync(Parameters, ProjectId, resultSender.GetClientId(), Id, UseCallbacks, false);
 
             // send that we are done to client
             if (state != null)
