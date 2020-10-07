@@ -12,6 +12,7 @@ using WebApplication.Job;
 using WebApplication.Processing;
 using WebApplication.Services;
 using WebApplication.State;
+using WebApplication.Utilities;
 
 namespace WebApplication.Controllers
 {
@@ -19,60 +20,135 @@ namespace WebApplication.Controllers
     [Route("callbacks")]
     public class WorkItemCallbackController : ControllerBase
     {
+        private enum ResponseWiType
+        {
+            UpdateProject,
+            AdoptProject
+        }
+
         private readonly ILogger<WorkItemCallbackController> _logger;
         private readonly IHubContext<JobsHub> _hubContext;
         private readonly IPostProcessing _postProcessing;
         private readonly IProjectWorkFactory _projectWorkFactory;
         private readonly UserResolver _userResolver;
+        private readonly DtoGenerator _dtoGenerator;
 
         public WorkItemCallbackController(ILogger<WorkItemCallbackController> logger, IHubContext<JobsHub> hubContext, IPostProcessing postProcessing,
-            UserResolver userResolver, IProjectWorkFactory projectWorkFactory)
+            UserResolver userResolver, IProjectWorkFactory projectWorkFactory, DtoGenerator dtoGenerator)
         {
             _logger = logger;
             _hubContext = hubContext;
             _postProcessing = postProcessing;
             _projectWorkFactory = projectWorkFactory;
             _userResolver = userResolver;
+            _dtoGenerator = dtoGenerator;
         }
 
-        [HttpPost("onwicomplete")]
-        public async Task<IActionResult> OnWiComplete([FromQuery] string clientId,
+        [HttpPost("onprojectupdatewicompleted")]
+        public IActionResult OnProjectUpdateWiCompleted([FromQuery] string clientId,
             [FromQuery] string hash, [FromQuery] string projectId, [FromQuery] string arrangerPrefix, [FromQuery] string jobId)
         {
-            // Process response to SignalR as fire and forget in order to respond to web hook quickly to avoid re-tries
-            ProcessResponse(clientId, hash, projectId, arrangerPrefix, jobId);
+            // Run the task asynchronously
+            Task.Run(() => ProcessResponse(ResponseWiType.UpdateProject, clientId, projectId, arrangerPrefix, jobId, extraArg1: hash));
 
-            // Rsponse accepted
+            // Response accepted
             return Ok();
         }
 
-        private async void ProcessResponse(string clientId, string hash, string projectId, string arrangerPrefix, string jobId)
+        [HttpPost("onadoptwicompleted")]
+        public IActionResult OnAdoptWiCompleted([FromQuery] string clientId, [FromQuery] string projectId, [FromQuery] string topLevelAssembly,
+            [FromQuery] string arrangerPrefix, [FromQuery] string jobId)
+        {
+            // Run the task asynchronously
+            Task.Run(() => ProcessResponse(ResponseWiType.AdoptProject, clientId, projectId, arrangerPrefix, jobId, extraArg1: topLevelAssembly));
+
+            // Response accepted
+            return Ok();
+        }
+
+        private async Task<ProcessingResult> ProcessResultFromBody()
+        {
+            // This serialization requires newtonsoft JSON because our FDA client uses it, otherwise deserializing te enum would fail
+            using StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8);
+            var bodyStr = await reader.ReadToEndAsync();
+            
+            var status = JsonConvert.DeserializeObject<WorkItemStatus>(bodyStr);
+            status.Stats.TimeFinished = DateTime.UtcNow;
+
+            await _postProcessing.HandleStatus(status);
+
+            ProcessingResult result = new ProcessingResult(status.Stats)
+            {
+                Success = (status.Status == Status.Success),
+                ReportUrl = status.ReportUrl
+            };
+
+            return result;
+        }
+
+        private async void ProcessResponse(ResponseWiType wiType, string clientId, string projectId, string arrangerPrefix, 
+            string jobId, string extraArg1 = null)
+        {
+            try
+            {
+                // Grab the SignalR client for response
+                var client = _hubContext.Clients.Client(clientId);
+
+                // Process the response
+                var result = await ProcessResultFromBody();
+
+                // Fork to the right workflow depending on returned WI type
+                switch (wiType)
+                {
+                    case ResponseWiType.UpdateProject:
+                        await ProcessUpdateProjectResponseAsync(result, clientId, extraArg1, projectId, arrangerPrefix, jobId);
+                        break;
+                    case ResponseWiType.AdoptProject:
+                        await ProcessAdoptResponseAsync(result, client, projectId, arrangerPrefix, extraArg1);
+                        break;
+                    default:
+                        throw new Exception($"Cannot process this workflow because its type {wiType} is not implemented");
+                }
+            }
+            catch (FdaProcessingException fpe)
+            { }
+            catch (ProcessingException pe)
+            { }
+            catch (Exception e)
+            { }
+        }
+
+        private async Task ProcessAdoptResponseAsync(ProcessingResult result, IClientProxy client, string projectId, 
+            string arrangerPrefix, string topLevelAssembly)
+        {
+            ProjectStorage projectStorage = null;
+            FdaStatsDTO stats;
+
+            try
+            {
+                var projectWork = _projectWorkFactory.CreateProjectWork(arrangerPrefix, _userResolver);
+                stats = await projectWork.ProcessAdoptProjectAsync(result, projectId, topLevelAssembly);
+                projectStorage = await _userResolver.GetProjectStorageAsync(projectId);
+            }
+            catch (Exception)
+            {
+                var bucket = await _userResolver.GetBucketAsync();
+                await bucket.DeleteObjectAsync(projectStorage.Project.OSSSourceModel);
+                throw;
+            }
+
+            await client.SendAsync("onComplete", _dtoGenerator.ToDTO(projectStorage), stats);
+        }
+
+        private async Task ProcessUpdateProjectResponseAsync(ProcessingResult result, string clientId, string hash, string projectId, string arrangerPrefix, string jobId)
         {
             // Grab the SignalR client for response
             var client = _hubContext.Clients.Client(clientId);
 
             try
             {
-                WorkItemStatus status;
-                // This serialization requires newtonsoft JSON because our FDA client uses it, otherwise deserializing te enum would fail
-                using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
-                {
-                    var bodyStr = await reader.ReadToEndAsync();
-                    status = JsonConvert.DeserializeObject<WorkItemStatus>(bodyStr);
-                }
-
-                status.Stats.TimeFinished = DateTime.Now;
-
-                await _postProcessing.HandleStatus(status);
-
-                ProcessingResult result = new ProcessingResult(status.Stats)
-                {
-                    Success = (status.Status == Status.Success),
-                    ReportUrl = status.ReportUrl
-                };
-
                 var projectWork = _projectWorkFactory.CreateProjectWork(arrangerPrefix, _userResolver);
-                (ProjectStateDTO state, FdaStatsDTO stats) = await projectWork.ProcessUpdateProject(result, hash, projectId);
+                (ProjectStateDTO state, FdaStatsDTO stats) = await projectWork.ProcessUpdateProjectAsync(result, hash, projectId);
 
                 await client.SendAsync("onComplete", state, stats);
             }

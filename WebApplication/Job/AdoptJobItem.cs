@@ -66,7 +66,7 @@ namespace WebApplication.Job
             {
                 string signedUploadedUrl = await bucket.CreateSignedUrlAsync(ossSourceModel);
 
-                stats = await ProjectWork.AdoptAsync(_projectInfo, signedUploadedUrl);
+                stats = await ProjectWork.AdoptAsync(_projectInfo, signedUploadedUrl, false);
                 adopted = true;
             }
             finally
@@ -79,8 +79,11 @@ namespace WebApplication.Job
                 }
             }
 
-            Logger.LogInformation($"ProcessJob (Adopt) {Id} for project {_projectInfo.Name} completed.");
-            await resultSender.SendSuccessAsync(_dtoGenerator.ToDTO(projectStorage), stats);
+            if (stats != null)
+            {
+                Logger.LogInformation($"ProcessJob (Adopt) {Id} for project {_projectInfo.Name} completed.");
+                await resultSender.SendSuccessAsync(_dtoGenerator.ToDTO(projectStorage), stats);
+            }
         }
     }
 }

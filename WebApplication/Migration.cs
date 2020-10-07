@@ -175,7 +175,7 @@ namespace MigrationApp
 
          try
          {
-            await _projectWork.AdoptAsync(job.projectInfo, signedUrlNew);
+            await _projectWork.AdoptAsync(job.projectInfo, signedUrlNew, false);
             _logger.LogInformation($"Project {job.projectInfo.Name} was adopted");
          }
          catch(Exception e)

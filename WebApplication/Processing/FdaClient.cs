@@ -89,9 +89,9 @@ namespace WebApplication.Processing
             await _updateProjectWork.CleanUpAsync();
         }
 
-        public Task<ProcessingResult> AdoptAsync(AdoptionData projectData)
+        public Task<ProcessingResult> AdoptAsync(AdoptionData projectData, string callbackUrl = "")
         {
-            return _adoptWork.ProcessAsync(projectData);
+            return _adoptWork.ProcessAsync(projectData, callbackUrl);
         }
 
         public Task<ProcessingResult> UpdateAsync(UpdateData projectData, string callbackUrl = "")

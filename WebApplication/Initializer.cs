@@ -103,7 +103,7 @@ namespace WebApplication
             {
                 var signedUrl = await _projectService.TransferProjectToOssAsync(_bucket, defaultProjectConfig);
 
-                await _projectWork.AdoptAsync(defaultProjectConfig, signedUrl);
+                await _projectWork.AdoptAsync(defaultProjectConfig, signedUrl, false);
             }
 
             _logger.LogInformation("Added default projects.");

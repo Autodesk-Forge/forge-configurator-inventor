@@ -72,7 +72,8 @@ namespace WebApplication.Processing
             // Fire and forget vs wait for results
             if (useCallback)
             {
-                await _client.CreateWorkItemAsync(wi);
+                WorkItemStatus status = await _client.CreateWorkItemAsync(wi);
+                Trace($"Created WI {status.Id}");
                 return null;
             }
             else

@@ -10,7 +10,7 @@ namespace WebApplication.Services
 {
     public interface IProjectWorkFactory
     {
-        ProjectWork CreateProjectWork(string arrangerUiquePrefix, UserResolver userResolver);
+        ProjectWork CreateProjectWork(string arrangerUniquePrefix, UserResolver userResolver);
     }
 
     public class ProjectWorkFactory : IProjectWorkFactory
@@ -22,7 +22,7 @@ namespace WebApplication.Services
             _serviceProvider = serviceProvider;
         }
 
-        public ProjectWork CreateProjectWork(string arrangerUiquePrefix, UserResolver userResolver)
+        public ProjectWork CreateProjectWork(string arrangerUniquePrefix, UserResolver userResolver)
         {
             return new ProjectWork(
                 _serviceProvider.GetRequiredService<ILogger<ProjectWork>>(),
@@ -30,7 +30,7 @@ namespace WebApplication.Services
                 _serviceProvider.GetRequiredService<DtoGenerator>(),
                 userResolver,
                 _serviceProvider.GetRequiredService<IHttpClientFactory>(),
-                arrangerUiquePrefix
+                arrangerUniquePrefix
             );
         }
     }
