@@ -33,8 +33,9 @@ namespace WebApplication.Job
         private readonly LinkGenerator _linkGenerator;
         private readonly string _drawingKey;
 
-        public ExportDrawingPdfJobItem(ILogger logger, string projectId, string hash, string drawingKey, ProjectWork projectWork, LinkGenerator linkGenerator)
-            : base(logger, projectId, projectWork)
+        public ExportDrawingPdfJobItem(ILogger logger, string projectId, string hash, string drawingKey, ProjectWork projectWork, 
+            LinkGenerator linkGenerator, bool useCallbacks)
+            : base(logger, projectId, projectWork, useCallbacks)
         {
             _hash = hash;
             _linkGenerator = linkGenerator;

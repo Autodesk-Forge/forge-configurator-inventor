@@ -29,8 +29,9 @@ namespace WebApplication.Job
         private readonly string _hash;
         private readonly LinkGenerator _linkGenerator;
 
-        public DrawingJobItem(ILogger logger, string projectId, string hash, ProjectWork projectWork, LinkGenerator linkGenerator)
-            : base(logger, projectId, projectWork)
+        public DrawingJobItem(ILogger logger, string projectId, string hash, ProjectWork projectWork, 
+            LinkGenerator linkGenerator, bool useCallbacks)
+            : base(logger, projectId, projectWork, useCallbacks)
         {
             _hash = hash;
             _linkGenerator = linkGenerator;

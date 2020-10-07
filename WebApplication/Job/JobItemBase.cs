@@ -29,13 +29,16 @@ namespace WebApplication.Job
         protected ProjectWork ProjectWork { get; }
         public string ProjectId { get; }
         public string Id { get; }
+        
+        public bool UseCallbacks { get; }
 
-        protected JobItemBase(ILogger logger, string projectId, ProjectWork projectWork)
+        protected JobItemBase(ILogger logger, string projectId, ProjectWork projectWork, bool useCallbacks)
         {
             ProjectId = projectId;
             Id = Guid.NewGuid().ToString();
             ProjectWork = projectWork;
             Logger = logger;
+            UseCallbacks = useCallbacks;
         }
 
         public abstract Task ProcessJobAsync(IResultSender resultSender);

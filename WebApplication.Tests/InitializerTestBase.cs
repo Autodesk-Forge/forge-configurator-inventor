@@ -103,10 +103,13 @@ namespace WebApplication.Tests
             var userResolver = new UserResolver(resourceProvider, forgeOSS, bucketKeyProvider, localCache, NullLogger<UserResolver>.Instance, profileProvider);
             var arranger = new Arranger(httpClientFactory, userResolver);
 
+            var urlBuilder = new UrlBuilder(Options.Create(new CallbackUrls {UseCallbacks = false}));
+
             // TODO: linkGenerator should be mocked
             var dtoGenerator = new DtoGenerator(linkGenerator: null, localCache);
             var projectWork = new ProjectWork(new NullLogger<ProjectWork>(), fdaClient, dtoGenerator, 
-                userResolver, serviceProvider.GetRequiredService<IHttpClientFactory>(), String.Empty);
+                userResolver, serviceProvider.GetRequiredService<IHttpClientFactory>(), String.Empty,
+                urlBuilder);
 
             var projectService = new ProjectService(new NullLogger<ProjectService>(), userResolver, serviceProvider.GetRequiredService<IProjectWorkFactory>());
 
