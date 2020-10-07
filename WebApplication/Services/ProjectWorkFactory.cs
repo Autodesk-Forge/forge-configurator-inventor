@@ -30,7 +30,8 @@ namespace WebApplication.Services
                 _serviceProvider.GetRequiredService<DtoGenerator>(),
                 userResolver,
                 _serviceProvider.GetRequiredService<IHttpClientFactory>(),
-                arrangerUniquePrefix
+                arrangerUniquePrefix,
+                _serviceProvider.GetRequiredService<UrlBuilder>()
             );
         }
     }

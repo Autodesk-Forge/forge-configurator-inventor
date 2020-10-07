@@ -45,6 +45,7 @@ namespace WebApplication
         private const string DefaultProjectsSectionKey = "DefaultProjects";
         private const string InviteOnlyModeKey = "InviteOnlyMode";
         private const string ProcessingOptionsKey = "Processing";
+        private const string CallbackUrlsSectionKey = "CallbackUrls";
 
         public Startup(IConfiguration configuration)
         {
@@ -83,7 +84,8 @@ namespace WebApplication
                 .Configure<AppBundleZipPaths>(Configuration.GetSection(AppBundleZipPathsKey))
                 .Configure<DefaultProjectsConfiguration>(Configuration.GetSection(DefaultProjectsSectionKey))
                 .Configure<InviteOnlyModeConfiguration>(Configuration.GetSection(InviteOnlyModeKey))
-                .Configure<ProcessingOptions>(Configuration.GetSection(ProcessingOptionsKey));
+                .Configure<ProcessingOptions>(Configuration.GetSection(ProcessingOptionsKey))
+                .Configure<CallbackUrls>(Configuration.GetSection(CallbackUrlsSectionKey));
 
             services.AddSingleton<ResourceProvider>();
             services.AddSingleton<IPostProcessing, PostProcessing>();
@@ -107,6 +109,7 @@ namespace WebApplication
             services.AddSingleton<Uploads>();
             services.AddSingleton<OssBucketFactory>();
             services.AddSingleton<IProjectWorkFactory, ProjectWorkFactory>();
+            services.AddSingleton<UrlBuilder>();
 
             if (Configuration.GetValue<bool>("migration"))
             {

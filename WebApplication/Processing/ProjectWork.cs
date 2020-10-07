@@ -28,6 +28,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Shared;
 using WebApplication.Definitions;
+using WebApplication.Services;
 using WebApplication.State;
 using WebApplication.Utilities;
 
@@ -43,14 +44,17 @@ namespace WebApplication.Processing
         private readonly FdaClient _fdaClient;
         private readonly DtoGenerator _dtoGenerator;
         private readonly UserResolver _userResolver;
+        private readonly UrlBuilder _urlBuilder;
 
         public ProjectWork(ILogger<ProjectWork> logger, FdaClient fdaClient, DtoGenerator dtoGenerator,
-            UserResolver userResolver, IHttpClientFactory clientFactory, string arrangerUiquePrefix)
+            UserResolver userResolver, IHttpClientFactory clientFactory, string arrangerUiquePrefix,
+            UrlBuilder urlBuilder)
         {
             _logger = logger;
             _fdaClient = fdaClient;
             _dtoGenerator = dtoGenerator;
             _userResolver = userResolver;
+            _urlBuilder = urlBuilder;
 
             _arranger = new Arranger(clientFactory, userResolver, arrangerUiquePrefix);
         }
@@ -141,8 +145,7 @@ namespace WebApplication.Processing
 
             // Otherwise - request project update as WI
             Project project = storage.Project;
-            string callbackUrl = useCallback ? String.Format("http://35f087a5c1ef.ngrok.io/callbacks/onprojectupdatewicompleted?clientId={0}&hash={1}&projectId={2}&arrangerPrefix={3}&jobId={4}",
-                clientId, hash, projectId, _arranger.UniquePrefix, jobId) : String.Empty;
+            string callbackUrl = _urlBuilder.GetUpdateCallbackUrl(clientId, hash, projectId, _arranger.UniquePrefix, jobId);
 
             var inputDocUrl = await bucket.CreateSignedUrlAsync(project.OSSSourceModel);
             UpdateData updateData = await _arranger.ForUpdateAsync(inputDocUrl, storage.Metadata.TLA, parameters);

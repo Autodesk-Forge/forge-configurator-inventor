@@ -89,10 +89,12 @@ namespace WebApplication.Controllers
         private async void ProcessResponse(ResponseWiType wiType, string clientId, string projectId, string arrangerPrefix, 
             string jobId, string extraArg1 = null)
         {
+            IClientProxy client = null;
+
             try
             {
                 // Grab the SignalR client for response
-                var client = _hubContext.Clients.Client(clientId);
+                client = _hubContext.Clients.Client(clientId);
 
                 // Process the response
                 var result = await ProcessResultFromBody();
@@ -111,11 +113,21 @@ namespace WebApplication.Controllers
                 }
             }
             catch (FdaProcessingException fpe)
-            { }
+            {
+                _logger.LogError(fpe, $"Processing failed for callback jobid: {jobId}");
+                await client.SendAsync("onError", new ReportUrlError(jobId, fpe.ReportUrl));
+            }
             catch (ProcessingException pe)
-            { }
+            {
+                await client.SendAsync("onError", new MessagesError(jobId, pe.Title, pe.Messages));
+            }
             catch (Exception e)
-            { }
+            {
+                _logger.LogError(e, $"Processing failed for callback jobid: {jobId}");
+
+                var message = $"Try to repeat your last action and please report the following message: {e.Message}";
+                await client.SendAsync("onError", new MessagesError(jobId, "Internal error", new[] { message }));
+            }
         }
 
         private async Task ProcessAdoptResponseAsync(ProcessingResult result, IClientProxy client, string projectId, 
