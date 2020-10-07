@@ -89,12 +89,12 @@ namespace WebApplication.Processing
             await _updateProjectWork.CleanUpAsync();
         }
 
-        public Task<ProcessingResult> AdoptAsync(AdoptionData projectData, string callbackUrl = "")
+        public Task<ProcessingResult> AdoptAsync(AdoptionData projectData, string callbackUrl = null)
         {
             return _adoptWork.ProcessAsync(projectData, callbackUrl);
         }
 
-        public Task<ProcessingResult> UpdateAsync(UpdateData projectData, string callbackUrl = "")
+        public Task<ProcessingResult> UpdateAsync(UpdateData projectData, string callbackUrl = null)
         {
             return _updateProjectWork.ProcessAsync(projectData, callbackUrl);
         }
@@ -121,6 +121,16 @@ namespace WebApplication.Processing
             rfaResult.Stats.AddRange(satResult.Stats);
 
             return rfaResult;
+        }
+
+        internal async Task GenerateSatWithCallback(ProcessingArgs satData, string callbackUrl)
+        {
+            await _satWork.ProcessAsync(satData, callbackUrl);
+        }
+
+        internal async Task GenerateRfaWithCallback(ProcessingArgs rfaData, string callbackUrl)
+        {
+            await _satWork.ProcessAsync(rfaData, callbackUrl);
         }
 
         internal async Task<ProcessingResult> GenerateDrawing(ProcessingArgs data)

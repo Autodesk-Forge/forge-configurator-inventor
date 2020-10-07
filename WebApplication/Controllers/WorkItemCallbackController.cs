@@ -103,7 +103,7 @@ namespace WebApplication.Controllers
                 switch (wiType)
                 {
                     case ResponseWiType.UpdateProject:
-                        await ProcessUpdateProjectResponseAsync(result, clientId, extraArg1, projectId, arrangerPrefix, jobId);
+                        await ProcessUpdateProjectResponseAsync(result, client, extraArg1, projectId, arrangerPrefix, jobId);
                         break;
                     case ResponseWiType.AdoptProject:
                         await ProcessAdoptResponseAsync(result, client, projectId, arrangerPrefix, extraArg1);
@@ -146,17 +146,14 @@ namespace WebApplication.Controllers
             {
                 var bucket = await _userResolver.GetBucketAsync();
                 await bucket.DeleteObjectAsync(projectStorage.Project.OSSSourceModel);
-                throw;
+                throw; // Throw will take us to ProcessResponse method were the general error handling + client message will occur
             }
 
             await client.SendAsync("onComplete", _dtoGenerator.ToDTO(projectStorage), stats);
         }
 
-        private async Task ProcessUpdateProjectResponseAsync(ProcessingResult result, string clientId, string hash, string projectId, string arrangerPrefix, string jobId)
+        private async Task ProcessUpdateProjectResponseAsync(ProcessingResult result, IClientProxy client, string hash, string projectId, string arrangerPrefix, string jobId)
         {
-            // Grab the SignalR client for response
-            var client = _hubContext.Clients.Client(clientId);
-
             try
             {
                 var projectWork = _projectWorkFactory.CreateProjectWork(arrangerPrefix, _userResolver);
@@ -172,5 +169,19 @@ namespace WebApplication.Controllers
                 await client.SendAsync("OnError", new MessagesError(jobId, "Internal error", new[] { message }));
             }
         }
+        
+        private async Task ProcessGenerateRfaSatAsync(ProcessingResult result, string clientId, string projectId, string jobId, 
+            string hash, string satUrl, string arrangerPrefix)
+        {
+            var projectWork = _projectWorkFactory.CreateProjectWork(arrangerPrefix, _userResolver);
+            await projectWork.ProcessSatGeneratedForRfa(result, clientId, projectId, jobId, hash, satUrl, arrangerPrefix);
+        }
+
+        /*
+        private async Task ProcessGenerateRfaAsync(ProcessingResult result, )
+        {
+
+        }
+        */
     }
 }

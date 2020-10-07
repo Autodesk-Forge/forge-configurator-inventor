@@ -12,10 +12,32 @@ namespace WebApplication.Services
             _callbackUrlsConfiguration = callbackUrlsConfiguration.Value;
         }
 
-        public string GetUpdateCallbackUrl(string clientId, string hash, string projectId, string prefix, string jobId)
+        public string GetUpdateCallbackUrl(string clientId, string hash, string projectId, string arrangerPrefix, string jobId)
         {
             return string.Format(_callbackUrlsConfiguration.Methods.Update, _callbackUrlsConfiguration.Base, 
-                clientId, hash, projectId, prefix, jobId);
+                clientId, hash, projectId, arrangerPrefix, jobId);
+        }
+
+
+        public string GetAdoptCallbackUrl(string clientId, string projectId, string topLevelAssembly,
+            string arrangerPrefix,  string jobId)
+        {
+            return string.Format(_callbackUrlsConfiguration.Methods.Update, _callbackUrlsConfiguration.Base,
+                clientId, projectId, topLevelAssembly, arrangerPrefix, jobId);
+        }
+
+        public string GetGenerateSatCallbackUrl(string clientId, string projectId, string hash,
+            string arrangerPrefix, string jobId, string satUrl)
+        {
+            return string.Format(_callbackUrlsConfiguration.Methods.GenSat, _callbackUrlsConfiguration.Base,
+                clientId, projectId, hash, arrangerPrefix, jobId, satUrl);
+        }
+
+        public string GetGenerateRfaCallbackUrl(string clientId, string projectId, string hash,
+            string arrangerPrefix, string jobId)
+        {
+            return string.Format(_callbackUrlsConfiguration.Methods.GenRfa, _callbackUrlsConfiguration.Base,
+                clientId, projectId, hash, arrangerPrefix, jobId);
         }
     }
 }

@@ -62,13 +62,13 @@ namespace WebApplication.Processing
         /// <summary>
         /// Adapt the project.
         /// </summary>
-        public async Task<FdaStatsDTO> AdoptAsync(ProjectInfo projectInfo, string inputDocUrl, bool useCallback)
+        public async Task<FdaStatsDTO> AdoptAsync(ProjectInfo projectInfo, string inputDocUrl, bool useCallback, string clientId = null, string jobId = null)
         {
             _logger.LogInformation($"Adopt project '{projectInfo.Name}'");
 
             var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, projectInfo.TopLevelAssembly);
 
-            string callbackUrl = String.Empty;
+            string callbackUrl = useCallback ? _urlBuilder.GetAdoptCallbackUrl(clientId, projectInfo.Name, projectInfo.TopLevelAssembly, _arranger.UniquePrefix, jobId) : null;
 
             ProcessingResult result = await _fdaClient.AdoptAsync(adoptionData, callbackUrl);
 
@@ -145,7 +145,7 @@ namespace WebApplication.Processing
 
             // Otherwise - request project update as WI
             Project project = storage.Project;
-            string callbackUrl = _urlBuilder.GetUpdateCallbackUrl(clientId, hash, projectId, _arranger.UniquePrefix, jobId);
+            string callbackUrl = useCallback ? _urlBuilder.GetUpdateCallbackUrl(clientId, hash, projectId, _arranger.UniquePrefix, jobId) : null;
 
             var inputDocUrl = await bucket.CreateSignedUrlAsync(project.OSSSourceModel);
             UpdateData updateData = await _arranger.ForUpdateAsync(inputDocUrl, storage.Metadata.TLA, parameters);
@@ -205,14 +205,10 @@ namespace WebApplication.Processing
             return (dtoUpdate, stats);
         }
 
-        //
-        //
-        //
-
         /// <summary>
         /// Generate RFA (or take it from cache).
         /// </summary>
-        public async Task<FdaStatsDTO> GenerateRfaAsync(string projectName, string hash)
+        public async Task<FdaStatsDTO> GenerateRfaAsync(string projectName, string hash, bool useCallback, string clientId = null, string jobId = null)
         {
             _logger.LogInformation($"Generating RFA for hash {hash}");
 
@@ -224,7 +220,6 @@ namespace WebApplication.Processing
             //_logger.LogError($"Failed to generate SAT file");
             //throw new FdaProcessingException($"Failed to generate SAT file", "https://localhost:5000/#");
             //// *********************************************
-
 
             var ossNames = project.OssNameProvider(hash);
 
@@ -238,20 +233,59 @@ namespace WebApplication.Processing
 
             // OK, nothing in cache - generate it now
             var inputDocUrl = await bucket.CreateSignedUrlAsync(ossNames.GetCurrentModel(storage.IsAssembly));
-            ProcessingArgs satData = await _arranger.ForSatAsync(inputDocUrl, storage.Metadata.TLA);
-            ProcessingArgs rfaData = await _arranger.ForRfaAsync(satData.SatUrl);
 
-            ProcessingResult result = await _fdaClient.GenerateRfa(satData, rfaData);
+            ProcessingArgs satData = await _arranger.ForSatAsync(inputDocUrl, storage.Metadata.TLA);
+            if (!useCallback)
+            {
+                ProcessingArgs rfaData = await _arranger.ForRfaAsync(satData.SatUrl);
+                ProcessingResult result = await _fdaClient.GenerateRfa(satData, rfaData);
+                return await ProcessGenerateRfaAsync(result, hash, project.Name);
+            }
+            else
+            {
+                string callbackUrl = _urlBuilder.GetGenerateSatCallbackUrl(clientId, project.Name, hash, _arranger.UniquePrefix, jobId, satData.SatUrl);
+                await _fdaClient.GenerateSatWithCallback(satData, callbackUrl);
+            }
+
+            return null;
+        }
+
+        public async Task ProcessSatGeneratedForRfa(ProcessingResult result, string clientId, string projectId, string jobId, string hash, string satUrl, string arrangerPrefix)
+        {
             if (!result.Success)
             {
-                _logger.LogError($"{result.ErrorMessage} for project {project.Name} and hash {hash}");
-                throw new FdaProcessingException($"{result.ErrorMessage} for project {project.Name} and hash {hash}", result.ReportUrl);
+                _logger.LogError($"Failed to generate SAT file for project {projectId} and hash {hash}");
+                throw new FdaProcessingException($"Failed to generate SAT file for project {projectId} and hash {hash}", result.ReportUrl);
             }
+
+            ProcessingArgs rfaData = await _arranger.ForRfaAsync(satUrl);
+            string callbackUrl = _urlBuilder.GetGenerateRfaCallbackUrl(clientId, projectId, hash, arrangerPrefix, jobId);
+            await _fdaClient.GenerateRfaWithCallback(rfaData, callbackUrl);
+        }
+
+
+        public async Task<FdaStatsDTO> ProcessGenerateRfaAsync(ProcessingResult result, string hash, string projectId)
+        {
+            if (!result.Success)
+            {
+                _logger.LogError($"{result.ErrorMessage} for project {projectId} and hash {hash}");
+                throw new FdaProcessingException($"{result.ErrorMessage} for project {projectId} and hash {hash}", result.ReportUrl);
+            }
+
+            ProjectStorage storage = await _userResolver.GetProjectStorageAsync(projectId);
+            Project project = storage.Project;
+
+            var ossNames = project.OssNameProvider(hash);
+            var bucket = await _userResolver.GetBucketAsync();
 
             await _arranger.MoveRfaAsync(project, hash);
             await bucket.UploadAsJsonAsync(ossNames.StatsRFA, result.Stats);
             return FdaStatsDTO.All(result.Stats);
         }
+
+        //
+        //
+        //
 
         public async Task<(FdaStatsDTO, int)> ExportDrawingPdfAsync(string projectName, string hash, string drawingKey)
         {

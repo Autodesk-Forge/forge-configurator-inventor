@@ -117,7 +117,7 @@ namespace WebApplication.Processing
         /// Run work item and wait for the completion.
         /// </summary>
         /// <param name="args">Work item arguments.</param>
-        protected async Task<ProcessingResult> RunAsync(Dictionary<string, IArgument> args, string callbackUrl = "")
+        protected async Task<ProcessingResult> RunAsync(Dictionary<string, IArgument> args, string callbackUrl = null)
         {
             WorkItemStatus status = await Publisher.RunWorkItemAsync(args, this, callbackUrl);
 
@@ -134,7 +134,7 @@ namespace WebApplication.Processing
         /// <summary>
         /// Process IPT or Zipped IAM file.
         /// </summary>
-        public Task<ProcessingResult> ProcessAsync(ProcessingArgs data, string callbackUrl = "")
+        public Task<ProcessingResult> ProcessAsync(ProcessingArgs data, string callbackUrl = null)
         {
             var args = ToWorkItemArgs(data);
 
