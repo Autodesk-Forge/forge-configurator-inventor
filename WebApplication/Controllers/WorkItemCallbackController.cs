@@ -23,7 +23,8 @@ namespace WebApplication.Controllers
         private enum ResponseWiType
         {
             UpdateProject,
-            AdoptProject
+            AdoptProject,
+            SatGenerated
         }
 
         private readonly ILogger<WorkItemCallbackController> _logger;
@@ -45,22 +46,57 @@ namespace WebApplication.Controllers
         }
 
         [HttpPost("onprojectupdatewicompleted")]
-        public IActionResult OnProjectUpdateWiCompleted([FromQuery] string clientId,
+        public async Task<IActionResult> OnProjectUpdateWiCompleted([FromQuery] string clientId,
             [FromQuery] string hash, [FromQuery] string projectId, [FromQuery] string arrangerPrefix, [FromQuery] string jobId)
         {
+            // Process the response
+            var result = await ProcessResultFromBody();
+
             // Run the task asynchronously
-            Task.Run(() => ProcessResponse(ResponseWiType.UpdateProject, clientId, projectId, arrangerPrefix, jobId, extraArg1: hash));
+           ProcessResponse(ResponseWiType.UpdateProject, result, clientId, projectId, arrangerPrefix, jobId, extraArg1: hash);
 
             // Response accepted
             return Ok();
         }
 
         [HttpPost("onadoptwicompleted")]
-        public IActionResult OnAdoptWiCompleted([FromQuery] string clientId, [FromQuery] string projectId, [FromQuery] string topLevelAssembly,
+        public async Task<IActionResult> OnAdoptWiCompleted([FromQuery] string clientId, [FromQuery] string projectId, [FromQuery] string topLevelAssembly,
             [FromQuery] string arrangerPrefix, [FromQuery] string jobId)
         {
+            // Process the response
+            var result = await ProcessResultFromBody();
+
             // Run the task asynchronously
-            Task.Run(() => ProcessResponse(ResponseWiType.AdoptProject, clientId, projectId, arrangerPrefix, jobId, extraArg1: topLevelAssembly));
+            ProcessResponse(ResponseWiType.AdoptProject, result, clientId, projectId, arrangerPrefix, jobId, extraArg1: topLevelAssembly);
+
+            // Response accepted
+            return Ok();
+        }
+
+        [HttpPost("ongeneratesatcompleted")]
+        public async Task<IActionResult> OnGenerateSatCompleted([FromQuery] string clientId, [FromQuery] string projectId, [FromQuery] string hash,
+            [FromQuery] string arrangerPrefix, [FromQuery] string jobId, [FromQuery] string satUrl)
+        {
+            // Process the response
+            var result = await ProcessResultFromBody();
+
+            // Run the task asynchronously
+            ProcessResponse(ResponseWiType.SatGenerated, result, clientId, projectId, arrangerPrefix, jobId, extraArg1: hash, extraArg2: satUrl);
+
+            // Response accepted
+            return Ok();
+        }
+
+        [HttpPost("ongeneraterfacompleted")]
+        public async Task<IActionResult> OnGenerateRfaCompleted([FromQuery] string clientId, [FromQuery] string projectId, [FromQuery] string hash,
+            [FromQuery] string arrangerPrefix, [FromQuery] string jobId, [FromQuery] string satUrl, [FromQuery]string stats)
+        {
+            var statsConv = System.Text.Json.JsonSerializer.Deserialize<Statistics>(stats);
+            // Process the response
+            var result = await ProcessResultFromBody();
+
+            // Run the task asynchronously
+            ProcessResponse(ResponseWiType.AdoptProject, result, clientId, projectId, arrangerPrefix, jobId, extraArg1: hash, extraArg2: satUrl);
 
             // Response accepted
             return Ok();
@@ -86,8 +122,8 @@ namespace WebApplication.Controllers
             return result;
         }
 
-        private async void ProcessResponse(ResponseWiType wiType, string clientId, string projectId, string arrangerPrefix, 
-            string jobId, string extraArg1 = null)
+        private async void ProcessResponse(ResponseWiType wiType, ProcessingResult result, string clientId, string projectId, string arrangerPrefix, 
+            string jobId, string extraArg1 = null, string extraArg2 = null)
         {
             IClientProxy client = null;
 
@@ -95,9 +131,6 @@ namespace WebApplication.Controllers
             {
                 // Grab the SignalR client for response
                 client = _hubContext.Clients.Client(clientId);
-
-                // Process the response
-                var result = await ProcessResultFromBody();
 
                 // Fork to the right workflow depending on returned WI type
                 switch (wiType)
@@ -107,6 +140,9 @@ namespace WebApplication.Controllers
                         break;
                     case ResponseWiType.AdoptProject:
                         await ProcessAdoptResponseAsync(result, client, projectId, arrangerPrefix, extraArg1);
+                        break;
+                    case ResponseWiType.SatGenerated:
+                        await ProcessGenerateRfaSatAsync(result, clientId, projectId, jobId, extraArg1, extraArg2, arrangerPrefix);
                         break;
                     default:
                         throw new Exception($"Cannot process this workflow because its type {wiType} is not implemented");

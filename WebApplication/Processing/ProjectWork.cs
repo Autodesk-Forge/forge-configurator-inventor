@@ -26,6 +26,7 @@ using Autodesk.Forge.Client;
 using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Shared;
 using WebApplication.Definitions;
 using WebApplication.Services;
@@ -258,8 +259,9 @@ namespace WebApplication.Processing
                 throw new FdaProcessingException($"Failed to generate SAT file for project {projectId} and hash {hash}", result.ReportUrl);
             }
 
+            var stats = System.Text.Json.JsonSerializer.Serialize(result.Stats[0]);
             ProcessingArgs rfaData = await _arranger.ForRfaAsync(satUrl);
-            string callbackUrl = _urlBuilder.GetGenerateRfaCallbackUrl(clientId, projectId, hash, arrangerPrefix, jobId);
+            string callbackUrl = _urlBuilder.GetGenerateRfaCallbackUrl(clientId, projectId, hash, arrangerPrefix, jobId, stats);
             await _fdaClient.GenerateRfaWithCallback(rfaData, callbackUrl);
         }
 

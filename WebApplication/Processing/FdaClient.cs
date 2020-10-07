@@ -130,7 +130,7 @@ namespace WebApplication.Processing
 
         internal async Task GenerateRfaWithCallback(ProcessingArgs rfaData, string callbackUrl)
         {
-            await _satWork.ProcessAsync(rfaData, callbackUrl);
+            await _rfaWork.ProcessAsync(rfaData, callbackUrl);
         }
 
         internal async Task<ProcessingResult> GenerateDrawing(ProcessingArgs data)

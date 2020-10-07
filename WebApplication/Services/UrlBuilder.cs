@@ -34,10 +34,10 @@ namespace WebApplication.Services
         }
 
         public string GetGenerateRfaCallbackUrl(string clientId, string projectId, string hash,
-            string arrangerPrefix, string jobId)
+            string arrangerPrefix, string jobId, string statistics)
         {
             return string.Format(_callbackUrlsConfiguration.Methods.GenRfa, _callbackUrlsConfiguration.Base,
-                clientId, projectId, hash, arrangerPrefix, jobId);
+                clientId, projectId, hash, arrangerPrefix, jobId, statistics);
         }
     }
 }

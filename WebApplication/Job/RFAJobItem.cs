@@ -43,6 +43,10 @@ namespace WebApplication.Job
             Logger.LogInformation($"ProcessJob (RFA) {Id} for project {ProjectId} started.");
 
             var stats = await ProjectWork.GenerateRfaAsync(ProjectId, _hash, true, resultSender.GetClientId(), Id);
+
+            if (stats == null)
+                return;
+
             Logger.LogInformation($"ProcessJob (RFA) {Id} for project {ProjectId} completed.");
 
             // TODO: this url can be generated right away... we can simply acknowledge that OSS file is ready,
