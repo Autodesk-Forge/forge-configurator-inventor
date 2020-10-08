@@ -21,6 +21,7 @@ using Autodesk.Forge.Core;
 using Autodesk.Forge.DesignAutomation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -75,6 +76,12 @@ namespace WebApplication
             });
 
             services.AddHttpClient();
+
+            services.Configure<FormOptions>(x =>
+            {
+                x.ValueLengthLimit = 500000000;
+                x.MultipartBodyLengthLimit = 500000000; // default was 134217728, 500000000 is enough due to FDA quotas (500 MB uncompressed size)
+            });
 
             // NOTE: eventually we might want to use `AddForgeService()`, but right now it might break existing stuff
             // https://github.com/Autodesk-Forge/forge-api-dotnet-core/blob/master/src/Autodesk.Forge.Core/ServiceCollectionExtensions.cs
