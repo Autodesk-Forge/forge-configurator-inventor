@@ -115,6 +115,7 @@ namespace WebApplication
             services.AddSingleton<LocalCache>();
             services.AddSingleton<Uploads>();
             services.AddSingleton<OssBucketFactory>();
+            services.AddSingleton<WorkItemCache>();
 
             if (Configuration.GetValue<bool>("migration"))
             {

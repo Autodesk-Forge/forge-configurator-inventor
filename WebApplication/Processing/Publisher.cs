@@ -23,6 +23,7 @@ using System.Threading.Tasks;
 using Autodesk.Forge.DesignAutomation;
 using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.Extensions.Logging;
+using WebApplication.Services;
 using WebApplication.Utilities;
 
 namespace WebApplication.Processing
@@ -33,20 +34,31 @@ namespace WebApplication.Processing
         private readonly IPostProcessing _postProcessing;
         private readonly DesignAutomationClient _client;
         private readonly ILogger<Publisher> _logger;
+        private readonly WorkItemCache _wiCache;
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Publisher(DesignAutomationClient client, ILogger<Publisher> logger, ResourceProvider resourceProvider, IPostProcessing postProcessing)
+        public Publisher(DesignAutomationClient client, ILogger<Publisher> logger, ResourceProvider resourceProvider, IPostProcessing postProcessing,
+            WorkItemCache wiCache)
         {
             _client = client;
             _logger = logger;
             _resourceProvider = resourceProvider;
             _postProcessing = postProcessing;
+            _wiCache = wiCache;
         }
 
         public async Task<WorkItemStatus> RunWorkItemAsync(Dictionary<string, IArgument> workItemArgs, ForgeAppBase config)
         {
+            XrefTreeArgument callbackOnComplete = new XrefTreeArgument()
+            {
+                Verb = Verb.Post,
+                Url = "http://5cc79b534487.ngrok.io/callbacks/onwicomplete"
+            };
+
+            workItemArgs.Add("onComplete", callbackOnComplete);
+
             // create work item
             var wi = new WorkItem
             {
@@ -55,15 +67,12 @@ namespace WebApplication.Processing
             };
 
             // run WI and wait for completion
+            IWorkItemHandle wiHandle = new CallbackWorkItemHandle(_wiCache, _client);
+
             System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
             WorkItemStatus status = await _client.CreateWorkItemAsync(wi);
             Trace($"Created WI {status.Id}");
-            while (status.Status == Status.Pending || status.Status == Status.Inprogress)
-            {
-                await Task.Delay(2000);
-                status = await _client.GetWorkitemStatusAsync(status.Id);
-            }
-
+            status = await wiHandle.ProcessWorkItemAsync(wi);
             Trace($"WI {status.Id} completed with {status.Status} in {sw.ElapsedMilliseconds} ms");
             Trace($"{status.ReportUrl}");
 
