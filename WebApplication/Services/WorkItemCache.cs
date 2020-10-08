@@ -21,11 +21,8 @@ namespace WebApplication.Services
 
         public async Task<WorkItemStatus> WaitForCompletion()
         {
-            await Task.Run(() =>
-            {
-                while (!IsFinished())
-                    Thread.Sleep(200);
-            });
+            while (!IsFinished())
+                await Task.Delay(200);
 
             return _status;
         }
