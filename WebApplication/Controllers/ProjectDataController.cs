@@ -19,6 +19,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using WebApplication.Processing;
 using WebApplication.State;
 using WebApplication.Utilities;
 
@@ -32,11 +33,13 @@ namespace WebApplication.Controllers
     {
         private readonly UserResolver _userResolver;
         private readonly ILogger<ProjectDataController> _logger;
+        private readonly Publisher _publisher;
 
-        public ProjectDataController(UserResolver userResolver, ILogger<ProjectDataController> logger)
+        public ProjectDataController(UserResolver userResolver, ILogger<ProjectDataController> logger, Publisher publisher)
         {
             _userResolver = userResolver;
             _logger = logger;
+            _publisher = publisher;
         }
 
         [HttpGet("parameters/{projectName}")]
@@ -55,6 +58,22 @@ namespace WebApplication.Controllers
         public async Task<ActionResult> GetBOM(string projectName, string hash)
         {
             return await SendLocalFileContent(projectName, LocalName.BOM, hash);
+        }
+        
+        [HttpGet("complete/{trackerId}")]
+        public ActionResult Complete(string trackerId)
+        {
+            _logger.LogInformation($"Completing {trackerId}");
+            if (_publisher.Tracker.TryRemove(trackerId, out var completionEvent))
+            {
+                completionEvent.Set();
+            }
+            else
+            {
+                _logger.LogError($"Cannot find tracker {trackerId}");
+            }
+
+            return NoContent();
         }
 
         /// <summary>

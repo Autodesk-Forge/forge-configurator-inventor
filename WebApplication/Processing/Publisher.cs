@@ -17,13 +17,17 @@
 /////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Autodesk.Forge.DesignAutomation;
 using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.Extensions.Logging;
 using WebApplication.Utilities;
+using Activity = Autodesk.Forge.DesignAutomation.Model.Activity;
 
 namespace WebApplication.Processing
 {
@@ -45,6 +49,9 @@ namespace WebApplication.Processing
             _postProcessing = postProcessing;
         }
 
+        public ConcurrentDictionary<string, AutoResetEvent> Tracker { get; } =
+            new ConcurrentDictionary<string, AutoResetEvent>();
+
         public async Task<WorkItemStatus> RunWorkItemAsync(Dictionary<string, IArgument> workItemArgs, ForgeAppBase config)
         {
             // create work item
@@ -55,7 +62,19 @@ namespace WebApplication.Processing
             };
 
             // run WI and wait for completion
-            System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
+            var sw = Stopwatch.StartNew();
+            WorkItemStatus status = await RunWithCallback(wi);
+            //WorkItemStatus status = await RunWithPolling(wi);
+
+            Trace($"WI {status.Id} completed with {status.Status} in {sw.ElapsedMilliseconds} ms");
+            Trace($"{status.ReportUrl}");
+
+            await _postProcessing.HandleStatus(status);
+            return status;
+        }
+
+        private async Task<WorkItemStatus> RunWithPolling(WorkItem wi)
+        {
             WorkItemStatus status = await _client.CreateWorkItemAsync(wi);
             Trace($"Created WI {status.Id}");
             while (status.Status == Status.Pending || status.Status == Status.Inprogress)
@@ -64,10 +83,23 @@ namespace WebApplication.Processing
                 status = await _client.GetWorkitemStatusAsync(status.Id);
             }
 
-            Trace($"WI {status.Id} completed with {status.Status} in {sw.ElapsedMilliseconds} ms");
-            Trace($"{status.ReportUrl}");
+            return status;
+        }
 
-            await _postProcessing.HandleStatus(status);
+        private async Task<WorkItemStatus> RunWithCallback(WorkItem wi)
+        {
+            string key = Guid.NewGuid().ToString("N"); // TODO: use in callback url
+            AutoResetEvent completionEvent = Tracker.GetOrAdd(key, new AutoResetEvent(false));
+
+            WorkItemStatus status = await _client.CreateWorkItemAsync(wi);
+            Trace($"Created WI {status.Id} with tracker ID {key}");
+
+            // wait for completion
+            completionEvent.WaitOne(60 * 60 * 1000);
+            status = await _client.GetWorkitemStatusAsync(status.Id);
+
+            Trace($"Completing WI {status.Id} with tracker ID {key}");
+
             return status;
         }
 
