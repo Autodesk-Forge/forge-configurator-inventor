@@ -17,6 +17,7 @@
 /////////////////////////////////////////////////////////////////////
 
 using System.Net.Http;
+using System.Text.Json.Serialization;
 using Autodesk.Forge.Core;
 using Autodesk.Forge.DesignAutomation;
 using Microsoft.AspNetCore.Builder;
@@ -61,6 +62,7 @@ namespace WebApplication
                 .AddControllersWithViews()
                 .AddJsonOptions(options =>
                                 {
+                                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                                     options.JsonSerializerOptions.IgnoreNullValues = true;
                                 });
 

@@ -26,6 +26,7 @@ using System.Threading.Tasks;
 using Autodesk.Forge.DesignAutomation;
 using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using WebApplication.Utilities;
 using Activity = Autodesk.Forge.DesignAutomation.Model.Activity;
 
@@ -90,6 +91,11 @@ namespace WebApplication.Processing
         {
             string key = Guid.NewGuid().ToString("N"); // TODO: use in callback url
             AutoResetEvent completionEvent = Tracker.GetOrAdd(key, new AutoResetEvent(false));
+
+            string callbackUrl = "https://ab0f46cecdc8.ngrok.io/complete/" + key; // TODO: read hostname from settings + generate relative path
+
+            var callbackOnComplete = new XrefTreeArgument { Verb = Verb.Post, Url = callbackUrl };
+            wi.Arguments.Add("onComplete", callbackOnComplete);
 
             WorkItemStatus status = await _client.CreateWorkItemAsync(wi);
             Trace($"Created WI {status.Id} with tracker ID {key}");
