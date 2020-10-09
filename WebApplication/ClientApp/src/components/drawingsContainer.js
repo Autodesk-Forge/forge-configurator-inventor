@@ -92,7 +92,6 @@ export class DrawingsContainer extends Component {
 
         // drawings for table
         let data = [];
-        //drawingsList ? drawingsList.map((drawing, index) => ( <div key={index}>{drawing}</div> ))
         if(this.props.drawingsList) {
             const shortName = function(name) {
                 const onlyName = name.split('\\').pop().split('/').pop();

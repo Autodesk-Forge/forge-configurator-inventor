@@ -76,7 +76,7 @@ Scenario('should check that Drawing tab shows drawing for an Assembly', async (I
 
 });
 
-Scenario('should check if an Assembly do not have any drawings then No data page is displayed', async (I) => {
+Scenario('should check if an Assembly does not have any drawings then No data page is displayed', async (I) => {
 
     // select project in the Project Switcher
     I.selectProject('Wrench');
@@ -87,11 +87,11 @@ Scenario('should check if an Assembly do not have any drawings then No data page
 
     // wait for no drawing page to be displayed
     I.waitForVisible(noDrawingElement, locators.FDAActionTimeout);
-    I.see("You don't have any drawings in package.", noDrawingElement);
+    I.see("You don't have any drawings in your package.", noDrawingElement);
 
 });
 
-Scenario('should check id a drawing has more sheet is will show arrow buttons', async (I) => {
+Scenario('should check if a drawing has more sheets it will show arrow buttons', async (I) => {
 
     I.signIn();
 
@@ -152,11 +152,11 @@ Scenario('should check that IPT do not display any data', async (I) => {
 
     // wait for no drawing page to be displayed
     I.waitForVisible(noDrawingElement, locators.FDAActionTimeout);
-    I.see("You don't have any drawings in package.", noDrawingElement);
+    I.see("You don't have any drawings in your package.", noDrawingElement);
 
 });
 
-Scenario('should check if Wheel has more drawings listed in drawing panel and with correct order', async (I) => {
+Scenario('should check if Wheel has more drawings listed in the drawing panel and in correct order', async (I) => {
 
     // select project in the Project Switcher
     I.selectProject('Wheel');

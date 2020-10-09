@@ -36,7 +36,7 @@ export class Drawing extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    // refresh drawing data when Drawing tab was clicked before projects initialized
+    // refresh drawing data when Drawing tab was clicked before projects were initialized
     const isAssembly = this.props.activeProject?.isAssembly;
     const hasDrawing = this.props.activeProject?.hasDrawing;
     if (isAssembly === true && hasDrawing === true) {
@@ -54,7 +54,7 @@ export class Drawing extends Component {
   render() {
     const initialized = !this.props.activeProject?.hasDrawing || this.props.drawingPdf !== null;
     const isAssembly = this.props.activeProject?.isAssembly;
-    // for now, we don't detect hasDrawing on the server, but return empty url in case there is no drawing. So keep the check for drawingPdf?.length
+    // for now, we don't detect hasDrawing on the server, but return an empty url in case there is no drawing. So keep the check for drawingPdf?.length
     const hasDrawing = this.props.activeProject?.hasDrawing && this.props.drawingPdf?.length > 0;
     const empty = (initialized && !hasDrawing) || isAssembly === false;
     const containerClass = empty ? "drawingContainer empty" : "drawingContainer";
@@ -66,12 +66,10 @@ export class Drawing extends Component {
           <div className="drawingEmptyText">You don&apos;t have any drawings in package.</div>
         }
         {!empty &&
-          // <div id="drawings" className='drawingsContent fullheight'>
             <div className='inRow fullheight'>
               <DrawingsContainer/>
               <ForgePdfView/>
             </div>
-          // </div>
         }
         {!empty && this.props.drawingProgressShowing &&
           <ModalProgress
@@ -96,7 +94,6 @@ export default connect(function (store) {
   return {
     activeProject: activeProject,
     activeDrawing: activeDrawing,
-    //drawingPdfUrl: getDrawingPdfUrl(store),
     drawingPdf: getDrawingPdfUrl(store),
     drawingProgressShowing: drawingProgressShowing(store)
   };

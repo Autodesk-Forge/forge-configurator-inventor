@@ -33,7 +33,6 @@ const rowForRFA = locate('div').withAttr({role: 'gridcell'});
 const divDownloads = locate('div').withAttr({ id: 'downloads' });
 const titleDataFileForWrench = locate('p').withText('Wrench').inside(progressDialog);
 const linkRFA = locate('a').withText('RFA').inside(rowForRFA);
-//const clickHere = locate('section').find('a').withText('Click here');
 
 Scenario('should check downloads tab with RFA link for Wrench', async (I) => {
 
@@ -43,7 +42,7 @@ Scenario('should check downloads tab with RFA link for Wrench', async (I) => {
     //check Download Tab
     I.see('Downloads', locators.downloadsTab);
 
-    // click on downlod tab
+    // click on download tab
     I.goToDownloadsTab();
 
     //check if Div download exists

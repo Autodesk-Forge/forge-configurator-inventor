@@ -37,7 +37,7 @@ const Icon = ({ iconname }) => (
 
 const iconRenderer = ({ cellData: iconname }) => <Icon iconname={iconname} />;
 
-/** Hyperlink, which leads nowhere. */
+/** Hyperlink that leads nowhere. */
 function deadEndLink(title) {
     return <a href='' onClick={(e) => { e.preventDefault(); }}>{ title }</a>;
 }

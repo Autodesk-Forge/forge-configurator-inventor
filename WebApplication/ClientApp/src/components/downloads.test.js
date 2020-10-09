@@ -80,7 +80,6 @@ describe('Downloads components', () => {
       const stopPropagation = jest.fn();
       iamlink.simulate('click', { stopPropagation });
       expect(stopPropagation).toHaveBeenCalled();
-      // iam.clickHandler();
 
       const rfa = btdata[1];
       expect(rfa.id).toEqual('rfa');
@@ -116,7 +115,7 @@ describe('Downloads components', () => {
     it('Base table renders NO links and icons when projects are empty', () => {
       // simulate activeProject (getActiveProject) like we have in these two scenarios:
       // 1) don't have initialized projects yet
-      // 2) user don't have any projects
+      // 2) user doesn't have any projects
       const noActiveProjectProps = { activeProject: {} };
       const wrapper = mount(<Downloads { ...noActiveProjectProps } />);
       const as = wrapper.find('AutoResizer');
@@ -189,7 +188,7 @@ describe('Downloads components', () => {
       });
     });
 
-    describe('Drawings', () => { // TODO: some unit tests are not required anymore, since the same dialogs used for different downloads
+    describe('Drawings', () => { // TODO: some unit tests are not required anymore, since the same dialog is used for different downloads
       const showModalProgressMock = jest.fn();
       const showFailedMock = jest.fn();
       const downloadUrl='downloadUrl';

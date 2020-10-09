@@ -50,7 +50,7 @@ class Repository {
         return response.data;
     }
 
-    /** Send to server if we want to enable/disable permanently showing of  paramteres change banner */
+    /** Send to server if we want to enable/disable permanently showing of paramteres change banner */
     async sendShowParametersChanged(value) {
         const response = await axios.post("/showParametersChanged", value, {
             headers: {

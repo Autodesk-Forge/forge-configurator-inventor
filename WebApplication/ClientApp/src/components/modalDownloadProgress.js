@@ -72,7 +72,7 @@ export class ModalDownloadProgress extends Component {
                                 downloadHyperlink.click();
                             }}
                             /* onUrlClick={this.props.onClose} */ // onClose in onUrlClick colides with onAutostart, causing the dialog to close itself when download starts. But we dont want it to close itself.
-                            prefix="Download should start automatically, if it doesn't, "
+                            prefix="Download should start automatically. If it doesn't, "
                             link="click here" href={this.props.url}
                             suffix=" to download it manually."
                             download={true}

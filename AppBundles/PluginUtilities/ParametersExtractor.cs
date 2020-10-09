@@ -66,7 +66,7 @@ namespace PluginUtilities
                 resultingParameters = ExtractParameters(doc, parameters.UserParameters);
             }
 
-            // if parameters from an update result were passed in, if validation errors were set on any replace values with them
+            // if parameters from an update result were passed in, and if validation errors were set on any of them, replace values with the overrides
             if (updateResultParameters != null)
             {
                 foreach (KeyValuePair<string, InventorParameter> updateResultParam in updateResultParameters)
