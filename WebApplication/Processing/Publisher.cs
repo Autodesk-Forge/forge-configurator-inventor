@@ -21,7 +21,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using Autodesk.Forge.DesignAutomation;
 using Autodesk.Forge.DesignAutomation.Model;
@@ -39,6 +38,13 @@ namespace WebApplication.Processing
         private readonly ILogger<Publisher> _logger;
 
         /// <summary>
+        /// Tracker of WI jobs.
+        /// Used for 'callback' mode only.
+        /// </summary>
+        public ConcurrentDictionary<string, TaskCompletionSource<WorkItemStatus>> Tracker { get; } =
+            new ConcurrentDictionary<string, TaskCompletionSource<WorkItemStatus>>();
+
+        /// <summary>
         /// Constructor.
         /// </summary>
         public Publisher(DesignAutomationClient client, ILogger<Publisher> logger, ResourceProvider resourceProvider, IPostProcessing postProcessing)
@@ -49,8 +55,6 @@ namespace WebApplication.Processing
             _postProcessing = postProcessing;
         }
 
-        public ConcurrentDictionary<string, TaskCompletionSource<WorkItemStatus>> Tracker { get; } =
-            new ConcurrentDictionary<string, TaskCompletionSource<WorkItemStatus>>();
 
         public async Task<WorkItemStatus> RunWorkItemAsync(Dictionary<string, IArgument> workItemArgs, ForgeAppBase config)
         {
@@ -63,14 +67,28 @@ namespace WebApplication.Processing
 
             // run WI and wait for completion
             var sw = Stopwatch.StartNew();
-            WorkItemStatus status = await RunWithCallback(wi);
-            //WorkItemStatus status = await RunWithPolling(wi);
+            WorkItemStatus status = await LaunchAndWait(wi);
 
             Trace($"WI {status.Id} completed with {status.Status} in {sw.ElapsedMilliseconds} ms");
             Trace($"{status.ReportUrl}");
 
             await _postProcessing.HandleStatus(status);
             return status;
+        }
+
+        /// <summary>
+        /// Run the work item and wait for results.
+        /// </summary>
+        private async Task<WorkItemStatus> LaunchAndWait(WorkItem wi)
+        {
+            if (true) // TODO: should be a flag from options
+            {
+                return await RunWithCallback(wi);
+            }
+            else
+            {
+                return await RunWithPolling(wi);
+            }
         }
 
         private async Task<WorkItemStatus> RunWithPolling(WorkItem wi)
@@ -88,22 +106,23 @@ namespace WebApplication.Processing
 
         private async Task<WorkItemStatus> RunWithCallback(WorkItem wi)
         {
-            string key = Guid.NewGuid().ToString("N"); // TODO: use in callback url
-            var completionSource = Tracker.GetOrAdd(key, new TaskCompletionSource<WorkItemStatus>());
+            // register tracking key for callback task
+            string trackingKey = Guid.NewGuid().ToString("N");
+            var completionSource = Tracker.GetOrAdd(trackingKey, new TaskCompletionSource<WorkItemStatus>());
 
-            // add callback URL to be poked from FDA server on WI completion
-            string callbackUrl = "https://ab0f46cecdc8.ngrok.io/complete/" + key; // TODO: read hostname from settings + generate relative path
+            // build callback URL to be poked from FDA server on WI completion
+            string callbackUrl = "https://ab0f46cecdc8.ngrok.io/complete/" + trackingKey; // TODO: read hostname from settings + generate relative path
             var callbackOnComplete = new XrefTreeArgument { Verb = Verb.Post, Url = callbackUrl };
             wi.Arguments.Add("onComplete", callbackOnComplete);
 
             // post work item
             WorkItemStatus status = await _client.CreateWorkItemAsync(wi);
-            Trace($"Created WI {status.Id} with tracker ID {key}");
+            Trace($"Created WI {status.Id} with tracker ID {trackingKey}");
 
             // wait for completion
             status = await completionSource.Task;
 
-            Trace($"Completing WI {status.Id} with tracker ID {key}");
+            Trace($"Completing WI {status.Id} with tracker ID {trackingKey}");
 
             return status;
         }
