@@ -26,7 +26,6 @@ using System.Threading.Tasks;
 using Autodesk.Forge.DesignAutomation;
 using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using WebApplication.Utilities;
 using Activity = Autodesk.Forge.DesignAutomation.Model.Activity;
 
@@ -50,8 +49,8 @@ namespace WebApplication.Processing
             _postProcessing = postProcessing;
         }
 
-        public ConcurrentDictionary<string, AutoResetEvent> Tracker { get; } =
-            new ConcurrentDictionary<string, AutoResetEvent>();
+        public ConcurrentDictionary<string, TaskCompletionSource<WorkItemStatus>> Tracker { get; } =
+            new ConcurrentDictionary<string, TaskCompletionSource<WorkItemStatus>>();
 
         public async Task<WorkItemStatus> RunWorkItemAsync(Dictionary<string, IArgument> workItemArgs, ForgeAppBase config)
         {
@@ -90,19 +89,19 @@ namespace WebApplication.Processing
         private async Task<WorkItemStatus> RunWithCallback(WorkItem wi)
         {
             string key = Guid.NewGuid().ToString("N"); // TODO: use in callback url
-            AutoResetEvent completionEvent = Tracker.GetOrAdd(key, new AutoResetEvent(false));
+            var completionSource = Tracker.GetOrAdd(key, new TaskCompletionSource<WorkItemStatus>());
 
+            // add callback URL to be poked from FDA server on WI completion
             string callbackUrl = "https://ab0f46cecdc8.ngrok.io/complete/" + key; // TODO: read hostname from settings + generate relative path
-
             var callbackOnComplete = new XrefTreeArgument { Verb = Verb.Post, Url = callbackUrl };
             wi.Arguments.Add("onComplete", callbackOnComplete);
 
+            // post work item
             WorkItemStatus status = await _client.CreateWorkItemAsync(wi);
             Trace($"Created WI {status.Id} with tracker ID {key}");
 
             // wait for completion
-            completionEvent.WaitOne(60 * 60 * 1000);
-            status = await _client.GetWorkitemStatusAsync(status.Id);
+            status = await completionSource.Task;
 
             Trace($"Completing WI {status.Id} with tracker ID {key}");
 
