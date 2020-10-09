@@ -28,8 +28,10 @@ See [high level diagram](architecture.png)
 1. Specify [forge credentials](#specify-forge-credentials).
 1. Copy `AppBundles\InventorBinFolder.props.template` to `AppBundles\InventorBinFolder.props`
 1. Replace the `PATH_TO_YOUR_INVENTOR_BIN` string in the `AppBundles\InventorBinFolder.props` file with your actual Inventor bin folder path, for example: `C:\Program Files\Autodesk\Inventor 2021\Bin`
+1. (optional) Choose network configuration for your application. By default the polling is enabled as it offers easier way to setup and run the application, this is OK for locally run applications and debuggin. However
+   using the new callback option is highly recommended as it follows best practice and helps to save resources. In order to enable the callback option {fill in callback option info}. 
+   In order to run and debug callbacks locally please refer to [ngrok section](#Use-ngrok-for-localhost-callbacks).
 1. *(Optional) Specify if access should be limited in `WebApplication\appsettings.json`. Set `Enabled` to `true` or `false`, and populate the `Domains` and `Addresses` fields with comma delimited lists such as `["autodesk.com", "company.com"]` and `["person@company2.com", "person@company3.com"]`*.
-
 ## Build
 * Building the projects also installs required packages (this can take several minutes).
 ### Web Application and App Bundles
