@@ -180,7 +180,7 @@ We are using npm.
 	* Notice section 2. of the download page. This contains your credentials and full authenticate command for you to copy paste
 	* Use full authentication command from previous step - this only needs to be done once
 	* Run ngroc with the format of `ngrok http port` and set the port number the web application uses on your local machine
-	* With default settings the comman dwould look like this: `command `ngrok http 5001` 
+	* With default settings the command would look like this: `ngrok http 5001` 
 	* You are now ready to use and debug callbacks locally
 	
 	
