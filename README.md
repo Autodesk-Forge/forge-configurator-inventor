@@ -179,8 +179,8 @@ We are using npm.
 	* (Optional) put the path to the ngrok executable to your system path to make it accessible from everywhere
 	* Notice section 2. of the download page. This contains your credentials and full authenticate command for you to copy paste
 	* Use full authentication command from previous step - this only needs to be done once
-	* Run ngroc with the format of `ngrok http(s) port` where you use http or https depending on your server settings and the port number the web application uses on your local machine
-	* With default settings the comman dwould look like this: `command `ngrok https 5001` 
+	* Run ngroc with the format of `ngrok http port` and set the port number the web application uses on your local machine
+	* With default settings the comman dwould look like this: `command `ngrok http 5001` 
 	* You are now ready to use and debug callbacks locally
 	
 	
