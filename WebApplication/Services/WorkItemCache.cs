@@ -8,43 +8,26 @@ namespace WebApplication.Services
 {
     public class WorkItemCacheRecord
     {
+        private readonly AutoResetEvent _resetEvent;
         private WorkItemStatus _status;
-        private bool _finished;
 
         public string Id { get; }
 
-        public WorkItemCacheRecord(string id)
+        public WorkItemCacheRecord()
         {
-            _finished = false;
-            Id = id;
+            _resetEvent = new AutoResetEvent(false);
         }
 
-        public async Task<WorkItemStatus> WaitForCompletion()
+        public WorkItemStatus WaitForCompletion()
         {
-            while (!IsFinished())
-                await Task.Delay(200);
-
+            _resetEvent.WaitOne();
             return _status;
         }
 
         public void Complete(WorkItemStatus status)
         {
-            lock (this)
-            {
-                _status = status;
-                _finished = true;
-            }
-        }
-
-        public bool IsFinished()
-        {
-            bool finished;
-            lock (this)
-            {
-                finished = _finished;
-            }
-
-            return finished;
+            _status = status;
+            _resetEvent.Set();
         }
     }
 
@@ -64,7 +47,7 @@ namespace WebApplication.Services
 
         public WorkItemCacheRecord CreateRecord(string id)
         {
-            return _cache.GetOrAdd(id, (key) => new WorkItemCacheRecord(key));
+            return _cache.GetOrAdd(id, (key) => new WorkItemCacheRecord());
         }
     }
 }

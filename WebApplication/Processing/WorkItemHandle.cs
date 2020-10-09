@@ -49,7 +49,7 @@ namespace WebApplication.Processing
             // run WI and wait for completion
             WorkItemStatus status = await _client.CreateWorkItemAsync(workItem);
             var record = _wiCache.CreateRecord(status.Id);
-            status = await record.WaitForCompletion();
+            status = record.WaitForCompletion();
             return status;
         }
     }
