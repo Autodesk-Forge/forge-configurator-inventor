@@ -166,3 +166,19 @@ We are using npm.
 * For a simple method of deploying to Azure, see [Publish a Web app to Azure App Service using Visual Studio](https://docs.microsoft.com/en-us/visualstudio/deployment/quickstart-deploy-to-azure?view=vs-2019)
     * First change `WebApplication.Program.cs` by removing the `UseKestrel()` statement
     * You will need to change the callback in your forge app to match the URL you deploy to.
+	
+### Use ngrok for localhost callbacks
+* If you choose webhook callback network configuration for the application, you will need a way for the callbacks to get from FDA servers to your local machine.
+* One of the tools that can assist you with this task is ngrok https://ngrok.com/ 
+* Theese steps should help you to set up ngrok tunnel to your localhost:
+	* Create free ngrok account
+	* Download the ngrok executable from https://dashboard.ngrok.com/get-started/setup
+	* Unzip the executable
+	* (Optional) put the path to the ngrok executable to your system path to make it accessible from everywhere
+	* Notice section 2. of the download page. This contains your credentials and full authenticate command for you to copy paste
+	* Use full authentication command from previous step - this only needs to be done once
+	* Run ngroc with the format of `ngrok http(s) port` where you use http or https depending on your server settings and the port number the web application uses on your local machine
+	* With default settings the comman dwould look like this: `command `ngrok https 5001` 
+	* You are now ready to use and debug callbacks locally
+	
+	
