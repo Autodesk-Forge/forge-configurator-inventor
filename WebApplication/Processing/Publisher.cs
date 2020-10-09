@@ -25,6 +25,8 @@ using System.Threading.Tasks;
 using Autodesk.Forge.DesignAutomation;
 using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using WebApplication.Definitions;
 using WebApplication.Utilities;
 using Activity = Autodesk.Forge.DesignAutomation.Model.Activity;
 
@@ -36,7 +38,9 @@ namespace WebApplication.Processing
         private readonly IPostProcessing _postProcessing;
         private readonly DesignAutomationClient _client;
         private readonly ILogger<Publisher> _logger;
-
+        private readonly PublisherConfiguration.StatusNotificationMethod _configuredWorkItemStatusNotificationMethod;
+        private readonly string _callbackUrlBase;
+        
         /// <summary>
         /// Tracker of WI jobs.
         /// Used for 'callback' mode only.
@@ -47,15 +51,33 @@ namespace WebApplication.Processing
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Publisher(DesignAutomationClient client, ILogger<Publisher> logger, ResourceProvider resourceProvider, IPostProcessing postProcessing)
+        public Publisher(DesignAutomationClient client, ILogger<Publisher> logger, ResourceProvider resourceProvider, 
+            IPostProcessing postProcessing, IOptions<PublisherConfiguration> publisherConfiguration)
         {
             _client = client;
             _logger = logger;
             _resourceProvider = resourceProvider;
             _postProcessing = postProcessing;
+            _callbackUrlBase = publisherConfiguration.Value.CallbackUrlBase;
+            _configuredWorkItemStatusNotificationMethod = publisherConfiguration.Value.WorkItemStatusNotificationMethod;
+
+            _usedWorkItemStatusNotificationMethod = _configuredWorkItemStatusNotificationMethod;
+        }
+        
+        #region workaround for Initializer which only supports polling
+        private PublisherConfiguration.StatusNotificationMethod _usedWorkItemStatusNotificationMethod;
+
+        public void UsePollingNotificationMethod()
+        {
+            _usedWorkItemStatusNotificationMethod = PublisherConfiguration.StatusNotificationMethod.UsePolling;
         }
 
-
+        public void UseConfiguredNotificationMethod()
+        {
+            _usedWorkItemStatusNotificationMethod = _configuredWorkItemStatusNotificationMethod;
+        }
+        #endregion
+        
         public async Task<WorkItemStatus> RunWorkItemAsync(Dictionary<string, IArgument> workItemArgs, ForgeAppBase config)
         {
             // create work item
@@ -81,14 +103,12 @@ namespace WebApplication.Processing
         /// </summary>
         private async Task<WorkItemStatus> LaunchAndWait(WorkItem wi)
         {
-            if (true) // TODO: should be a flag from options
+            //use polling if not configured otherwise
+            return _usedWorkItemStatusNotificationMethod switch
             {
-                return await RunWithCallback(wi);
-            }
-            else
-            {
-                return await RunWithPolling(wi);
-            }
+                PublisherConfiguration.StatusNotificationMethod.UseCallback => await RunWithCallback(wi),
+                _ => await RunWithPolling(wi)
+            };
         }
 
         private async Task<WorkItemStatus> RunWithPolling(WorkItem wi)
@@ -111,7 +131,7 @@ namespace WebApplication.Processing
             var completionSource = Tracker.GetOrAdd(trackingKey, new TaskCompletionSource<WorkItemStatus>());
 
             // build callback URL to be poked from FDA server on WI completion
-            string callbackUrl = "https://ab0f46cecdc8.ngrok.io/complete/" + trackingKey; // TODO: read hostname from settings + generate relative path
+            string callbackUrl = _callbackUrlBase + trackingKey;
             var callbackOnComplete = new XrefTreeArgument { Verb = Verb.Post, Url = callbackUrl };
             wi.Arguments.Add("onComplete", callbackOnComplete);
 

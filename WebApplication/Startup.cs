@@ -47,6 +47,7 @@ namespace WebApplication
         private const string DefaultProjectsSectionKey = "DefaultProjects";
         private const string InviteOnlyModeKey = "InviteOnlyMode";
         private const string ProcessingOptionsKey = "Processing";
+        private const string PublisherOptionsKey = "Publisher";
 
         public Startup(IConfiguration configuration)
         {
@@ -92,7 +93,8 @@ namespace WebApplication
                 .Configure<AppBundleZipPaths>(Configuration.GetSection(AppBundleZipPathsKey))
                 .Configure<DefaultProjectsConfiguration>(Configuration.GetSection(DefaultProjectsSectionKey))
                 .Configure<InviteOnlyModeConfiguration>(Configuration.GetSection(InviteOnlyModeKey))
-                .Configure<ProcessingOptions>(Configuration.GetSection(ProcessingOptionsKey));
+                .Configure<ProcessingOptions>(Configuration.GetSection(ProcessingOptionsKey))
+                .Configure<PublisherConfiguration>(Configuration.GetSection(PublisherOptionsKey));
 
             services.AddSingleton<ResourceProvider>();
             services.AddSingleton<IPostProcessing, PostProcessing>();
@@ -141,7 +143,9 @@ namespace WebApplication
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Initializer initializer, ILogger<Startup> logger, LocalCache localCache, IOptions<ForgeConfiguration> forgeConfiguration)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Initializer initializer, 
+            ILogger<Startup> logger, LocalCache localCache, IOptions<ForgeConfiguration> forgeConfiguration,
+            Publisher publisher)
         {
             if(Configuration.GetValue<bool>("clear"))
             {
@@ -156,8 +160,13 @@ namespace WebApplication
 
             if(Configuration.GetValue<bool>("initialize"))
             {
-                logger.LogInformation("-- Initialization --");
+                //set polling notification method for initializer
+                publisher.UsePollingNotificationMethod();
+
                 initializer.InitializeAsync().Wait();
+
+                //reset configured value of notification method
+                publisher.UseConfiguredNotificationMethod();
             }
 
             if(Configuration.GetValue<bool>("bundles"))
