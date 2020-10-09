@@ -16,7 +16,9 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Threading.Tasks;
+using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using WebApplication.Processing;
@@ -60,13 +62,25 @@ namespace WebApplication.Controllers
             return await SendLocalFileContent(projectName, LocalName.BOM, hash);
         }
         
-        [HttpGet("complete/{trackerId}")]
-        public ActionResult Complete(string trackerId)
+        /// <summary>
+        /// Completion callback for FDA work items.
+        /// </summary>
+        /// <param name="trackerId">Tracking ID.</param>
+        /// <param name="status">Workitem status.</param>
+        /// <remarks>
+        /// https://forge.autodesk.com/en/docs/design-automation/v3/developers_guide/callbacks/#oncomplete-callback
+        /// </remarks>
+        [HttpPost("complete/{trackerId}")]
+        public ActionResult Complete(string trackerId, [FromBody] WorkItemStatus status)
         {
             _logger.LogInformation($"Completing {trackerId}");
-            if (_publisher.Tracker.TryRemove(trackerId, out var completionEvent))
+
+            // by some reason 'time finished' is not set, so "fix" it if necessary
+            status.Stats.TimeFinished ??= DateTime.UtcNow;
+
+            if (_publisher.Tracker.TryRemove(trackerId, out var completionSource))
             {
-                completionEvent.Set();
+                completionSource.SetResult(status);
             }
             else
             {
