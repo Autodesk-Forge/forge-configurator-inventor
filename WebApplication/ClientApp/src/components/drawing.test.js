@@ -34,7 +34,7 @@ describe('Drawings', () => {
       const wrapperComponent = wrapper.find('.drawingEmptyText');
       expect(wrapperComponent.length).toEqual(1);
       const children = wrapperComponent.prop('children');
-      expect(children).toEqual("You don't have any drawings in your package.");
+      expect(children).toEqual("You don't have any drawings in package.");
     });
 
   it('Page has expected text when package is not assembly', () => {
@@ -46,7 +46,7 @@ describe('Drawings', () => {
       const wrapperComponent = wrapper.find('.drawingEmptyText');
       expect(wrapperComponent.length).toEqual(1);
       const children = wrapperComponent.prop('children');
-      expect(children).toEqual("You don't have any drawings in your package.");
+      expect(children).toEqual("You don't have any drawings in package.");
     });
 
   it('check that fetching of drawing is called when package is assembly', () => {

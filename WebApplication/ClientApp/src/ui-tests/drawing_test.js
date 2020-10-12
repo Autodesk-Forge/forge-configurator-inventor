@@ -87,7 +87,7 @@ Scenario('should check if an Assembly does not have any drawings then No data pa
 
     // wait for no drawing page to be displayed
     I.waitForVisible(noDrawingElement, locators.FDAActionTimeout);
-    I.see("You don't have any drawings in your package.", noDrawingElement);
+    I.see("You don't have any drawings in package.", noDrawingElement);
 
 });
 
@@ -152,7 +152,7 @@ Scenario('should check that IPT do not display any data', async (I) => {
 
     // wait for no drawing page to be displayed
     I.waitForVisible(noDrawingElement, locators.FDAActionTimeout);
-    I.see("You don't have any drawings in your package.", noDrawingElement);
+    I.see("You don't have any drawings in package.", noDrawingElement);
 
 });
 
