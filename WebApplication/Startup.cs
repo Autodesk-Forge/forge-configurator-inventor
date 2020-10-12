@@ -160,13 +160,15 @@ namespace WebApplication
 
             if(Configuration.GetValue<bool>("initialize"))
             {
-                //set polling notification method for initializer
-                publisher.UsePollingNotificationMethod();
+                // force polling check for initializer, because callbacks
+                // cannot be used at this point (no controllers are running yet)
+                var oldCheckType = publisher.CompletionCheck;
+                publisher.CompletionCheck = CompletionCheck.Polling;
 
                 initializer.InitializeAsync().Wait();
 
-                //reset configured value of notification method
-                publisher.UseConfiguredNotificationMethod();
+                // reset configured value of completion check method
+                publisher.CompletionCheck = oldCheckType;
             }
 
             if(Configuration.GetValue<bool>("bundles"))

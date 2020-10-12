@@ -38,9 +38,13 @@ namespace WebApplication.Processing
         private readonly IPostProcessing _postProcessing;
         private readonly DesignAutomationClient _client;
         private readonly ILogger<Publisher> _logger;
-        private readonly PublisherConfiguration.StatusNotificationMethod _configuredWorkItemStatusNotificationMethod;
         private readonly string _callbackUrlBase;
-        
+
+        /// <summary>
+        /// How a work item completion check should be done.
+        /// </summary>
+        public CompletionCheck CompletionCheck { get; set; } // TECHDEBT: setter should not be public, but it's a easiest way to allow use polling for initialization phase
+
         /// <summary>
         /// Tracker of WI jobs.
         /// Used for 'callback' mode only.
@@ -58,26 +62,11 @@ namespace WebApplication.Processing
             _logger = logger;
             _resourceProvider = resourceProvider;
             _postProcessing = postProcessing;
+
             _callbackUrlBase = publisherConfiguration.Value.CallbackUrlBase;
-            _configuredWorkItemStatusNotificationMethod = publisherConfiguration.Value.WorkItemStatusNotificationMethod;
-
-            _usedWorkItemStatusNotificationMethod = _configuredWorkItemStatusNotificationMethod;
-        }
-        
-        #region workaround for Initializer which only supports polling
-        private PublisherConfiguration.StatusNotificationMethod _usedWorkItemStatusNotificationMethod;
-
-        public void UsePollingNotificationMethod()
-        {
-            _usedWorkItemStatusNotificationMethod = PublisherConfiguration.StatusNotificationMethod.UsePolling;
+            CompletionCheck = publisherConfiguration.Value.CompletionCheck;
         }
 
-        public void UseConfiguredNotificationMethod()
-        {
-            _usedWorkItemStatusNotificationMethod = _configuredWorkItemStatusNotificationMethod;
-        }
-        #endregion
-        
         public async Task<WorkItemStatus> RunWorkItemAsync(Dictionary<string, IArgument> workItemArgs, ForgeAppBase config)
         {
             // create work item
@@ -91,8 +80,8 @@ namespace WebApplication.Processing
             var sw = Stopwatch.StartNew();
             WorkItemStatus status = await LaunchAndWait(wi);
 
-            Trace($"WI {status.Id} completed with {status.Status} in {sw.ElapsedMilliseconds} ms");
-            Trace($"{status.ReportUrl}");
+            _logger.LogInformation($"WI {status.Id} completed with {status.Status} in {sw.ElapsedMilliseconds} ms");
+            _logger.LogInformation($"{status.ReportUrl}");
 
             await _postProcessing.HandleStatus(status);
             return status;
@@ -104,9 +93,9 @@ namespace WebApplication.Processing
         private async Task<WorkItemStatus> LaunchAndWait(WorkItem wi)
         {
             //use polling if not configured otherwise
-            return _usedWorkItemStatusNotificationMethod switch
+            return CompletionCheck switch
             {
-                PublisherConfiguration.StatusNotificationMethod.UseCallback => await RunWithCallback(wi),
+                CompletionCheck.Callback => await RunWithCallback(wi),
                 _ => await RunWithPolling(wi)
             };
         }
@@ -114,7 +103,7 @@ namespace WebApplication.Processing
         private async Task<WorkItemStatus> RunWithPolling(WorkItem wi)
         {
             WorkItemStatus status = await _client.CreateWorkItemAsync(wi);
-            Trace($"Created WI {status.Id}");
+            _logger.LogInformation($"Created WI {status.Id} (polling mode)");
             while (status.Status == Status.Pending || status.Status == Status.Inprogress)
             {
                 await Task.Delay(2000);
@@ -137,12 +126,12 @@ namespace WebApplication.Processing
 
             // post work item
             WorkItemStatus status = await _client.CreateWorkItemAsync(wi);
-            Trace($"Created WI {status.Id} with tracker ID {trackingKey}");
+            _logger.LogInformation($"Created WI {status.Id} with tracker ID {trackingKey}");
 
             // wait for completion
             status = await completionSource.Task;
 
-            Trace($"Completing WI {status.Id} with tracker ID {trackingKey}");
+            _logger.LogInformation($"Completing WI {status.Id} with tracker ID {trackingKey}");
 
             return status;
         }
@@ -160,14 +149,14 @@ namespace WebApplication.Processing
                     // getting version of AppBundle for the particular Alias (label)
                     oldVersion = await _client.GetAppBundleAliasAsync(config.Bundle.Id, config.Label);
                 } catch (System.Net.Http.HttpRequestException e) when (e.Message.Contains("404")) {};
-                Trace($"Creating new app bundle '{config.Bundle.Id}' version.");
+                _logger.LogInformation($"Creating new app bundle '{config.Bundle.Id}' version.");
                 await _client.UpdateAppBundleAsync(config.Bundle, config.Label, packagePathname);
                 if (oldVersion != null)
                     await _client.DeleteAppBundleVersionAsync(config.Bundle.Id, oldVersion.Version);
             }
             catch (System.Net.Http.HttpRequestException e) when (e.Message.Contains("404"))
             {
-                Trace($"Creating app bundle '{config.Bundle.Id}'.");
+                _logger.LogInformation($"Creating app bundle '{config.Bundle.Id}'.");
                 await _client.CreateAppBundleAsync(config.Bundle, config.Label, packagePathname);
             }
         }
@@ -200,14 +189,14 @@ namespace WebApplication.Processing
                     // getting version of Activity for the particular Alias (label)
                     oldVersion = await _client.GetActivityAliasAsync(config.ActivityId, config.ActivityLabel);
                 } catch (System.Net.Http.HttpRequestException e) when (e.Message.Contains("404")) {};
-                Trace($"Creating new activity '{config.ActivityId}' version.");
+                _logger.LogInformation($"Creating new activity '{config.ActivityId}' version.");
                 await _client.UpdateActivityAsync(activity, config.ActivityLabel);
                 if (oldVersion != null)
                     await _client.DeleteActivityVersionAsync(config.ActivityId, oldVersion.Version);
             }
             catch (System.Net.Http.HttpRequestException e) when (e.Message.Contains("404"))
             {
-                Trace($"Creating activity '{config.ActivityId}'");
+                _logger.LogInformation($"Creating activity '{config.ActivityId}'");
                 await _client.CreateActivityAsync(activity, config.ActivityLabel);
             }
         }
@@ -238,14 +227,14 @@ namespace WebApplication.Processing
             //remove activity
             if (config.HasActivity)
             {
-                Trace($"Removing '{config.ActivityId}' activity.");
+                _logger.LogInformation($"Removing '{config.ActivityId}' activity.");
                 await _client.ActivitiesApi.DeleteActivityAsync(config.ActivityId, null, null, false);
             }
 
             if (config.HasBundle)
             {
                 //remove existed app bundle 
-                Trace($"Removing '{config.Bundle.Id}' app bundle.");
+                _logger.LogInformation($"Removing '{config.Bundle.Id}' app bundle.");
                 await _client.AppBundlesApi.DeleteAppBundleAsync(config.Bundle.Id, throwOnError: false);
             }
         }
@@ -254,11 +243,6 @@ namespace WebApplication.Processing
         {
             var nickname = await _resourceProvider.Nickname;
             return $"{nickname}.{config.ActivityId}+{config.ActivityLabel}";
-        }
-
-        private void Trace(string message)
-        {
-            _logger.LogInformation(message);
         }
     }
 }
