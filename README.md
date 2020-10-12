@@ -188,7 +188,7 @@ We are using npm.
 	{
 		"Publisher": {
 			"CompletionCheck": "UseCallback",
-			"CallbackUrlBase": <YOUR NGROK URL>"
+			"CallbackUrlBase": "<YOUR NGROK URL>"
 		}
 	}
 ```
