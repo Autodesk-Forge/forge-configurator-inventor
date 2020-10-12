@@ -183,15 +183,15 @@ We are using npm.
 	* Run ngroc with the format of `ngrok http port` and set the port number the web application uses on your local machine
 	* With default settings the command would look like this: `ngrok http 5001` 
 	* You are now ready to use and debug callbacks locally
+	* If you experience issues running ngrok tunnel with the web application using https settings, the simple workaround is to switch the app to http mode (only for local use). 
 	* In order to set the callback URL for local development it is recomended to create file appsettings.Local.json in WebApplication directory if you dont have it already and then put following settings into it:
 ```json		  
-	{
-		"Publisher": {
-			"CompletionCheck": "UseCallback",
-			"CallbackUrlBase": "<YOUR NGROK URL>"
-		}
-	}
+    {
+        "Publisher": {
+            "CompletionCheck": "UseCallback",
+            "CallbackUrlBase": "<YOUR NGROK URL>"
+	    }
+    }
 ```
-	* If you experience issues running ngrok tunnel with the web application using https settings, the simple workaround is to switch the app to http mode (only for local use). 
 	
 	
