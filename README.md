@@ -30,7 +30,7 @@ See [high level diagram](architecture.png)
 1. Replace the `PATH_TO_YOUR_INVENTOR_BIN` string in the `AppBundles\InventorBinFolder.props` file with your actual Inventor bin folder path, for example: `C:\Program Files\Autodesk\Inventor 2021\Bin`
 1. (Optional) Choose network configuration for your application. By default the polling is enabled as it offers easier way to setup and run the application. This is OK for locally run applications and debugging. However
    in production using the new callback option is highly recommended to conserve resources. In order to enable the callback option modify `Publisher` section of the appsettings.json. 
-   Change `"CompletionCheck"` value from `"UsePolling"` to `"UseCallback"` and set `"CallbackUrlBase"` url to your server URL or ngrok tunnel URL for locally run application.
+   Change `"CompletionCheck"` value from `"Polling"` to `"Callback"` and set `"CallbackUrlBase"` url to your server URL or ngrok tunnel URL for locally run application.
    To run and debug callbacks locally please refer to [ngrok section](#Use-ngrok-for-localhost-callbacks).
 1. *(Optional) Specify if access should be limited in `WebApplication\appsettings.json`. Set `Enabled` to `true` or `false`, and populate the `Domains` and `Addresses` fields with comma delimited lists such as `["autodesk.com", "company.com"]` and `["person@company2.com", "person@company3.com"]`*.
 ## Build
@@ -188,7 +188,7 @@ We are using npm.
 ```json		  
     {
         "Publisher": {
-            "CompletionCheck": "UseCallback",
+            "CompletionCheck": "Callback",
             "CallbackUrlBase": "<YOUR NGROK URL>"
 	    }
     }
