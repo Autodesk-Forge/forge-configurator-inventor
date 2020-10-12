@@ -124,13 +124,21 @@ namespace WebApplication.Processing
             var callbackOnComplete = new XrefTreeArgument { Verb = Verb.Post, Url = callbackUrl };
             wi.Arguments.Add("onComplete", callbackOnComplete);
 
-            // post work item
-            WorkItemStatus status = await _client.CreateWorkItemAsync(wi);
-            _logger.LogInformation($"Created WI {status.Id} with tracker ID {trackingKey}");
+            try
+            {
+                // post work item
+                WorkItemStatus created = await _client.CreateWorkItemAsync(wi);
+                _logger.LogInformation($"Created WI {created.Id} with tracker ID {trackingKey}");
+            }
+            catch
+            {
+                // something failed during WI creation. Clear tracking info
+                Tracker.TryRemove(trackingKey, out var _);
+                throw;
+            }
 
             // wait for completion
-            status = await completionSource.Task;
-
+            WorkItemStatus status = await completionSource.Task;
             _logger.LogInformation($"Completing WI {status.Id} with tracker ID {trackingKey}");
 
             return status;
