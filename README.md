@@ -184,9 +184,11 @@ We are using npm.
 	* With default settings the command would look like this: `ngrok http 5001` 
 	* You are now ready to use and debug callbacks locally
 	* In order to set the callback URL for local development it is recomended to create file appsettings.Local.json in WebApplication directory if you dont have it already and then put following settings into it:
-		  "Publisher": {
-			"WorkItemStatusNotificationMethod": "UseCallback",
-			"CallbackUrlBase": <YOUR NGROK URL>"
+		  {
+			"Publisher": {
+				"WorkItemStatusNotificationMethod": "UseCallback",
+				"CallbackUrlBase": <YOUR NGROK URL>"
+			}
 		  }
 	* If you experience issues running ngrok tunnel with the web application using https settings, the simple workaround is to switch the app to http mode (only for local use). 
 	
