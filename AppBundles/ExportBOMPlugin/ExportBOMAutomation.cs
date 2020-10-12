@@ -34,8 +34,8 @@ namespace ExportBOMPlugin
     public class ExportBOMAutomation
     {
         /// <summary>
-        /// Filename of output JSON with BOM data.
-        /// The filename is expected by corresponding Activity.
+        /// File name of output JSON with BOM data.
+        /// The file name is expected by the corresponding Activity.
         /// </summary>
         private const string OutputJsonName = "bom.json";
         private const string TrackingProperties = "Design Tracking Properties";
@@ -77,10 +77,9 @@ namespace ExportBOMPlugin
 
                         try
                         {
-                            // TODO: remove this project activation when new inventorcoreconsole.exe
-                            // will be available on PROD environment
+                            // TODO: remove this project activation when new inventorcoreconsole.exe is available on PROD environment
                             var fullFileName = doc.FullFileName;
-                            // close the orignal doc
+                            // close the original doc
                             doc.Close(true);
                             // activate default project
                             var dir = System.IO.Directory.GetCurrentDirectory();

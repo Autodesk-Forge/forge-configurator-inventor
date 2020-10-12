@@ -69,7 +69,7 @@ describe('main reducer', () => {
       };
       expect(reducer.parametersEditedMessageVisible(state)).toEqual(false);
    }),
-   it('Will show parameters changed notification string when paramters are changed', () => {
+   it('Will show parameters changed notification string when parameters are changed', () => {
       const state = {
          uiFlags: uiFlagsReducer.initialState,
          projectList: projectList,

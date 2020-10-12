@@ -64,14 +64,13 @@ namespace RFAExportPlugin
 
         private void ConvertSAT2RFA()
         {
-            // the template is included into the appbundle
+            // the template is included in the appbundle
             string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             string fullPath = Path.Combine(assemblyPath, RFA_TEMPLATE);
 
             //Get the document from the data(i.e) template file document
             Document doc = _rvtApp.NewFamilyDocument(fullPath);
 
-            //check document is not null
             if (doc == null)
             {
                 throw new InvalidOperationException("Could not create family.");
@@ -84,15 +83,15 @@ namespace RFAExportPlugin
                 //Start the transaction 
                 transaction.Start("CONVERTING SAT TO RFA FILE");
 
-                //FailureHandlingOptions will collect those warnings which occurs while importing the SAT file and deletes those warning
-                //These warnings occurs because all the data from the SAT file cannot be converted to revit family file(.rfa file)
+                //FailureHandlingOptions will collect warnings which occur while importing the SAT file and delete them
+                //These warnings occur because all the data from the SAT file cannot be converted to revit family file(.rfa file)
                 //For simple SAT files((i.e)SAT file of a Box) these type of warnings won't occur.
                 FailureHandlingOptions FH_options = transaction.GetFailureHandlingOptions();
                 FH_options.SetFailuresPreprocessor(new Warning_Swallower());
                 transaction.SetFailureHandlingOptions(FH_options);
 
                 //Create SATImportOptions
-                //It help you to import the .sat files
+                //It helps you to import the .sat files
                 SATImportOptions SAT_IOption = new SATImportOptions();
                 SAT_IOption.VisibleLayersOnly = false;
                 SAT_IOption.Placement = ImportPlacement.Centered;
@@ -116,13 +115,12 @@ namespace RFAExportPlugin
                 //import the .SAT file to family template file ((i.e)Metric Generic Model.rft) 
                 doc.Import(SAT_INPUT, SAT_IOption, view);
 
-                //After importing
-                //to save the changes commit the transaction
+                //After importing, to save the changes commit the transaction
                 transaction.Commit();
             }
 
             //save the imported .SAT file as .RFA file
-            //If the family file(.rfa) with same name  already exists in the rfa_path,overwrite the already existing family file with the modified family file
+            //If the family file(.rfa) with same name already exists in the rfa_path, overwrite the already existing family file with the modified family file
             ModelPath RFAmodelPath = ModelPathUtils.ConvertUserVisiblePathToModelPath(RFA_TEMP);
             SaveAsOptions SAO = new SaveAsOptions();
             SAO.OverwriteExistingFile = true;

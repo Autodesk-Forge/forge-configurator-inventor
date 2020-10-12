@@ -22,8 +22,7 @@ namespace WebApplication.Definitions
 {
     /// <summary>
     /// Exception to report about processing problems.
-    /// Use it if you want to pass message to client to be shown in UI.
-    /// 
+    /// Use it if you want to pass a message to the client to be shown in the UI.
     /// </summary>
     public class ProcessingException : Exception
     {

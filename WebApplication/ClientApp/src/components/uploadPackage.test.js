@@ -139,7 +139,7 @@ describe('Upload package dialog', () => {
     const input = wrapper.find("#packageFileInput");
     const newFile = { name: 'packageWithOneAssembly.zip'};
     await input.simulate('change', { target: { files: [ newFile ] }} );
-    await Promise.resolve(); // waits until all is done
+    await Promise.resolve(); // waits until all done
 
     expect(editPackageFileMockFn).toHaveBeenCalledWith(newFile, [file2iam]);
     expect(editPackageRootMockFn).toHaveBeenCalledWith(file2iam);
@@ -150,7 +150,7 @@ describe('Upload package dialog', () => {
     const input = wrapper.find("#packageFileInput");
     const newFile = { name: 'packageWithMoreAssemblies.zip'};
     await input.simulate('change', { target: { files: [ newFile ] }} );
-    await Promise.resolve(); // waits until all is done
+    await Promise.resolve(); // waits until all done
 
     expect(editPackageFileMockFn).toHaveBeenCalledWith(newFile, [file2iam,file3iam]);
     expect(editPackageRootMockFn).toHaveBeenCalledTimes(0);

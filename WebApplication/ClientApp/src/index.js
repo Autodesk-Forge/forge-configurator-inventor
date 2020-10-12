@@ -31,9 +31,8 @@ import "@hig/fonts/build/ArtifaktElement.css";
 
 /* eslint-disable no-undef */
 
-// We want to turn off on develop environment showing exception overlay
-// It is because ForgeViewer is causing our issue while removing it from DOM by throwing unhandled exceptions (by showing and immediate hiding ForgeViewer)
-// Even though these exception anyhow disturb our customers and workflows, since they are unhandeled, react decides to show them in overlay which is causing our PR check automations to fail
+// Turn off exception overlay on develop environment because ForgeViewer is causing an issue while removing it from DOM by throwing unhandled exceptions (by showing and immediately hiding ForgeViewer)
+// Even though these exception disturb our customers and workflows, since they are unhandled, react decides to show them in an overlay which is causing our PR check automations to fail
 if (process.env.NODE_ENV !== 'production') {
     stopReportingRuntimeErrors(); // disables error overlays
 }
@@ -73,7 +72,6 @@ function logToConsole(oldMessages, newMessages) { // TODO: not clear how to diff
 // listen for notifications changes and stream them into console
 observeStore(store, logSelector, logToConsole);
 
-// const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
 const rootElement = document.getElementById('root');
 
 ReactDOM.render(

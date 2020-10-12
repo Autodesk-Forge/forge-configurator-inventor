@@ -23,7 +23,7 @@ export const initialState = {
 };
 
 export const getActiveProject = function(state) {
-    // when no projects available, returns empty project for correct UI initialization
+    // when no projects are available, returns empty project for correct UI initialization
     if (! state.projects || state.projects.length === 0) return { };
     return getProject(state.activeProjectId, state);
 };

@@ -22,7 +22,7 @@ import { showDownloadProgress, showDownloadFailed, setDownloadLink, setErrorData
 import { showDrawingExportProgress, setDrawingPdfUrl } from './uiFlagsActions';
 
 /**
- * Generic method to handle downloads generation. The following happens:
+ * Generic method to handle generation of downloads. The following happens:
  * - show 'in progress' dialog
  * - call SignalR method to generate downloads
  * - wait for completion
@@ -88,7 +88,6 @@ export const fetchDrawing = (project, drawingKey) => async (dispatch) => {
             // start job
             () => {
                 dispatch(addLog('JobManager.doDrawingExportJob: HubConnection started for project : ' + project.id + ' (drawing: ' + drawingKey + ')'));
-                //dispatch(setReportUrlLink(null)); // cleanup url link
             },
             // onComplete
             (drawingPdfUrl, stats) => {

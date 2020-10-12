@@ -30,9 +30,8 @@ export function getMaxColumnTextWidth(strings) {
       maxWidth = width>maxWidth ? width : maxWidth;
     });
 
-    // round to 10times number, like 81.5 -> 90, 87.1 -> 90, etc
+    // round to 10 times number, like 81.5 -> 90, 87.1 -> 90, etc
     const roundTo = 10;
     const rounded = (maxWidth % roundTo==0) ? maxWidth : maxWidth-maxWidth%roundTo + roundTo;
-    // console.log('width of "'+ JSON.stringify(strings) +'" is: ' + rounded);
     return rounded;
   }

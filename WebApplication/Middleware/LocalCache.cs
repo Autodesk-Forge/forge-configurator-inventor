@@ -25,7 +25,7 @@ using Microsoft.Extensions.FileProviders;
 namespace WebApplication.Middleware
 {
     /// <summary>
-    /// For performance reason - some important generated files are cached locally,
+    /// For performance reasons - some important generated files are cached locally,
     /// this class encapsulate related logic and allows access to it as to static files.
     /// </summary>
     public class LocalCache

@@ -33,7 +33,7 @@ Scenario('should check Project switcher is loaded', async (I) => {
     I.waitForElement( locators.xpComboProjects, 10);
     I.click( locators.xpComboProjects);
 
-    // wait until project list is displayed2
+    // wait until project list is displayed
     I.waitForElement( locators.xpProjectList, 10);
 
     // check content of PROJECTS menu
