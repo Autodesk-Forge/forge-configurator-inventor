@@ -43,7 +43,7 @@ namespace WebApplication.Processing
         /// <summary>
         /// How a work item completion check should be done.
         /// </summary>
-        public CompletionCheck CompletionCheck { get; set; } // TECHDEBT: setter should not be public, but it's a easiest way to allow use polling for initialization phase
+        public CompletionCheck CompletionCheck { get; set; } // TECHDEBT: setter should not be public, but it's the easiest way to allow polling for initialization phase
 
         /// <summary>
         /// Tracker of WI jobs.

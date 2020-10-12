@@ -134,7 +134,7 @@ export class ProjectList extends Component {
         {this.props.modalProgressShowing && <ModalProgress
                     open={this.props.modalProgressShowing}
                     title="Deleting Project(s)"
-                    label="Deleting a project and its cache"
+                    label="Deleting project(s) and cache"
                     icon="/Assembly_icon.svg"
                     onClose={() => this.onDeleteCloseClick()}/>
         }

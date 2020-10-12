@@ -118,7 +118,7 @@ namespace MigrationApp
                   migrationJobs.Add(new MigrationJob(JobType.CopyAndAdopt, bucketOld, projectInfo, ONC.ProjectUrl(projectName)));
                } catch(Exception e)
                {
-                  _logger.LogError(e, $"Project {projectName} in bucket {bucketKeyOld} does not have metadata file. Skipping that.");
+                  _logger.LogError(e, $"Project {projectName} in bucket {bucketKeyOld} does not have metadata file. Skipping it.");
                }
             }
          }
