@@ -17,6 +17,7 @@
 /////////////////////////////////////////////////////////////////////
 
 using System.Net.Http;
+using System.Text.Json.Serialization;
 using Autodesk.Forge.Core;
 using Autodesk.Forge.DesignAutomation;
 using Microsoft.AspNetCore.Builder;
@@ -46,6 +47,7 @@ namespace WebApplication
         private const string DefaultProjectsSectionKey = "DefaultProjects";
         private const string InviteOnlyModeKey = "InviteOnlyMode";
         private const string ProcessingOptionsKey = "Processing";
+        private const string PublisherOptionsKey = "Publisher";
 
         public Startup(IConfiguration configuration)
         {
@@ -61,6 +63,7 @@ namespace WebApplication
                 .AddControllersWithViews()
                 .AddJsonOptions(options =>
                                 {
+                                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                                     options.JsonSerializerOptions.IgnoreNullValues = true;
                                 });
 
@@ -90,7 +93,8 @@ namespace WebApplication
                 .Configure<AppBundleZipPaths>(Configuration.GetSection(AppBundleZipPathsKey))
                 .Configure<DefaultProjectsConfiguration>(Configuration.GetSection(DefaultProjectsSectionKey))
                 .Configure<InviteOnlyModeConfiguration>(Configuration.GetSection(InviteOnlyModeKey))
-                .Configure<ProcessingOptions>(Configuration.GetSection(ProcessingOptionsKey));
+                .Configure<ProcessingOptions>(Configuration.GetSection(ProcessingOptionsKey))
+                .Configure<PublisherConfiguration>(Configuration.GetSection(PublisherOptionsKey));
 
             services.AddSingleton<ResourceProvider>();
             services.AddSingleton<IPostProcessing, PostProcessing>();
@@ -139,7 +143,9 @@ namespace WebApplication
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Initializer initializer, ILogger<Startup> logger, LocalCache localCache, IOptions<ForgeConfiguration> forgeConfiguration)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Initializer initializer, 
+            ILogger<Startup> logger, LocalCache localCache, IOptions<ForgeConfiguration> forgeConfiguration,
+            Publisher publisher)
         {
             if(Configuration.GetValue<bool>("clear"))
             {
@@ -154,8 +160,15 @@ namespace WebApplication
 
             if(Configuration.GetValue<bool>("initialize"))
             {
-                logger.LogInformation("-- Initialization --");
+                // force polling check for initializer, because callbacks
+                // cannot be used at this point (no controllers are running yet)
+                var oldCheckType = publisher.CompletionCheck;
+                publisher.CompletionCheck = CompletionCheck.Polling;
+
                 initializer.InitializeAsync().Wait();
+
+                // reset configured value of completion check method
+                publisher.CompletionCheck = oldCheckType;
             }
 
             if(Configuration.GetValue<bool>("bundles"))
