@@ -58,7 +58,7 @@ namespace WebApplication.Controllers
             var projectDTOs = new List<ProjectDTO>();
             foreach (var projectName in await _projectService.GetProjectNamesAsync(bucket))
             {
-                // TODO: in future bad projects should not affect project listing. It's a workaround
+                // TODO: in the future bad projects should not affect project listing. It's a workaround
                 try
                 {
                     ProjectStorage projectStorage = await _userResolver.GetProjectStorageAsync(projectName); // TODO: expensive to do it in the loop
@@ -71,7 +71,7 @@ namespace WebApplication.Controllers
                 catch (Exception e)
                 {
                     // log, swallow and continue (see the comment above)
-                    _logger.LogWarning(e, $"Ignoring '{projectName}' project, which (seems) failed to adopt.");
+                    _logger.LogWarning(e, $"Ignoring '{projectName}' project, which (seems to have) failed to adopt.");
                 }
             }
 

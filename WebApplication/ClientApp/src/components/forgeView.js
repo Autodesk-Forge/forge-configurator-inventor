@@ -64,8 +64,7 @@ export class ForgeView extends Component {
 
             const viewCubeExtensionId = "Autodesk.ViewCubeUi";
 
-            // ER: it's not perfect, because the view transition is visible, so this is
-            // a place to improve someday
+            // this is not perfect, because the view transition is visible, so it's a place to improve someday
             if (event.extensionId === viewCubeExtensionId) {
 
                 const viewCubeUI = event.target.getExtension(viewCubeExtensionId);
@@ -75,7 +74,7 @@ export class ForgeView extends Component {
             }
         });
 
-        // skip loading of svf when here is no active project svf
+        // skip loading of svf when there is no active project svf
         if (!this.props.activeProject.svf)
             return;
 

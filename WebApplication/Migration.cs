@@ -182,37 +182,5 @@ namespace MigrationApp
             _logger.LogError(e, $"Project {job.projectInfo.Name} was not adopted");
          }
       }
-
-        /*
-        public async Task<string> Refresh()
-        {
-            string returnValue = "";
-            List<ObjectDetails> ossFiles = await _forgeOSS.GetBucketObjectsAsync(_bucket.BucketKey, "cache/");
-            foreach (ObjectDetails file in ossFiles)
-            {
-                string[] fileParts = file.ObjectKey.Split('/');
-                string project = fileParts[1];
-                string hash = fileParts[2];
-                string fileName = fileParts[3];
-                if (fileName == "parameters.json")
-                {
-                    returnValue += "Project " + project + " (" + hash + ") is being updated\n";
-                    string paramsFile = Path.Combine(_localCache.LocalRootName, "params.json");
-                    await _bucket.DownloadFileAsync(file.ObjectKey, paramsFile);
-                    InventorParameters inventorParameters = Json.DeserializeFile<InventorParameters>(paramsFile);
-                    try
-                    {
-                        await _projectWork.DoSmartUpdateAsync(inventorParameters, project, true);
-                        returnValue += "Project " + project + " (" + hash + ") was updated\n";
-                    } catch(Exception e)
-                    {
-                        returnValue += "Project " + project + " (" + hash + ") update failed\nException: " + e.Message + "\n";
-                    }
-                }
-            }
-
-            return returnValue;
-        }
-        */
    }
 }

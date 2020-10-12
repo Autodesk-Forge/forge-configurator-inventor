@@ -89,7 +89,7 @@ export class Message extends Component {
             onDismiss={this.onDismiss}
             isVisible={visible}
             >
-            The model is out-of-date. Click Update to display the most actual state.
+            The model is out-of-date. Click Update to display the updated state.
             </Banner>
             </Fixed>
             </ThemeContext.Provider>

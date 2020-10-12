@@ -78,7 +78,6 @@ describe('components', () => {
       });
 
       expect(updateActiveProject).toHaveBeenLastCalledWith(5);
-      //expect(fetchParameters).toHaveBeenLastCalledWith(5);
     });
 
     it('should activate model tab when project changed', () => {

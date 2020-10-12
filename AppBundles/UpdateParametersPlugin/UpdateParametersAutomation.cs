@@ -72,8 +72,6 @@ namespace UpdateParametersPlugin
 
                 var incomingParams = JsonConvert.DeserializeObject<InventorParameters>(json);
 
-                bool changed = false;
-
                 foreach (var pair in incomingParams)
                 {
                     string paramName = pair.Key;
@@ -88,7 +86,6 @@ namespace UpdateParametersPlugin
                         {
                             LogTrace($"Applying '{paramData.Value}' to '{paramName}'");
                             SetExpression(userParameter, paramData, doc);
-                            changed = true;
                             if (paramData.ErrorMessage != null)
                             {
                                 // there was an invalid expression the UI will prompt the user to fix, so don't bother changing the rest of the parameters

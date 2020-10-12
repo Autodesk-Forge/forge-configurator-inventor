@@ -62,7 +62,6 @@ namespace UpdateDrawingsPlugin
                 if (doc == null)
                 {
                     ActivateDefaultProject(rootDir);
-                    //doc = inventorApplication.Documents.Open(map.Item["_1"]);
                 }
 
                 var drawingExtensions = new List<string> { ".idw", ".dwg" };
@@ -86,7 +85,7 @@ namespace UpdateDrawingsPlugin
                     LogTrace("Drawing updated");
                     drawingDocument.Save2(true);
                     LogTrace("Drawing saved");
-                    // copy to new place with keeping the folder structure
+                    // copy to new place, keeping the folder structure
                     var pathInArchive = filePath.Substring(rootDir.Length+1);
                     pathInArchive = pathInArchive.Substring(pathInArchive.IndexOf(System.IO.Path.DirectorySeparatorChar)+1);
                     var destPath = System.IO.Path.Combine(drawingsPath, pathInArchive);

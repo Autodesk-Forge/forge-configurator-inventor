@@ -45,7 +45,7 @@ export class ForgePdfView extends Component {
         try {
             await import('./forgePdfViewExtension');
         } catch (error) {
-            // TODO unit test is crashing here, verify if some mock resolve it
+            // TODO unit test is crashing here, verify if some mock resolves it
         }
 
         const container = this.viewerDiv.current;
@@ -73,8 +73,6 @@ export class ForgePdfView extends Component {
             return;
 
         this.viewer.loadModel( this.props.drawingPdf, { page: 1 } ); // load page 1 by default
-        //this.viewer.loadExtension("Autodesk.Viewing.MarkupsCore")
-        //this.viewer.loadExtension("Autodesk.Viewing.MarkupsGui")
     }
 
     componentDidUpdate(prevProps) {

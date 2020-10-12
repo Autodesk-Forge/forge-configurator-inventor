@@ -52,7 +52,6 @@ namespace ExportDrawingAsPdfPlugin
                 if (drawingToGenerate == null)
                 {
                     LogTrace("Drawing not specified !");
-                    //throw new Exception("Drawing not specified !");
                     return;
                 }
 
@@ -104,7 +103,6 @@ namespace ExportDrawingAsPdfPlugin
                     var pdfPath = System.IO.Path.Combine(dir, "Drawing.pdf");
                     LogTrace("Exporting drawing to: " + pdfPath);
                     ExportIDWToPDF(drawingDocument, pdfPath);
-                    //drawingDocument.SaveAs(pdfPath, true);
                     LogTrace("Drawing exported");
                 }
             }
@@ -133,8 +131,8 @@ namespace ExportDrawingAsPdfPlugin
         }
 
         // Export Drawing file to PDF format
-        // In case that the Drawing has more sheets -> it will export PDF with pages
-        // Each PDF page represet one Drawing sheet
+        // In the case that the Drawing has more sheets -> it will export PDF with pages
+        // Each PDF page represents one Drawing sheet
         public void ExportIDWToPDF(Document doc, string exportFileName)
         {
             if (doc == null)
