@@ -70,7 +70,7 @@ namespace CreateThumbnailPlugin
 
                 Color backgroundColor = inventorApplication.TransientObjects.CreateColor(0xEC, 0xEC, 0xEC, 0.0); // hardcoded. Make as a parameter
 
-                // generate image as twice larger size, and then downsample it (antialiasing)
+                // generate image twice as large, and then downsample it (antialiasing)
                 cam.SaveAsBitmap(filePathLarge, ThumbnailSize * 2, ThumbnailSize * 2, backgroundColor, backgroundColor);
 
                 // based on https://stackoverflow.com/a/24199315

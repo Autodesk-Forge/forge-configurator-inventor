@@ -78,7 +78,8 @@ namespace WebApplication.Tests
             var bucketPrefixProvider = new BucketPrefixProvider(forgeConfigOptions, configuration);
             var resourceProvider = new ResourceProvider(forgeConfigOptions, designAutomationClient, configuration, bucketPrefixProvider, projectsBucketKey);
             var postProcessing = new PostProcessing(httpClientFactory, new NullLogger<PostProcessing>(), localCache, Options.Create(new ProcessingOptions()));
-            var publisher = new Publisher(designAutomationClient, new NullLogger<Publisher>(), resourceProvider, postProcessing);
+            var publisher = new Publisher(designAutomationClient, new NullLogger<Publisher>(), resourceProvider,
+                postProcessing, Options.Create(new PublisherConfiguration()));
 
             var appBundleZipPathsConfiguration = new AppBundleZipPaths
             {

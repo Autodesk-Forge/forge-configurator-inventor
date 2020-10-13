@@ -134,7 +134,7 @@ namespace DataCheckerPlugin
                 if (filenameX.Equals(filenameY))
                     return 0;
 
-                // special handling for default filename ( remember the first one )
+                // special handling for default filename (remember the first one)
                 if (filenameX == _defaultDoc && (_found == null || _found == x))
                 {
                     _found = x;
@@ -176,7 +176,7 @@ namespace DataCheckerPlugin
                 .OrderBy(path => System.IO.Path.GetFileName(path), new DefaultDocComparer(fileName))
                 .ToArray();
 
-            // drawings is valid also when no drawings exists, so test drawings?.Length
+            // drawings is also valid when no drawings exists, so test drawings?.Length
             LogTrace($"DEFAULT drawing is : {(drawings?.Length > 0 ? drawings[0] : "NONE")}");
 
             SaveAsJson(drawings, "drawings-list.json"); // the file name must be in sync with activity definition

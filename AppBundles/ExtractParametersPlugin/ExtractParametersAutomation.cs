@@ -19,12 +19,9 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-
-using Inventor;
 using Autodesk.Forge.DesignAutomation.Inventor.Utils;
-using System.Linq;
-using Newtonsoft.Json;
-using Shared;
+using Inventor;
+using PluginUtilities;
 
 namespace ExtractParametersPlugin
 {
@@ -60,48 +57,8 @@ namespace ExtractParametersPlugin
                             return;
                     }
 
-                    // extract user parameters
-                    InventorParameters allParams = ExtractParameters(doc, parameters);
-
-                    // save current state
-                    LogTrace("Updating");
-                    doc.Update2();
-                    LogTrace("Saving");
-                    doc.Save2(SaveDependents: true);
-
-                    // detect iLogic forms
-                    iLogicFormsReader reader = new iLogicFormsReader(doc, allParams);
-                    iLogicForm[] forms = reader.Extract();
-                    LogTrace($"Found {forms.Length} iLogic forms");
-                    foreach (var form in forms)
-                    {
-                        LogTrace($" - {form.Name}");
-                    }
-
-                    // Choose set of parameters to use with the following algorithm:
-                    // - extract all iLogic forms from the document
-                    //   - keep only 'user parameters' from a form
-                    // - use _first_ iLogic form with non-empty list of parameters
-                    // - if no forms - use UserParameters from the document
-                    InventorParameters resultingParameters;
-                    var candidate = forms.FirstOrDefault(form => form.Parameters.Count > 0);
-                    if (candidate != null)
-                    {
-                        LogTrace($"Using '{candidate.Name}' form as a parameter filter");
-                        resultingParameters = candidate.Parameters;
-                    }
-                    else
-                    {
-                        LogTrace("No non-empty iLogic forms found. Using all user parameters.");
-                        resultingParameters = ExtractParameters(doc, parameters.UserParameters);
-                    }
-
-                    // generate resulting JSON. Note it's not formatted (to have consistent hash)
-                    string paramsJson = JsonConvert.SerializeObject(resultingParameters, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.None });
-                    System.IO.File.WriteAllText("documentParams.json", paramsJson);
-
-                    LogTrace("Closing");
-                    doc.Close(true);
+                    var paramsExtractor = new ParametersExtractor();
+                    paramsExtractor.Extract(doc, parameters);
                 }
             }
             catch (Exception e)
@@ -110,56 +67,7 @@ namespace ExtractParametersPlugin
             }
         }
 
-        public InventorParameters ExtractParameters(Document doc, dynamic userParameters)
-        {
-            /* The resulting json will be like this:
-              { 
-                "length" : {
-                  "unit": "in",
-                  "value": "10 in",
-                  "values": ["5 in", "10 in", "15 in"]
-                },
-                "width": {
-                  "unit": "in",
-                  "value": "20 in",
-                }
-              }
-            */
-            try
-            {
-                var parameters = new InventorParameters();
-                foreach (dynamic param in userParameters)
-                {
-                    var nominalValue = param.Expression;
-                    try
-                    {
-                        var unitType = doc.UnitsOfMeasure.GetTypeFromString(param.Units);
-                        var value = doc.UnitsOfMeasure.GetValueFromExpression(param.Expression, unitType);
-                        nominalValue = doc.UnitsOfMeasure.GetPreciseStringFromValue(value, unitType);
-                    }
-                    // not all unitTypes seem to be convertible (e.g. kTextUnits). In that case, we'll go on with param.Expression assigned before.
-                    catch (Exception e)
-                    { 
-                        LogError("Can't get nominalValue for " + param.Name + ": " + e.Message);
-                    }
-
-                    var parameter = new InventorParameter
-                    {
-                        Unit = param.Units,
-                        Value = nominalValue,
-                        Values = param.ExpressionList?.GetExpressionList() ?? new string[0]
-                    };
-                    parameters.Add(param.Name, parameter);
-                }
-
-                return parameters;
-            }
-            catch (Exception e)
-            {
-                LogError("Error reading params: " + e.Message);
-                return null;
-            }
-        }
+ 
 
         #region Logging utilities
 

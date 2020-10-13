@@ -94,7 +94,8 @@ function adaptParameters(rawParameters) {
             allowedValues: (param.values) ? param.values.map( item => unquote(item)) : [],
             units: param.unit,
             label: param.label || key,
-            readonly: !! param.readonly
+            readonly: !! param.readonly,
+            errormessage: param.errormessage
         };
     });
 }
@@ -151,7 +152,7 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
     const invFormattedParameters = formatParameters(data);
     const jobManager = Jobs();
 
-    // launch progress dialog immediately before we started connection to the server
+    // launch progress dialog immediately before we start connection to the server
     dispatch(showModalProgress(true));
 
     try {
@@ -199,7 +200,7 @@ const stripUnits = (parameter) => {
     return stripped.trim();
 };
 
-// Compares the two parameter values and return true if they represent the same value
+// Compares the two parameter values and returns true if they represent the same value
 export const compareParamaters = (firstParameter, secondParameter) => {
     if(!firstParameter || !secondParameter) {
         return false;
@@ -210,7 +211,7 @@ export const compareParamaters = (firstParameter, secondParameter) => {
     }
 
     if(firstParameter.units !== secondParameter.units) {
-        // no units conversions
+        // no unit conversions
         return false;
     }
 

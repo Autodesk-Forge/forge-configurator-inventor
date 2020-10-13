@@ -60,7 +60,7 @@ namespace WebApplication
                         options.Limits.MaxRequestBodySize =  size;
                     });
                     var port = Environment.GetEnvironmentVariable("PORT");
-                    // In case deployed to Heroku, we need to listen on port given by Heroku, not the default one
+                    // If deployed to a service like Heroku, need to listen on port defined in the environment, not the default one
                     if (!string.IsNullOrEmpty(port))
                     {
                         webBuilder.UseUrls("http://*:" + port);

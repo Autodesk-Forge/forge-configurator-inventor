@@ -143,14 +143,14 @@ describe('components', () => {
     it('unmounts correctly', async () => {
         const wrapper = shallow(<ForgePdfView { ...baseProps } />);
 
-      // preparation: must load the viewer first
-         const viewer = wrapper.find('.viewer');
+        // preparation: must load the viewer first
+        const viewer = wrapper.find('.viewer');
         expect(viewer).toHaveLength(1);
         const script = viewer.find('Script');
         expect(script).toHaveLength(1);
         window.Autodesk = AutodeskMock;
         await script.simulate('load');
-        await Promise.resolve(); // waits until all is done
+        await Promise.resolve(); // waits until all done
 
         wrapper.unmount();
 

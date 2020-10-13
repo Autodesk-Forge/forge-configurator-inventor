@@ -57,7 +57,7 @@ namespace WebApplication.Job
                                                                 action: "DrawingPdf",
                                                                 values: new { projectName = ProjectId, hash = _hash, index = drawingIndex });
 
-                // when local url starts with slash, it does not work, because it is doubled in url
+                // when local url starts with a slash, it does not work, because it is doubled in url
                 if (url.StartsWith('/'))
                 {
                     url = url.Substring(1);

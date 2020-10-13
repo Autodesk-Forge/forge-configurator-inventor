@@ -54,7 +54,7 @@ namespace WebApplication.Processing
         }
 
         /// <summary>
-        /// Adapt the project.
+        /// Adopt the project.
         /// </summary>
         public async Task<FdaStatsDTO> AdoptAsync(ProjectInfo projectInfo, string inputDocUrl)
         {
@@ -78,7 +78,7 @@ namespace WebApplication.Processing
             var bucket = await _userResolver.GetBucketAsync();
 
             // check for adoption errors
-            // TECHDEBT: this should be done before `MoveProjectAsync`, but it will left "garbage" at OSS.  Solve it someday.
+            // TECHDEBT: this should be done before `MoveProjectAsync`, but it will leave "garbage" at OSS.  Solve it someday.
             var messages = await bucket.DeserializeAsync<Message[]>(projectStorage.Project.OssAttributes.AdoptMessages);
             var errors = messages.Where(m => m.Severity == Severity.Error).Select(m => m.Text).ToArray();
             if (errors.Length > 0)
@@ -147,13 +147,6 @@ namespace WebApplication.Processing
 
             ProjectStorage storage = await _userResolver.GetProjectStorageAsync(projectName);
             Project project = storage.Project;
-
-            //// *********************************************
-            //// temporary fail *********************************************
-            //_logger.LogError($"Failed to generate SAT file");
-            //throw new FdaProcessingException($"Failed to generate SAT file", "https://localhost:5000/#");
-            //// *********************************************
-
 
             var ossNames = project.OssNameProvider(hash);
 

@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////
+﻿/////////////////////////////////////////////////////////////////////
 // Copyright (c) Autodesk, Inc. All rights reserved
 // Written by Forge Design Automation team for Inventor
 //
@@ -16,23 +16,31 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using System;
-
 namespace WebApplication.Definitions
 {
-    /// <summary>
-    /// Exception to report about processing problems.
-    /// Use it if you want to pass a message to the client to be shown in the UI.
-    /// </summary>
-    public class ProcessingException : Exception
+    public enum CompletionCheck
     {
-        public string Title { get; }
-        public string[] Messages { get; }
+        /// <summary>
+        /// Use polling (ask about status periodically).
+        /// </summary>
+        Polling,
 
-        public ProcessingException(string title, string[] messages)
-        {
-            Title = title;
-            Messages = messages;
-        }
+        /// <summary>
+        /// Use callback URL to get notification from FDA servers.
+        /// </summary>
+        Callback
+    }
+
+    public class PublisherConfiguration
+    {
+        /// <summary>
+        /// How publisher should check for completion.
+        /// </summary>
+        public CompletionCheck CompletionCheck { get; set; } = CompletionCheck.Polling;
+
+        /// <summary>
+        /// Base URL for callback.
+        /// </summary>
+        public string CallbackUrlBase { get; set; }
     }
 }
