@@ -23,6 +23,7 @@ import { getActiveProject } from '../reducers/mainReducer';
 import './forgeView.css';
 import Message from './message';
 import repo from '../Repository';
+import { viewerCss, viewerJs } from './shared';
 
 let Autodesk = null;
 
@@ -114,10 +115,8 @@ export class ForgeView extends Component {
                 <Message/>
                 <div className="viewer" id="ForgeViewer">
                     <div ref={this.viewerDiv}></div>
-                    <link rel="stylesheet" type="text/css" href={`https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/style.css`}/>
-                    <Script url={`https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.js`}
-                      onLoad={this.handleScriptLoad.bind(this)}
-                    />
+                    <link rel="stylesheet" type="text/css" href={ viewerCss } />
+                    <Script url={ viewerJs } onLoad={this.handleScriptLoad.bind(this)} />
                 </div>
             </div>
         );
