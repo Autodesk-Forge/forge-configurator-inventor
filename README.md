@@ -28,10 +28,10 @@ See [high level diagram](architecture.png)
 1. Specify [forge credentials](#specify-forge-credentials).
 1. Copy `AppBundles\InventorBinFolder.props.template` to `AppBundles\InventorBinFolder.props`
 1. Replace the `PATH_TO_YOUR_INVENTOR_BIN` string in the `AppBundles\InventorBinFolder.props` file with your actual Inventor bin folder path, for example: `C:\Program Files\Autodesk\Inventor 2021\Bin`
-1. (Optional) Choose network configuration for your application. By default the polling is enabled as it offers easier way to setup and run the application. This is OK for locally run applications and debugging. However
-   in production using the new callback option is highly recommended to conserve resources. In order to enable the callback option modify `Publisher` section of the appsettings.json. 
-   Change `"CompletionCheck"` value from `"Polling"` to `"Callback"` and set `"CallbackUrlBase"` url to your server URL or ngrok tunnel URL for locally run application.
-   To run and debug callbacks locally please refer to [ngrok section](#Use-ngrok-for-localhost-callbacks).
+1. (Optional) Choose network configuration for your application. By default polling is enabled as it offers an easier way to setup and run the application. This is OK for locally run applications and debugging. However
+   in production using the new callback option is highly recommended to conserve resources. In order to enable the callback option modify the `Publisher` section of the appsettings.json file. 
+   Change `"CompletionCheck"` value from `"Polling"` to `"Callback"` and set `"CallbackUrlBase"` url to your server URL or ngrok tunnel URL for a locally run application.
+   To run and debug callbacks locally please refer to the [ngrok section](#Use-ngrok-for-localhost-callbacks).
 1. *(Optional) Specify if access should be limited in `WebApplication\appsettings.json`. Set `Enabled` to `true` or `false`, and populate the `Domains` and `Addresses` fields with comma delimited lists such as `["autodesk.com", "company.com"]` and `["person@company2.com", "person@company3.com"]`*.
 ## Build
 * Building the projects also installs required packages (this can take several minutes).
@@ -171,20 +171,20 @@ We are using npm.
     * You will need to change the callback in your forge app to match the URL you deploy to.
 	
 ### Use ngrok for localhost callbacks
-* If you choose webhook callback network configuration for the application, you will need a way for the callbacks to get from FDA servers to your local machine.
+* If you choose webhook callback network configuration for the application, you will need a way for the callbacks to get from the FDA servers to your local machine.
 * One of the tools that can assist you with this task is ngrok https://ngrok.com/ 
-* Theese steps should help you to set up ngrok tunnel to your localhost:
-	* Create free ngrok account
+* These steps should help you to set up an ngrok tunnel to your localhost:
+	* Create a free ngrok account
 	* Download the ngrok executable from https://dashboard.ngrok.com/get-started/setup
 	* Unzip the executable
-	* (Optional) put the path to the ngrok executable to your system path to make it accessible from everywhere
+	* (Optional) put the path to the ngrok executable in your system path to make it accessible from everywhere
 	* Notice section 2. of the download page. This contains your credentials and full authenticate command for you to copy paste
-	* Use full authentication command from previous step - this only needs to be done once
+	* Use the full authentication command from previous step - this only needs to be done once
 	* Run ngroc with the format of `ngrok http port` and set the port number the web application uses on your local machine
 	* With default settings the command would look like this: `ngrok http 5001` 
 	* You are now ready to use and debug callbacks locally
 	* If you experience issues running ngrok tunnel with the web application using https settings, the simple workaround is to switch the app to http mode (only for local use). 
-	* In order to set the callback URL for local development it is recomended to create file appsettings.Local.json in WebApplication directory if you dont have it already and then put following settings into it:
+	* In order to set the callback URL for local development it is recomended to create an appsettings.Local.json file in the WebApplication directory (if you don't have it already) and then put following settings into it:
 ```json		  
     {
         "Publisher": {
