@@ -86,6 +86,9 @@ namespace WebApplication.Processing
                 throw new ProcessingException("Adoption failed", errors);
             }
 
+            // myTODO: collect Warning messages and store them / make them available for the project data.
+            var warnings = messages.Where(m => m.Severity == Severity.Warning).Select(m => m.Text).ToArray();
+
             await projectStorage.EnsureLocalAsync(bucket);
 
             // save adoption statistics
