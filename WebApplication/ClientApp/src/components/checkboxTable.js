@@ -117,6 +117,13 @@ export class CheckboxTable extends Component {
             dataKey: 'label',
             align: Column.Alignment.LEFT,
             width: 200
+        },
+        {
+            key: 'adoptMessages',
+            title: 'Details',
+            dataKey: 'details',
+            align: Column.Alignment.LEFT,
+            width: 900
         }
       ];
     }
@@ -140,8 +147,9 @@ export class CheckboxTable extends Component {
         data = this.props.projectList.projects.map((project) => (
           {
             id: project.id,
-            icon: 'Archive.svg',
+            icon: project.adoptMessages?.length ? 'alert-24.svg' : 'Archive.svg',
             label: project.label,
+            details: project.adoptMessages
           }
         ));
       }
