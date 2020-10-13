@@ -22,6 +22,7 @@ import {connect} from 'react-redux';
 import { getDrawingPdfUrl } from '../reducers/mainReducer';
 import repo from '../Repository';
 import './forgePdfView.css';
+import { viewerCss, viewerJs } from './shared';
 
 let Autodesk = null;
 
@@ -124,10 +125,8 @@ export class ForgePdfView extends Component {
         return (
             <div className="viewer" id="ForgePdfViewer">
                 <div ref={this.viewerDiv}></div>
-                <link rel="stylesheet" type="text/css" href={`https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/style.css`}/>
-                <Script url={`https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.js`}
-                    onLoad={this.handleScriptLoad.bind(this)}
-                />
+                <link rel="stylesheet" type="text/css" href={ viewerCss } />
+                <Script url={ viewerJs } onLoad={this.handleScriptLoad.bind(this)} />
             </div>
         );
     }
