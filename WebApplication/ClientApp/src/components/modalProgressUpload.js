@@ -21,6 +21,7 @@ import React, { Component } from 'react';
 import Modal from '@hig/modal';
 import { CloseMUI, Complete24 } from "@hig/icons";
 import ProgressBar from '@hig/progress-bar';
+import Spacer from "@hig/spacer";
 import Typography from "@hig/typography";
 import './modalProgress.css';
 import merge from "lodash.merge";
@@ -32,7 +33,9 @@ export class ModalProgressUpload extends Component {
 
     render() {
         const done = this.props.isDone();
+        const withWarnings = this.props.warningMsg?.length;
         const doneColor = "rgb(135, 179, 64)";
+        const warningColor = "rgb(250, 162, 27)";
 
         const modalStyles = /* istanbul ignore next */ styles =>
         merge(styles, {
@@ -42,7 +45,7 @@ export class ModalProgressUpload extends Component {
                     height: "auto",
                     borderLeftWidth: "3px",
                     borderLeftStyle: "solid",
-                    borderLeftColor: done ? doneColor : "rgb(255, 255, 255)"
+                    borderLeftColor: done ? withWarnings ? warningColor : doneColor : "rgb(255, 255, 255)"
                 }
             }
         });
@@ -52,6 +55,12 @@ export class ModalProgressUpload extends Component {
             height: '48px',
             backgroundImage: 'url(' + this.props.icon + ')',
           };
+
+        const warningIconAsBackgroundImage = {
+        width: '24px',
+        height: '24px',
+        backgroundImage: 'url(alert-24.svg)',
+        };
 
         return (
             <Modal
@@ -64,7 +73,8 @@ export class ModalProgressUpload extends Component {
                 <header id="customHeader">
                     <div className="customHeaderContent">
                         <div className="title">
-                            {done && <Complete24 className="doneIcon"/>}
+                            {done && !withWarnings && <Complete24 className="doneIcon"/>}
+                            {done && withWarnings && <div id='warningIcon' style={warningIconAsBackgroundImage}/>}
                             <Typography style={{
                                 paddingLeft: "8px",
                                 fontSize: "inherit",
@@ -93,6 +103,11 @@ export class ModalProgressUpload extends Component {
                 </div>
                 {done &&
                     <div>
+                        {withWarnings && <div id='warningMsg'>
+                            <Spacer spacing='s'/>
+                            <Typography>{this.props.warningMsg}</Typography>
+                            <Spacer spacing='s'/>
+                        </div>}
                         <CreditCost />
                         <div className="buttonsContainer">
                             <Button className="button" style={
