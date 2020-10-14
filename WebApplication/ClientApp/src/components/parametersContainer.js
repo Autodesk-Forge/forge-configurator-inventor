@@ -89,6 +89,7 @@ export class ParametersContainer extends Component {
                         <ModalProgress
                             open={this.props.modalProgressShowing}
                             title="Updating Project"
+                            doneTitle="Update Finished"
                             label={this.props.activeProject.id}
                             icon="/Assembly_icon.svg"
                             onClose={() => this.onModalProgressClose()}
