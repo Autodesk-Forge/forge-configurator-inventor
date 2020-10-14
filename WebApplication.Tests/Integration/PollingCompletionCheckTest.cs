@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using Autodesk.Forge.Model;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using WebApplication.Definitions;
@@ -12,14 +10,14 @@ using Xunit;
 
 namespace WebApplication.Tests.Integration
 {
-    public class NetworkConfigurationTest : IClassFixture<WebApplicationFactory<Startup>>
+    public class PollingCompletionCheckTest : IClassFixture<WebApplicationFactory<Startup>>
     {
         private readonly ProjectWork _projectWork;
         private readonly Publisher _publisher;
         private readonly ProjectService _projectService;
         private readonly OssBucket _anonymousBucket;
 
-        public NetworkConfigurationTest(WebApplicationFactory<Startup> factory)
+        public PollingCompletionCheckTest(WebApplicationFactory<Startup> factory)
         {
             using var scope = factory.Services.CreateScope();
             _projectWork = scope.ServiceProvider.GetRequiredService<ProjectWork>();
@@ -43,11 +41,6 @@ namespace WebApplication.Tests.Integration
                 {
                     projectConfiguration,
                     CompletionCheck.Polling
-                };
-                yield return new object[]
-                {
-                    projectConfiguration,
-                    CompletionCheck.Callback
                 };
             }
 
