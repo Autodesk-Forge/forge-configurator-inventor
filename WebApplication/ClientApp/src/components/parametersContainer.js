@@ -26,6 +26,7 @@ import { showModalProgress, showUpdateFailed, invalidateDrawing } from '../actio
 import Button from '@hig/button';
 import ModalProgress from './modalProgress';
 import ModalFail from './modalFail';
+import { fullWarningMsg } from '../utils/conversion';
 
 export class ParametersContainer extends Component {
 
@@ -114,7 +115,7 @@ export class ParametersContainer extends Component {
 /* istanbul ignore next */
 export default connect(function (store) {
     const activeProject = getActiveProject(store);
-    const adoptWarning = activeProject.adoptWarnings?.join('\\n');
+    const adoptWarning = fullWarningMsg(activeProject.adoptWarnings);
 
     return {
         activeProject: activeProject,

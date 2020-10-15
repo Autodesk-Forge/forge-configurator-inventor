@@ -34,6 +34,7 @@ import ModalFail from './modalFail';
 import { uploadProgressShowing, uploadProgressIsDone, uploadPackageData, uploadFailedShowing,
   checkedProjects, modalProgressShowing, errorData, getAdoptWarnings } from '../reducers/mainReducer';
 import CheckboxTable from './checkboxTable';
+import { fullWarningMsg } from '../utils/conversion';
 
 export class ProjectList extends Component {
 
@@ -143,7 +144,7 @@ export default connect(function (store) {
   const filename = uploadPackageData(store)?.file?.name;
   // use file name without extension as ID of uploaded project
   const uploadProjectName = filename ? (filename.substring(0, filename.lastIndexOf('.')) || filename) : null; // TODO: project name should be received from the server  
-  const adoptWarning = getAdoptWarnings(uploadProjectName, store)?.join('\\n');
+  const adoptWarning = fullWarningMsg(getAdoptWarnings(uploadProjectName, store));
   return {
     isLoggedIn: store.profile.isLoggedIn,
     checkedProjects: checkedProjects(store),
