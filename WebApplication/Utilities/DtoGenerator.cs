@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Routing;
 using Shared;
@@ -88,12 +89,20 @@ namespace WebApplication.Utilities
             dto.HasDrawing = projectStorage.Metadata.HasDrawings;
             dto.DrawingsListUrl = _localCache.ToDataUrl(localAttributes.DrawingsList);
 
-            // we are interested only in warning messages
-            var allMessages = Json.DeserializeFile<List<Message>>(localAttributes.AdoptMessages);
-            dto.AdoptWarnings = allMessages
-                                    .Where(m => m.Severity == Severity.Warning)
-                                    .Select(m => m.Text)
-                                    .ToArray();
+            // fill array with adoption messages
+            if (File.Exists(localAttributes.AdoptMessages))
+            {
+                // we are interested only in warning messages
+                var allMessages = Json.DeserializeFile<List<Message>>(localAttributes.AdoptMessages);
+                dto.AdoptWarnings = allMessages
+                    .Where(m => m.Severity == Severity.Warning)
+                    .Select(m => m.Text)
+                    .ToArray();
+            }
+            else
+            {
+                dto.AdoptWarnings = Array.Empty<string>();
+            }
 
             return dto;
         }

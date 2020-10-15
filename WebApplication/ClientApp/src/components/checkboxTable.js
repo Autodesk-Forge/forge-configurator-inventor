@@ -24,6 +24,7 @@ import CheckboxTableHeader from './checkboxTableHeader';
 import CheckboxTableRow from './checkboxTableRow';
 import { checkedProjects } from '../reducers/mainReducer';
 import { setProjectChecked, setCheckedProjects, clearCheckedProjects } from '../actions/uiFlagsActions';
+import { fullWarningMsg } from '../utils/conversion';
 
 import styled from 'styled-components';
 
@@ -149,7 +150,7 @@ export class CheckboxTable extends Component {
             id: project.id,
             icon: project.adoptWarnings?.length ? 'alert-24.svg' : 'Archive.svg',
             label: project.label,
-            details: project.adoptWarnings?.join('\\n')
+            details: fullWarningMsg(project.adoptWarnings)
           }
         ));
       }

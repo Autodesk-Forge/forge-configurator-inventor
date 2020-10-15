@@ -180,3 +180,4 @@ export const getDrawingsList = function(state) {
 export const getActiveDrawing = function(state) {
     return uiFlags.getActiveDrawing(state.uiFlags);
 };
+

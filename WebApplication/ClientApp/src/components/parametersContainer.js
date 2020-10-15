@@ -24,8 +24,12 @@ import { getActiveProject, getParameters, getUpdateParameters, modalProgressShow
 import { fetchParameters, resetParameters, updateModelWithParameters } from '../actions/parametersActions';
 import { showModalProgress, showUpdateFailed, invalidateDrawing } from '../actions/uiFlagsActions';
 import Button from '@hig/button';
+import Tooltip from '@hig/tooltip';
+import { Alert24 } from "@hig/icons";
+
 import ModalProgress from './modalProgress';
 import ModalFail from './modalFail';
+import { fullWarningMsg } from '../utils/conversion';
 
 export class ParametersContainer extends Component {
 
@@ -57,6 +61,11 @@ export class ParametersContainer extends Component {
         const parameterList = this.props.activeProject ? this.props.projectUpdateParameters : [];
         const buttonsContainerClass = parameterList ? "buttonsContainer" : "buttonsContainer hidden";
 
+        // if model adopted with warning - then button should became white and have a tooltip with warning details
+        const adoptWarning = this.props.adoptWarning;
+        const tooltipProps = adoptWarning ? { openOnHover: true, content: () => <div className="warningButtonTooltip">{ adoptWarning }</div>  } : { open: false };
+        const buttonProps = adoptWarning ? { type:"secondary", icon: <Alert24 style={ { color: "orange" }} /> } : { type: "primary" };
+
         return (
             <div className="parametersContainer">
                 <div className="pencilContainer">
@@ -78,13 +87,16 @@ export class ParametersContainer extends Component {
                         onClick={() => {this.props.resetParameters(this.props.activeProject.id, this.props.projectSourceParameters);}}
                     />
                     <div style={{width: '14px'}}/>
-                    <Button style={{width: '125px'}}
-                        size="standard"
-                        title="Update"
-                        type="primary"
-                        width="grow"
-                        onClick={() => {this.updateClicked();}}
-                    />
+                    <Tooltip { ...tooltipProps } className="paramTooltip" anchorPoint="top-center">
+                        <Button id="updateButton"
+                            style={{width: '125px'}}
+                            { ...buttonProps }
+                            size="standard"
+                            title= "Update"
+                            width="grow"
+                            onClick={() => this.updateClicked()}/>
+                    </Tooltip>
+
                     {this.props.modalProgressShowing &&
                         <ModalProgress
                             open={this.props.modalProgressShowing}
@@ -114,7 +126,7 @@ export class ParametersContainer extends Component {
 /* istanbul ignore next */
 export default connect(function (store) {
     const activeProject = getActiveProject(store);
-    const adoptWarning = activeProject.adoptWarnings?.join('\\n');
+    const adoptWarning = fullWarningMsg(activeProject.adoptWarnings);
 
     return {
         activeProject: activeProject,

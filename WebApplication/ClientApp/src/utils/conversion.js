@@ -37,3 +37,12 @@ export const significantDigits = (number, minimumDigits) => {
 
     return number.toPrecision(trueSignificantDigits);
 };
+
+// converts an array of (adoption) warnings into the final, single warning string
+export const fullWarningMsg = ( warningsArray ) => {
+    if (!(warningsArray?.length > 0))
+        return null;
+
+    const newArray = [ ...warningsArray, 'Change of parameters may lead to incorrect results.' ];
+    return newArray.join('\n');
+};
