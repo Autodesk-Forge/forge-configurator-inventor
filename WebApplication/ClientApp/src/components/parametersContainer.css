@@ -98,3 +98,16 @@ div.changedOnUpdate-input-wrapper {
 .parameter input.error-input-wrapper__input {
     color: red;
 }
+
+.warningButtonTooltip {
+    margin: 8px;
+    width: 280px;
+    font-size: 12px;
+    font-family: ArtifaktElement, sans-serif;
+    font-weight: 300;    
+}
+
+/* trick to change SVG color. https://stackoverflow.com/a/49627345 */
+.buttonsContainer svg path {
+    fill: #FAA21B;
+}
