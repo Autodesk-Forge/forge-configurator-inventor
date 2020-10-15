@@ -17,6 +17,7 @@
 /////////////////////////////////////////////////////////////////////
 
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import Modal from '@hig/modal';
 import ProgressBar from '@hig/progress-bar';
@@ -26,6 +27,7 @@ import merge from "lodash.merge";
 import HyperLink from './hyperlink';
 import Button from '@hig/button';
 import CreditCost from './creditCost';
+import { getReportUrl } from '../reducers/mainReducer';
 
 export class ModalDownloadProgress extends Component {
 
@@ -40,6 +42,8 @@ export class ModalDownloadProgress extends Component {
             }
         });
 
+        const reportUrl = this.props.reportUrl;
+        const showReportUrl = reportUrl !== null;
         const done = this.props.url != null;
         const iconAsBackgroundImage = {
             width: '48px',
@@ -66,6 +70,10 @@ export class ModalDownloadProgress extends Component {
               {(done) &&
                 <React.Fragment>
                     <CreditCost/>
+                    {showReportUrl && <div className="logContainer">
+                            <HyperLink link="Open log file" href={ reportUrl } />
+                        </div>
+                    }
                     <div className="modalLink">
                         <HyperLink
                             onAutostart={(downloadHyperlink) => {
@@ -92,4 +100,9 @@ export class ModalDownloadProgress extends Component {
     }
 }
 
-export default ModalDownloadProgress;
+/* istanbul ignore next */
+export default connect(function (store){
+    return {
+      reportUrl: getReportUrl(store)
+    };
+})(ModalDownloadProgress);

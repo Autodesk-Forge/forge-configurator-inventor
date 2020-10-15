@@ -17,6 +17,7 @@
 /////////////////////////////////////////////////////////////////////
 
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import Modal from '@hig/modal';
 import { CloseMUI, Complete24 } from "@hig/icons";
@@ -27,12 +28,16 @@ import merge from "lodash.merge";
 import Button from '@hig/button';
 import IconButton from "@hig/icon-button";
 import CreditCost from './creditCost';
+import HyperLink from './hyperlink';
+import { getReportUrl } from '../reducers/mainReducer';
 
 export class ModalProgressUpload extends Component {
 
     render() {
         const done = this.props.isDone();
         const doneColor = "rgb(135, 179, 64)";
+        const reportUrl = this.props.reportUrl;
+        const showReportUrl = reportUrl !== null;
 
         const modalStyles = /* istanbul ignore next */ styles =>
         merge(styles, {
@@ -94,6 +99,10 @@ export class ModalProgressUpload extends Component {
                 {done &&
                     <div>
                         <CreditCost />
+                        {showReportUrl && <div className="logContainer">
+                            <HyperLink link="Open log file" href={ reportUrl } />
+                        </div>
+                    }
                         <div className="buttonsContainer">
                             <Button className="button" style={
                                 { width: '102px', height: '36px', borderRadius: '2px', marginLeft: '12px'}}
@@ -118,4 +127,9 @@ export class ModalProgressUpload extends Component {
     }
 }
 
-export default ModalProgressUpload;
+/* istanbul ignore next */
+export default connect(function (store){
+    return {
+      reportUrl: getReportUrl(store)
+    };
+})(ModalProgressUpload);
