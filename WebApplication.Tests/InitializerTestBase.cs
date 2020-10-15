@@ -79,7 +79,8 @@ namespace WebApplication.Tests
             var resourceProvider = new ResourceProvider(forgeConfigOptions, designAutomationClient, configuration, bucketPrefixProvider, projectsBucketKey);
             var postProcessing = new PostProcessing(httpClientFactory, new NullLogger<PostProcessing>(), localCache, Options.Create(new ProcessingOptions()));
             var publisher = new Publisher(designAutomationClient, new NullLogger<Publisher>(), resourceProvider,
-                postProcessing, Options.Create(new PublisherConfiguration()));
+                postProcessing, Options.Create(new PublisherConfiguration()),
+                null, null);
 
             var appBundleZipPathsConfiguration = new AppBundleZipPaths
             {
@@ -100,8 +101,8 @@ namespace WebApplication.Tests
             var fdaClient = new FdaClient(publisher, appBundleZipPathsOptions);
             IOptions<DefaultProjectsConfiguration> defaultProjectsOptions = Options.Create(defaultProjectsConfiguration);
             var profileProvider = new ProfileProvider(forgeOSS);
-            var bucketKeyProvider = new LoggedInUserBucketKeyProvider(forgeConfigOptions, profileProvider, bucketPrefixProvider, resourceProvider);
-            var userResolver = new UserResolver(resourceProvider, forgeOSS, bucketKeyProvider, localCache, NullLogger<UserResolver>.Instance, profileProvider);
+            var bucketKeyProvider = new LoggedInUserBucketKeyProvider(profileProvider, resourceProvider);
+            var userResolver = new UserResolver(forgeOSS, bucketKeyProvider, localCache, NullLogger<UserResolver>.Instance, profileProvider);
             var arranger = new Arranger(httpClientFactory, userResolver);
 
             // TODO: linkGenerator should be mocked

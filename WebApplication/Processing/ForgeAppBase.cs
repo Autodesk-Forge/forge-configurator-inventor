@@ -36,11 +36,17 @@ namespace WebApplication.Processing
         All = AppBundle | Activity
     }
 
+    public interface IForgeAppBase
+    {
+        public string ActivityId { get; }
+        public string ActivityLabel { get; }
+    }
+
     /// <summary>
     /// Abstract class for Forge App definition.
     /// Override the class and provide data which is specific for your forge app.
     /// </summary>
-    public abstract class ForgeAppBase
+    public abstract class ForgeAppBase : IForgeAppBase
     {
         public virtual string Engine { protected set; get; } = "Autodesk.Inventor+2021";
         public readonly string Label = Environment.GetEnvironmentVariable("ProductionEnv") ?? "alpha";

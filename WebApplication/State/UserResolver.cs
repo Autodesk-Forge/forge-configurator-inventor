@@ -46,7 +46,7 @@ namespace WebApplication.State
         /// </summary>
         public OssBucket AnonymousBucket { get; }
 
-        public UserResolver(ResourceProvider resourceProvider, IForgeOSS forgeOSS, IBucketKeyProvider bucketKeyProvider,
+        public UserResolver(IForgeOSS forgeOSS, IBucketKeyProvider bucketKeyProvider,
                             LocalCache localCache, ILogger<UserResolver> logger, ProfileProvider profileProvider)
         {
             _forgeOSS = forgeOSS;
