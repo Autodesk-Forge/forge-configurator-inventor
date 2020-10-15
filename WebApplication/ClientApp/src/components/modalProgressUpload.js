@@ -33,7 +33,7 @@ export class ModalProgressUpload extends Component {
 
     render() {
         const done = this.props.isDone();
-        const withWarnings = this.props.warningMsg?.length;
+        const withWarnings = this.props.warningMsg?.length > 0;
         const doneColor = "rgb(135, 179, 64)";
         const warningColor = "rgb(250, 162, 27)";
 
@@ -104,9 +104,8 @@ export class ModalProgressUpload extends Component {
                 {done &&
                     <div>
                         {withWarnings && <div id='warningMsg'>
-                            <Spacer spacing='s'/>
                             <Typography>{this.props.warningMsg}</Typography>
-                            <Spacer spacing='s'/>
+                            <Spacer spacing='m'/>
                         </div>}
                         <CreditCost />
                         <div className="buttonsContainer">
