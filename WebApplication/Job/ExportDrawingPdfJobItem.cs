@@ -46,7 +46,7 @@ namespace WebApplication.Job
             using var scope = Logger.BeginScope("Export Drawing PDF ({Id})");
             Logger.LogInformation($"ProcessJob (ExportDrawingPDF) {Id} for project {ProjectId} started.");
 
-            (FdaStatsDTO stats, int drawingIndex) = await ProjectWork.ExportDrawingPdfAsync(ProjectId, _hash, _drawingKey);
+            (FdaStatsDTO stats, int drawingIndex, string reportUrl) = await ProjectWork.ExportDrawingPdfAsync(ProjectId, _hash, _drawingKey);
 
             Logger.LogInformation($"ProcessJob (ExportDrawingPDF) {Id} for project {ProjectId} completed.");
 
@@ -64,7 +64,7 @@ namespace WebApplication.Job
                 }
             }
 
-            await resultSender.SendSuccessAsync(url, stats);
+            await resultSender.SendSuccessAsync(url, stats, reportUrl);
         }
     }
 }

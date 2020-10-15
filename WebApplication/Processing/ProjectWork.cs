@@ -56,7 +56,7 @@ namespace WebApplication.Processing
         /// <summary>
         /// Adopt the project.
         /// </summary>
-        public async Task<FdaStatsDTO> AdoptAsync(ProjectInfo projectInfo, string inputDocUrl)
+        public async Task<(FdaStatsDTO stats, string reportUrl)> AdoptAsync(ProjectInfo projectInfo, string inputDocUrl)
         {
             _logger.LogInformation($"Adopt project '{projectInfo.Name}'");
 
@@ -92,7 +92,7 @@ namespace WebApplication.Processing
             var ossNames = projectStorage.GetOssNames();
             await bucket.UploadAsJsonAsync(ossNames.StatsAdopt, result.Stats);
             await bucket.CopyAsync(ossNames.StatsAdopt, ossNames.StatsUpdate);
-            return FdaStatsDTO.All(result.Stats);
+            return (FdaStatsDTO.All(result.Stats), result.ReportUrl);
         }
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace WebApplication.Processing
         /// <summary>
         /// Generate RFA (or take it from cache).
         /// </summary>
-        public async Task<FdaStatsDTO> GenerateRfaAsync(string projectName, string hash)
+        public async Task<(FdaStatsDTO stats, string reportUrl)> GenerateRfaAsync(string projectName, string hash)
         {
             _logger.LogInformation($"Generating RFA for hash {hash}");
 
@@ -159,7 +159,7 @@ namespace WebApplication.Processing
             if (await bucket.ObjectExistsAsync(ossNames.Rfa))
             {
                 var stats = await bucket.DeserializeAsync<Statistics[]>(ossNames.StatsRFA);
-                return FdaStatsDTO.CreditsOnly(stats);
+                return (FdaStatsDTO.CreditsOnly(stats), null);
             }
 
             // OK, nothing in cache - generate it now
@@ -176,10 +176,10 @@ namespace WebApplication.Processing
 
             await _arranger.MoveRfaAsync(project, hash);
             await bucket.UploadAsJsonAsync(ossNames.StatsRFA, result.Stats);
-            return FdaStatsDTO.All(result.Stats);
+            return (FdaStatsDTO.All(result.Stats), result.ReportUrl);
         }
 
-        public async Task<(FdaStatsDTO, int)> ExportDrawingPdfAsync(string projectName, string hash, string drawingKey)
+        public async Task<(FdaStatsDTO stats, int drawingIdx, string reportUrl)> ExportDrawingPdfAsync(string projectName, string hash, string drawingKey)
         {
             _logger.LogInformation($"Getting drawing pdf for hash {hash}");
 
@@ -215,11 +215,11 @@ namespace WebApplication.Processing
                 if (generated)
                 {
                     var nativeStats = await bucket.DeserializeAsync<List<Statistics>>(ossNames.StatsDrawingPDF(drawingIdx));
-                    return (FdaStatsDTO.CreditsOnly(nativeStats), drawingIdx);
+                    return (FdaStatsDTO.CreditsOnly(nativeStats), drawingIdx, null);
                 }
                 else
                 {
-                    return (null, drawingIdx);
+                    return (null, drawingIdx, null);
                 }
             }
             catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
@@ -250,7 +250,7 @@ namespace WebApplication.Processing
                 // handle statistics
                 await bucket.UploadAsJsonAsync(ossNames.StatsDrawingPDF(drawingIdx), result.Stats);
                 _logger.LogInformation($"Drawing PDF for hash {hash} is generated");
-                return (FdaStatsDTO.All(result.Stats), drawingIdx);
+                return (FdaStatsDTO.All(result.Stats), drawingIdx, result.ReportUrl);
             }
             catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
             {
@@ -258,14 +258,14 @@ namespace WebApplication.Processing
                 await bucket.UploadObjectAsync(ossNames.DrawingPdf(drawingIdx), new MemoryStream(0));
 
                 _logger.LogError($"Drawing PDF for hash {hash} is NOT generated");
-                return (null, drawingIdx);
+                return (null, drawingIdx, result.ReportUrl);
             }
         }
 
         /// <summary>
         /// Generate Drawing zip with folder structure (or take it from cache).
         /// </summary>
-        public async Task<FdaStatsDTO> GenerateDrawingAsync(string projectName, string hash)
+        public async Task<(FdaStatsDTO stats, string reportUrl)> GenerateDrawingAsync(string projectName, string hash)
         {
             _logger.LogInformation($"Generating Drawing for hash {hash}");
 
@@ -279,7 +279,7 @@ namespace WebApplication.Processing
             if (await bucket.ObjectExistsAsync(ossNames.Drawing))
             {
                 var stats = await bucket.DeserializeAsync<Statistics[]>(ossNames.StatsDrawings);
-                return FdaStatsDTO.CreditsOnly(stats);
+                return (FdaStatsDTO.CreditsOnly(stats), null);
             }
 
             // OK, nothing in cache - generate it now
@@ -296,7 +296,7 @@ namespace WebApplication.Processing
             await _arranger.MoveDrawingAsync(project, hash);
 
             await bucket.UploadAsJsonAsync(ossNames.StatsDrawings, result.Stats);
-            return FdaStatsDTO.All(result.Stats);
+            return (FdaStatsDTO.All(result.Stats), result.ReportUrl);
         }
 
         public async Task FileTransferAsync(string source, string target)
