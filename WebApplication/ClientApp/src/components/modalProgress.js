@@ -46,7 +46,7 @@ export class ModalProgress extends Component {
 
         const stats = this.props.statsKey == null ? this.props.stats : (this.props.stats ? this.props.stats[this.props.statsKey] : null);
         const done = stats != null;
-        const withWarnings = this.props.warningMsg?.length;
+        const withWarnings = this.props.warningMsg?.length > 0;
         const title = done && this.props.doneTitle ? this.props.doneTitle : this.props.title;
 
         const modalProps = (done && withWarnings) ? {
@@ -104,9 +104,8 @@ export class ModalProgress extends Component {
                 {(done) &&
                 <React.Fragment>
                     {withWarnings && <div id='warningMsg'>
-                        <Spacer spacing='s'/>
                         <Typography>{this.props.warningMsg}</Typography>
-                        <Spacer spacing='s'/>
+                        <Spacer spacing='m'/>
                     </div>}
                     <CreditCost statsKey={this.props.statsKey}/>
                     <div id="modalDone">

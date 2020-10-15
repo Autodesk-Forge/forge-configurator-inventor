@@ -93,6 +93,7 @@ export class ParametersContainer extends Component {
                             label={this.props.activeProject.id}
                             icon="/Assembly_icon.svg"
                             onClose={() => this.onModalProgressClose()}
+                            warningMsg={this.props.adoptWarning}
                         />
                     }
                     {this.props.updateFailedShowing &&
@@ -113,6 +114,7 @@ export class ParametersContainer extends Component {
 /* istanbul ignore next */
 export default connect(function (store) {
     const activeProject = getActiveProject(store);
+    const adoptWarning = activeProject.adoptWarnings?.join('\\n');
 
     return {
         activeProject: activeProject,
@@ -120,7 +122,8 @@ export default connect(function (store) {
         updateFailedShowing: updateFailedShowing(store),
         errorData: errorData(store),
         projectSourceParameters: getParameters(activeProject.id, store),
-        projectUpdateParameters: getUpdateParameters(activeProject.id, store)
+        projectUpdateParameters: getUpdateParameters(activeProject.id, store),
+        adoptWarning: adoptWarning
     };
 }, { fetchParameters, resetParameters, updateModelWithParameters, showModalProgress, showUpdateFailed, invalidateDrawing,
     hideModalProgress: () => async (dispatch) => { dispatch(showModalProgress(false)); } })(ParametersContainer);
