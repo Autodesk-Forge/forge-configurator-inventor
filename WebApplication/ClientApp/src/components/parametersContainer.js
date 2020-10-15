@@ -88,7 +88,8 @@ export class ParametersContainer extends Component {
                     />
                     <div style={{width: '14px'}}/>
                     <Tooltip { ...tooltipProps } className="paramTooltip" anchorPoint="top-center">
-                        <Button style={{width: '125px'}}
+                        <Button id="updateButton"
+                            style={{width: '125px'}}
                             { ...buttonProps }
                             size="standard"
                             title= "Update"
