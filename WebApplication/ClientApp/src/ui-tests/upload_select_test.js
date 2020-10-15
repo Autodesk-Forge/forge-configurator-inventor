@@ -31,23 +31,17 @@ Scenario('upload workflow 2nd assembly', (I) => {
     I.uploadProject('src/ui-tests/dataset/SimpleBox2asm.zip', 'Assembly2.iam');
 });
 
-Scenario('delete workflow', (I) => {
-    I.deleteProject('SimpleBox2asm');
-});
-
 Scenario('upload assembly with non-supported addins', async (I) => {
 
-    I.dontSeeElement(locators.getProject('NotSupportedAddins'));
+    I.dontSeeElement(locators.getProjectByName('NotSupportedAddins'));
 
-    I.uploadProjectFailure(
+    I.uploadProjectWarning(
         'src/ui-tests/dataset/NotSupportedAddins.zip',
         'notSupportedAddins.iam');
 
-    // check the error box title
-    I.see('Adoption failed', locators.xpErrorMessageTitle);
-
-    // get error message
-    const errorMessage = await I.grabTextFrom(locators.xpErrorMessage);
+    // get warning message
+    I.waitForVisible(locators.xpWarningMessage, locators.FDAActionTimeout);
+    const warningMessage = await I.grabTextFrom(locators.xpWarningMessage);
 
     // validate if all names of all unsupported plugins are there
     [
@@ -57,10 +51,22 @@ Scenario('upload assembly with non-supported addins', async (I) => {
         /Cable & Harness/,
         /Mold Design/,
         /Design Accelerator/,
-    ].forEach((snippet) => assert.match(errorMessage, snippet));
+    ].forEach((snippet) => assert.match(warningMessage, snippet));
 
     I.closeCompletionDialog();
 
-    // ensure the project is deleted
-    I.dontSeeElement(locators.getProject('NotSupportedAddins'));
+    // ensure the project is uploaded
+    I.waitForVisible(locators.getProjectByName('NotSupportedAddins'), 30);
+
+    // get Details text for uploaded project
+    const projectRow = await I.grabTextFrom(locators.getProjectRowByName('NotSupportedAddins'));
+    const rowDetails = projectRow.split('\n')[1]; // temporally use second string from the row
+
+    // validate the warning message
+    assert.strictEqual(rowDetails, 'Detected unsupported plugins: Mold Design, Tube & Pipe, Frame Generator, Design Accelerator, Cable & Harness', 'Error: Details text of a project is not expected!');
+});
+
+Scenario('delete workflow', (I) => {
+    I.deleteProject('SimpleBox2asm');
+    I.deleteProject('NotSupportedAddins');
 });
