@@ -19,7 +19,7 @@
 import repo from '../Repository';
 import { addError, addLog } from './notificationActions';
 import { Jobs } from '../JobManager';
-import { showModalProgress, showUpdateFailed, setErrorData, setStats } from './uiFlagsActions';
+import { showModalProgress, showUpdateFailed, setErrorData, setStats, setReportUrl } from './uiFlagsActions';
 
 import { updateProject } from './projectListActions';
 
@@ -163,9 +163,10 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
                 dispatch(setErrorData(null)); // cleanup url link
             },
             // onComplete
-            (updatedState, stats) => {
+            (updatedState, stats, reportUrl) => {
                 dispatch(addLog('JobManager: Received onComplete'));
                 dispatch(setStats(stats));
+                dispatch(setReportUrl(reportUrl));
 
                 // parameters and "base project state" should be handled differently,
                 // so split the incoming updated state to pieces.

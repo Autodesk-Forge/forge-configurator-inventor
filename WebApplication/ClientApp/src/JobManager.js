@@ -37,12 +37,12 @@ class JobManager {
         if (onStart)
             onStart();
 
-        connection.on("onComplete", (updatedState, stats) => {
+        connection.on("onComplete", (updatedState, stats, reportUrl) => {
             // stop connection
             connection.stop();
 
             if (onComplete)
-                onComplete(updatedState, stats);
+                onComplete(updatedState, stats, reportUrl);
         });
 
         connection.on("onError", (errorData) => {

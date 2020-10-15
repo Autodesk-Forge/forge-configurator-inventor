@@ -43,6 +43,7 @@ export const initialState = {
    drawingProgressShowing: false,
    drawingUrls: {},
    stats: {},
+   reportUrl: null,
    activeDrawing: null,
    drawings: null
 };
@@ -131,6 +132,10 @@ export const getStats = function(state) {
    return state.stats;
 };
 
+export const getReportUrl = function(state) {
+   return state.reportUrl;
+};
+
 export const getDrawingsList = function(state) {
    return state.drawings;
 };
@@ -152,7 +157,7 @@ export default function(state = initialState, action) {
       case uiFlagsActionTypes.SHOW_MODAL_PROGRESS:
          return { ...state, modalProgressShowing: action.visible, stats: null };
       case uiFlagsActionTypes.SHOW_UPDATE_FAILED:
-         return { ...state, updateFailedShowing: action.visible};
+         return { ...state, SHOW_UPDATE_FAILED: action.visible};
       case uiFlagsActionTypes.SHOW_LOGIN_FAILED:
          return { ...state, loginFailedShowing: action.visible};
       case uiFlagsActionTypes.SHOW_DOWNLOAD_FAILED:
@@ -231,6 +236,8 @@ export default function(state = initialState, action) {
                return { ...state, stats: stats };
             }
          }
+      case uiFlagsActionTypes.SET_REPORT_URL:
+         return { ...state, reportUrl: action.reportUrl };
       case uiFlagsActionTypes.DRAWING_LIST_UPDATED: {
 
          const prev = state.activeDrawing;
