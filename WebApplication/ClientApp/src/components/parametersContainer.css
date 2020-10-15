@@ -104,7 +104,8 @@ div.changedOnUpdate-input-wrapper {
     width: 280px;
     font-size: 12px;
     font-family: ArtifaktElement, sans-serif;
-    font-weight: 300;    
+    font-weight: 300;
+    white-space: pre-wrap;
 }
 
 /* trick to change SVG color. https://stackoverflow.com/a/49627345 */

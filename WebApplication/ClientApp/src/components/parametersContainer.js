@@ -20,7 +20,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import './parametersContainer.css';
 import Parameter from './parameter';
-import { getActiveProject, getParameters, getUpdateParameters, modalProgressShowing, updateFailedShowing, errorData, adoptWarningMessage } from '../reducers/mainReducer';
+import { getActiveProject, getParameters, getUpdateParameters, modalProgressShowing, updateFailedShowing, errorData } from '../reducers/mainReducer';
 import { fetchParameters, resetParameters, updateModelWithParameters } from '../actions/parametersActions';
 import { showModalProgress, showUpdateFailed, invalidateDrawing } from '../actions/uiFlagsActions';
 import Button from '@hig/button';
@@ -62,9 +62,9 @@ export class ParametersContainer extends Component {
         const buttonsContainerClass = parameterList ? "buttonsContainer" : "buttonsContainer hidden";
 
         // if model adopted with warning - then button should became white and have a tooltip with warning details
-        const adoptWarnings = adoptWarningMessage(this.props.activeProject);
-        const tooltipProps = adoptWarnings ? { openOnHover: true, content: () => <div className="warningButtonTooltip">{ adoptWarnings }</div>  } : { open: false };
-        const buttonProps = adoptWarnings ? { type:"secondary", icon: <Alert24 style={ { color: "orange" }} /> } : { type: "primary" };
+        const adoptWarning = this.props.adoptWarning;
+        const tooltipProps = adoptWarning ? { openOnHover: true, content: () => <div className="warningButtonTooltip">{ adoptWarning }</div>  } : { open: false };
+        const buttonProps = adoptWarning ? { type:"secondary", icon: <Alert24 style={ { color: "orange" }} /> } : { type: "primary" };
 
         return (
             <div className="parametersContainer">

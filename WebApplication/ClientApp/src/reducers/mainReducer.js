@@ -181,6 +181,3 @@ export const getActiveDrawing = function(state) {
     return uiFlags.getActiveDrawing(state.uiFlags);
 };
 
-export const adoptWarningMessage = function(project) { // TODO: move to utility
-    return project?.adoptWarnings?.join('\n');
-};
