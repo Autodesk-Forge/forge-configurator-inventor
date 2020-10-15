@@ -151,6 +151,18 @@ namespace WebApplication.Processing
             return status;
         }
 
+        public void NotifyTaskIsCompleted(string trackerId, WorkItemStatus status)
+        {
+            if (Tracker.TryRemove(trackerId, out var completionSource))
+            {
+                completionSource.SetResult(status);
+            }
+            else
+            {
+                _logger.LogError($"Cannot find tracker {trackerId}");
+            }
+        }
+
         private async Task PostAppBundleAsync(string packagePathname, ForgeAppBase config)
         {
             if (!File.Exists(packagePathname))

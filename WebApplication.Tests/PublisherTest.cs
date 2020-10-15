@@ -85,12 +85,7 @@ namespace WebApplication.Tests
         public void RunWorkItemAsync()
         {
             var workItemTask = _publisher.RunWorkItemAsync(_workItemArgs, _configMock.Object);
-
-            //simulates callback
-            //TODO: the following code shall be moved to separate method
-            _publisher.Tracker.TryRemove(_trackingKey, out var completionSource);
-            completionSource?.SetResult(_workItemStatus);
-
+            _publisher.NotifyTaskIsCompleted(_trackingKey, _workItemStatus);
             workItemTask.Wait();
             
             _workItemsApiMock.Verify(mock => mock.CreateWorkItemAsync(It.IsAny<WorkItem>(), null, null, true),
