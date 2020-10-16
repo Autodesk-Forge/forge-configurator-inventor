@@ -26,20 +26,21 @@ namespace WebApplication.Processing
     {
         private const string OutputModelIAMParameterName = "OutputModelIAMFile";
         private const string OutputModelIPTParameterName = "OutputModelIPTFile";
+
         /// <summary>
         /// Design Automation parameter name for JSON file with Inventor parameters.
         /// </summary>
         private const string InventorParameters = "InventorParams";
 
         public override string Id => nameof(UpdateParameters);
-        public override string Description => "Update parameters from Inventor document";
-
-        protected override bool HasOutput => false;
+        public override string Description => "Update parameters from Inventor document, and extract the results";
+        protected override string OutputName => "documentParams.json";
+        protected override string OutputUrl(ProcessingArgs projectData) => projectData.ParametersJsonUrl;
 
         public override List<string> ActivityCommandLine =>
             new List<string>
             {
-                $"$(engine.path)\\InventorCoreConsole.exe /al $(appbundles[{ActivityId}].path) /i \"$(args[{InputDocParameterName}].path)\" \"$(args[{InventorParameters}].path)\" /p"
+                $"$(engine.path)\\InventorCoreConsole.exe /al \"$(appbundles[{ActivityId}].path)\" /i \"$(args[{InputDocParameterName}].path)\" \"$(args[{InventorParameters}].path)\" /p"
             };
 
         public override Dictionary<string, Parameter> GetActivityParams() =>
@@ -60,6 +61,10 @@ namespace WebApplication.Processing
                 {
                     OutputModelIPTParameterName,
                     new Parameter { Verb = Verb.Put, LocalName = IptName }
+                },
+                {
+                    OutputParameterName,
+                    new Parameter { Verb = Verb.Put, LocalName = OutputName }
                 }
             };
 

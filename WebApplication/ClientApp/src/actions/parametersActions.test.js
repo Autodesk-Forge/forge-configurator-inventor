@@ -280,19 +280,18 @@ describe('fetchParameters', () => {
             const updateProject = actions.find(a => a.type === projectListActionTypes.UPDATE_PROJECT);
             expect(updateProject.activeProjectId).toEqual(projectId);
             expect(updateProject.data).toEqual(projectData);
-            // there are two setStats in the flow: clear (null) and set (theStats)
-            expect(actions.some(a => a.type === uiFlagsActionTypes.SET_STATS && a.stats === null)).toBeTruthy();
+            // verify stats
             expect(actions.some(a => a.type === uiFlagsActionTypes.SET_STATS && a.stats === theStats)).toBeTruthy();
         });
 
         it('check updateModelWithParameters error path', async () => {
             await store.dispatch(updateModelWithParameters(projectId, []));
-            connectionMock.simulateError(jobId,errorReportLink);
+            connectionMock.simulateErrorWithReport(jobId, errorReportLink);
 
             // check expected store actions
             const actions = store.getActions();
             // there are two SET_REPORT_URL actions in the list. The first one come from job start and is called with null to clear old data...
-            expect(actions.some(a => (a.type === uiFlagsActionTypes.SET_REPORT_URL && a.url === errorReportLink))).toEqual(true);
+            expect(actions.some(a => (a.type === uiFlagsActionTypes.SET_ERROR_DATA && a.errorData?.reportUrl === errorReportLink))).toEqual(true);
             expect(actions.some(a => a.type === uiFlagsActionTypes.SHOW_UPDATE_FAILED)).toEqual(true);
         });
     });

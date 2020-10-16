@@ -45,11 +45,11 @@ class JobManager {
                 onComplete(updatedState, stats);
         });
 
-        connection.on("onError", (jobId, reportUrl) => {
+        connection.on("onError", (errorData) => {
             connection.stop();
 
             if (onError)
-                onError(jobId, reportUrl);
+                onError(errorData);
         });
 
         await connection.invoke('CreateUpdateJob', projectId, parameters, repo.getAccessToken());
@@ -70,11 +70,11 @@ class JobManager {
                 onComplete(newProject,stats);
         });
 
-        connection.on("onError", (jobId, reportUrl) => {
+        connection.on("onError", (errorData) => {
             connection.stop();
 
             if (onError)
-                onError(jobId, reportUrl);
+                onError(errorData);
         });
 
         await connection.invoke('CreateAdoptJob', packageId, repo.getAccessToken());
@@ -114,7 +114,7 @@ class JobManager {
      * @param onSuccess  Callback to be called on success. Argument: url to the generated download.
      * @param onError    Callback to be called on error. Arguments: job ID, report url.
      * */
-    async doDownloadJob(methodName, projectId, hash, onStart, onSuccess, onError) {
+    async doDownloadJob(methodName, projectId, hash, key, onStart, onSuccess, onError) {
 
         const connection = await this.startConnection();
 
@@ -138,16 +138,19 @@ class JobManager {
             }
         });
 
-        connection.on("onError", (jobId, reportUrl) => {
+        connection.on("onError", (errorData) => {
 
             connection.stop();
-            if (onError) onError(jobId, reportUrl);
+            if (onError) onError(errorData);
         });
 
-        await connection.invoke(methodName, projectId, hash, repo.getAccessToken());
+        if (key != null)
+            await connection.invoke(methodName, projectId, hash, key, repo.getAccessToken());
+        else
+            await connection.invoke(methodName, projectId, hash, repo.getAccessToken());
     }
 
-    async doDrawingExportJob(projectId, hash, onStart, onComplete, onError) {
+    async doDrawingExportJob(projectId, hash, drawingKey, onStart, onComplete, onError) {
         const connection = await this.startConnection();
 
         if (onStart)
@@ -162,14 +165,14 @@ class JobManager {
             }
         });
 
-        connection.on("onError", (jobId, reportUrl) => {
+        connection.on("onError", (errorData) => {
             connection.stop();
 
             if (onError)
-                onError(jobId, reportUrl);
+                onError(errorData);
         });
 
-        await connection.invoke('CreateDrawingPdfJob', projectId, hash, repo.getAccessToken());
+        await connection.invoke('CreateDrawingPdfJob', projectId, hash, drawingKey, repo.getAccessToken());
     }
 }
 

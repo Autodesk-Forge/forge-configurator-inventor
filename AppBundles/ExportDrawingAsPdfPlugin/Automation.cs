@@ -47,25 +47,53 @@ namespace ExportDrawingAsPdfPlugin
             using (new HeartBeat())
             {
                 var dir = System.IO.Directory.GetCurrentDirectory();
-                if (doc == null)
+                var drawingToGenerate = map.Count>1 ? map.Item["_2"] : null;
+
+                if (drawingToGenerate == null)
                 {
-                    ActivateDefaultProject(dir);
-                    doc = inventorApplication.Documents.Open(map.Item["_1"]);
+                    LogTrace("Drawing not specified !");
+                    return;
                 }
-                var fullFileName = doc.FullFileName;
-                var path = System.IO.Path.GetFullPath(fullFileName);
-                var fileName = System.IO.Path.GetFileNameWithoutExtension(fullFileName);
-                var drawing = inventorApplication.DesignProjectManager.ResolveFile(path, fileName + ".idw");
-                LogTrace("Looking for drawing: " + fileName + ".idw " + "inside: " + path + " with result: " + drawing);
-                if (drawing == null)
+
+                LogTrace("Drawing to generate PDF: {0}", drawingToGenerate);
+
+                string drawing = null;
+                if (drawingToGenerate == null)
                 {
-                    drawing = inventorApplication.DesignProjectManager.ResolveFile(path, fileName + ".dwg");
-                    LogTrace("Looking for drawing: " + fileName + ".dwg " + "inside: " + path + " with result: " + drawing);
+                    if (doc == null)
+                    {
+                        ActivateDefaultProject(dir);
+                        doc = inventorApplication.Documents.Open(map.Item["_1"]);
+                    }
+
+                    var fullFileName = doc.FullFileName;
+                    var path = System.IO.Path.GetFullPath(fullFileName);
+                    var fileName = System.IO.Path.GetFileNameWithoutExtension(fullFileName);
+                    drawing = inventorApplication.DesignProjectManager.ResolveFile(path, fileName + ".idw");
+                    LogTrace("Looking for drawing: " + fileName + ".idw " + "inside: " + path + " with result: " + drawing);
+                    if (drawing == null)
+                    {
+                        drawing = inventorApplication.DesignProjectManager.ResolveFile(path, fileName + ".dwg");
+                        LogTrace("Looking for drawing: " + fileName + ".dwg " + "inside: " + path + " with result: " + drawing);
+                    }
+                    if (drawing != null)
+                    {
+                        LogTrace("Found drawing to export at: " + drawing);
+                    } else
+                    {
+                        LogTrace("NO drawing found!");
+                        // do nothing and return
+                        return;
+                    }
+                }
+                else
+                {
+                    drawing = System.IO.Path.Combine(dir, /* ??? */"unzippedIam", drawingToGenerate);
                 }
 
                 if (drawing != null)
                 {
-                    LogTrace("Found drawing to export at: " + drawing);
+                    LogTrace("Exporting : " + drawing);
                     var drawingDocument = inventorApplication.Documents.Open(drawing);
                     LogTrace("Drawing opened");
                     drawingDocument.Update2(true);
@@ -75,7 +103,6 @@ namespace ExportDrawingAsPdfPlugin
                     var pdfPath = System.IO.Path.Combine(dir, "Drawing.pdf");
                     LogTrace("Exporting drawing to: " + pdfPath);
                     ExportIDWToPDF(drawingDocument, pdfPath);
-                    //drawingDocument.SaveAs(pdfPath, true);
                     LogTrace("Drawing exported");
                 }
             }
@@ -104,8 +131,8 @@ namespace ExportDrawingAsPdfPlugin
         }
 
         // Export Drawing file to PDF format
-        // In case that the Drawing has more sheets -> it will export PDF with pages
-        // Each PDF page represet one Drawing sheet
+        // In the case that the Drawing has more sheets -> it will export PDF with pages
+        // Each PDF page represents one Drawing sheet
         public void ExportIDWToPDF(Document doc, string exportFileName)
         {
             if (doc == null)

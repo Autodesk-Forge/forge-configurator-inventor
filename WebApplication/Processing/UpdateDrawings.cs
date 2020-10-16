@@ -29,6 +29,8 @@ namespace WebApplication.Processing
         public override string Id => nameof(UpdateDrawings);
         public override string Description => "Find all drawings and update them -> zip";
 
+        protected internal override ForgeRegistration Registration { get; } = ForgeRegistration.All;
+
         protected override string OutputUrl(ProcessingArgs projectData) => projectData.DrawingUrl;
         protected override string OutputName => "drawing";
         protected override bool IsOutputZip => true;
@@ -40,7 +42,7 @@ namespace WebApplication.Processing
         public override List<string> ActivityCommandLine =>
             new List<string>
             {
-                $"$(engine.path)\\InventorCoreConsole.exe /al $(appbundles[{ActivityId}].path) \"$(args[{InputDocParameterName}].path)\" "
+                $"$(engine.path)\\InventorCoreConsole.exe /al \"$(appbundles[{ActivityId}].path)\" \"$(args[{InputDocParameterName}].path)\" "
             };
 
         /// <summary>

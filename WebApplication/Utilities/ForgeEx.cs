@@ -44,7 +44,7 @@ namespace WebApplication.Utilities
             // https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/consumer-apis/password-hashing?view=aspnetcore-3.1
             return KeyDerivation.Pbkdf2(
                                         password: configuration.ClientId,
-                                        salt: Encoding.UTF8.GetBytes(configuration.ClientSecret + configuration.ClientId), // ER: is it OK? Or safer to not use the secret at all?
+                                        salt: Encoding.UTF8.GetBytes(configuration.ClientSecret + configuration.ClientId), // TODO Is it OK? Or safer to not use the secret at all?
                                         prf: KeyDerivationPrf.HMACSHA1,
                                         iterationCount: 10,
                                         numBytesRequested: 12);

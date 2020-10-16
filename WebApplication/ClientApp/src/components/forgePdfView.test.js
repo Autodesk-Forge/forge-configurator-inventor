@@ -24,13 +24,33 @@ import { ForgePdfView } from './forgePdfView';
 Enzyme.configure({ adapter: new Adapter() });
 
 const loadModelMock = jest.fn();
+const hideModelMock = jest.fn();
+const showModelMock = jest.fn();
 const loadExtensionMock = jest.fn();
 const viewerFinishMock = jest.fn();
 const adskViewingShutdownMock = jest.fn();
 
+let allModelsData = [];
+
+class ModelMock {
+
+  constructor(url)
+  {
+    this.data = { urn: url };
+  }
+
+  getData() { return this.data; }
+}
+
 class GuiViewer3DMock {
   loadExtension(extId) { loadExtensionMock(extId); }
-  loadModel(model) { loadModelMock(model); }
+  loadModel(modelUrl, options) {
+    loadModelMock(modelUrl, options);
+    allModelsData.push(new ModelMock(modelUrl));
+  }
+  hideModel(model) { hideModelMock(model); }
+  showModel(model) { showModelMock(model); }
+  getAllModels() { return allModelsData; }
   start() {}
   finish() { viewerFinishMock(); }
 }
@@ -52,9 +72,13 @@ describe('components', () => {
 
     beforeEach(() => {
         loadModelMock.mockClear();
+        hideModelMock.mockClear();
+        showModelMock.mockClear();
         loadExtensionMock.mockClear();
         viewerFinishMock.mockClear();
         adskViewingShutdownMock.mockClear();
+
+        allModelsData = [];
     });
 
     it('load gets called when pdf provided', async () => {
@@ -70,10 +94,10 @@ describe('components', () => {
       await Promise.resolve(); // waits until all is done
 
       expect(loadExtensionMock).toHaveBeenCalledWith('Autodesk.PDF');
-      expect(loadModelMock).toHaveBeenCalledWith(drawingPdf);
+      expect(loadModelMock).toHaveBeenCalledWith( drawingPdf, {page: 1});
     });
 
-    it('load gets called when pdf changes', async () => {
+    it('load/hide/show gets called when pdf changes', async () => {
         const wrapper = shallow(<ForgePdfView { ...baseProps } />);
 
         window.Autodesk = AutodeskMock;
@@ -81,9 +105,27 @@ describe('components', () => {
         await script.simulate('load');
         await Promise.resolve(); // waits until all is done
 
-        const updateProps = { drawingPdf: 'newurl.pdf' };
+        const newUrl = 'newurl.pdf';
+        let updateProps = { drawingPdf: newUrl };
         wrapper.setProps(updateProps);
         expect(loadModelMock).toHaveBeenCalledTimes(2);
+        expect(hideModelMock).toHaveBeenCalledTimes(1);
+        // expect that the first pdf will be hide
+        expect(hideModelMock).toHaveBeenCalledWith({"data": {"urn": drawingPdf}});
+
+        hideModelMock.mockClear();
+
+        // return back to startup url
+        updateProps = { drawingPdf: drawingPdf };
+        wrapper.setProps(updateProps);
+
+        // expect that the second pdf will be hide when selecting back the first one
+        expect(hideModelMock).toHaveBeenCalledTimes(1);
+        expect(hideModelMock).toHaveBeenCalledWith({"data": {"urn": newUrl}});
+
+        // original pdf will be displayed
+        expect(showModelMock).toHaveBeenCalledTimes(1);
+        expect(showModelMock).toHaveBeenCalledWith({"data": {"urn": drawingPdf}});
     });
 
     it('returns without loading when pdf is null', async () => {
@@ -101,14 +143,14 @@ describe('components', () => {
     it('unmounts correctly', async () => {
         const wrapper = shallow(<ForgePdfView { ...baseProps } />);
 
-      // preparation: must load the viewer first
-         const viewer = wrapper.find('.viewer');
+        // preparation: must load the viewer first
+        const viewer = wrapper.find('.viewer');
         expect(viewer).toHaveLength(1);
         const script = viewer.find('Script');
         expect(script).toHaveLength(1);
         window.Autodesk = AutodeskMock;
         await script.simulate('load');
-        await Promise.resolve(); // waits until all is done
+        await Promise.resolve(); // waits until all done
 
         wrapper.unmount();
 

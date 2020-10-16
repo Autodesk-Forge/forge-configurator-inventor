@@ -32,7 +32,7 @@ import ModalProgressUpload from './modalProgressUpload';
 import ModalProgress from './modalProgress';
 import ModalFail from './modalFail';
 import { uploadProgressShowing, uploadProgressIsDone, uploadPackageData, uploadFailedShowing,
-  checkedProjects, modalProgressShowing, reportUrl } from '../reducers/mainReducer';
+  checkedProjects, modalProgressShowing, errorData } from '../reducers/mainReducer';
 import CheckboxTable from './checkboxTable';
 
 export class ProjectList extends Component {
@@ -128,13 +128,13 @@ export class ProjectList extends Component {
                     contentName="Package:"
                     label={this.props.uploadPackageData.file.name}
                     onClose={() => this.onUploadFailedCloseClick()}
-                    url={this.props.reportUrl}/>}
+                    errorData={this.props.errorData}/>}
 
         <DeleteProject />
         {this.props.modalProgressShowing && <ModalProgress
                     open={this.props.modalProgressShowing}
                     title="Deleting Project(s)"
-                    label="Deleting a project and its cache"
+                    label="Deleting project(s) and cache"
                     icon="/Assembly_icon.svg"
                     onClose={() => this.onDeleteCloseClick()}/>
         }
@@ -152,7 +152,7 @@ export default connect(function (store) {
     uploadProgressIsDone: uploadProgressIsDone(store),
     uploadPackageData: uploadPackageData(store),
     uploadFailedShowing: uploadFailedShowing(store),
-    reportUrl: reportUrl(store),
+    errorData: errorData(store),
     modalProgressShowing: modalProgressShowing(store)
   };
 }, { showUploadPackage, updateActiveProject, updateActiveTabIndex, setUploadProgressHidden, hideUploadFailed, showDeleteProject, showModalProgress, invalidateDrawing })(ProjectList);

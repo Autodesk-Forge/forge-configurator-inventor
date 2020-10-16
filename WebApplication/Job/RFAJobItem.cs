@@ -44,8 +44,8 @@ namespace WebApplication.Job
             var stats = await ProjectWork.GenerateRfaAsync(ProjectId, _hash);
             Logger.LogInformation($"ProcessJob (RFA) {Id} for project {ProjectId} completed.");
 
-            // TODO: this url can be generated right away... we can simply acknowledge that OSS file is ready,
-            // without generating URL here
+            // TODO: this url can be generated right away... we can simply acknowledge that the OSS file is ready,
+            // without generating a URL here
             string rfaUrl = _linkGenerator.GetPathByAction(controller: "Download",
                                                             action: "RFA",
                                                             values: new {projectName = ProjectId, hash = _hash});

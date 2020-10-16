@@ -20,7 +20,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import BaseTable, { AutoResizer, Column } from 'react-base-table';
 import 'react-base-table/styles.css';
-import { getActiveProject, downloadProgressShowing, downloadProgressTitle, downloadUrl, downloadFailedShowing, reportUrl } from '../reducers/mainReducer';
+import { getActiveProject, downloadProgressShowing, downloadProgressTitle, downloadUrl, downloadFailedShowing, errorData } from '../reducers/mainReducer';
 import { downloadDrawingFailedShowing } from '../reducers/mainReducer';
 import { getDownloadLink } from '../actions/downloadActions';
 import { showDownloadProgress, showDownloadFailed } from '../actions/uiFlagsActions';
@@ -37,7 +37,7 @@ const Icon = ({ iconname }) => (
 
 const iconRenderer = ({ cellData: iconname }) => <Icon iconname={iconname} />;
 
-/** Hyperlink, which leads nowhere. */
+/** Hyperlink that leads nowhere. */
 function deadEndLink(title) {
     return <a href='' onClick={(e) => { e.preventDefault(); }}>{ title }</a>;
 }
@@ -148,16 +148,6 @@ export class Downloads extends Component {
                         link: deadEndLink('Drawing'),
                         clickHandler: async () => this.props.getDownloadLink('CreateDrawingDownloadJob', project.id, project.hash, 'Preparing Drawings')
                     });
-
-                data.push(
-                    {
-                        id: 'pdf',
-                        icon: 'products-and-services-24.svg',
-                        type: 'PDF',
-                        env: 'Drawing',
-                        link: deadEndLink('Drawing PDF'),
-                        clickHandler: async () => this.props.getDownloadLink('CreateDrawingPdfJob', project.id, project.hash, 'Preparing Drawing PDF')
-                    });
             }
         }
 
@@ -193,7 +183,7 @@ export class Downloads extends Component {
                     contentName="Project:"
                     label={project.id}
                     onClose={ () => this.props.showDownloadFailed(false) }
-                    url={this.props.reportUrl}/>}
+                    errorData={this.props.errorData}/>}
 
         </React.Fragment>
         );
@@ -209,7 +199,7 @@ export default connect(function(store) {
         downloadProgressTitle: downloadProgressTitle(store),
         downloadFailedShowing: downloadFailedShowing(store),
         downloadUrl: downloadUrl(store),
-        reportUrl: reportUrl(store),
+        errorData: errorData(store),
         drawingDownloadFailedShowing: downloadDrawingFailedShowing(store)
     };
 }, { Downloads, getDownloadLink, showDownloadProgress, showDownloadFailed })(Downloads);

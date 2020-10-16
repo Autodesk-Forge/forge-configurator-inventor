@@ -22,6 +22,7 @@ import {connect} from 'react-redux';
 import { getDrawingPdfUrl } from '../reducers/mainReducer';
 import repo from '../Repository';
 import './forgePdfView.css';
+import { viewerCss, viewerJs } from './shared';
 
 let Autodesk = null;
 
@@ -45,11 +46,14 @@ export class ForgePdfView extends Component {
         try {
             await import('./forgePdfViewExtension');
         } catch (error) {
-            // TODO unit test is crashing here, verify if some mock resolve it
+            // TODO unit test is crashing here, verify if some mock resolves it
         }
 
         const container = this.viewerDiv.current;
-        this.viewer = new Autodesk.Viewing.GuiViewer3D(container, { extensions: ['ForgePdfViewExtension'] });
+        this.viewer = new Autodesk.Viewing.GuiViewer3D(container,
+            { extensions: ['ForgePdfViewExtension'],
+              // these options (enableBrowserNavigation) are used when switching PDF sheets
+              enableBrowserNavigation: false });
 
         // uncomment this for Viewer debugging
         //this.viewer.debugEvents(true);
@@ -62,20 +66,50 @@ export class ForgePdfView extends Component {
         if (errorCode)
             return;
 
+        // these options (enableBrowserNavigation) are used when switching TAB (creating pdf view)
+        this.viewer.loadExtension('Autodesk.PDF', { enableBrowserNavigation: false });
+
         // skip loading of svf when here is no active project drawingPdf
         if (!this.props.drawingPdf)
             return;
 
-        this.viewer.loadExtension('Autodesk.PDF');
-
-        this.viewer.loadModel( this.props.drawingPdf);
-        //this.viewer.loadExtension("Autodesk.Viewing.MarkupsCore")
-        //this.viewer.loadExtension("Autodesk.Viewing.MarkupsGui")
+        this.viewer.loadModel( this.props.drawingPdf, { page: 1 } ); // load page 1 by default
     }
 
     componentDidUpdate(prevProps) {
         if (this.viewer && Autodesk && (this.props.drawingPdf !== prevProps.drawingPdf)) {
-            this.viewer.loadModel( this.props.drawingPdf);
+
+            const findModelForUrn = function(viewer, urn) {
+                const allModels = viewer.getAllModels();
+                let modelForUrn = null;
+                for (const model of allModels) {
+                    const modelUrn = model.getData().urn;
+                    if (modelUrn != urn)
+                        continue;
+
+                        modelForUrn = model;
+                    break;
+                }
+
+                return modelForUrn;
+            };
+
+            if (prevProps.drawingPdf != null) {
+                // try to find model in viewer.allModels and hide it
+                const modelToHide = findModelForUrn(this.viewer, prevProps.drawingPdf);
+                if (modelToHide != null)
+                    this.viewer.hideModel(modelToHide);
+            }
+
+            if (this.props.drawingPdf != null) {
+                // try to find model of specific urn and show it or load
+                const modelToShow = findModelForUrn(this.viewer, this.props.drawingPdf);
+                if (modelToShow != null) {
+                    this.viewer.showModel(modelToShow);
+                } else {
+                    this.viewer.loadModel( this.props.drawingPdf, { page: 1 }); // load page 1 by default
+                }
+            }
         }
     }
 
@@ -91,10 +125,8 @@ export class ForgePdfView extends Component {
         return (
             <div className="viewer" id="ForgePdfViewer">
                 <div ref={this.viewerDiv}></div>
-                <link rel="stylesheet" type="text/css" href={`https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/style.css`}/>
-                <Script url={`https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.js`}
-                    onLoad={this.handleScriptLoad.bind(this)}
-                />
+                <link rel="stylesheet" type="text/css" href={ viewerCss } />
+                <Script url={ viewerJs } onLoad={this.handleScriptLoad.bind(this)} />
             </div>
         );
     }

@@ -16,23 +16,51 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-/* eslint-disable no-console */
 /* eslint-disable no-undef */
-
-Before((I) => {
-   I.amOnPage('/');
-});
+const assert = require('assert');
+const locators = require('./elements_definition.js');
 
 Feature('Select Upload Assembly');
 
-Scenario('upload workflow 2nd assembly', async (I) => {
-   await I.signIn();
-
-   I.uploadProject('src/ui-tests/dataset/SimpleBox2asm.zip', 'Assembly2.iam');
+Before(async (I) => {
+    I.amOnPage('/');
+    await I.signIn();
 });
 
-Scenario('delete workflow', async (I) => {
-   await I.signIn();
+Scenario('upload workflow 2nd assembly', (I) => {
+    I.uploadProject('src/ui-tests/dataset/SimpleBox2asm.zip', 'Assembly2.iam');
+});
 
-   I.deleteProject('SimpleBox2asm');
+Scenario('delete workflow', (I) => {
+    I.deleteProject('SimpleBox2asm');
+});
+
+Scenario('upload assembly with non-supported addins', async (I) => {
+
+    I.dontSeeElement(locators.getProject('NotSupportedAddins'));
+
+    I.uploadProjectFailure(
+        'src/ui-tests/dataset/NotSupportedAddins.zip',
+        'notSupportedAddins.iam');
+
+    // check the error box title
+    I.see('Adoption failed', locators.xpErrorMessageTitle);
+
+    // get error message
+    const errorMessage = await I.grabTextFrom(locators.xpErrorMessage);
+
+    // validate if all names of all unsupported plugins are there
+    [
+        /Detected unsupported plugins/,
+        /Frame Generator/,
+        /Tube & Pipe/,
+        /Cable & Harness/,
+        /Mold Design/,
+        /Design Accelerator/,
+    ].forEach((snippet) => assert.match(errorMessage, snippet));
+
+    I.closeCompletionDialog();
+
+    // ensure the project is deleted
+    I.dontSeeElement(locators.getProject('NotSupportedAddins'));
 });

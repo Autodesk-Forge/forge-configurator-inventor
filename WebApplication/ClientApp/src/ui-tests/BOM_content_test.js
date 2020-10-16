@@ -47,11 +47,11 @@ const updatedRows =  [
     ['12', 'DS51F1496-07', '2', 'CLEVIS PINS AND COTTER PINS - CLEVIS PIN', 'Steel, Mild']
 ];
 
+Feature('Bom Data Validation');
+
 Before((I) => {
     I.amOnPage('/');
 });
-
-Feature('Bom Data Validation');
 
 // this test checks that BOM data are correct. There are two validations
 // first validation is before update
@@ -78,7 +78,7 @@ Scenario('should check BOM data after change', async (I) => {
     }
 
     // change parameter - select an item from a listbox
-    const partMaterialParameter = '//div[@class="parameter"][text()="PartMaterial"]//input';
+    const partMaterialParameter = '//div[@class="parameter"][text()="Material"]//input';
     const listbox = '//div[@role="listbox" and .//div[contains(.,"Stainless Steel")]]';
     const optionStainlessSteel = '//div[@role="option" and .//span[contains(.,"Stainless Steel")]]';
     I.click(locators.modelTab);

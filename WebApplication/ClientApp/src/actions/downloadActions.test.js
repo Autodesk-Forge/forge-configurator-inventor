@@ -84,33 +84,33 @@ describe('downloadActions', () => {
 
         it('check getDownloadLink onError action', async () => {
             await store.dispatch(downloadActions.getDownloadLink("Method", "ProjectId", "hash", "title"));
-            connectionMock.simulateError(jobId,errorReportLink);
+            connectionMock.simulateErrorWithReport(jobId, errorReportLink);
 
             // check expected store actions
             const actions = store.getActions();
             // there are two SET_REPORT_URL actions in the list. The first one come from job start and is called with null to clear old data...
-            expect(actions.some(a => (a.type === uiFlagsActionTypes.SET_REPORT_URL && a.url === errorReportLink))).toEqual(true);
+            expect(actions.some(a => (a.type === uiFlagsActionTypes.SET_ERROR_DATA && a.errorData?.reportUrl === errorReportLink))).toEqual(true);
             expect(actions.some(a => a.type === uiFlagsActionTypes.SHOW_DOWNLOAD_FAILED)).toEqual(true);
         });
     });
 
     describe('Drawing', () => {
         it('check fetchDrawing action', async () => {
-            await store.dispatch(downloadActions.fetchDrawing({ id: "ProjectId" }));
+            await store.dispatch(downloadActions.fetchDrawing({ id: "ProjectId" }, "DrawingKey"));
             connectionMock.simulateComplete(aLink, theStats);
 
             // check expected store actions
             const actions = store.getActions();
             const linkAction = actions.find(a => a.type === uiFlagsActionTypes.SET_DRAWING_URL);
             expect(linkAction.url).toEqual(noTokenLink);
-            // there are two setStats in the flow: clear (null) and set (theStats)
-            expect(actions.some(a => a.type === uiFlagsActionTypes.SET_STATS && a.stats === null)).toBeTruthy();
+
+            // check that stats is preset
             expect(actions.some(a => a.type === uiFlagsActionTypes.SET_STATS && a.stats === theStats)).toBeTruthy();
         });
 
         it('check fetchDrawing error handling', async () => {
-            await store.dispatch(downloadActions.fetchDrawing({ id: "ProjectId" }));
-            connectionMock.simulateError(jobId,errorReportLink);
+            await store.dispatch(downloadActions.fetchDrawing({ id: "ProjectId" }, "DrawingKey"));
+            connectionMock.simulateErrorWithReport(jobId,errorReportLink);
 
             // check expected store actions
             const actions = store.getActions();

@@ -18,11 +18,11 @@
 
 import { addError, addLog } from './notificationActions';
 import { Jobs } from '../JobManager';
-import { showDownloadProgress, showDownloadFailed, setDownloadLink, setReportUrlLink, setStats, hideDownloadProgress } from './uiFlagsActions';
+import { showDownloadProgress, showDownloadFailed, setDownloadLink, setErrorData, setStats, hideDownloadProgress } from './uiFlagsActions';
 import { showDrawingExportProgress, setDrawingPdfUrl } from './uiFlagsActions';
 
 /**
- * Generic method to handle downloads generation. The following happens:
+ * Generic method to handle generation of downloads. The following happens:
  * - show 'in progress' dialog
  * - call SignalR method to generate downloads
  * - wait for completion
@@ -34,7 +34,7 @@ import { showDrawingExportProgress, setDrawingPdfUrl } from './uiFlagsActions';
  * @param {string} hash        Parameters hash. (passed as a second arg to the SignalR method)
  * @param {string} dialogTitle Title for dialogs.
  */
-export const getDownloadLink = (methodName, projectId, hash, dialogTitle) => async (dispatch) => {
+export const getDownloadLink = (methodName, projectId, hash, dialogTitle, key) => async (dispatch) => {
     dispatch(addLog(`getDownloadLink invoked for ${methodName}`));
 
     const jobManager = Jobs();
@@ -44,11 +44,11 @@ export const getDownloadLink = (methodName, projectId, hash, dialogTitle) => asy
 
     // launch signalR to generate download and wait for result
     try {
-        await jobManager.doDownloadJob(methodName, projectId, hash,
+        await jobManager.doDownloadJob(methodName, projectId, hash, key,
             // start job
             () => {
                 dispatch(addLog(`JobManager.doDownloadJob: '${methodName}' started for project : ${projectId}`));
-                dispatch(setReportUrlLink(null)); // cleanup url link
+                dispatch(setErrorData(null)); // cleanup url link
             },
             // onComplete
             (downloadUrl, stats) => {
@@ -58,12 +58,12 @@ export const getDownloadLink = (methodName, projectId, hash, dialogTitle) => asy
                 dispatch(setStats(stats));
             },
             // onError
-            (jobId, reportUrl) => {
-                dispatch(addLog('JobManager.doDownloadJob: Received onError with jobId: ' + jobId + ' and reportUrl: ' + reportUrl));
+            (errorData) => {
+                dispatch(addLog('JobManager.doDownloadJob: Received onError with jobId: ' + errorData.jobId));
                 // hide progress modal dialog
                 dispatch(hideDownloadProgress());
                 // show error modal dialog
-                dispatch(setReportUrlLink(reportUrl));
+                dispatch(setErrorData(errorData));
                 dispatch(showDownloadFailed(true));
             }
         );
@@ -72,8 +72,8 @@ export const getDownloadLink = (methodName, projectId, hash, dialogTitle) => asy
     }
 };
 
-export const fetchDrawing = (project) => async (dispatch) => {
-    if (! project.id) return;
+export const fetchDrawing = (project, drawingKey) => async (dispatch) => {
+    if (! project.id || !drawingKey) return;
 
     dispatch(addLog('fetchDrawing invoked'));
 
@@ -84,23 +84,21 @@ export const fetchDrawing = (project) => async (dispatch) => {
 
     // launch signalR to export drawing and wait for result
     try {
-        await jobManager.doDrawingExportJob(project.id, project.hash,
+        await jobManager.doDrawingExportJob(project.id, project.hash, drawingKey,
             // start job
             () => {
-                dispatch(addLog('JobManager.doDrawingExportJob: HubConnection started for project : ' + project.id));
-                dispatch(setStats(null));
-                //dispatch(setReportUrlLink(null)); // cleanup url link
+                dispatch(addLog('JobManager.doDrawingExportJob: HubConnection started for project : ' + project.id + ' (drawing: ' + drawingKey + ')'));
             },
             // onComplete
             (drawingPdfUrl, stats) => {
                 dispatch(addLog('JobManager.doDrawingExportJob: Received onComplete'));
                 // store drawings link
-                dispatch(setDrawingPdfUrl(drawingPdfUrl));
-                dispatch(setStats(stats));
+                dispatch(setDrawingPdfUrl(drawingKey, drawingPdfUrl));
+                dispatch(setStats(stats, drawingKey));
             },
             // onError
-            (jobId, reportUrl) => {
-                dispatch(addLog('JobManager: Received onError with jobId: ' + jobId + ' and reportUrl: ' + reportUrl));
+            (errorData) => {
+                dispatch(addLog('JobManager: Received onError with jobId: ' + errorData.jobId));
                 // hide progress modal dialog
                 dispatch(showDrawingExportProgress(false));
             }

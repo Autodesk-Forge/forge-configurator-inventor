@@ -48,7 +48,7 @@ export class DeleteProject extends Component {
             stylesheet={modalStyles} >
                 <div id="deleteProjectModal">
                     <div className="deleteProjectListContainer">
-                        Are you sure you want to delete following {this.props.checkedProjects.length === 1 ? 'project' : 'projects'}?
+                        Are you sure you want to delete the following {this.props.checkedProjects.length === 1 ? 'project' : 'projects'}?
                         <ul>
                             {this.props.checkedProjects.map(projectId => (<li key={projectId}>{projectId}</li>))}
                         </ul>

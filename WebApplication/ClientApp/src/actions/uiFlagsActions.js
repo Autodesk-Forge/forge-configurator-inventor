@@ -27,7 +27,7 @@ export const actionTypes = {
     SHOW_UPDATE_FAILED: 'SHOW_UPDATE_FAILED',
     SHOW_LOGIN_FAILED: 'SHOW_LOGIN_FAILED',
     SHOW_DOWNLOAD_FAILED: 'SHOW_DOWNLOAD_FAILED',
-    SET_REPORT_URL: 'SET_REPORT_URL',
+    SET_ERROR_DATA: 'SET_ERROR_DATA',
     SHOW_DOWNLOAD_PROGRESS: 'SHOW_DOWNLOAD_PROGRESS',
     HIDE_DOWNLOAD_PROGRESS: 'HIDE_DOWNLOAD_PROGRESS',
     SET_DOWNLOAD_LINK: 'SET_DOWNLOAD_LINK',
@@ -47,6 +47,8 @@ export const actionTypes = {
     INVALIDATE_DRAWING: 'INVALIDATE_DRAWING',
     SET_STATS: 'SET_STATS',
     SET_ENABLE_EMBEDDED_MODE: 'SET_ENABLE_EMBEDDED_MODE',
+    ACTIVE_DRAWING_UPDATED: 'ACTIVE_DRAWING_UPDATED',
+    DRAWING_LIST_UPDATED: 'DRAWING_LIST_UPDATED'
 };
 
 export default actionTypes;
@@ -111,10 +113,10 @@ export const showDownloadFailed = (visible) => {
     };
 };
 
-export const setReportUrlLink = (url) => {
+export const setErrorData = (errorData) => {
     return {
-        type: actionTypes.SET_REPORT_URL,
-        url
+        type: actionTypes.SET_ERROR_DATA,
+        errorData
     };
 };
 
@@ -231,9 +233,10 @@ export const showAdoptWithParamsFailed = (visible) => {
     };
 };
 
-export const setDrawingPdfUrl = (url) => {
+export const setDrawingPdfUrl = (drawingKey, url) => {
     return {
         type: actionTypes.SET_DRAWING_URL,
+        drawingKey,
         url
     };
 };
@@ -244,10 +247,25 @@ export const invalidateDrawing = () => {
     };
 };
 
-export const setStats = (stats) => {
+export const setStats = (stats, key) => {
     return {
         type: actionTypes.SET_STATS,
-        stats
+        stats,
+        key
+    };
+};
+
+export const updateActiveDrawing = activeDrawing => {
+    return {
+        type: actionTypes.ACTIVE_DRAWING_UPDATED,
+        activeDrawing
+    };
+};
+
+export const updateDrawingsList = drawingsList => {
+    return {
+        type: actionTypes.DRAWING_LIST_UPDATED,
+        drawingsList
     };
 };
 

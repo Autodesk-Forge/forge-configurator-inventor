@@ -23,7 +23,7 @@ const { debug } = require('console');
 const parametersElement = '.parameters';
 
 const elements = '//div[@class="parameter" or @class="parameter checkbox"]';
-const iLogicParameterList = ['WheelSize', 'NumberOfSpokes', 'Slot', 'WheelFinish', 'BrakeMaterial', 'CaliperFinish', 'TotalPrice'];
+const iLogicParameterList = ['Wheel Size', 'Number Of Spokes', 'Slot', 'Wheel Finish', 'Brake Material', 'Caliper Finish', 'Total Price'];
 
 const readOnlyElements = '//div[(@class = "parameter" or @class = "parameter checkbox") and .//input[@disabled]]';
 const iLogicReadOnlyParameterList = ['ReadOnly', 'Diameter [mm]'];
@@ -50,11 +50,11 @@ function compareArrays(array1, array2)
   return true;
 }
 
+Feature('iLogic Parameters');
+
 Before((I) => {
     I.amOnPage('/');
 });
-
-Feature('iLogic Parameters');
 
 // validate that all parameters in iLogic form are displayed in the List of Parameters
 Scenario('should check parameters in iLogic Form with list of parameters in Model Tab', async (I) => {
@@ -68,13 +68,13 @@ Scenario('should check parameters in iLogic Form with list of parameters in Mode
 
   // compare all parameters and validate
   const result = compareArrays(iLogicParameterList, modelTabParamList);
-  assert.equal(result, true, "There is incorrect number of parameters or parameter names");
+  assert.equal(result, true, "There is an incorrect number of parameters or parameter names");
 });
 
 // validate that all Read only parameters in iLogic form are displayed in the List of Parameters
 Scenario('should check parameters in iLogic Form with list of Read Only parameters in Model Tab', async (I) => {
 
-  I.signIn();
+  await I.signIn();
 
   I.uploadIPTFile('src/ui-tests/dataset/EndCap.ipt');
 
@@ -91,8 +91,8 @@ Scenario('should check parameters in iLogic Form with list of Read Only paramete
 
 });
 
-Scenario('Delete the project', (I) => {
+Scenario('Delete the project', async (I) => {
 
-  I.signIn();
+  await I.signIn();
   I.deleteProject('EndCap');
 });

@@ -16,17 +16,16 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-/* eslint-disable no-console */
 /* eslint-disable no-undef */
 
-Before((I) => {
+Feature('Failed Upload Dialog');
+
+Before(async (I) => {
     I.amOnPage('/');
- });
+    await I.signIn();
+});
 
- Feature('Failed Upload Dialog');
-
- Scenario('upload IPT and verify that exists report.txt url', async (I) => {
-   await I.signIn();
+Scenario('upload IPT and verify that exists report.txt url', (I) => {
 
    I.uploadInvalidIPTFile('src/ui-tests/dataset/invalid.ipt');
- });
+});

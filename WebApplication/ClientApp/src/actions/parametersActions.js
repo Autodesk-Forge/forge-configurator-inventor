@@ -19,7 +19,7 @@
 import repo from '../Repository';
 import { addError, addLog } from './notificationActions';
 import { Jobs } from '../JobManager';
-import { showModalProgress, showUpdateFailed, setReportUrlLink, setStats } from './uiFlagsActions';
+import { showModalProgress, showUpdateFailed, setErrorData, setStats } from './uiFlagsActions';
 
 import { updateProject } from './projectListActions';
 
@@ -94,7 +94,8 @@ export function adaptParameters(rawParameters) {
             allowedValues: (param.values) ? param.values.map( item => unquote(item)) : [],
             units: param.unit,
             label: param.label || key,
-            readonly: !! param.readonly
+            readonly: !! param.readonly,
+            errormessage: param.errormessage
         };
     });
 }
@@ -151,7 +152,7 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
     const invFormattedParameters = formatParameters(data);
     const jobManager = Jobs();
 
-    // launch progress dialog immediately before we started connection to the server
+    // launch progress dialog immediately before we start connection to the server
     dispatch(showModalProgress(true));
 
     try {
@@ -159,8 +160,7 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
             // start job
             () => {
                 dispatch(addLog('JobManager: HubConnection started for project : ' + projectId));
-                dispatch(setReportUrlLink(null)); // cleanup url link
-                dispatch(setStats(null));
+                dispatch(setErrorData(null)); // cleanup url link
             },
             // onComplete
             (updatedState, stats) => {
@@ -177,12 +177,12 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
                 dispatch(updateProject(projectId, baseProjectState));
             },
             // onError
-            (jobId, reportUrl) => {
-                dispatch(addLog('JobManager: Received onError with jobId: ' + jobId + ' and reportUrl: ' + reportUrl));
+            (errorData) => {
+                dispatch(addLog('JobManager: Received onError with jobId: ' + errorData.jobId));
                 // hide progress modal dialog
                 dispatch(showModalProgress(false));
                 // show error modal dialog
-                dispatch(setReportUrlLink(reportUrl));
+                dispatch(setErrorData(errorData));
                 dispatch(showUpdateFailed(true));
             }
         );
@@ -200,7 +200,7 @@ const stripUnits = (parameter) => {
     return stripped.trim();
 };
 
-// Compares the two parameter values and return true if they represent the same value
+// Compares the two parameter values and returns true if they represent the same value
 export const compareParamaters = (firstParameter, secondParameter) => {
     if(!firstParameter || !secondParameter) {
         return false;
@@ -211,7 +211,7 @@ export const compareParamaters = (firstParameter, secondParameter) => {
     }
 
     if(firstParameter.units !== secondParameter.units) {
-        // no units conversions
+        // no unit conversions
         return false;
     }
 

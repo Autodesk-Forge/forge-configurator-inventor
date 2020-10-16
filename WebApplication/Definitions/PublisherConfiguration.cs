@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////
+﻿/////////////////////////////////////////////////////////////////////
 // Copyright (c) Autodesk, Inc. All rights reserved
 // Written by Forge Design Automation team for Inventor
 //
@@ -16,25 +16,31 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using WebApplication.Definitions;
-
-namespace WebApplication.Processing
+namespace WebApplication.Definitions
 {
-    /// <summary>
-    /// Drawings List.
-    /// </summary>
-    public class DrawingsList : ForgeAppBase
+    public enum CompletionCheck
     {
-        public override string Id => nameof(DrawingsList);
-        public override string Description => "Gets list of drawings in the package";
-
-        protected override string OutputUrl(ProcessingArgs projectData) => projectData.DrawingsListUrl;
-        protected override string OutputName => "drawingsList.json";
-        protected override bool IsOutputZip => false;
+        /// <summary>
+        /// Use polling (ask about status periodically).
+        /// </summary>
+        Polling,
 
         /// <summary>
-        /// Constructor.
+        /// Use callback URL to get notification from FDA servers.
         /// </summary>
-        public DrawingsList(Publisher publisher) : base(publisher) {}
+        Callback
+    }
+
+    public class PublisherConfiguration
+    {
+        /// <summary>
+        /// How publisher should check for completion.
+        /// </summary>
+        public CompletionCheck CompletionCheck { get; set; } = CompletionCheck.Polling;
+
+        /// <summary>
+        /// Base URL for callback.
+        /// </summary>
+        public string CallbackUrlBase { get; set; }
     }
 }

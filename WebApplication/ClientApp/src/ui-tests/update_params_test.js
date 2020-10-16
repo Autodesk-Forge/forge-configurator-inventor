@@ -20,13 +20,13 @@
 const locators = require('./elements_definition.js');
 const assert = require('assert');
 const newParamValue = '24 mm';
-const paramName = 'JawOffset';
+const paramName = 'Jaw Offset';
+
+Feature('Update params');
 
 Before((I) => {
     I.amOnPage('/');
 });
-
-Feature('Update params');
 
 Scenario('Updating parameters for model', async (I) => {
 

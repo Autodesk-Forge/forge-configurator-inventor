@@ -73,11 +73,11 @@ namespace WebApplication.Controllers
         }
 
         // viewer expects PDF extension, so `drawing.pdf` is a piece of the route
-        [HttpGet("{projectName}/{hash}/drawing.pdf/{token?}")]
-        public async Task<ActionResult> DrawingPdf(string projectName, string hash, string token = null)
+        [HttpGet("{projectName}/{hash}/{index}/drawing.pdf/{token?}")]
+        public async Task<ActionResult> DrawingPdf(string projectName, string hash, int index, string token = null)
         {
-            string localFileName = await _userResolver.EnsureLocalFile(projectName, LocalName.DrawingPdf, hash);
-            return new PhysicalFileResult(localFileName, "application/pdf") { FileDownloadName = LocalName.DrawingPdf };
+            string localFileName = await _userResolver.EnsureLocalFile(projectName, LocalName.DrawingPdf(index), hash);
+            return new PhysicalFileResult(localFileName, "application/pdf") { FileDownloadName = LocalName.DrawingPdf(index) };
         }
 
         [HttpGet("{projectName}/{hash}/drawing/{token?}")]

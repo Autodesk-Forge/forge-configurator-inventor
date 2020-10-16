@@ -35,3 +35,9 @@
     text-align: center;
     line-height: 26px;
 }
+
+.drawingsContent {
+    border-style: solid;
+    border-width: 8px;
+    border-color: red;/*#D9D9D9;*/
+}

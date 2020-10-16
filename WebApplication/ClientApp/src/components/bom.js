@@ -48,7 +48,7 @@ export class Bom extends Component {
     let data = [];
     if(this.props.bomData) {
       const columnWidths = [];
-      // extract all strings from per all columns to prepare columns widths
+      // extract all strings from all columns to prepare columns widths
       const allStrings = [];
       this.props.bomData.columns.forEach( (column, index) => {
         const columnStrings = [ column.label ];

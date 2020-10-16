@@ -80,7 +80,6 @@ describe('Downloads components', () => {
       const stopPropagation = jest.fn();
       iamlink.simulate('click', { stopPropagation });
       expect(stopPropagation).toHaveBeenCalled();
-      // iam.clickHandler();
 
       const rfa = btdata[1];
       expect(rfa.id).toEqual('rfa');
@@ -116,7 +115,7 @@ describe('Downloads components', () => {
     it('Base table renders NO links and icons when projects are empty', () => {
       // simulate activeProject (getActiveProject) like we have in these two scenarios:
       // 1) don't have initialized projects yet
-      // 2) user don't have any projects
+      // 2) user doesn't have any projects
       const noActiveProjectProps = { activeProject: {} };
       const wrapper = mount(<Downloads { ...noActiveProjectProps } />);
       const as = wrapper.find('AutoResizer');
@@ -147,9 +146,9 @@ describe('Downloads components', () => {
       const showModalProgressMock = jest.fn();
       const showFailedMock = jest.fn();
       const downloadUrl='downloadUrl';
-      const failedReportUrl='failedReportUrl';
+      const errorData={ errorType: 1, reportUrl: 'failedReportUrl' };
       const rfaProps = { ...props, downloadProgressShowing:true, downloadUrl: downloadUrl, showDownloadProgress: showModalProgressMock, downloadProgressTitle: 'RFA' };
-      const rfaFailedProps = { ...props, downloadFailedShowing:true, reportUrl:failedReportUrl, showDownloadFailed: showFailedMock, downloadProgressTitle: 'RFA' };
+      const rfaFailedProps = { ...props, downloadFailedShowing:true, errorData, showDownloadFailed: showFailedMock, downloadProgressTitle: 'RFA' };
 
       beforeEach(() => {
         showModalProgressMock.mockClear();
@@ -177,7 +176,7 @@ describe('Downloads components', () => {
         const dlg = wrapper.find('ModalFail');
         expect(dlg.prop('label')).toEqual(props.activeProject.id);
         expect(dlg.prop('title')).toContain('RFA');
-        expect(dlg.prop('url')).toEqual(failedReportUrl);
+        expect(dlg.prop('errorData')).toEqual(errorData);
       });
 
       it('Handles failed dialog Close click', () => {
@@ -189,13 +188,13 @@ describe('Downloads components', () => {
       });
     });
 
-    describe('Drawings', () => { // TODO: some unit tests are not required anymore, since the same dialogs used for different downloads
+    describe('Drawings', () => { // TODO: some unit tests are not required anymore, since the same dialog is used for different downloads
       const showModalProgressMock = jest.fn();
       const showFailedMock = jest.fn();
       const downloadUrl='downloadUrl';
-      const failedReportUrl='failedReportUrl';
+      const errorData={ errorType: 1, reportUrl: 'failedReportUrl' };
       const drwProps = { ...props, downloadProgressShowing:true, downloadUrl, showDownloadProgress:showModalProgressMock, downloadProgressTitle: 'Drawings'};
-      const drwFailedProps = { ...props, downloadFailedShowing:true, reportUrl:failedReportUrl, showDownloadFailed:showFailedMock, downloadProgressTitle: 'Drawings'};
+      const drwFailedProps = { ...props, downloadFailedShowing:true, errorData, showDownloadFailed:showFailedMock, downloadProgressTitle: 'Drawings'};
 
       beforeEach(() => {
         showModalProgressMock.mockClear();
@@ -223,7 +222,7 @@ describe('Downloads components', () => {
         const dlg = wrapper.find('ModalFail');
         expect(dlg.prop('label')).toEqual(props.activeProject.id);
         expect(dlg.prop('title')).toContain('Drawings');
-        expect(dlg.prop('url')).toEqual(failedReportUrl);
+        expect(dlg.prop('errorData')).toEqual(errorData);
       });
 
       it('Handles failed dialog Close click', () => {

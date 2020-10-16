@@ -27,7 +27,7 @@ export const initialState = {
    updateFailedShowing: false,
    loginFailedShowing: false,
    downloadFailedShowing: false,
-   reportUrl: null,
+   errorData: null,
    downloadProgressShowing: null,
    downloadProgressTitle: null,
    downloadUrl: null,
@@ -43,9 +43,11 @@ export const initialState = {
    drawingProgressShowing: false,
    adoptWithParamsProgressShowing: false,
    adoptWithParamsFailed: false,
-   drawingUrl: null,
-   stats: null,
-   embeddedModeEnabled: true
+   embeddedModeEnabled: true,
+   drawingUrls: {},
+   stats: {},
+   activeDrawing: null,
+   drawings: null
 };
 
 export const modalProgressShowing = function(state) {
@@ -68,8 +70,8 @@ export const downloadDrawingFailedShowing = function(state) {
    return state.downloadDrawingFailedShowing;
 };
 
-export const reportUrl = function(state) {
-   return state.reportUrl;
+export const errorData = function(state) {
+   return state.errorData;
 };
 
 export const downloadProgressShowing = function(state) {
@@ -120,8 +122,8 @@ export const checkedProjects = function(state) {
    return state.checkedProjects;
 };
 
-export const getDrawingPdfUrl = function(state) {
-   return state.drawingUrl;
+export const getDrawingPdfUrl = function(drawingKey, state) {
+   return state.drawingUrls[drawingKey] === undefined ? null : state.drawingUrls[drawingKey];
 };
 
 export const drawingProgressShowing = function(state) {
@@ -142,6 +144,14 @@ export const getStats = function(state) {
 
 export const embeddedModeEnabled = function(state) {
    return state.embeddedModeEnabled;
+}
+
+export const getDrawingsList = function(state) {
+   return state.drawings;
+};
+
+export const getActiveDrawing = function(state) {
+   return state.activeDrawing;
 };
 
 export default function(state = initialState, action) {
@@ -155,23 +165,23 @@ export default function(state = initialState, action) {
       case uiFlagsActionTypes.REJECT_PARAMETERS_EDITED_MESSAGE:
          return { ...state, parametersEditedMessageRejected: action.show };
       case uiFlagsActionTypes.SHOW_MODAL_PROGRESS:
-         return { ...state, modalProgressShowing: action.visible};
+         return { ...state, modalProgressShowing: action.visible, stats: null };
       case uiFlagsActionTypes.SHOW_UPDATE_FAILED:
          return { ...state, updateFailedShowing: action.visible};
       case uiFlagsActionTypes.SHOW_LOGIN_FAILED:
          return { ...state, loginFailedShowing: action.visible};
       case uiFlagsActionTypes.SHOW_DOWNLOAD_FAILED:
          return { ...state, downloadFailedShowing: action.visible};
-      case uiFlagsActionTypes.SET_REPORT_URL:
-         return { ...state, reportUrl: action.url};
+      case uiFlagsActionTypes.SET_ERROR_DATA:
+         return { ...state, errorData: action.errorData};
       case uiFlagsActionTypes.SHOW_DOWNLOAD_PROGRESS:
-         return { ...state, downloadProgressShowing: action.visible, downloadUrl: null, downloadProgressTitle: action.title };
+         return { ...state, downloadProgressShowing: action.visible, downloadUrl: null, downloadProgressTitle: action.title, stats: null };
       case uiFlagsActionTypes.HIDE_DOWNLOAD_PROGRESS:
          return { ...state, downloadProgressShowing: false };
       case uiFlagsActionTypes.SET_DOWNLOAD_LINK:
          return { ...state, downloadUrl: action.url};
       case uiFlagsActionTypes.SHOW_UPLOAD_PACKAGE:
-         return { ...state, showUploadPackage: action.visible};
+         return { ...state, showUploadPackage: action.visible, stats: null };
       case uploadPackagesActionTypes.SET_UPLOAD_PROGRESS_VISIBLE:
          return { ...state, uploadProgressShowing: true};
       case uploadPackagesActionTypes.SET_UPLOAD_PROGRESS_HIDDEN:
@@ -179,7 +189,7 @@ export default function(state = initialState, action) {
       case uploadPackagesActionTypes.SET_UPLOAD_PROGRESS_DONE:
          return { ...state, uploadProgressStatus: "done"};
       case uploadPackagesActionTypes.SET_UPLOAD_FAILED:
-         return { ...state, uploadFailedShowing: true, reportUrl: action.reportUrl };
+         return { ...state, uploadFailedShowing: true, errorData: action.errorData };
       case uploadPackagesActionTypes.HIDE_UPLOAD_FAILED:
          return { ...state, uploadFailedShowing: false };
       case uiFlagsActionTypes.PACKAGE_FILE_EDITED:
@@ -219,15 +229,38 @@ export default function(state = initialState, action) {
       case uiFlagsActionTypes.SHOW_DRAWING_DOWNLOAD_FAILED:
          return { ...state, downloadDrawingFailedShowing: action.visible};
       case uiFlagsActionTypes.SHOW_DRAWING_PROGRESS:
-         return { ...state, drawingProgressShowing: action.visible};
+         return { ...state, drawingProgressShowing: action.visible, stats: null };
       case uiFlagsActionTypes.SET_DRAWING_URL:
-         return { ...state, drawingUrl: action.url };
+         {
+            const new_drawingUrls = { ...state.drawingUrls };
+            new_drawingUrls[action.drawingKey] = action.url;
+
+            return { ...state, drawingUrls: new_drawingUrls };
+         }
       case uiFlagsActionTypes.INVALIDATE_DRAWING:
-         return { ...state, drawingUrl: null };
+         return { ...state, drawingUrls: {}, activeDrawing: null, drawings: null };
       case uiFlagsActionTypes.SET_STATS:
-         return { ...state, stats: action.stats };
+         if (action.key != null) {
+            const new_stats = { ...state.stats };
+            new_stats[action.key] = action.stats;
+            return { ...state, stats: new_stats };
+         } else {
+            const stats = action.stats === null ? {} : action.stats;
+            return { ...state, stats: stats };
+         }
+
       case uiFlagsActionTypes.SET_ENABLE_EMBEDDED_MODE:
          return { ...state, embeddedModeEnabled: action.enabled };
+
+      case uiFlagsActionTypes.DRAWING_LIST_UPDATED: {
+
+         const prev = state.activeDrawing;
+         const firstDrawing = prev!=null ? prev : action.drawingsList[0];
+         return { ...state, activeDrawing: firstDrawing, drawings: action.drawingsList };
+      }
+      case uiFlagsActionTypes.ACTIVE_DRAWING_UPDATED: {
+         return { ...state, activeDrawing: action.activeDrawing};
+      }
       default:
          return state;
   }

@@ -20,15 +20,14 @@
 const assert = require('assert');
 const locators = require('./elements_definition.js');
 
+Feature('Download drawing');
+
 Before((I) => {
     I.amOnPage('/');
 });
 
 const downloadsData = new DataTable(['linkText', 'dlgTitle', 'urlTail']);
 downloadsData.add(['Drawing', 'Preparing Drawings', /\/drawing$/]);             // ZIP with drawings
-downloadsData.add(['Drawing PDF', 'Preparing Drawing PDF', /\/drawing\.pdf$/]); // Drawing PDF
-
-Feature('Download drawing');
 
 Data(downloadsData).Scenario('should check file download on downloads link click', async (I, current) => {
 

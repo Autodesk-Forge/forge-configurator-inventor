@@ -172,7 +172,7 @@ export class CheckboxTable extends Component {
                     tagName: Row // styled div to show/hide row checkbox when hover
                   }}
                   headerRenderer={ ({ cells }) => {
-                    // get prepared the first checkbox cell and override
+                    // prepare the first checkbox cell and override
                     // background color to be consistent with row checkbox cells
                     const headerCheckboxCell = cells[0];
                     const updatedCell = React.cloneElement(headerCheckboxCell, {

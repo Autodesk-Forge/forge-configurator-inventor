@@ -16,9 +16,12 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Threading.Tasks;
+using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using WebApplication.Processing;
 using WebApplication.State;
 using WebApplication.Utilities;
 
@@ -32,11 +35,13 @@ namespace WebApplication.Controllers
     {
         private readonly UserResolver _userResolver;
         private readonly ILogger<ProjectDataController> _logger;
+        private readonly Publisher _publisher;
 
-        public ProjectDataController(UserResolver userResolver, ILogger<ProjectDataController> logger)
+        public ProjectDataController(UserResolver userResolver, ILogger<ProjectDataController> logger, Publisher publisher)
         {
             _userResolver = userResolver;
             _logger = logger;
+            _publisher = publisher;
         }
 
         [HttpGet("parameters/{projectName}")]
@@ -55,6 +60,34 @@ namespace WebApplication.Controllers
         public async Task<ActionResult> GetBOM(string projectName, string hash)
         {
             return await SendLocalFileContent(projectName, LocalName.BOM, hash);
+        }
+        
+        /// <summary>
+        /// Completion callback for FDA work items.
+        /// </summary>
+        /// <param name="trackerId">Tracking ID.</param>
+        /// <param name="status">Workitem status.</param>
+        /// <remarks>
+        /// https://forge.autodesk.com/en/docs/design-automation/v3/developers_guide/callbacks/#oncomplete-callback
+        /// </remarks>
+        [HttpPost("complete/{trackerId}")]
+        public ActionResult Complete(string trackerId, [FromBody] WorkItemStatus status)
+        {
+            _logger.LogInformation($"Completing {trackerId}");
+
+            // for some reason 'time finished' is not set, so "fix" it if necessary
+            status.Stats.TimeFinished ??= DateTime.UtcNow;
+
+            if (_publisher.Tracker.TryRemove(trackerId, out var completionSource))
+            {
+                completionSource.SetResult(status);
+            }
+            else
+            {
+                _logger.LogError($"Cannot find tracker {trackerId}");
+            }
+
+            return NoContent();
         }
 
         /// <summary>

@@ -50,7 +50,7 @@ class Repository {
         return response.data;
     }
 
-    /** Send to server if we want to enable/disable permanently showing of  paramteres change banner */
+    /** Send to server if we want to permanently enable/disable the showing of parameters changed banner */
     async sendShowParametersChanged(value) {
         const response = await axios.post("/showParametersChanged", value, {
             headers: {
@@ -97,6 +97,13 @@ class Repository {
     /** Get BOM data */
     async loadBom(bomUrl) {
         const response = await axios.get(bomUrl);
+        return response.data;
+    }
+
+    /** Get list of drawings */
+    async loadDrawingsList(drawingsListUrl) {
+        const response = await axios.get(drawingsListUrl);
+
         return response.data;
     }
 }

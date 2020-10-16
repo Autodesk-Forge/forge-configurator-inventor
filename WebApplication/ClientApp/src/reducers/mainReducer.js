@@ -96,8 +96,8 @@ export const downloadDrawingFailedShowing = function(state) {
     return uiFlags.downloadDrawingFailedShowing(state.uiFlags);
 };
 
-export const reportUrl = function(state) {
-    return uiFlags.reportUrl(state.uiFlags);
+export const errorData = function(state) {
+    return uiFlags.errorData(state.uiFlags);
 };
 
 /** If downloads are generating, and "In progress" dialog is shown */
@@ -158,7 +158,7 @@ export const getBom = function(projectId, state) {
 };
 
 export const getDrawingPdfUrl = function(state) {
-    return uiFlags.getDrawingPdfUrl(state.uiFlags);
+    return uiFlags.getDrawingPdfUrl(state.uiFlags.activeDrawing, state.uiFlags);
 };
 
 export const drawingProgressShowing = function(state) {
@@ -179,4 +179,12 @@ export const getStats = function(state) {
 
 export const embeddedModeEnabled = function(state) {
     return uiFlags.embeddedModeEnabled(state.uiFlags);
+};
+
+export const getDrawingsList = function(state) {
+    return uiFlags.getDrawingsList(state.uiFlags);
+};
+
+export const getActiveDrawing = function(state) {
+    return uiFlags.getActiveDrawing(state.uiFlags);
 };

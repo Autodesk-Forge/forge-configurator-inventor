@@ -78,12 +78,13 @@ namespace WebApplication.Tests
             var bucketPrefixProvider = new BucketPrefixProvider(forgeConfigOptions, configuration);
             var resourceProvider = new ResourceProvider(forgeConfigOptions, designAutomationClient, configuration, bucketPrefixProvider, projectsBucketKey);
             var postProcessing = new PostProcessing(httpClientFactory, new NullLogger<PostProcessing>(), localCache, Options.Create(new ProcessingOptions()));
-            var publisher = new Publisher(designAutomationClient, new NullLogger<Publisher>(), resourceProvider, postProcessing);
+            var publisher = new Publisher(designAutomationClient, new NullLogger<Publisher>(), resourceProvider,
+                postProcessing, Options.Create(new PublisherConfiguration()));
 
             var appBundleZipPathsConfiguration = new AppBundleZipPaths
             {
                 EmptyExe = "../../../../WebApplication/AppBundles/EmptyExePlugin.bundle.zip",
-                DrawingsList = "../../../../WebApplication/AppBundles/DrawingsListPlugin.bundle.zip",
+                DataChecker = "../../../../WebApplication/AppBundles/DataCheckerPlugin.bundle.zip",
                 CreateSVF = "../../../../WebApplication/AppBundles/CreateSVFPlugin.bundle.zip",
                 CreateThumbnail = "../../../../WebApplication/AppBundles/CreateThumbnailPlugin.bundle.zip",
                 ExtractParameters = "../../../../WebApplication/AppBundles/ExtractParametersPlugin.bundle.zip",

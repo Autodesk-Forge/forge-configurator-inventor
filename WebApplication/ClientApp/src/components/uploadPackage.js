@@ -257,7 +257,7 @@ export class UploadPackage extends Component {
             open={true}
             title="Warning"
             onCloseClick={() => { this.props.setProjectAlreadyExists(false); }}
-            stylesheet={modalStylesConflict} >Project already exists, please choose different file to upload or rename it.</Modal>
+            stylesheet={modalStylesConflict} >Project already exists, please choose a different file to upload or rename it.</Modal>
             }
             </React.Fragment>
         );

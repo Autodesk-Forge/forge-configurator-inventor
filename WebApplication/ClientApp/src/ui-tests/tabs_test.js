@@ -19,11 +19,11 @@
 /* eslint-disable no-undef */
 const locators = require('./elements_definition.js');
 
+Feature('Tabs');
+
 Before((I) => {
     I.amOnPage('/');
 });
-
-Feature('Tabs');
 
 Scenario('should check if All tabs are available', async (I) => {
 

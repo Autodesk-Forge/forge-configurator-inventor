@@ -69,7 +69,7 @@ describe('main reducer', () => {
       };
       expect(reducer.parametersEditedMessageVisible(state)).toEqual(false);
    }),
-   it('Will show parameters changed notification string when paramters are changed', () => {
+   it('Will show parameters changed notification string when parameters are changed', () => {
       const state = {
          uiFlags: uiFlagsReducer.initialState,
          projectList: projectList,
@@ -95,8 +95,8 @@ describe('main reducer', () => {
       it('gets downloadDrawingFailedShowing', () => {
          expect(reducer.downloadDrawingFailedShowing(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.downloadDrawingFailedShowing);
       }),
-      it('gets reportUrl', () => {
-         expect(reducer.reportUrl(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.reportUrl);
+      it('gets errorData', () => {
+         expect(reducer.errorData(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.errorData);
       }),
       it('gets downloadProgressShowing', () => {
          expect(reducer.downloadProgressShowing(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.downloadProgressShowing);
@@ -132,13 +132,19 @@ describe('main reducer', () => {
          expect(reducer.checkedProjects(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.checkedProjects);
       }),
       it('gets getDrawingPdfUrl', () => {
-         expect(reducer.getDrawingPdfUrl(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.drawingUrl); /* method and flag name differ */
+         expect(reducer.getDrawingPdfUrl(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.drawingUrls[uiFlagsTestState.uiFlags.activeDrawing]); /* method and flag name differ */
       }),
       it('gets drawingProgressShowing', () => {
          expect(reducer.drawingProgressShowing(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.drawingProgressShowing);
       }),
       it('gets the processing stats', () => {
          expect(reducer.getStats(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.stats);
+      }),
+      it('gets the active drawing stats', () => {
+         expect(reducer.getActiveDrawing(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.activeDrawing);
+      }),
+      it('gets the drawings list', () => {
+         expect(reducer.getDrawingsList(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.drawings); /* method and flag name differ */
       });
    });
 

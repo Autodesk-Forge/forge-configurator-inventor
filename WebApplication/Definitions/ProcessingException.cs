@@ -1,4 +1,4 @@
-﻿/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
 // Copyright (c) Autodesk, Inc. All rights reserved
 // Written by Forge Design Automation team for Inventor
 //
@@ -16,12 +16,23 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
+using System;
+
 namespace WebApplication.Definitions
 {
-    public class ResultDTO
+    /// <summary>
+    /// Exception to report about processing problems.
+    /// Use it if you want to pass a message to the client to be shown in the UI.
+    /// </summary>
+    public class ProcessingException : Exception
     {
-        public bool Success { get; set; }
-        public string ReportUrl { get; set; }
-        public string Message { get; set; }
+        public string Title { get; }
+        public string[] Messages { get; }
+
+        public ProcessingException(string title, string[] messages)
+        {
+            Title = title;
+            Messages = messages;
+        }
     }
 }

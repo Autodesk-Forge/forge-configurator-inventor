@@ -52,8 +52,7 @@ export const uploadPackage = () => async (dispatch, getState) => {
             if (httpStatus === 409) {
                 dispatch(setProjectAlreadyExists(true));
             } else {
-                const reportUrl = (httpStatus === 422) ? e.response.data.reportUrl : null;  // <<<---- the major change
-                dispatch(setUploadFailed(reportUrl));
+                dispatch(setUploadFailed(`Upload failed with ${httpStatus} error`));
             }
 
             return;
@@ -75,11 +74,11 @@ export const uploadPackage = () => async (dispatch, getState) => {
                     dispatch(setUploadProgressDone());
                 },
                 // onError
-                (jobId, reportUrl) => {
-                    dispatch(addLog('JobManager: Received onError with jobId: ' + jobId + ' and reportUrl: ' + reportUrl));
+                (errorData) => {
+                    dispatch(addLog('JobManager: Received onError with jobId: ' + errorData.jobId));
                     dispatch(setUploadProgressHidden());
                     // show error modal dialog
-                    dispatch(setUploadFailed(reportUrl));
+                    dispatch(setUploadFailed(errorData));
                 }
             );
         } catch (error) {
@@ -106,10 +105,10 @@ export const setUploadProgressDone = () => {
     };
 };
 
-export const setUploadFailed = (reportUrl) => {
+export const setUploadFailed = (errorData) => {
     return {
         type: actionTypes.SET_UPLOAD_FAILED,
-        reportUrl
+        errorData: errorData
     };
 };
 

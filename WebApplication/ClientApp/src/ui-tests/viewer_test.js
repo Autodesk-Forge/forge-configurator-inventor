@@ -19,13 +19,13 @@
 /* eslint-disable no-undef */
 const locators = require('./elements_definition.js');
 
+Feature('Viewer');
+
 Before((I) => {
     I.amOnPage('/');
 });
 
-Feature('Viewer');
-
-Scenario('should check switch to model tab loads the viewer', async (I) => {
+Scenario('should check switch to model tab loads the viewer', (I) => {
 
     const viewerModelSelector = '#ViewerModelStructurePanel';
 

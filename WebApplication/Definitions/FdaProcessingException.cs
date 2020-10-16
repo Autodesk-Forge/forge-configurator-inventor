@@ -24,7 +24,7 @@ namespace WebApplication.Definitions
     /// Exception for FDA processing failures.
     /// Contains URL to processing report.
     /// </summary>
-    public class FdaProcessingException : ApplicationException
+    public class FdaProcessingException : Exception
     {
         public string ReportUrl { get; }
 

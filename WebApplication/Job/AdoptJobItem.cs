@@ -67,13 +67,7 @@ namespace WebApplication.Job
                 string signedUploadedUrl = await bucket.CreateSignedUrlAsync(ossSourceModel);
 
                 stats = await ProjectWork.AdoptAsync(_projectInfo, signedUploadedUrl);
-
                 adopted = true;
-            }
-            catch (FdaProcessingException fpe)
-            {
-                await resultSender.SendErrorAsync(Id, fpe.ReportUrl);
-                return;
             }
             finally
             {

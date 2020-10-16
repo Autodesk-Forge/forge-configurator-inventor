@@ -24,7 +24,7 @@ export const testState = {
     loginFailedShowing: 5,
     downloadFailedShowing: 6,
     downloadDrawingFailedShowing: 7,
-    reportUrl: 8,
+    errorData: { type:1, reportUrl: 'https://foo' },
     downloadProgressShowing: 9,
     downloadUrl: 11,
     showUploadPackage: 13,
@@ -37,8 +37,10 @@ export const testState = {
     showDeleteProject: 19,
     checkedProjects: [20],
     drawingProgressShowing: 21,
-    drawingUrl: 22,
-    stats: { credits: 3, processing: 2 }
+    drawingUrls: { "1" : "url1", "2" : "url2" },
+    stats: { "1" : { credits: 3, processing: 2 }},
+    activeDrawing: "1",
+    drawings: [ "1", "2", "3" ]
 };
 
  export const fullState = {
