@@ -23,8 +23,14 @@ phases:
       - echo "**** running frontend tests ****"
       - npm test -- --coverage
       - echo "**** Starting the server ****"
-      - cd ..
+      - cd $slnDir
+      - xcopy /Y /E WebApplication\bin\Release\netcoreapp3.1\publish\* app\
+      - xcopy /Y /E WebApplication\AppBundles\* app\AppBundles\
+      - xcopy /Y /E app\* uitest\
+      - rm app\appsettings.Local.json
+      - cd uitest\
       - Start-Process -NoNewWindow dotnet -ArgumentList "run", "clear=true", "initialize=true", "allowCleanSelf=true"
+      - cd $slnDir\WebApplication
       - echo "Waiting for server to initialize"
       - ..\AWS-CICD\build-specs\waitForServer.ps1
       - echo "**** running the UI tests ****"
@@ -34,9 +40,6 @@ phases:
   post_build:
     commands:
       - cd $slnDir
-      - rm WebApplication\bin\Release\netcoreapp3.1\publish\appsettings.Local.json
-      - xcopy /Y /E WebApplication\bin\Release\netcoreapp3.1\publish\* app\
-      - xcopy /Y /E WebApplication\AppBundles\* app\AppBundles\
       - xcopy /Y /E WebApplication\ClientApp\output\* report\errorScreenShots\
       - xcopy /Y /E WebApplication\ClientApp\coverage\* report\coverage\
       - if ($githubOAuthToken -ne $null) { .\AWS-CICD\build-specs\CreateRelease.ps1 }
