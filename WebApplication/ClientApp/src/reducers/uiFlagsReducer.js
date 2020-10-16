@@ -157,7 +157,7 @@ export default function(state = initialState, action) {
       case uiFlagsActionTypes.SHOW_MODAL_PROGRESS:
          return { ...state, modalProgressShowing: action.visible, stats: null };
       case uiFlagsActionTypes.SHOW_UPDATE_FAILED:
-         return { ...state, SHOW_UPDATE_FAILED: action.visible};
+         return { ...state, updateFailedShowing: action.visible};
       case uiFlagsActionTypes.SHOW_LOGIN_FAILED:
          return { ...state, loginFailedShowing: action.visible};
       case uiFlagsActionTypes.SHOW_DOWNLOAD_FAILED:
