@@ -63,7 +63,7 @@ export class Drawing extends Component {
       <div className="fullheight">
         <div className={containerClass}>
         {empty &&
-          <div className="drawingEmptyText">You don&apos;t have any drawings in package.</div>
+          <div className="drawingEmptyText">You don&apos;t have any drawings in your package.</div>
         }
         {!empty &&
             <div className='inRow fullheight'>

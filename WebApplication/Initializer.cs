@@ -114,12 +114,12 @@ namespace WebApplication
             {
                 _logger.LogInformation($"Deleting anonymous user bucket {_bucket.BucketKey}");
                 await _bucket.DeleteAsync();
-                // We need to wait because server needs some time to settle it down. If we would go and create bucket immediately again we would receive conflict.
+                // We need to wait because the server needs some time to settle down. If we try to create the bucket again immediately we'll get a conflict error.
                 await Task.Delay(4000);
             }
             catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
             {
-                _logger.LogInformation($"Nothing to delete because bucket {_bucket.BucketKey} does not exists yet");
+                _logger.LogInformation($"Nothing to delete because bucket {_bucket.BucketKey} does not exist yet");
             }
 
             if (deleteUserBuckets)

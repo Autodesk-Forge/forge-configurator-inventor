@@ -75,7 +75,7 @@ namespace WebApplication.Controllers
         {
             _logger.LogInformation($"Completing {trackerId}");
 
-            // by some reason 'time finished' is not set, so "fix" it if necessary
+            // for some reason 'time finished' is not set, so "fix" it if necessary
             status.Stats.TimeFinished ??= DateTime.UtcNow;
 
             _publisher.NotifyTaskIsCompleted(trackerId, status);
