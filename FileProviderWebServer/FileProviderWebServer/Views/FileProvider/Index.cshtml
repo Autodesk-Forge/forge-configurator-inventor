@@ -1,0 +1,96 @@
+﻿@{
+    ViewBag.Title = "POC for Inventor Configurator CPQ integration";
+}
+
+<html>
+<head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-136591698-2"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-136591698-2');
+    </script>
+    <link 
+        rel="stylesheet" 
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" 
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" 
+        crossorigin="anonymous">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <script type='text/javascript'>
+        /* attach a submit handler to the form */
+        $(function() {
+
+            var form = $("#jsonForm");
+            
+            var CONFIGURATOR_URL = 'https://spx-configurator.azurewebsites.net';
+            var SANDBOX_URL = 'https://spx-configurator-api.azurewebsites.net';
+
+            form.submit(function(event) {
+
+                /* stop form from submitting normally */
+                event.preventDefault();
+
+                /* get the action attribute from the <form action=""> element */
+                var $form = $(this), url = $form.attr('action');
+
+                /* Send the data using post with element id name and name2*/
+                var posting = $.post(url, { fileContent: $('#fileContent').val() });
+
+                /* Alerts the results */
+                posting.always(function(data) {
+                    document.getElementById('forge-configurator-inventor').src = CONFIGURATOR_URL + '/?url=' + SANDBOX_URL + '/fileprovider/fileContent';
+                });
+
+                return false;
+            });
+        });
+    </script>
+</head>
+<body>
+<div class="container-flex">
+    <!-- As a heading -->
+    <div class="row h-100">
+        <div class="col-4 h-100">
+            <div class="p-2">
+                <h5>Autodesk Design Automation for Inventor Configurator</h5>
+                <h6 class="mb-2 text-muted">API Sandbox</h6>
+                <p>
+                    <span class="badge badge-secondary">Sandbox V0.1.1</span>
+                    <span class="badge badge-secondary">Configurator V1.0.0</span>
+                </p>
+                <form 
+                    id="jsonForm" 
+                    action="/fileprovider" 
+                    method="post">
+                    <div class="form-group">
+                        <textarea 
+                            id="fileContent" 
+                            class="form-control mt-3 h-75"
+                            style="white-space:nowrap;overflow:auto;"
+                            name="fileContent" >{&#xD;&#xA;&#x9;&quot;Url&quot;: &quot;https://sdra-default-projects.s3-us-west-2.amazonaws.com/Wrench_2021.zip&quot;,&#xD;&#xA;&#x9;&quot;Name&quot;: &quot;TestWrench&quot;,&#xD;&#xA;&#x9;&quot;TopLevelAssembly&quot;: &quot;Wrench.iam&quot;,&#xD;&#xA;&#x9;&quot;Config&quot;: {&#xD;&#xA;&#x9;&#x9;&quot;WrenchSz&quot;: {&#xD;&#xA;&#x9;&#x9;&#x9;&quot;value&quot;: &quot;\&quot;Small\&quot;&quot;&#xD;&#xA;&#x9;&#x9;},&#xD;&#xA;&#x9;&#x9;&quot;JawOffset&quot;: {&#xD;&#xA;&#x9;&#x9;&#x9;&quot;value&quot;: &quot;12 mm&quot;&#xD;&#xA;&#x9;&#x9;},&#xD;&#xA;&#x9;&#x9;&quot;PartMaterial&quot;: {&#xD;&#xA;&#x9;&#x9;&#x9;&quot;value&quot;: &quot;\&quot;Steel\&quot;&quot;&#xD;&#xA;&#x9;&#x9;},&#xD;&#xA;&#x9;&#x9;&quot;iTrigger0&quot;: {&#xD;&#xA;&#x9;&#x9;&#x9;&quot;value&quot;: &quot;2 ul&quot;&#xD;&#xA;&#x9;&#x9;}&#xD;&#xA;&#x9;}&#xD;&#xA;}&#xD;&#xA;</textarea>
+                    </div>
+                    <input 
+                        type="submit"
+                        class="btn btn-primary"
+                        id="submitBtn" 
+                        name="submitBtn" 
+                        value="Load Configuration" />
+                </form>
+            </div>
+        </div>
+        <div class="col-8">
+            <iframe 
+                id="forge-configurator-inventor"
+                class="w-100 h-100"
+                name="forge-configurator-inventor">
+            </iframe>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

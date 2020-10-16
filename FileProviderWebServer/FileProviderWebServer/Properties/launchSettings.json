@@ -1,0 +1,19 @@
+{
+  "profiles": {
+    "FileProviderWebServer": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "http://localhost:5080",
+      "launchUrl": "fileprovider/index"
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/fileprovider",
+      "publishAllPorts": true
+    }
+  }
+}

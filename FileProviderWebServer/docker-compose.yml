@@ -1,0 +1,10 @@
+version: '3.4'
+
+services:
+  fileproviderwebserver:
+    image: fileproviderwebserver
+    build:
+      context: .
+      dockerfile: FileProviderWebServer/Dockerfile
+    ports:
+        - 5080:80

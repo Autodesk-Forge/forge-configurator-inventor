@@ -53,12 +53,13 @@ namespace WebApplication
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>().UseKestrel(options =>
-                    {
-                        long sizeinMB = 500;
-                        long size = sizeinMB * 1024 * 1024;
-                        options.Limits.MaxRequestBodySize =  size;
-                    });
+                    webBuilder.UseStartup<Startup>();
+                    // .UseKestrel(options =>
+                    // {
+                    //     long sizeinMB = 500;
+                    //     long size = sizeinMB * 1024 * 1024;
+                    //     options.Limits.MaxRequestBodySize =  size;
+                    // });
                     var port = Environment.GetEnvironmentVariable("PORT");
                     // If deployed to a service like Heroku, need to listen on port defined in the environment, not the default one
                     if (!string.IsNullOrEmpty(port))

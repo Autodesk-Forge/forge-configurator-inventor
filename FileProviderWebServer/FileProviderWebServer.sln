@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30413.136
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileProviderWebServer", "FileProviderWebServer\FileProviderWebServer.csproj", "{BC75133E-A7C5-4F74-B6BD-96C943A8FE96}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9642352E-F7EE-44D0-AA47-BB01BE257C10}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BC75133E-A7C5-4F74-B6BD-96C943A8FE96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC75133E-A7C5-4F74-B6BD-96C943A8FE96}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC75133E-A7C5-4F74-B6BD-96C943A8FE96}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC75133E-A7C5-4F74-B6BD-96C943A8FE96}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F1178C69-C6B2-4B81-9F48-8850DF374D5D}
+	EndGlobalSection
+EndGlobal

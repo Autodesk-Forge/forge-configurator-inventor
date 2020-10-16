@@ -1,0 +1,4 @@
+{
+    "appService.preDeployTask": "publish-release-sandbox",
+    "appService.deploySubpath": "FileProviderWebServer/bin/Release/netcoreapp3.1/publish",
+}

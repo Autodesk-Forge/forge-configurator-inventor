@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/WebApplication/WebApplication.csproj",
+                "${workspaceFolder}/FileProviderWebServer/FileProviderWebServer.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -19,26 +19,25 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/WebApplication/WebApplication.csproj",
+                "${workspaceFolder}/FileProviderWebServer/FileProviderWebServer.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "publish-release",
+            "label": "publish-release-sandbox",
             "command": "dotnet",
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/WebApplication/WebApplication.csproj",
+                "${workspaceFolder}/FileProviderWebServer/FileProviderWebServer.csproj",
                 "--configuration",
                 "Release",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
-            "problemMatcher": "$msCompile",
-            "dependsOn": "clean"
+            "problemMatcher": "$msCompile"
         },
         {
             "label": "watch",
@@ -47,7 +46,7 @@
             "args": [
                 "watch",
                 "run",
-                "${workspaceFolder}/WebApplication/WebApplication.csproj",
+                "${workspaceFolder}/FileProviderWebServer/FileProviderWebServer.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
