@@ -57,9 +57,12 @@ export class ModalProgressUpload extends Component {
           };
 
         const warningIconAsBackgroundImage = {
-        width: '24px',
-        height: '24px',
-        backgroundImage: 'url(alert-24.svg)',
+            width: '33px',
+            height: '33px',
+            backgroundImage: 'url(alert-24.svg)',
+            backgroundSize: '26px',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center'
         };
 
         return (

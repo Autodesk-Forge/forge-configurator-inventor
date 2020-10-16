@@ -39,9 +39,12 @@ export class ModalProgress extends Component {
           };
 
         const warningIconAsBackgroundImage = {
-            width: '24px',
-            height: '24px',
+            width: '33px',
+            height: '33px',
             backgroundImage: 'url(alert-24.svg)',
+            backgroundSize: '26px',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center'
         };
 
         const stats = this.props.statsKey == null ? this.props.stats : (this.props.stats ? this.props.stats[this.props.statsKey] : null);

@@ -82,3 +82,7 @@
     height: calc(20px + (8px * 2));
     width: calc(20px + (8px * 2));
 }
+
+#warningMsg {
+    white-space: pre-wrap;
+}
