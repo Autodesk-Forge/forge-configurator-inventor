@@ -53,6 +53,9 @@ Scenario('upload assembly with non-supported addins', async (I) => {
         /Design Accelerator/,
     ].forEach((snippet) => assert.match(warningMessage, snippet));
 
+    // validate that the dialog has warning Icon
+    I.seeElement('#warningIcon');
+
     I.closeCompletionDialog();
 
     // ensure the project is uploaded
@@ -63,7 +66,7 @@ Scenario('upload assembly with non-supported addins', async (I) => {
     const rowDetails = projectRow.split('\n')[1]; // temporally use second string from the row
 
     // validate the warning message
-    assert.strictEqual(rowDetails, 'Detected unsupported plugins: Mold Design, Tube & Pipe, Frame Generator, Design Accelerator, Cable & Harness', 'Error: Details text of a project is not expected!');
+    assert.strictEqual(rowDetails, 'Detected unsupported plugins: Mold Design, Tube & Pipe, Frame Generator, Design Accelerator, Cable & Harness Change of parameters may lead to incorrect results.', 'Error: Details text of a project is not expected!');
 });
 
 Scenario('delete workflow', (I) => {
