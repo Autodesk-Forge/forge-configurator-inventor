@@ -29,7 +29,7 @@ phases:
       - xcopy /Y /E app\* uitest\
       - rm app\appsettings.Local.json
       - cd uitest\
-      - Start-Process -NoNewWindow dotnet -ArgumentList "run", "clear=true", "initialize=true", "allowCleanSelf=true"
+      - Start-Process -NoNewWindow dotnet -ArgumentList "WebApplication.dll", "clear=true", "initialize=true", "allowCleanSelf=true"
       - cd $slnDir\WebApplication
       - echo "Waiting for server to initialize"
       - ..\AWS-CICD\build-specs\waitForServer.ps1
