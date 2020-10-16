@@ -28,11 +28,10 @@ See [high level diagram](architecture.png)
 1. Specify [forge credentials](#specify-forge-credentials).
 1. Copy `AppBundles\InventorBinFolder.props.template` to `AppBundles\InventorBinFolder.props`
 1. Replace the `PATH_TO_YOUR_INVENTOR_BIN` string in the `AppBundles\InventorBinFolder.props` file with your actual Inventor bin folder path, for example: `C:\Program Files\Autodesk\Inventor 2021\Bin`
-1. The application can run in two netwok setting modes that determine how it communicates with FDA servers - `Callback` and `Polling`. Default settings is now `Callback` and it requires extre setup to be done.
-   You can use the `Polling` option instead for locally run application (See next optional step instead of this one), however in production using the new callback option is highly recommended to conserve resources.
-   In order to finish setting up the `Callback` option you will need to modify the `Publisher` section of the `appsettings.json` file. Ensure that `"CompletionCheck"` value is set to `"Callback"` and set `"CallbackUrlBase"` value to your server URL or ngrok tunnel URL for a locally run application.
+1. (Optional) Choose network configuration for your application. By default polling is enabled as it offers an easier way to setup and run the application. This is OK for locally run applications and debugging. However
+   in production using the new callback option is highly recommended to conserve resources. In order to enable the callback option modify the `Publisher` section of the appsettings.json file. 
+   Change `"CompletionCheck"` value from `"Polling"` to `"Callback"` and set `"CallbackUrlBase"` url to your server URL or ngrok tunnel URL for a locally run application.
    To run and debug callbacks locally please refer to the [ngrok section](#Use-ngrok-for-localhost-callbacks).
-1. (Optional) Switch network configuration to polling for locally run application and debugging. Change `"CompletionCheck"` value from `"Callback"` to `"Polling"` in `Publisher` section of appsettings.json file. This is OK for locally run applications and debugging. 
 1. *(Optional) Specify if access should be limited in `WebApplication\appsettings.json`. Set `Enabled` to `true` or `false`, and populate the `Domains` and `Addresses` fields with comma delimited lists such as `["autodesk.com", "company.com"]` and `["person@company2.com", "person@company3.com"]`*.
 ## Build
 * Building the projects also installs required packages (this can take several minutes).
