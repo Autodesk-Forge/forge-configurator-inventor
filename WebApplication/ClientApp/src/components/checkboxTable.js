@@ -36,6 +36,7 @@ const Icon = ({ iconname }) => (
 );
 
 const iconRenderer = ({ cellData: iconname }) => <Icon iconname={iconname} />;
+const detailsRenderer = ( {cellData: details } ) => <div style={{ whiteSpace: 'pre-wrap'}}>{details}</div>;
 
 const cellBackgroundColor = 'white';
 const cellHoverColor = '#f3f3f3';
@@ -124,7 +125,8 @@ export class CheckboxTable extends Component {
             title: 'Details',
             dataKey: 'details',
             align: Column.Alignment.LEFT,
-            width: 900
+            width: 900,
+            cellRenderer: detailsRenderer
         }
       ];
     }
@@ -163,6 +165,7 @@ export class CheckboxTable extends Component {
                   height={height}
                   columns={this.projectListColumns}
                   data={data}
+                  estimatedRowHeight={50}
                   rowEventHandlers={{
                     onClick: ({ rowData }) => {
                       this.props.onProjectClick(rowData.id);
