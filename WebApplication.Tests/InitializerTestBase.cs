@@ -25,6 +25,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.IO;
 using System.Net.Http;
+using Autodesk.Forge.DesignAutomation.Http;
 using WebApplication.Definitions;
 using WebApplication.Middleware;
 using WebApplication.Processing;
@@ -80,7 +81,7 @@ namespace WebApplication.Tests
             var postProcessing = new PostProcessing(httpClientFactory, new NullLogger<PostProcessing>(), localCache, Options.Create(new ProcessingOptions()));
             var publisher = new Publisher(designAutomationClient, new NullLogger<Publisher>(), resourceProvider,
                 postProcessing, Options.Create(new PublisherConfiguration()),
-                null, null);
+                new WorkItemsApi(forgeService), null, new TaskUtil());
 
             var appBundleZipPathsConfiguration = new AppBundleZipPaths
             {

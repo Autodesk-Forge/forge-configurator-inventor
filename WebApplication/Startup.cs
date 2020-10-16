@@ -104,6 +104,8 @@ namespace WebApplication
             services.AddTransient<Arranger>();
             services.AddTransient<ProjectWork>();
             services.AddTransient<DtoGenerator>();
+            services.AddSingleton<ITaskUtil, TaskUtil>();
+            
             services.AddDesignAutomation(Configuration);
             
             services.AddSingleton<Publisher>();
