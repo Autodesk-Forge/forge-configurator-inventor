@@ -57,7 +57,7 @@ namespace WebApplication.Job
             }
             catch (Exception ex)
             {
-                await resultSender.SendErrorAsync(Id, ex.Message);
+                await resultSender.SendErrorAsync(new MessagesError(Id, "Adopt project went wrong", new string[] { ex.Message }));
             }
         }
     }
