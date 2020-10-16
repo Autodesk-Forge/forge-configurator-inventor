@@ -63,11 +63,14 @@ Scenario('upload assembly with non-supported addins', async (I) => {
 
     // get Details text for uploaded project
     const projectRow = await I.grabTextFrom(locators.getProjectRowByName('NotSupportedAddins'));
-    const rowDetails = projectRow.split('\n')[1]; // temporally use second string from the row
-
+    const rowDetails1 = projectRow.split('\n')[1]; // temporally use second ...
+    const rowDetails2 = projectRow.split('\n')[2]; // ... and third string from the row
     // validate the warning message
-    assert.strictEqual(rowDetails, 'Detected unsupported plugins: Mold Design, Tube & Pipe, Frame Generator, Design Accelerator, Cable & Harness Change of parameters may lead to incorrect results.', 'Error: Details text of a project is not expected!');
+    assert.strictEqual(rowDetails1, 'Detected unsupported plugins: Mold Design, Tube & Pipe, Frame Generator, Design Accelerator, Cable & Harness.', 'Error: Details text with list of unsupported plugins is not as expected!');
+    assert.strictEqual(rowDetails2, 'Change of parameters may lead to incorrect results.', 'Error: Warning for incorrect result on parameter change is not correct!');
+
 });
+
 
 Scenario('delete workflow', (I) => {
     I.deleteProject('SimpleBox2asm');

@@ -93,12 +93,12 @@ namespace DataCheckerPlugin
             switch (addinNames.Count)
             {
                 case 1:
-                    AddMessage($"Detected unsupported plugin: {addinNames[0]}", Severity.Warning);
+                    AddMessage($"Detected unsupported plugin: {addinNames[0]}.", Severity.Warning);
                     break;
                 case 0:
                     break;
                 default:
-                    AddMessage($"Detected unsupported plugins: {string.Join(", ", addinNames)}", Severity.Warning);
+                    AddMessage($"Detected unsupported plugins: {string.Join(", ", addinNames)}.", Severity.Warning);
                     break;
             }
         }
