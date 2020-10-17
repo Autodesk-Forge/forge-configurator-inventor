@@ -85,7 +85,7 @@ describe('ProjectList components', () => {
     const invalidateDrawingMock = jest.fn();
 
     const projectId = '3';
-    const propsWithProfile = { ...props, isLoggedIn: true, uploadPackageData: { file: { name: projectId}} };
+    const propsWithProfile = { ...props, isLoggedIn: true, uploadPackageData: { file: { name: projectId}}, uploadProjectName: projectId };
     // a bit of mess here, allowing to show all the dialogs at once, but it works, so...
     const wrapper = shallow(<ProjectList { ...propsWithProfile } uploadProgressShowing = {true}
       uploadFailedShowing = {true}

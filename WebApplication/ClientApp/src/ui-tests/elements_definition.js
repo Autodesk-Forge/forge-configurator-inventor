@@ -50,7 +50,10 @@ module.exports = {
      xpFirstInputOnModelTab : '//*[@id="model"]/div/div[1]/div[2]/div[1] //input',
      FDAActionTimeout: 600,
      xpButtonExportPDF: locate('button').find('span').withText('Export PDF'),
-     getProject: (name) => locate('li').find('span').withAttr({role: 'button'}).withText(name),
+     getProjectFromSwitcher: (name) => locate('li').find('span').withAttr({role: 'button'}).withText(name),
+     getProjectByName: (name) => locate('div').withAttr({role: 'gridcell'}).find('div').withText(name),
+     getProjectRowByName: (name) => locate('div').withAttr({role: 'row'}).withChild('div').withText(name),
      xpErrorMessageTitle: '//div[@class="modalFailContent"]//p[contains(@class,"errorMessageTitle")]',
-     xpErrorMessage: '//div[@class="modalFailContent"]//p[contains(@class,"errorMessage")][2]'
+     xpErrorMessage: '//div[@class="modalFailContent"]//p[contains(@class,"errorMessage")][2]',
+     xpWarningMessage: '#warningMsg'
 };

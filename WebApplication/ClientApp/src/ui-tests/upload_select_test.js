@@ -31,23 +31,17 @@ Scenario('upload workflow 2nd assembly', (I) => {
     I.uploadProject('src/ui-tests/dataset/SimpleBox2asm.zip', 'Assembly2.iam');
 });
 
-Scenario('delete workflow', (I) => {
-    I.deleteProject('SimpleBox2asm');
-});
-
 Scenario('upload assembly with non-supported addins', async (I) => {
 
-    I.dontSeeElement(locators.getProject('NotSupportedAddins'));
+    I.dontSeeElement(locators.getProjectByName('NotSupportedAddins'));
 
-    I.uploadProjectFailure(
+    I.uploadProjectWarning(
         'src/ui-tests/dataset/NotSupportedAddins.zip',
         'notSupportedAddins.iam');
 
-    // check the error box title
-    I.see('Adoption failed', locators.xpErrorMessageTitle);
-
-    // get error message
-    const errorMessage = await I.grabTextFrom(locators.xpErrorMessage);
+    // get warning message
+    I.waitForVisible(locators.xpWarningMessage, locators.FDAActionTimeout);
+    const warningMessage = await I.grabTextFrom(locators.xpWarningMessage);
 
     // validate if all names of all unsupported plugins are there
     [
@@ -57,10 +51,28 @@ Scenario('upload assembly with non-supported addins', async (I) => {
         /Cable & Harness/,
         /Mold Design/,
         /Design Accelerator/,
-    ].forEach((snippet) => assert.match(errorMessage, snippet));
+    ].forEach((snippet) => assert.match(warningMessage, snippet));
+
+    // validate that the dialog has warning Icon
+    I.seeElement('#warningIcon');
 
     I.closeCompletionDialog();
 
-    // ensure the project is deleted
-    I.dontSeeElement(locators.getProject('NotSupportedAddins'));
+    // ensure the project is uploaded
+    I.waitForVisible(locators.getProjectByName('NotSupportedAddins'), 30);
+
+    // get Details text for uploaded project
+    const projectRow = await I.grabTextFrom(locators.getProjectRowByName('NotSupportedAddins'));
+    const rowDetails1 = projectRow.split('\n')[1]; // temporally use second ...
+    const rowDetails2 = projectRow.split('\n')[2]; // ... and third string from the row
+    // validate the warning message
+    assert.strictEqual(rowDetails1, 'Detected unsupported plugins: Mold Design, Tube & Pipe, Frame Generator, Design Accelerator, Cable & Harness.', 'Error: Details text with list of unsupported plugins is not as expected!');
+    assert.strictEqual(rowDetails2, 'Change of parameters may lead to incorrect results.', 'Error: Warning for incorrect result on parameter change is not correct!');
+
+});
+
+
+Scenario('delete workflow', (I) => {
+    I.deleteProject('SimpleBox2asm');
+    I.deleteProject('NotSupportedAddins');
 });

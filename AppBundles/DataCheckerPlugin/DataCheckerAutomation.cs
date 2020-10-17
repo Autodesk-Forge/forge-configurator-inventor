@@ -93,12 +93,12 @@ namespace DataCheckerPlugin
             switch (addinNames.Count)
             {
                 case 1:
-                    AddMessage($"Detected unsupported plugin: {addinNames[0]}", Severity.Error);
+                    AddMessage($"Detected unsupported plugin: {addinNames[0]}.", Severity.Warning);
                     break;
                 case 0:
                     break;
                 default:
-                    AddMessage($"Detected unsupported plugins: {string.Join(", ", addinNames)}", Severity.Error);
+                    AddMessage($"Detected unsupported plugins: {string.Join(", ", addinNames)}.", Severity.Warning);
                     break;
             }
         }
@@ -128,8 +128,8 @@ namespace DataCheckerPlugin
             public DefaultDocComparer(string defaultDoc) { _defaultDoc = defaultDoc; }
             public int Compare(string x, string y)
             {
-                var filenameX = System.IO.Path.GetFileNameWithoutExtension(x).ToLower();
-                var filenameY = System.IO.Path.GetFileNameWithoutExtension(y).ToLower();
+                var filenameX = Path.GetFileNameWithoutExtension(x).ToLower();
+                var filenameY = Path.GetFileNameWithoutExtension(y).ToLower();
 
                 if (filenameX.Equals(filenameY))
                     return 0;
@@ -164,7 +164,7 @@ namespace DataCheckerPlugin
 
             var rootDir = Directory.GetCurrentDirectory();
             var index = Path.Combine(rootDir, "unzippedIam").Length + 1;
-            var fileName = System.IO.Path.GetFileNameWithoutExtension(doc.FullFileName).ToLower();
+            var fileName = Path.GetFileNameWithoutExtension(doc.FullFileName).ToLower();
             var drawings = Directory.GetFiles(rootDir, "*.*", SearchOption.AllDirectories)
                 .Where(file =>
                 {
@@ -173,7 +173,7 @@ namespace DataCheckerPlugin
                            !lowName.Contains(oldVersionMask);
                 })
                 .Select(path => path.Substring(index))
-                .OrderBy(path => System.IO.Path.GetFileName(path), new DefaultDocComparer(fileName))
+                .OrderBy(path => Path.GetFileName(path), new DefaultDocComparer(fileName))
                 .ToArray();
 
             // drawings is also valid when no drawings exists, so test drawings?.Length

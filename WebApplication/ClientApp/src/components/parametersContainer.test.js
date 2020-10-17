@@ -112,6 +112,36 @@ describe('parameters container', () => {
         expect(fnMock).toHaveBeenCalledWith(projectId, props.projectUpdateParameters);
     });
 
+    it('Update button has correct props and renders Alert24 icon when adopt message is present', () => {
+        const adoptWarning = 'Unsupported plugin!';
+        const props = {
+            activeProject: { id: projectId },
+            fetchParameters: () => {},
+            adoptWarning: adoptWarning
+        };
+        const wrapper = shallow(<ParametersContainer {...props} />);
+        const button = wrapper.find('#updateButton');
+        //expect(button.prop('type')).toEqual('secondary');
+
+        const icon = shallow(button.prop('icon')); // this would fail if no adopt message present, as there will be no valid element in button.prop('icon')
+        expect(icon.length).toBe(1);
+    });
+
+    it('shows the tooltip on Update button when adopt message is present', () => {
+        const adoptWarning = 'Unsupported plugin!';
+        const props = {
+            activeProject: { id: projectId },
+            fetchParameters: () => {},
+            adoptWarning: adoptWarning
+        };
+        const wrapper = shallow(<ParametersContainer {...props} />);
+        const tooltip = wrapper.find('.paramTooltip');
+        expect(tooltip.prop('openOnHover')).toEqual(true);
+
+        const tooltipContent = shallow(tooltip.prop('content')());
+        expect(tooltipContent.html()).toContain(adoptWarning);
+    });
+
     it('verify reset button connected', () => {
         const fnMock = jest.fn();
         const props = {
