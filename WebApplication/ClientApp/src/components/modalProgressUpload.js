@@ -17,8 +17,6 @@
 /////////////////////////////////////////////////////////////////////
 
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-
 import Modal from '@hig/modal';
 import { CloseMUI, Complete24 } from "@hig/icons";
 import ProgressBar from '@hig/progress-bar';
@@ -29,8 +27,7 @@ import merge from "lodash.merge";
 import Button from '@hig/button';
 import IconButton from "@hig/icon-button";
 import CreditCost from './creditCost';
-import HyperLink from './hyperlink';
-import { getReportUrl } from '../reducers/mainReducer';
+import ReportUrl from './reportUrl';
 
 export class ModalProgressUpload extends Component {
 
@@ -39,8 +36,6 @@ export class ModalProgressUpload extends Component {
         const withWarnings = this.props.warningMsg?.length > 0;
         const doneColor = "rgb(135, 179, 64)";
         const warningColor = "rgb(250, 162, 27)";
-        const reportUrl = this.props.reportUrl;
-        const showReportUrl = reportUrl !== null;
 
         const modalStyles = /* istanbul ignore next */ styles =>
         merge(styles, {
@@ -116,10 +111,7 @@ export class ModalProgressUpload extends Component {
                             <Spacer spacing='m'/>
                         </div>}
                         <CreditCost />
-                        {showReportUrl && <div className="logContainer">
-                            <HyperLink link="Open log file" href={ reportUrl } />
-                        </div>
-                    }
+                        <ReportUrl />
                         <div className="buttonsContainer">
                             <Button className="button" style={
                                 { width: '102px', height: '36px', borderRadius: '2px', marginLeft: '12px'}}
@@ -145,8 +137,4 @@ export class ModalProgressUpload extends Component {
 }
 
 /* istanbul ignore next */
-export default connect(function (store){
-    return {
-      reportUrl: getReportUrl(store)
-    };
-})(ModalProgressUpload);
+export default ModalProgressUpload;

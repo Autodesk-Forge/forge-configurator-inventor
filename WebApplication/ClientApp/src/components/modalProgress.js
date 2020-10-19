@@ -27,8 +27,8 @@ import './modalProgress.css';
 import merge from "lodash.merge";
 import CreditCost from './creditCost';
 import Button from '@hig/button';
-import HyperLink from './hyperlink';
-import { getStats, getReportUrl } from '../reducers/mainReducer';
+import ReportUrl from './reportUrl';
+import { getStats } from '../reducers/mainReducer';
 
 export class ModalProgress extends Component {
 
@@ -50,8 +50,6 @@ export class ModalProgress extends Component {
 
         const stats = this.props.statsKey == null ? this.props.stats : (this.props.stats ? this.props.stats[this.props.statsKey] : null);
         const done = stats != null;
-        const reportUrl = this.props.reportUrl;
-        const showReportUrl = reportUrl !== null;
         const withWarnings = this.props.warningMsg?.length > 0;
         const title = done && this.props.doneTitle ? this.props.doneTitle : this.props.title;
 
@@ -114,10 +112,7 @@ export class ModalProgress extends Component {
                         <Spacer spacing='m'/>
                     </div>}
                     <CreditCost statsKey={this.props.statsKey}/>
-                    {showReportUrl && <div className="logContainer">
-                            <HyperLink link="Open log file" href={ reportUrl } />
-                        </div>
-                    }
+                    <ReportUrl/>
                     <div id="modalDone">
                         <Button className="button" style={
                             { width: '116px', height: '36px', borderRadius: '2px', marginLeft: '12px'}}
@@ -137,7 +132,6 @@ export class ModalProgress extends Component {
 /* istanbul ignore next */
 export default connect(function (store){
     return {
-      stats: getStats(store),
-      reportUrl: getReportUrl(store)
+      stats: getStats(store)
     };
 })(ModalProgress);
