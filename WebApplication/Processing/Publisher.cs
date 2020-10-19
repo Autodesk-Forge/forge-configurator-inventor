@@ -116,7 +116,7 @@ namespace WebApplication.Processing
             _logger.LogInformation($"Created WI {status.Id} (polling mode)");
             while (status.Status == Status.Pending || status.Status == Status.Inprogress)
             {
-                _taskUtil.Sleep(2000);
+                await _taskUtil.Sleep(2000);
                 status = (await _workItemsApi.GetWorkitemStatusAsync(status.Id)).Content;
             }
 

@@ -4,12 +4,12 @@ namespace WebApplication.Utilities
 {
     public interface ITaskUtil
     {
-        void Sleep(int millis);
+        Task Sleep(int millis);
     }
 
     public class TaskUtil : ITaskUtil
     {
-        public async void Sleep(int millis)
+        public async Task Sleep(int millis)
         {
             await Task.Delay(millis);
         }
