@@ -33,6 +33,10 @@ export const getProject = function(id, state) {
     return state.projects.find(proj => proj.id === id);
 };
 
+export const getAdoptWarnings = function(id, state) {
+    return getProject(id,state)?.adoptWarnings;
+};
+
 /** Generate shallow array clone, sorted by project label. */
 export function sortProjects(projects) {
     return [].concat(projects).sort((a,b) => a.label.localeCompare(b.label));

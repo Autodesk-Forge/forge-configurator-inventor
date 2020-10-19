@@ -85,28 +85,36 @@ describe('projectList reducer', () => {
         expect(projectListReducer(secondProjectActive, updateProjectList(newList))).toEqual(expectedResult);
     });
 
-    it('correctly selects active project', () => {
+    describe('project and project data getters', () => {
         const activeProject = {
             id: '2',
             svf: 'bbb222'
         };
-
         const firstProject = {
             id: '3',
-            svf: 'aaa111'
+            svf: 'aaa111',
+            adoptWarnings: [ 'Unsupported plugin!' ]
         };
-
         const projects = [
             firstProject,
             activeProject
         ];
-
         const projectList = {
             activeProjectId: '2',
             projects: projects
         };
 
-        expect(list.getActiveProject(projectList)).toEqual(activeProject);
+        it('correctly selects active project', () => {
+            expect(list.getActiveProject(projectList)).toEqual(activeProject);
+        });
+
+        it('correctly selects project by id', () => {
+            expect(list.getProject('3', projectList)).toEqual(firstProject);
+        });
+
+        it('correctly returns project adopt messages for given project', () => {
+            expect(list.getAdoptWarnings('3', projectList)).toEqual(firstProject.adoptWarnings);
+        });
     });
 
     it('correctly updates the svf', () => {

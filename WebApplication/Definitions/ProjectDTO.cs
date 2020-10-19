@@ -17,6 +17,7 @@
 /////////////////////////////////////////////////////////////////////
 
 using System;
+using Shared;
 
 namespace WebApplication.Definitions
 {
@@ -45,5 +46,10 @@ namespace WebApplication.Definitions
         /// URL to DrawingsList JSON.
         /// </summary>
         public string DrawingsListUrl { get; set; }
+
+        /// <summary>
+        /// Adoption messages.
+        /// </summary>
+        public string[] AdoptWarnings { get; set; }
     }
 }

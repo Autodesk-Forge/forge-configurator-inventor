@@ -45,6 +45,31 @@ describe('modal progress ', () => {
         expect(buttons.length).toBe(2);
     });
 
+    it('shows the Complete24 icon when done without warning', () => {
+        const props = { isDone: () => { return true;}, warningMsg: undefined };
+        const wrapper = shallow(<ModalProgressUpload {...props} />);
+        const header = shallow(wrapper.prop('headerChildren'));
+        const icon = header.find('Complete24');
+        expect(icon.length).toEqual(1);
+    });
+
+    it('shows the OTHER icon when done with warning', () => {
+        const props = { isDone: () => { return true;}, warningMsg: 'Unsupported plugin!' };
+        const wrapper = shallow(<ModalProgressUpload {...props} />);
+        const header = shallow(wrapper.prop('headerChildren'));
+        const icon = header.find('#warningIcon');
+        expect(icon.length).toEqual(1);
+    });
+
+    it('shows the warning when one is passed in', () => {
+        const warningMsg = 'Unsupported plugin!';
+        const props = { isDone: () => { return true;}, warningMsg: warningMsg };
+        const wrapper = shallow(<ModalProgressUpload {...props} />);
+        const msg = wrapper.find('#warningMsg');
+        expect(msg.length).toEqual(1);
+        expect(msg.html()).toContain(warningMsg);
+    });
+
     it('check OPEN button click', () => {
         const openMockFn = jest.fn();
         const props = { isDone: () => { return true;},
