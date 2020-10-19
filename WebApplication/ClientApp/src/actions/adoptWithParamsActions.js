@@ -51,8 +51,6 @@ export const adoptProjectWithParameters = (parameters) => async (dispatch) => {
                 project.bomJsonUrl = projectUpdate.bomJsonUrl;
                 project.modelDownloadUrl = projectUpdate.modelDownloadUrl;
                 project.hash = projectUpdate.hash;
-                project.isAssembly = projectUpdate.isAssembly;
-                project.hasDrawing = projectUpdate.hasDrawing;
 
                 // hide modal dialog
                 dispatch(showAdoptWithParametersProgress(false));
