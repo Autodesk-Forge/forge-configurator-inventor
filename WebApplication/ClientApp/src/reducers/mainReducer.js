@@ -43,6 +43,10 @@ export const getProject = function(id, state) {
     return list.getProject(id, state.projectList);
 };
 
+export const getAdoptWarnings = function(projectId, state) {
+    return list. getAdoptWarnings(projectId, state.projectList);
+};
+
 export const getParameters = function(projectId, state) {
     return params.getParameters(projectId, state.parameters);
 };
@@ -180,3 +184,4 @@ export const getDrawingsList = function(state) {
 export const getActiveDrawing = function(state) {
     return uiFlags.getActiveDrawing(state.uiFlags);
 };
+

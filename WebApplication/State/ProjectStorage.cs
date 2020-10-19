@@ -94,6 +94,7 @@ namespace WebApplication.State
             await Task.WhenAll(
                 ossBucket.EnsureFileAsync(ossAttributes.Metadata, localAttributes.Metadata),
                 ossBucket.EnsureFileAsync(ossAttributes.Thumbnail, localAttributes.Thumbnail),
+                ossBucket.EnsureFileAsync(ossAttributes.AdoptMessages, localAttributes.AdoptMessages),
                 ossBucket.EnsureFileAsync(ossAttributes.DrawingsList, localAttributes.DrawingsList)
             );
         }

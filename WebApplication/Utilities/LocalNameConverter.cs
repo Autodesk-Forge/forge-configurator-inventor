@@ -61,6 +61,11 @@ namespace WebApplication.Utilities
         /// </summary>
         public string DrawingsList => ToFullName(LocalName.DrawingsList);
 
+        /// <summary>
+        /// Filename of JSON file with adoption messages.
+        /// </summary>
+        public string AdoptMessages => ToFullName(LocalName.AdoptMessages);
+
         public LocalAttributes(string rootDir, string projectDir) : base(Path.Combine(rootDir, projectDir))
         {
         }

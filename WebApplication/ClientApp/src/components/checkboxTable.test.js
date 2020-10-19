@@ -20,6 +20,7 @@ import React from 'react';
 import Enzyme, { shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import { CheckboxTable } from './checkboxTable';
+import { fullWarningMsg } from '../utils/conversion';
 
 jest.mock('./checkboxTableHeader');
 jest.mock('./checkboxTableRow');
@@ -41,7 +42,13 @@ const projectList = {
       },
       {
           id: '3',
-          label: 'Three'
+          label: 'Three',
+          adoptWarnings: [ 'Unsupported plugins!' ]
+      },
+      {
+          id: '4',
+          label: 'Four',
+          adoptWarnings: [ 'Unsupported plugins!' , 'Other warning' ]
       }
   ]
 };
@@ -65,7 +72,7 @@ describe('CheckboxTable components', () => {
     const autoresizer = wrapper.find('AutoResizer');
     const basetable = autoresizer.renderProp('children')( {width: 100, height: 200} );
     const cols = basetable.prop('columns');
-    expect(cols.length).toEqual(3);
+    expect(cols.length).toEqual(4);
   });
 
   it('Base table has expected data', () => {
@@ -77,6 +84,8 @@ describe('CheckboxTable components', () => {
     basetabledata.forEach((datarow, index) => {
         expect(datarow.id).toEqual(projectList.projects[index].id);
         expect(datarow.label).toEqual(projectList.projects[index].label);
+        expect(datarow.details).toEqual(fullWarningMsg(projectList.projects[index].adoptWarnings));
+        expect(datarow.icon).toEqual(projectList.projects[index].adoptWarnings?.length ? 'alert-24.svg' : 'Archive.svg');
     });
   });
 

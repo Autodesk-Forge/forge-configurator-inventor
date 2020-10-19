@@ -32,8 +32,9 @@ import ModalProgressUpload from './modalProgressUpload';
 import ModalProgress from './modalProgress';
 import ModalFail from './modalFail';
 import { uploadProgressShowing, uploadProgressIsDone, uploadPackageData, uploadFailedShowing,
-  checkedProjects, modalProgressShowing, errorData } from '../reducers/mainReducer';
+  checkedProjects, modalProgressShowing, errorData, getAdoptWarnings } from '../reducers/mainReducer';
 import CheckboxTable from './checkboxTable';
+import { fullWarningMsg } from '../utils/conversion';
 
 export class ProjectList extends Component {
 
@@ -59,14 +60,8 @@ export class ProjectList extends Component {
   }
 
   onProgressOpenClick() {
-
     this.props.setUploadProgressHidden();
-
-    // switch to uploaded project
-    const filename = this.props.uploadPackageData.file.name;
-    // use file name without extension as ID of uploaded project
-    const onlyName = filename.substring(0, filename.lastIndexOf('.')) || filename; // TODO: project name should be received from the server
-    this.props.updateActiveProject(onlyName);
+    this.props.updateActiveProject(this.props.uploadProjectName);
     this.props.invalidateDrawing();
     // switch to MODEL tab
     this.props.updateActiveTabIndex(1);
@@ -121,6 +116,7 @@ export class ProjectList extends Component {
                     onOpen={() => {this.onProgressOpenClick(); }}
                     url={null}
                     isDone={() => this.isDone() === true }
+                    warningMsg={this.isDone() ? this.props.adoptWarning : null}
                     />}
         {this.props.uploadFailedShowing && <ModalFail
                     open={true}
@@ -145,14 +141,21 @@ export class ProjectList extends Component {
 
 /* istanbul ignore next */
 export default connect(function (store) {
+  const filename = uploadPackageData(store)?.file?.name;
+  // use file name without extension as ID of uploaded project
+  const uploadProjectName = filename ? (filename.substring(0, filename.lastIndexOf('.')) || filename) : null; // TODO: project name should be received from the server  
+  const adoptWarning = fullWarningMsg(getAdoptWarnings(uploadProjectName, store));
   return {
     isLoggedIn: store.profile.isLoggedIn,
     checkedProjects: checkedProjects(store),
     uploadProgressShowing: uploadProgressShowing(store),
     uploadProgressIsDone: uploadProgressIsDone(store),
     uploadPackageData: uploadPackageData(store),
+    uploadProjectName: uploadProjectName,
     uploadFailedShowing: uploadFailedShowing(store),
     errorData: errorData(store),
-    modalProgressShowing: modalProgressShowing(store)
+    modalProgressShowing: modalProgressShowing(store),
+    adoptWarning: adoptWarning
   };
-}, { showUploadPackage, updateActiveProject, updateActiveTabIndex, setUploadProgressHidden, hideUploadFailed, showDeleteProject, showModalProgress, invalidateDrawing })(ProjectList);
+}, { showUploadPackage, updateActiveProject, updateActiveTabIndex, setUploadProgressHidden, hideUploadFailed,
+  showDeleteProject, showModalProgress, invalidateDrawing })(ProjectList);

@@ -67,14 +67,14 @@ Scenario('should check BOM data after change', async (I) => {
 
     const htmlData = await I.grabTextFrom(bomRows);
 
-    assert.equal(htmlData.length , baseRows.length, 'Error: Different number of BOM rows!');
+    assert.strictEqual(htmlData.length , baseRows.length, 'Error: Different number of BOM rows!');
 
     for(let i = 0; i < htmlData.length; ++i) // first validation
     {
         const baseRow = baseRows[i].join('\n');
         I.say(baseRow);
         const rowNumber = i + 1;
-        assert.equal(htmlData[i], baseRow, 'Error: BOM row ' + rowNumber + ' is not identical with base data!');
+        assert.strictEqual(htmlData[i], baseRow, 'Error: BOM row ' + rowNumber + ' is not identical with base data!');
     }
 
     // change parameter - select an item from a listbox
@@ -97,13 +97,13 @@ Scenario('should check BOM data after change', async (I) => {
 
     const updatedHtmlData = await I.grabTextFrom(bomRows);
 
-    assert.equal(updatedHtmlData.length , updatedRows.length, 'Error: Different number of BOM rows after update!');
+    assert.strictEqual(updatedHtmlData.length , updatedRows.length, 'Error: Different number of BOM rows after update!');
 
     for(let i = 0; i < updatedHtmlData.length; ++i) // second validation
     {
         const updatedRow = updatedRows[i].join('\n');
         const rowNumber = i + 1;
-        assert.equal(updatedHtmlData[i], updatedRow, 'Error: BOM row ' + rowNumber + ' is not identical with base data after update!');
+        assert.strictEqual(updatedHtmlData[i], updatedRow, 'Error: BOM row ' + rowNumber + ' is not identical with base data after update!');
     }
 
   });

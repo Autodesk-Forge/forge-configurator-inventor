@@ -22,6 +22,7 @@ import { connect } from 'react-redux';
 import Modal from '@hig/modal';
 import ProgressBar from '@hig/progress-bar';
 import Typography from "@hig/typography";
+import Spacer from "@hig/spacer";
 import './modalProgress.css';
 import merge from "lodash.merge";
 import CreditCost from './creditCost';
@@ -32,34 +33,69 @@ import { getStats, getReportUrl } from '../reducers/mainReducer';
 export class ModalProgress extends Component {
 
     render() {
-        const modalStyles = /* istanbul ignore next */ styles =>
-        merge(styles, {
-          modal: {
-                window: { // by design
-                    width: "371px",
-                    height: "auto"
-                }
-            }
-        });
-
         const iconAsBackgroundImage = {
             width: '48px',
             height: '48px',
             backgroundImage: 'url(' + this.props.icon + ')',
           };
 
+        const warningIconAsBackgroundImage = {
+            width: '33px',
+            height: '33px',
+            backgroundImage: 'url(alert-24.svg)',
+            backgroundSize: '26px',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center'
+        };
+
         const stats = this.props.statsKey == null ? this.props.stats : (this.props.stats ? this.props.stats[this.props.statsKey] : null);
         const done = stats != null;
         const reportUrl = this.props.reportUrl;
         const showReportUrl = reportUrl !== null;
+        const withWarnings = this.props.warningMsg?.length > 0;
+        const title = done && this.props.doneTitle ? this.props.doneTitle : this.props.title;
+
+        const modalProps = (done && withWarnings) ? {
+            window: { // by design
+                width: "371px",
+                height: "auto",
+                borderLeftWidth: "3px",
+                borderLeftStyle: "solid",
+                borderLeftColor: "rgb(250, 162, 27)" // warningColor
+            }
+        } : {
+            window: { // by design
+                width: "371px",
+                height: "auto"
+            }
+        };
+
+        const modalStyles = /* istanbul ignore next */ styles =>
+        merge(styles, {
+          modal: modalProps
+        });
 
         return (
             <Modal
             open={this.props.open}
-            title={this.props.title}
+            title={title}
             onCloseClick={this.props.onClose}
             percentComplete={null}
-            stylesheet={modalStyles}>
+            stylesheet={modalStyles}
+            headerChildren={
+                <header id="customHeader">
+                    <div className="customHeaderContent">
+                        <div className="title">
+                            {done && withWarnings && <div id='warningIcon' style={warningIconAsBackgroundImage}/>}
+                            <Typography style={{
+                                paddingLeft: "8px",
+                                fontSize: "inherit",
+                                fontWeight: "inherit",
+                                lineHeight: "inherit"}}>{title}</Typography>
+                        </div>
+                    </div>
+                </header>}
+            >
                 <div className="modalContent">
                     <div style={iconAsBackgroundImage}/>
                     <div className="modalAction" fontWeight="bold">
@@ -73,6 +109,10 @@ export class ModalProgress extends Component {
                 </div>
                 {(done) &&
                 <React.Fragment>
+                    {withWarnings && <div id='warningMsg'>
+                        <Typography>{this.props.warningMsg}</Typography>
+                        <Spacer spacing='m'/>
+                    </div>}
                     <CreditCost statsKey={this.props.statsKey}/>
                     {showReportUrl && <div className="logContainer">
                             <HyperLink link="Open log file" href={ reportUrl } />

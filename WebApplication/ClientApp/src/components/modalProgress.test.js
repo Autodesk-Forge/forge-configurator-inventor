@@ -24,6 +24,66 @@ import { ModalProgress } from './modalProgress';
 Enzyme.configure({ adapter: new Adapter() });
 
 describe('modal progress ', () => {
+    it('should show default title when in progress', () => {
+        const title = 'a title';
+        const props = {
+            title: title
+        };
+        const wrapper = shallow(<ModalProgress { ...props } />);
+        expect(wrapper.prop('title')).toEqual(title);
+    });
+
+    it('should show Done title when the progress is done, which is indicated by valid stats in props', () => {
+        const title = 'a title';
+        const doneTitle = 'done title';
+        const stats = { credits: 3 };
+        const props = {
+            title: title,
+            doneTitle: doneTitle,
+            stats: stats
+        };
+        const wrapper = shallow(<ModalProgress { ...props } />);
+        expect(wrapper.prop('title')).toEqual(doneTitle);
+    });
+
+    it('should show default title when the progress is done, but no Done title is provided', () => {
+        const title = 'a title';
+        const stats = { credits: 3 };
+        const props = {
+            title: title,
+            stats: stats
+        };
+        const wrapper = shallow(<ModalProgress { ...props } />);
+        expect(wrapper.prop('title')).toEqual(title);
+    });
+
+    it('should show warningMsg when done and message is present', () => {
+        const warningMsg = 'Unsupported plugin!';
+        const props = {
+            title: 'a title',
+            doneTitle: 'done title',
+            stats: { credits: 3 },
+            warningMsg : warningMsg
+        };
+        const wrapper = shallow(<ModalProgress { ...props } />);
+        const msg = wrapper.find('#warningMsg');
+        expect(msg.length).toEqual(1);
+        expect(msg.html()).toContain(warningMsg);
+    });
+
+    it('should show warning Icon when done and warningMsg is present', () => {
+        const warningMsg = 'Unsupported plugin!';
+        const props = {
+            title: 'a title',
+            doneTitle: 'done title',
+            stats: { credits: 3 },
+            warningMsg : warningMsg
+        };
+        const wrapper = shallow(<ModalProgress { ...props } />);
+        const header = shallow(wrapper.prop('headerChildren'));
+        const icon = header.find('#warningIcon');
+        expect(icon.length).toEqual(1);
+    });
 
     it('should show message from props.label', () => {
 

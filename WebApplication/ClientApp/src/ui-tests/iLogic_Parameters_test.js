@@ -68,7 +68,7 @@ Scenario('should check parameters in iLogic Form with list of parameters in Mode
 
   // compare all parameters and validate
   const result = compareArrays(iLogicParameterList, modelTabParamList);
-  assert.equal(result, true, "There is an incorrect number of parameters or parameter names");
+  assert.strictEqual(result, true, "There is an incorrect number of parameters or parameter names");
 });
 
 // validate that all Read only parameters in iLogic form are displayed in the List of Parameters
@@ -87,7 +87,7 @@ Scenario('should check parameters in iLogic Form with list of Read Only paramete
 
   // compare Read Only labels and validate
   const readOnlyResult = compareArrays(iLogicReadOnlyParameterList, modelTabReadOnlyParamList);
-  assert.equal(readOnlyResult, true);
+  assert.strictEqual(readOnlyResult, true);
 
 });
 
