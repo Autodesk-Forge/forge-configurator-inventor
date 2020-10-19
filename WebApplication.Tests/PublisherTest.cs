@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Autodesk.Forge.Core;
 using Autodesk.Forge.DesignAutomation.Http;
@@ -28,93 +27,53 @@ namespace WebApplication.Tests
             _configMock.Setup(mock => mock.ActivityId).Returns("activityId");
             _configMock.Setup(mock => mock.ActivityLabel).Returns("activityLabel");
         }
-        
-        private class CallbackDataProvider : IEnumerable<object[]>
+
+        private class TestDataProvider : IEnumerable<object[]>
         {
-            private readonly Publisher _publisher;
+            private readonly Publisher _publisherCallback, _publisherPolling;
+            private readonly Mock<IResourceProvider> _resourceProviderMock = new Mock<IResourceProvider>();
+            private readonly Mock<IGuidGenerator> _guidGenerator = new Mock<IGuidGenerator>();
 
-            private readonly Mock<IWorkItemsApi> _workItemsApiMock;
+            private Mock<IWorkItemsApi> _workItemsApiMockCallback, _workItemsApiMockPolling;
 
-            private const string _trackingKey = "cd26ccf675d64521884f1693c62ed303";
+            private const string TrackingKey = "cd26ccf675d64521884f1693c62ed303";
+            private const string CallbackUrlBase = "http://fci/complete/";
 
-            public CallbackDataProvider()
+            public TestDataProvider()
             {
-                const string callbackUrlBase = "http://fci/complete/";
+                _resourceProviderMock.SetupGet(mock => mock.Nickname).Returns(Task.FromResult("nickname"));
+                _guidGenerator.Setup(mock => mock.GenerateGuid()).Returns(TrackingKey);
 
-                var resourceProviderMock = new Mock<IResourceProvider>();
-                resourceProviderMock.SetupGet(mock => mock.Nickname).Returns(Task.FromResult("nickname"));
+                InitializeCallbackMocks();
+                InitializePollingMocks();
 
-                var guidGenerator = new Mock<IGuidGenerator>();
-                guidGenerator.Setup(mock => mock.GenerateGuid()).Returns(_trackingKey);
+                _publisherCallback = InitializePublisherMock(_workItemsApiMockCallback, _resourceProviderMock,
+                    CallbackUrlBase,
+                    _guidGenerator.Object, CompletionCheck.Callback);
+                _publisherPolling = InitializePublisherMock(_workItemsApiMockPolling, _resourceProviderMock, null, null,
+                    CompletionCheck.Polling);
+            }
 
-                _workItemsApiMock = new Mock<IWorkItemsApi>();
-                _workItemsApiMock.Setup(mock => mock.CreateWorkItemAsync(
+            private void InitializeCallbackMocks()
+            {
+                _workItemsApiMockCallback = new Mock<IWorkItemsApi>();
+                _workItemsApiMockCallback.Setup(mock => mock.CreateWorkItemAsync(
                         It.Is<WorkItem>(wi => wi.ActivityId.Equals("nickname.activityId+activityLabel")
                                               && ((XrefTreeArgument) wi.Arguments["onComplete"]).Url.StartsWith(
-                                                  callbackUrlBase)),
+                                                  CallbackUrlBase)),
                         null, null, true))
                     .Returns(Task.FromResult(new ApiResponse<WorkItemStatus>(null, new WorkItemStatus
                     {
                         Status = Status.Pending
                     })));
-
-                _publisher = new Publisher(
-                    null,
-                    new NullLogger<Publisher>(),
-                    resourceProviderMock.Object,
-                    new Mock<IPostProcessing>().Object,
-                    Options.Create(new PublisherConfiguration
-                    {
-                        CallbackUrlBase = callbackUrlBase,
-                        CompletionCheck = CompletionCheck.Callback
-                    }),
-                    _workItemsApiMock.Object,
-                    guidGenerator.Object,
-                    null);
             }
 
-            public IEnumerator<object[]> GetEnumerator()
-            {
-                yield return new object[]
-                {
-                    _publisher,
-                    _trackingKey,
-                    new WorkItemStatus
-                    {
-                        Status = Status.FailedLimitDataSize
-                    },
-                    _workItemsApiMock
-                };
-                yield return new object[]
-                {
-                    _publisher,
-                    _trackingKey,
-                    new WorkItemStatus
-                    {
-                        Status = Status.Cancelled
-                    },
-                    _workItemsApiMock
-                };
-            }
-
-            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-        }
-
-        private class PollingDataProvider : IEnumerable<object[]>
-        {
-            private readonly Publisher _publisher;
-
-            private readonly Mock<IWorkItemsApi> _workItemsApiMock;
-
-            public PollingDataProvider()
+            private void InitializePollingMocks()
             {
                 const string statusId = "id";
-                
-                var resourceProviderMock = new Mock<IResourceProvider>();
-                resourceProviderMock.SetupGet(mock => mock.Nickname).Returns(Task.FromResult("nickname"));
 
-                _workItemsApiMock = new Mock<IWorkItemsApi>();
-                _workItemsApiMock.Setup(mock => mock.CreateWorkItemAsync(
+                _workItemsApiMockPolling = new Mock<IWorkItemsApi>();
+                _workItemsApiMockPolling.Setup(mock => mock.CreateWorkItemAsync(
                         It.Is<WorkItem>(wi => wi.ActivityId.Equals("nickname.activityId+activityLabel")),
                         null, null, true))
                     .Returns(Task.FromResult(new ApiResponse<WorkItemStatus>(null, new WorkItemStatus
@@ -123,7 +82,7 @@ namespace WebApplication.Tests
                         Status = Status.Pending
                     })));
 
-                _workItemsApiMock.SetupSequence(mock => mock.GetWorkitemStatusAsync(
+                _workItemsApiMockPolling.SetupSequence(mock => mock.GetWorkitemStatusAsync(
                         statusId, null, null, true))
                     .Returns(PrepareWorkItemStatusResult(Status.Pending))
                     .Returns(PrepareWorkItemStatusResult(Status.Pending))
@@ -139,31 +98,58 @@ namespace WebApplication.Tests
                         Status = status
                     }));
                 }
+            }
 
-                _publisher = new Publisher(
+            private Publisher InitializePublisherMock(IMock<IWorkItemsApi> workItemsApiMock,
+                IMock<IResourceProvider> resourceProviderMock,
+                string callbackUrlBase, IGuidGenerator guidGenerator, CompletionCheck completionCheck)
+            {
+                return new Publisher(
                     null,
                     new NullLogger<Publisher>(),
                     resourceProviderMock.Object,
                     new Mock<IPostProcessing>().Object,
                     Options.Create(new PublisherConfiguration
                     {
-                        CompletionCheck = CompletionCheck.Polling
+                        CallbackUrlBase = callbackUrlBase,
+                        CompletionCheck = completionCheck
                     }),
-                    _workItemsApiMock.Object,
-                    null,
+                    workItemsApiMock.Object,
+                    guidGenerator,
                     new Mock<ITaskUtil>().Object);
             }
-            
+
             public IEnumerator<object[]> GetEnumerator()
             {
                 yield return new object[]
                 {
-                    _publisher,
+                    _publisherCallback,
+                    TrackingKey,
+                    new WorkItemStatus
+                    {
+                        Status = Status.FailedLimitDataSize
+                    },
+                    _workItemsApiMockCallback
+                };
+                yield return new object[]
+                {
+                    _publisherCallback,
+                    TrackingKey,
+                    new WorkItemStatus
+                    {
+                        Status = Status.Cancelled
+                    },
+                    _workItemsApiMockCallback
+                };
+                yield return new object[]
+                {
+                    _publisherPolling,
+                    null,
                     new WorkItemStatus
                     {
                         Status = Status.FailedInstructions
                     },
-                    _workItemsApiMock
+                    _workItemsApiMockPolling
                 };
             }
 
@@ -171,38 +157,23 @@ namespace WebApplication.Tests
         }
 
         [Theory]
-        [ClassData(typeof(CallbackDataProvider))]
-        public void RunWorkItemAsyncUsingCallback(Publisher publisher,
-            string trackingKey, WorkItemStatus workItemStatus,
-            Mock<IWorkItemsApi> workItemsApiMock)
+        [ClassData(typeof(TestDataProvider))]
+        public void RunWorkItemAsyncUsingCallback(Publisher publisher, string trackingKey,
+            WorkItemStatus workItemStatus, Mock<IWorkItemsApi> workItemsApiMock)
         {
             workItemsApiMock.Invocations.Clear();
-            
+
             var workItemTask = publisher.RunWorkItemAsync(_workItemArgs, _configMock.Object);
-            publisher.NotifyTaskIsCompleted(trackingKey, workItemStatus);
+            if (trackingKey != null) //in order to have single test for callback and polling
+            {
+                publisher.NotifyTaskIsCompleted(trackingKey, workItemStatus);
+            }
+
             workItemTask.Wait();
 
             workItemsApiMock.Verify(mock => mock.CreateWorkItemAsync(It.IsAny<WorkItem>(), null, null, true),
                 Times.Once);
             Assert.Equal(workItemStatus.Status, workItemTask.Result.Status);
-            
-            workItemsApiMock.Invocations.Clear();
-        }
-        
-        [Theory]
-        [ClassData(typeof(PollingDataProvider))]
-        public void RunWorkItemAsyncUsingPolling(Publisher publisher, WorkItemStatus workItemStatus,
-            Mock<IWorkItemsApi> workItemsApiMock)
-        {
-            workItemsApiMock.Invocations.Clear();
-
-            var workItemTask = publisher.RunWorkItemAsync(_workItemArgs, _configMock.Object);
-            workItemTask.Wait();
-
-            workItemsApiMock.Verify(mock => mock.CreateWorkItemAsync(It.IsAny<WorkItem>(), null, null, true),
-                Times.Once);
-            Assert.Equal(workItemStatus.Status, workItemTask.Result.Status);
-            
         }
     }
 }
