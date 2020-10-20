@@ -38,14 +38,14 @@ namespace MigrationApp
       private readonly BucketPrefixProvider _bucketPrefix;
       private readonly IForgeOSS _forgeOSS;
       private readonly MigrationBucketKeyProvider _bucketProvider;
-      private readonly ResourceProvider _resourceProvider;
+      private readonly IResourceProvider _resourceProvider;
       private readonly UserResolver _userResolver;
       private readonly ProjectWork _projectWork;
       private readonly ILogger<Migration> _logger;
       private readonly OssBucketFactory _bucketFactory;
       private readonly ProjectService _projectService;
 
-      public Migration(IConfiguration configuration, BucketPrefixProvider bucketPrefix, IForgeOSS forgeOSS, MigrationBucketKeyProvider bucketProvider, UserResolver userResolver, ProjectWork projectWork, ILogger<Migration> logger, ResourceProvider resourceProvider, OssBucketFactory bucketFactory, ProjectService projectService)
+      public Migration(IConfiguration configuration, BucketPrefixProvider bucketPrefix, IForgeOSS forgeOSS, MigrationBucketKeyProvider bucketProvider, UserResolver userResolver, ProjectWork projectWork, ILogger<Migration> logger, IResourceProvider resourceProvider, OssBucketFactory bucketFactory, ProjectService projectService)
       {
          _forgeOSS = forgeOSS;
          _configuration = configuration;

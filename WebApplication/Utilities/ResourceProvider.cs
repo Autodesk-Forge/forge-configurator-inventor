@@ -26,7 +26,18 @@ using WebApplication.Services;
 
 namespace WebApplication.Utilities
 {
-    public class ResourceProvider
+    public interface IResourceProvider
+    {
+        /// <summary>
+        /// Bucket key for anonymous user.
+        /// </summary>
+        string BucketKey { get; }
+        Task<string> Nickname { get; }
+        string AnonymousBucketKey(string suffixParam = null);
+        string LoggedUserBucketKey(string userId, string userHashParam = null);
+    }
+
+    public class ResourceProvider : IResourceProvider
     {
         /// <summary>
         /// Bucket key for anonymous user.
