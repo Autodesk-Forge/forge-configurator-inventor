@@ -16,33 +16,19 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { getReportUrl } from '../reducers/mainReducer';
-import HyperLink from './hyperlink';
+import React from 'react';
+import Enzyme, { shallow } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+import { ReportUrl } from './reportUrl';
 
-export class ReportUrl extends Component {
-    render() {
-        const reportUrl =
-            this.props.reportUrl !== undefined ? this.props.reportUrl : null;
-        const showReportUrl = reportUrl !== null;
+Enzyme.configure({ adapter: new Adapter() });
 
-        // Return nothing if there is no report URL to render
-        if (!showReportUrl) return (null);
-
-        return (
-            <React.Fragment>
-                <div className="logContainer">
-                    <HyperLink link="Open log file" href={reportUrl} />
-                </div>
-            </React.Fragment>
-        );
-    }
-}
-
-/* istanbul ignore next */
-export default connect(function (store) {
-    return {
-        reportUrl: getReportUrl(store),
-    };
-})(ReportUrl);
+describe('Show report url', () => {
+    it('Shows report url when work item finishes', () => {
+        const props = { reportUrl: 'http://example.com' };
+        const wrapper = shallow(<ReportUrl {...props} />);
+        const hyperlink = wrapper.find('HyperLink');
+        expect(hyperlink.prop('href')).toEqual(props.reportUrl);
+        expect(wrapper).toEqual({});
+    });
+});
