@@ -19,7 +19,7 @@
 import repo from '../Repository';
 import { uploadPackageData } from '../reducers/mainReducer';
 import { addProject } from './projectListActions';
-import { setProjectAlreadyExists, showUploadPackage, setStats } from './uiFlagsActions';
+import { setProjectAlreadyExists, showUploadPackage, setStats, setReportUrl } from './uiFlagsActions';
 import { addError, addLog } from './notificationActions';
 import { Jobs } from '../JobManager';
 import { resetParameters } from "./parametersActions";
@@ -66,11 +66,12 @@ export const uploadPackage = () => async (dispatch, getState) => {
                     dispatch(addLog('JobManager: HubConnection started for adopt project : ' + uploadResponse));
                 },
                 // onComplete
-                (newProject, stats) => {
+                (newProject, stats, reportUrl) => {
                     dispatch(addLog('JobManager: Received onComplete'));
                     dispatch(resetParameters(newProject.id, null));
                     dispatch(addProject(newProject));
                     dispatch(setStats(stats));
+                    dispatch(setReportUrl(reportUrl));
                     dispatch(setUploadProgressDone());
                 },
                 // onError

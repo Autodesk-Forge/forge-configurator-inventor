@@ -62,11 +62,12 @@ namespace WebApplication.Job
             // adopt the project
             bool adopted = false;
             FdaStatsDTO stats;
+            string reportUrl = null;
             try
             {
                 string signedUploadedUrl = await bucket.CreateSignedUrlAsync(ossSourceModel);
 
-                stats = await ProjectWork.AdoptAsync(_projectInfo, signedUploadedUrl);
+                (stats, reportUrl) = await ProjectWork.AdoptAsync(_projectInfo, signedUploadedUrl);
                 adopted = true;
             }
             finally
@@ -80,7 +81,7 @@ namespace WebApplication.Job
             }
 
             Logger.LogInformation($"ProcessJob (Adopt) {Id} for project {_projectInfo.Name} completed.");
-            await resultSender.SendSuccessAsync(_dtoGenerator.ToDTO(projectStorage), stats);
+            await resultSender.SendSuccessAsync(_dtoGenerator.ToDTO(projectStorage), stats, reportUrl);
         }
     }
 }

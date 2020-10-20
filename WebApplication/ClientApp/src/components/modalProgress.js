@@ -27,6 +27,7 @@ import './modalProgress.css';
 import merge from "lodash.merge";
 import CreditCost from './creditCost';
 import Button from '@hig/button';
+import ReportUrl from './reportUrl';
 import { getStats } from '../reducers/mainReducer';
 
 export class ModalProgress extends Component {
@@ -111,6 +112,7 @@ export class ModalProgress extends Component {
                         <Spacer spacing='m'/>
                     </div>}
                     <CreditCost statsKey={this.props.statsKey}/>
+                    <ReportUrl/>
                     <div id="modalDone">
                         <Button className="button" style={
                             { width: '116px', height: '36px', borderRadius: '2px', marginLeft: '12px'}}

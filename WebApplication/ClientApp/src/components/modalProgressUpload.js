@@ -17,7 +17,6 @@
 /////////////////////////////////////////////////////////////////////
 
 import React, { Component } from 'react';
-
 import Modal from '@hig/modal';
 import { CloseMUI, Complete24 } from "@hig/icons";
 import ProgressBar from '@hig/progress-bar';
@@ -28,6 +27,7 @@ import merge from "lodash.merge";
 import Button from '@hig/button';
 import IconButton from "@hig/icon-button";
 import CreditCost from './creditCost';
+import ReportUrl from './reportUrl';
 
 export class ModalProgressUpload extends Component {
 
@@ -111,6 +111,7 @@ export class ModalProgressUpload extends Component {
                             <Spacer spacing='m'/>
                         </div>}
                         <CreditCost />
+                        <ReportUrl />
                         <div className="buttonsContainer">
                             <Button className="button" style={
                                 { width: '102px', height: '36px', borderRadius: '2px', marginLeft: '12px'}}
@@ -135,4 +136,5 @@ export class ModalProgressUpload extends Component {
     }
 }
 
+/* istanbul ignore next */
 export default ModalProgressUpload;

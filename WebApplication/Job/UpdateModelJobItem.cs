@@ -40,12 +40,12 @@ namespace WebApplication.Job
 
             Logger.LogInformation($"ProcessJob (Update) {Id} for project {ProjectId} started.");
 
-            (ProjectStateDTO state, FdaStatsDTO stats) = await ProjectWork.DoSmartUpdateAsync(Parameters, ProjectId);
+            (ProjectStateDTO state, FdaStatsDTO stats, string reportUrl) = await ProjectWork.DoSmartUpdateAsync(Parameters, ProjectId);
 
             Logger.LogInformation($"ProcessJob (Update) {Id} for project {ProjectId} completed.");
 
             // send that we are done to client
-            await resultSender.SendSuccessAsync(state, stats);
+            await resultSender.SendSuccessAsync(state, stats, reportUrl);
         }
     }
 }

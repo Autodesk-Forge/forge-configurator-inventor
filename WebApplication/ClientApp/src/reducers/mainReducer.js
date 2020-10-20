@@ -173,6 +173,10 @@ export const getStats = function(state) {
     return uiFlags.getStats(state.uiFlags);
 };
 
+export const getReportUrl = function(state) {
+    return uiFlags.getReportUrl(state.uiFlags);
+};
+
 export const getDrawingsList = function(state) {
     return uiFlags.getDrawingsList(state.uiFlags);
 };

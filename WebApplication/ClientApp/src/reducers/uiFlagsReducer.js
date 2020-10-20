@@ -43,6 +43,7 @@ export const initialState = {
    drawingProgressShowing: false,
    drawingUrls: {},
    stats: {},
+   reportUrl: null,
    activeDrawing: null,
    drawings: null
 };
@@ -129,6 +130,10 @@ export const drawingProgressShowing = function(state) {
 
 export const getStats = function(state) {
    return state.stats;
+};
+
+export const getReportUrl = function(state) {
+   return state.reportUrl;
 };
 
 export const getDrawingsList = function(state) {
@@ -231,6 +236,8 @@ export default function(state = initialState, action) {
                return { ...state, stats: stats };
             }
          }
+      case uiFlagsActionTypes.SET_REPORT_URL:
+         return { ...state, reportUrl: action.reportUrl };
       case uiFlagsActionTypes.DRAWING_LIST_UPDATED: {
 
          const prev = state.activeDrawing;
