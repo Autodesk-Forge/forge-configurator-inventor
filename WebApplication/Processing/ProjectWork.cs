@@ -164,10 +164,9 @@ namespace WebApplication.Processing
 
             // OK, nothing in cache - generate it now
             var inputDocUrl = await bucket.CreateSignedUrlAsync(ossNames.GetCurrentModel(storage.IsAssembly));
-            ProcessingArgs satData = await _arranger.ForSatAsync(inputDocUrl, storage.Metadata.TLA);
-            ProcessingArgs rfaData = await _arranger.ForRfaAsync(satData.SatUrl);
+            ProcessingArgs rfaData = await _arranger.ForRfaAsync(inputDocUrl, storage.Metadata.TLA);
 
-            ProcessingResult result = await _fdaClient.GenerateRfa(satData, rfaData);
+            ProcessingResult result = await _fdaClient.GenerateRfa(rfaData);
             if (!result.Success)
             {
                 _logger.LogError($"{result.ErrorMessage} for project {project.Name} and hash {hash}");

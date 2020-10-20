@@ -16,6 +16,7 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
+using System.Net.Http;
 using System.Text.Json.Serialization;
 using Autodesk.Forge.Core;
 using Autodesk.Forge.DesignAutomation;
@@ -105,9 +106,22 @@ namespace WebApplication
             services.AddTransient<ProjectWork>();
             services.AddTransient<DtoGenerator>();
             services.AddSingleton<ITaskUtil, TaskUtil>();
-            
-            services.AddDesignAutomation(Configuration);
-            
+            //services.AddDesignAutomation(Configuration);
+            ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            /// this is for testing with DEV env only - WILL BE REMOVED
+            services.AddSingleton<DesignAutomationClient>(provider =>
+                                    {
+                                        var forge = provider.GetService<IForgeOSS>();
+                                        var httpMessageHandler = new ForgeHandler(Options.Create(forge.Configuration))
+                                        {
+                                            InnerHandler = new HttpClientHandler()
+                                        };
+                                        var forgeService = new ForgeService(new HttpClient(httpMessageHandler));
+                                        var rsdkCfg = Configuration.GetSection("DesignAutomation").Get<Configuration>();
+                                        var options = (rsdkCfg == null) ? null : Options.Create(rsdkCfg);
+                                        return new DesignAutomationClient(forgeService, options);
+                                    });
+            ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             services.AddSingleton<Publisher>();
             services.AddSingleton<BucketPrefixProvider>();
             services.AddSingleton<LocalCache>();

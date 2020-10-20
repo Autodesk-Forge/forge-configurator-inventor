@@ -41,6 +41,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCheckerPlugin", "AppBun
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginUtilities", "AppBundles\PluginUtilities\PluginUtilities.csproj", "{1B86189C-D714-4A83-B710-F669091C9C6C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RFAExportRCEPlugin", "AppBundles\RFAExportRCEPlugin\RFAExportRCEPlugin.csproj", "{F2814338-C426-4EC7-A29E-F29E849A2158}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -103,6 +105,10 @@ Global
 		{1B86189C-D714-4A83-B710-F669091C9C6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1B86189C-D714-4A83-B710-F669091C9C6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1B86189C-D714-4A83-B710-F669091C9C6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2814338-C426-4EC7-A29E-F29E849A2158}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2814338-C426-4EC7-A29E-F29E849A2158}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2814338-C426-4EC7-A29E-F29E849A2158}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2814338-C426-4EC7-A29E-F29E849A2158}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -120,6 +126,7 @@ Global
 		{96BECCEC-D943-46C7-ACD7-E8A5C6F0650D} = {BE4037E8-BD5B-4F31-8F23-1FC907D31CEC}
 		{EB3C5EA6-26EC-44D2-90B3-08929CE9D6DE} = {BE4037E8-BD5B-4F31-8F23-1FC907D31CEC}
 		{1B86189C-D714-4A83-B710-F669091C9C6C} = {BE4037E8-BD5B-4F31-8F23-1FC907D31CEC}
+		{F2814338-C426-4EC7-A29E-F29E849A2158} = {BE4037E8-BD5B-4F31-8F23-1FC907D31CEC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CFF460A7-ACD6-4D4D-BC60-953D66925F4E}
