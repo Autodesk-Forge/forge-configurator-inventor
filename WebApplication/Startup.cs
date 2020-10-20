@@ -16,7 +16,6 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using System.Net.Http;
 using System.Text.Json.Serialization;
 using Autodesk.Forge.Core;
 using Autodesk.Forge.DesignAutomation;
@@ -31,6 +30,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MigrationApp;
 using Serilog;
+using WebApplication.Controllers;
 using WebApplication.Definitions;
 using WebApplication.Middleware;
 using WebApplication.Processing;
@@ -96,7 +96,7 @@ namespace WebApplication
                 .Configure<ProcessingOptions>(Configuration.GetSection(ProcessingOptionsKey))
                 .Configure<PublisherConfiguration>(Configuration.GetSection(PublisherOptionsKey));
 
-            services.AddSingleton<ResourceProvider>();
+            services.AddSingleton<IResourceProvider, ResourceProvider>();
             services.AddSingleton<IPostProcessing, PostProcessing>();
             services.AddSingleton<IForgeOSS, ForgeOSS>();
             services.AddSingleton<FdaClient>();
@@ -104,25 +104,21 @@ namespace WebApplication
             services.AddTransient<Arranger>();
             services.AddTransient<ProjectWork>();
             services.AddTransient<DtoGenerator>();
-            services.AddSingleton<DesignAutomationClient>(provider =>
-                                    {
-                                        var forge = provider.GetService<IForgeOSS>();
-                                        var httpMessageHandler = new ForgeHandler(Options.Create(forge.Configuration))
-                                        {
-                                            InnerHandler = new HttpClientHandler()
-                                        };
-                                        var forgeService = new ForgeService(new HttpClient(httpMessageHandler));
-                                        return new DesignAutomationClient(forgeService);
-                                    });
+            services.AddSingleton<ITaskUtil, TaskUtil>();
+            
+            services.AddDesignAutomation(Configuration);
+            
             services.AddSingleton<Publisher>();
             services.AddSingleton<BucketPrefixProvider>();
             services.AddSingleton<LocalCache>();
             services.AddSingleton<Uploads>();
             services.AddSingleton<OssBucketFactory>();
 
+            services.AddSingleton<IGuidGenerator, GuidGenerator>();
+
             if (Configuration.GetValue<bool>("migration"))
             {
-                services.AddHostedService<MigrationApp.Worker>();
+                services.AddHostedService<Worker>();
                 services.AddSingleton<MigrationBucketKeyProvider>();
                 services.AddSingleton<IBucketKeyProvider>(provider =>
                 {
@@ -208,7 +204,7 @@ namespace WebApplication
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHub<Controllers.JobsHub>("/signalr/connection");
+                endpoints.MapHub<JobsHub>("/signalr/connection");
             });
 
             app.UseSpa(spa =>

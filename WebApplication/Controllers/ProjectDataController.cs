@@ -78,14 +78,7 @@ namespace WebApplication.Controllers
             // for some reason 'time finished' is not set, so "fix" it if necessary
             status.Stats.TimeFinished ??= DateTime.UtcNow;
 
-            if (_publisher.Tracker.TryRemove(trackerId, out var completionSource))
-            {
-                completionSource.SetResult(status);
-            }
-            else
-            {
-                _logger.LogError($"Cannot find tracker {trackerId}");
-            }
+            _publisher.NotifyTaskIsCompleted(trackerId, status);
 
             return NoContent();
         }

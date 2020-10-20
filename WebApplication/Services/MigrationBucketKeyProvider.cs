@@ -7,11 +7,11 @@ namespace WebApplication.Services
     public class MigrationBucketKeyProvider : IBucketKeyProvider
     {
         private readonly BucketPrefixProvider _bucketPrefixProvider;
-        private readonly ResourceProvider _resourceProvider;
+        private readonly IResourceProvider _resourceProvider;
         private string BucketKey = "";
         public string AnonymousBucketKey {get;}
 
-        public MigrationBucketKeyProvider(BucketPrefixProvider bucketPrefixProvider, ResourceProvider resourceProvider)
+        public MigrationBucketKeyProvider(BucketPrefixProvider bucketPrefixProvider, IResourceProvider resourceProvider)
         {
             _bucketPrefixProvider = bucketPrefixProvider;
             _resourceProvider = resourceProvider;
