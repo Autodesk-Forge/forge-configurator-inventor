@@ -23,6 +23,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Autodesk.Forge.DesignAutomation;
+using Autodesk.Forge.DesignAutomation.Http;
 using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -34,11 +35,14 @@ namespace WebApplication.Processing
 {
     public class Publisher
     {
-        private readonly ResourceProvider _resourceProvider;
+        private readonly IResourceProvider _resourceProvider;
         private readonly IPostProcessing _postProcessing;
         private readonly DesignAutomationClient _client;
         private readonly ILogger<Publisher> _logger;
         private readonly string _callbackUrlBase;
+        private readonly IWorkItemsApi _workItemsApi;
+        private readonly IGuidGenerator _guidGenerator;
+        private readonly ITaskUtil _taskUtil;
 
         /// <summary>
         /// How a work item completion check should be done.
@@ -55,8 +59,9 @@ namespace WebApplication.Processing
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Publisher(DesignAutomationClient client, ILogger<Publisher> logger, ResourceProvider resourceProvider, 
-            IPostProcessing postProcessing, IOptions<PublisherConfiguration> publisherConfiguration)
+        public Publisher(DesignAutomationClient client, ILogger<Publisher> logger, IResourceProvider resourceProvider, 
+            IPostProcessing postProcessing, IOptions<PublisherConfiguration> publisherConfiguration, 
+            IWorkItemsApi workItemsApi, IGuidGenerator guidGenerator, ITaskUtil taskUtil)
         {
             _client = client;
             _logger = logger;
@@ -65,9 +70,14 @@ namespace WebApplication.Processing
 
             _callbackUrlBase = publisherConfiguration.Value.CallbackUrlBase;
             CompletionCheck = publisherConfiguration.Value.CompletionCheck;
+
+            _workItemsApi = workItemsApi;
+            _guidGenerator = guidGenerator;
+
+            _taskUtil = taskUtil;
         }
 
-        public async Task<WorkItemStatus> RunWorkItemAsync(Dictionary<string, IArgument> workItemArgs, ForgeAppBase config)
+        public async Task<WorkItemStatus> RunWorkItemAsync(Dictionary<string, IArgument> workItemArgs, IForgeAppBase config)
         {
             // create work item
             var wi = new WorkItem
@@ -102,12 +112,12 @@ namespace WebApplication.Processing
 
         private async Task<WorkItemStatus> RunWithPolling(WorkItem wi)
         {
-            WorkItemStatus status = await _client.CreateWorkItemAsync(wi);
+            WorkItemStatus status = (await _workItemsApi.CreateWorkItemAsync(wi)).Content;
             _logger.LogInformation($"Created WI {status.Id} (polling mode)");
             while (status.Status == Status.Pending || status.Status == Status.Inprogress)
             {
-                await Task.Delay(2000);
-                status = await _client.GetWorkitemStatusAsync(status.Id);
+                await _taskUtil.Sleep(2000);
+                status = (await _workItemsApi.GetWorkitemStatusAsync(status.Id)).Content;
             }
 
             return status;
@@ -116,7 +126,7 @@ namespace WebApplication.Processing
         private async Task<WorkItemStatus> RunWithCallback(WorkItem wi)
         {
             // register tracking key for callback task
-            string trackingKey = Guid.NewGuid().ToString("N");
+            string trackingKey = _guidGenerator.GenerateGuid();
             var completionSource = Tracker.GetOrAdd(trackingKey, new TaskCompletionSource<WorkItemStatus>());
 
             // build callback URL to be poked from FDA server on WI completion
@@ -127,7 +137,7 @@ namespace WebApplication.Processing
             try
             {
                 // post work item
-                WorkItemStatus created = await _client.CreateWorkItemAsync(wi);
+                WorkItemStatus created = (await _workItemsApi.CreateWorkItemAsync(wi)).Content;
                 _logger.LogInformation($"Created WI {created.Id} with tracker ID {trackingKey}");
             }
             catch
@@ -142,6 +152,18 @@ namespace WebApplication.Processing
             _logger.LogInformation($"Completing WI {status.Id} with tracker ID {trackingKey}");
 
             return status;
+        }
+
+        public void NotifyTaskIsCompleted(string trackerId, WorkItemStatus status)
+        {
+            if (Tracker.TryRemove(trackerId, out var completionSource))
+            {
+                completionSource.SetResult(status);
+            }
+            else
+            {
+                _logger.LogError($"Cannot find tracker {trackerId}");
+            }
         }
 
         private async Task PostAppBundleAsync(string packagePathname, ForgeAppBase config)
@@ -247,7 +269,7 @@ namespace WebApplication.Processing
             }
         }
 
-        private async Task<string> GetFullActivityId(ForgeAppBase config)
+        private async Task<string> GetFullActivityId(IForgeAppBase config)
         {
             var nickname = await _resourceProvider.Nickname;
             return $"{nickname}.{config.ActivityId}+{config.ActivityLabel}";
