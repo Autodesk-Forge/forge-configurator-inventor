@@ -31,4 +31,11 @@ describe('Show report url', () => {
         expect(hyperlink.prop('href')).toEqual(props.reportUrl);
         expect(wrapper).toEqual({});
     });
+
+    it('Do not show report url', () => {
+        const props = { reportUrl: null };
+        const wrapper = shallow(<ReportUrl {...props} />);
+        const hyperlink = wrapper.find('HyperLink');
+        expect(hyperlink.contains('HyperLink')).toBe(false);
+    });
 });
