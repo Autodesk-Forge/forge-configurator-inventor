@@ -203,7 +203,7 @@ export default function(state = initialState, action) {
       case uiFlagsActionTypes.SHOW_DELETE_PROJECT:
          return { ...state, showDeleteProject: action.visible};
       case uiFlagsActionTypes.SHOW_ADOPT_WITH_PROPERTIES_PROGRESS:
-         return { ...state, adoptWithParamsProgressShowing: action.visible};
+         return { ...state, adoptWithParamsProgressShowing: action.visible, stats: null};
       case uiFlagsActionTypes.SHOW_ADOPT_WITH_PARAMS_FAILED:
          return { ...state, adoptWithParamsFailed: action.visible};
       case uiFlagsActionTypes.SET_PROJECT_CHECKED:
