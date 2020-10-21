@@ -16,7 +16,6 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using System.Net.Http;
 using System.Text.Json.Serialization;
 using Autodesk.Forge.Core;
 using Autodesk.Forge.DesignAutomation;
@@ -106,7 +105,9 @@ namespace WebApplication
             services.AddTransient<ProjectWork>();
             services.AddTransient<DtoGenerator>();
             services.AddSingleton<ITaskUtil, TaskUtil>();
+
             services.AddDesignAutomation(Configuration);
+
             services.AddSingleton<Publisher>();
             services.AddSingleton<BucketPrefixProvider>();
             services.AddSingleton<LocalCache>();
