@@ -278,9 +278,7 @@ namespace WebApplication.Services
         /// </remarks>
         public async Task<dynamic> GetProfileAsync(string token)
         {
-            //var api = new UserProfileApi(new Configuration { AccessToken = token }); // TODO: use Polly cache policy!
-            /// this is for testing with DEV env only - WILL BE REMOVED
-            var api = new UserProfileApi("https://developer-dev.api.autodesk.com");
+            var api = new UserProfileApi(new Configuration { AccessToken = token }); // TODO: use Polly cache policy!
             api.Configuration.AccessToken = await TwoLeggedAccessToken;
             return await api.GetUserProfileAsync();
         }
@@ -293,10 +291,7 @@ namespace WebApplication.Services
         {
             await _ossResiliencyPolicy.ExecuteAsync(async () =>
                     {
-                        var api = new BucketsApi("https://developer-dev.api.autodesk.com");
-                        /// this is for testing with DEV env only - WILL BE REMOVED
-                        api.Configuration.AccessToken = await TwoLeggedAccessToken;
-                        //{ Configuration = { AccessToken = await TwoLeggedAccessToken } };
+                        var api = new BucketsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } };
                         await action(api);
                     });
         }
@@ -309,10 +304,7 @@ namespace WebApplication.Services
         {
             return await _ossResiliencyPolicy.ExecuteAsync(async () =>
             {
-                //var api = new BucketsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } };
-                /// this is for testing with DEV env only - WILL BE REMOVED
-                var api = new BucketsApi("https://developer-dev.api.autodesk.com");
-                api.Configuration.AccessToken = await TwoLeggedAccessToken;
+                var api = new BucketsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } };
                 return await action(api);
             });
         }
@@ -325,10 +317,7 @@ namespace WebApplication.Services
         {
             await _ossResiliencyPolicy.ExecuteAsync(async () =>
                     {
-                        //var api = new ObjectsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } };
-                        /// this is for testing with DEV env only - WILL BE REMOVED
-                        var api = new ObjectsApi("https://developer-dev.api.autodesk.com");
-                        api.Configuration.AccessToken = await TwoLeggedAccessToken;
+                        var api = new ObjectsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } };
                         await action(api);
                     });
         }
@@ -341,10 +330,7 @@ namespace WebApplication.Services
         {
             return await _ossResiliencyPolicy.ExecuteAsync(async () =>
             {
-                //var api = new ObjectsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } };
-                /// this is for testing with DEV env only - WILL BE REMOVED
-                var api = new ObjectsApi("https://developer-dev.api.autodesk.com");
-                api.Configuration.AccessToken = await TwoLeggedAccessToken;
+                var api = new ObjectsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } };
                 return await action(api);
             });
         }
@@ -365,8 +351,7 @@ namespace WebApplication.Services
 
             // Call the asynchronous version of the 2-legged client with HTTP information
             // HTTP information helps to verify if the call was successful as well as read the HTTP transaction headers.
-            /// this is for testing with DEV env only - WILL BE REMOVED
-            var twoLeggedApi = new TwoLeggedApi("https://developer-dev.api.autodesk.com");
+            var twoLeggedApi = new TwoLeggedApi();
             Autodesk.Forge.Client.ApiResponse<dynamic> response = await twoLeggedApi.AuthenticateAsyncWithHttpInfo(Configuration.ClientId, Configuration.ClientSecret, oAuthConstants.CLIENT_CREDENTIALS, _scope);
             if (response.StatusCode != StatusCodes.Status200OK)
             {

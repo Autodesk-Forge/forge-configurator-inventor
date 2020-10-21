@@ -106,22 +106,7 @@ namespace WebApplication
             services.AddTransient<ProjectWork>();
             services.AddTransient<DtoGenerator>();
             services.AddSingleton<ITaskUtil, TaskUtil>();
-            //services.AddDesignAutomation(Configuration);
-            ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            /// this is for testing with DEV env only - WILL BE REMOVED
-            services.AddSingleton<DesignAutomationClient>(provider =>
-                                    {
-                                        var forge = provider.GetService<IForgeOSS>();
-                                        var httpMessageHandler = new ForgeHandler(Options.Create(forge.Configuration))
-                                        {
-                                            InnerHandler = new HttpClientHandler()
-                                        };
-                                        var forgeService = new ForgeService(new HttpClient(httpMessageHandler));
-                                        var rsdkCfg = Configuration.GetSection("DesignAutomation").Get<Configuration>();
-                                        var options = (rsdkCfg == null) ? null : Options.Create(rsdkCfg);
-                                        return new DesignAutomationClient(forgeService, options);
-                                    });
-            ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            services.AddDesignAutomation(Configuration);
             services.AddSingleton<Publisher>();
             services.AddSingleton<BucketPrefixProvider>();
             services.AddSingleton<LocalCache>();
