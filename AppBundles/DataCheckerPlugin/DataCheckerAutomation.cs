@@ -195,21 +195,44 @@ namespace DataCheckerPlugin
             LogTrace("Scan document for missing references");
 
             ProcessFileReferences(doc.File);
+
+            if (_missingReferences.Count == 0) return;
+
+            // generate message about files
+            var count = _missingReferences.Count;
+            var filenames = _missingReferences
+                                .Take(2)
+                                .ToArray();
+
+            string message;
+            switch (count)
+            {
+                case 1:
+                    message = $"Unresolved file: '{filenames[0]}'.";
+                    break;
+                case 2:
+                    message = $"Unresolved files: '{filenames[0]}' and '{filenames[1]}'.";
+                    break;
+                default: // 3+
+                    message = $"Unresolved files: '{filenames[0]}', '{filenames[1]}', and {count - 2} other file(s).";
+                    break;
+            }
+
+            AddMessage(message, Severity.Warning);
         }
 
         private void ProcessFileReferences(Inventor.File file)
         {
             foreach (FileDescriptor descriptor in file.ReferencedFileDescriptors)
             {
-                LogTrace(descriptor.FullFileName);
                 if (descriptor.ReferenceMissing)
                 {
-                    if (_missingReferences.Contains(descriptor.FullFileName)) continue;
+                    var fileName = Path.GetFileName(descriptor.FullFileName);
 
-                    _missingReferences.Add(descriptor.FullFileName);
+                    if (_missingReferences.Contains(fileName)) continue;
 
+                    _missingReferences.Add(fileName);
                     LogError($"Missing '{descriptor.FullFileName}'");
-                    AddMessage($"Missing '{descriptor.FullFileName}'", Severity.Warning);
                 }
                 else if (descriptor.ReferencedFileType != FileTypeEnum.kForeignFileType)
                 {
