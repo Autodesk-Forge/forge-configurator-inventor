@@ -47,6 +47,8 @@ namespace DataCheckerPlugin
                                                                        { "{BB8FE430-83BF-418D-8DF9-9B323D3DB9B9}", "Design Accelerator" },
                                                                     };
 
+        private readonly HashSet<string> _missingReferences = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
         public DataCheckerAutomation(InventorServer inventorApp)
         {
             inventorApplication = inventorApp;
@@ -63,6 +65,7 @@ namespace DataCheckerPlugin
             {
                 ExtractDrawingList(doc);
                 DetectUnsupportedAddins(doc);
+                CheckForMissingReferences(doc);
 
                 SaveMessages();
             }
@@ -184,7 +187,36 @@ namespace DataCheckerPlugin
             AddMessage($"Found {drawings.Length} drawings", Severity.Info);
 
             foreach (var (d, i) in drawings.Select((v, i) => (v, i)))
-                LogTrace("Drawing {0}: {1}", i, d);
+                LogTrace($"Drawing {i}: {d}");
+        }
+
+        private void CheckForMissingReferences(Document doc)
+        {
+            LogTrace("Scan document for missing references");
+
+            ProcessFileReferences(doc.File);
+        }
+
+        private void ProcessFileReferences(Inventor.File file)
+        {
+            foreach (FileDescriptor descriptor in file.ReferencedFileDescriptors)
+            {
+                LogTrace(descriptor.FullFileName);
+                if (descriptor.ReferenceMissing)
+                {
+                    if (_missingReferences.Contains(descriptor.FullFileName)) continue;
+
+                    _missingReferences.Add(descriptor.FullFileName);
+
+                    LogError($"Missing '{descriptor.FullFileName}'");
+                    AddMessage($"Missing '{descriptor.FullFileName}'", Severity.Warning);
+                }
+                else if (descriptor.ReferencedFileType != FileTypeEnum.kForeignFileType)
+                {
+                    // go deeper
+                    ProcessFileReferences(descriptor.ReferencedFile);
+                }
+            }
         }
 
         private void SaveMessages()
@@ -218,25 +250,9 @@ namespace DataCheckerPlugin
         /// <summary>
         /// Log message with 'trace' log level.
         /// </summary>
-        private static void LogTrace(string format, params object[] args)
-        {
-            Trace.TraceInformation(format, args);
-        }
-
-        /// <summary>
-        /// Log message with 'trace' log level.
-        /// </summary>
         private static void LogTrace(string message)
         {
             Trace.TraceInformation(message);
-        }
-
-        /// <summary>
-        /// Log message with 'error' log level.
-        /// </summary>
-        private static void LogError(string format, params object[] args)
-        {
-            Trace.TraceError(format, args);
         }
 
         /// <summary>
