@@ -20,9 +20,11 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Autodesk.Forge.Client;
+using Autodesk.Forge.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Shared;
 using WebApplication.Definitions;
 using WebApplication.Processing;
 using WebApplication.Services;
@@ -101,6 +103,22 @@ namespace MigrationApp
             // swallow non existing item
          }
 
+         // gather list of cache paramters files from the new bucket
+         List<string> configKeysNew = new List<string>();
+         try {
+            List<ObjectDetails> configODsNew = await bucketNew.GetObjectsAsync($"cache/");
+            foreach (ObjectDetails configODNew in configODsNew)
+            {
+               if (configODNew.ObjectKey.EndsWith(WebApplication.Utilities.LocalName.Parameters))
+                  configKeysNew.Add(configODNew.ObjectKey);
+            }
+         }
+         catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
+         {
+            // swallow non existing item
+         }
+
+         // gather projects to migrate
          List<string> projectNamesOld = (List<string>) await _projectService.GetProjectNamesAsync(bucketOld);
          foreach (string projectName in projectNamesOld)
          {
@@ -121,6 +139,24 @@ namespace MigrationApp
                   _logger.LogError(e, $"Project {projectName} in bucket {bucketKeyOld} does not have metadata file. Skipping it.");
                }
             }
+
+            // process cached configurations
+            List<ObjectDetails> configODs = await bucketOld.GetObjectsAsync($"cache/{projectName}/");
+            foreach (ObjectDetails configOD in configODs)
+            {
+               string configKey = configOD.ObjectKey;
+               if (configKey.EndsWith(WebApplication.Utilities.LocalName.Parameters))
+               {
+                  if (! configKeysNew.Contains(configKey))
+                  {
+                     InventorParameters parameters = await bucketOld.DeserializeAsync<InventorParameters>(configKey);;
+                     ProjectInfo projectInfo = new ProjectInfo();
+                     projectInfo.Name = projectName;
+
+                     migrationJobs.Add(new MigrationJob(JobType.GenerateConfiguration, bucketOld, projectInfo, ONC.ProjectUrl(projectName), parameters));
+                  }
+               }
+            }
          }
 
          // check if any of migrated projects were deleted in old bucket
@@ -134,6 +170,7 @@ namespace MigrationApp
 
       public async Task Migrate(List<MigrationJob> migrationJobs)
       {
+         // process adoption first
          foreach (MigrationJob job in migrationJobs)
          {
             switch (job.jobType)
@@ -146,6 +183,35 @@ namespace MigrationApp
                   break;
             }
          }
+
+         // now process configurations
+         foreach (MigrationJob job in migrationJobs)
+         {
+            switch (job.jobType)
+            {
+               case JobType.GenerateConfiguration:
+                  await GenerateConfiguration(job);
+                  break;
+            }
+         }
+      }
+
+      private async Task GenerateConfiguration(MigrationJob job)
+      {
+         _bucketProvider.SetBucketKeyFromOld(job.bucket.BucketKey);
+         OssBucket bucketNew = await _userResolver.GetBucketAsync();
+
+         try
+         {
+            await _projectWork.DoSmartUpdateAsync(job.parameters, job.projectInfo.Name);
+            _logger.LogInformation($"Configuration {job.parameters} for project {job.projectInfo.Name} was generated.");
+         }
+         catch(Exception e)
+         {
+            _logger.LogError(e, $"Configuration {job.parameters} for project {job.projectInfo.Name} was NOT generated.");
+         }
+
+         return;
       }
 
       private async Task RemoveNew(MigrationJob job)

@@ -16,6 +16,7 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
+using Shared;
 using WebApplication.Definitions;
 using WebApplication.State;
 
@@ -23,17 +24,19 @@ namespace MigrationApp
 {
    public class MigrationJob
    {
-      public enum JobType {CopyAndAdopt, RemoveNew };
+      public enum JobType {CopyAndAdopt, RemoveNew, GenerateConfiguration };
       public JobType jobType;
       public OssBucket bucket;
       public ProjectInfo projectInfo;
       public string projectUrl;
-      public MigrationJob(JobType jobTypeParam, OssBucket bucketParam, ProjectInfo projectInfoParam, string projectUrlParam)
+      public InventorParameters parameters;
+      public MigrationJob(JobType jobTypeParam, OssBucket bucketParam, ProjectInfo projectInfoParam, string projectUrlParam, InventorParameters parametersParam = null)
       {
          jobType = jobTypeParam;
          bucket = bucketParam;
          projectInfo = projectInfoParam;
          projectUrl = projectUrlParam;
+         parameters = parametersParam;
       }
    }
 }
