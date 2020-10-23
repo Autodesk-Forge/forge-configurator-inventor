@@ -87,7 +87,7 @@ export class ParametersContainer extends Component {
                         onClick={() => {this.props.resetParameters(this.props.activeProject.id, this.props.projectSourceParameters);}}
                     />
                     <div style={{width: '14px'}}/>
-                    <div width="grow" /*this div makes the sizzing of the Button bellow not to be broken by the encapsulating Tooltip*/>
+                    <div width="grow" /*this div makes the size of the Button below not to be broken by the encapsulating Tooltip*/>
                         <Tooltip { ...tooltipProps } className="paramTooltip" anchorPoint="top-center">
                             <Button id="updateButton"
                                 style={{width: '125px'}}
