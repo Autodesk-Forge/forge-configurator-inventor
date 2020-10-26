@@ -202,7 +202,9 @@ describe('fetchParameters', () => {
                         name: 'WrenchSz',
                         value: 'Small',
                         units: 'Text',
-                        allowedValues: ['Large', 'Medium', 'Small']
+                        allowedValues: ['Large', 'Medium', 'Small'],
+                        label: "Size",
+                        readonly: false
                     }
                 ];
 
@@ -210,7 +212,9 @@ describe('fetchParameters', () => {
                     WrenchSz: {
                         value: '"Small"',
                         unit: 'Text',
-                        values: ['"Large"', '"Medium"', '"Small"']
+                        values: ['"Large"', '"Medium"', '"Small"'],
+                        label: "Size",
+                        readonly: false
                     }
                 };
 
