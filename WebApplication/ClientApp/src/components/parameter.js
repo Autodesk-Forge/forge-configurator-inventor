@@ -44,6 +44,23 @@ export class Parameter extends Component {
         this.onComboChange = this.onComboChange.bind(this);
         this.onCheckboxChange = this.onCheckboxChange.bind(this);
         this.onEditChange = this.onEditChange.bind(this);
+        this.showTooltip = this.showTooltip.bind(this);
+        this.hideTooltip = this.hideTooltip.bind(this);
+        this.state = {
+            showDropdownTooltip: false
+        };
+    }
+
+    showTooltip() {
+        this.setState({
+            showDropdownTooltip: true
+        });
+    }
+
+    hideTooltip() {
+        this.setState({
+            showDropdownTooltip: false
+        });
     }
 
     onComboChange(data) {
@@ -61,7 +78,7 @@ export class Parameter extends Component {
     render() {
         let parameterInputClassName = this.props.parameter.changedOnUpdate == true ? "changedOnUpdate" : "";
         const showToolTip = this.props.parameter.changedOnUpdate || (this.props.parameter.errormessage != null);
-        const tooltipProps = showToolTip == true ? {openOnHover: true} : {open: false};
+        const tooltipProps = showToolTip ? {openOnHover: true} : {open: false}; // not used for dropdown, see below
         // for debugging the tooltip, replace the above two lines with these:
         // const parameterInputClassName = "changedOnUpdate";
         // const tooltipProps = {openOnHover: true};
@@ -94,15 +111,18 @@ export class Parameter extends Component {
             return (
                 <div className="parameter">
                     {this.props.parameter.label}
-                    <Tooltip {...tooltipProps} className="paramTooltip" anchorPoint="top-center" content={paramTooltipRenderer(this.props.parameter)}>
+                    <Tooltip open={showToolTip && this.state.showDropdownTooltip}  className="paramTooltip" anchorPoint="bottom-center" content={paramTooltipRenderer(this.props.parameter)}>
                         <Dropdown className={parameterInputClassName}
                             variant="box"
                             disabled={this.props.parameter.readonly}
                             error={false}
                             required=""
                             multiple={false}
-                            onBlur={null}
                             onChange={this.onComboChange}
+                            onMouseOver={this.showTooltip}
+                            onMouseOut={this.hideTooltip}
+                            onFocus={this.hideTooltip}
+                            onBlur={this.hideTooltip}
                             options={this.props.parameter.allowedValues}
                             value={this.props.parameter.value}
                         />
