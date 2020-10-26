@@ -20,7 +20,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import 'react-base-table/styles.css';
 import './bom.css';
-import './drawing.css';
 
 import { getActiveProject, getBom } from '../reducers/mainReducer';
 import { fetchBom } from '../actions/bomActions';
@@ -52,12 +51,16 @@ export class Bom extends Component {
     if (this.props.activeProject.isAssembly && ! bom?.columns?.length) {
       // if BOM is empty it's possible that the project has problems (like - IPT is missing).
       // So check existence the adoption warnings, and if any - show the warning message.
-      const adoptWarning = fullWarningMsg(this.props.activeProject.adoptWarnings, '<br/>', []);
+      const adoptWarning = fullWarningMsg(this.props.activeProject.adoptWarnings, '\n', []);
       if (adoptWarning) {
         return <div className="fullheight">
-          <div className="drawingContainer empty">
-            <div className="drawingEmptyText">
-              BOM is empty, which possibly can be caused by the following project adoption warnings:
+          <div className="bomEmpty">
+            <div className="title">
+              BOM is Empty
+            </div>
+            <div className="image"></div>
+            <div className="details">
+              which possibly can be caused by the following project adoption warnings:
               <br/>
               {adoptWarning}
             </div>

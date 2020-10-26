@@ -20,3 +20,27 @@
     background-color: white;
     font-family: ArtifaktElement, sans-serif;
 }
+
+.bomEmpty {
+    font-family: ArtifaktElement, sans-serif;
+    text-align: center;
+    padding: 50px;
+    color: #3C3C3C;
+}
+
+.bomEmpty .title {
+    font-size: 28px;
+    margin: 25px;
+}
+
+.bomEmpty .image {
+    background-image: url('/no-data.svg');
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 150px;
+}
+
+.bomEmpty .details {
+    font-family: ArtifaktElement-Medium, sans-serif;
+    margin: 25px;
+}
