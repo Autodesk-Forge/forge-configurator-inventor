@@ -73,50 +73,48 @@ export class Bom extends Component {
     let columns = [{ key: 'leftAlignColumn', width: 79, minWidth: 79}];
     let data = [];
 
-    if (bom) {
-      const columnWidths = [];
-      // extract all strings from all columns to prepare columns widths
-      const allStrings = [];
-      bom.columns.forEach( (column, index) => {
-        const columnStrings = [ column.label ];
-        bom.data.forEach(row => {
-          columnStrings.push(row[index]);
+    const columnWidths = [];
+    // extract all strings from all columns to prepare columns widths
+    const allStrings = [];
+    bom.columns.forEach( (column, index) => {
+      const columnStrings = [ column.label ];
+      bom.data.forEach(row => {
+        columnStrings.push(row[index]);
+      });
+      allStrings.push(columnStrings);
+    });
+
+    allStrings.forEach(columnStrings => {
+      // compute column width
+      columnWidths.push(getMaxColumnTextWidth(columnStrings) + 15 /*right+left padding*/);
+    });
+
+    // prepare columns
+    columns = columns.concat(bom.columns.map( (column, columnIndex) => (
+      {
+        key: 'column-'+columnIndex,
+        dataKey: 'column-'+columnIndex,
+        title: column.label,
+        align: column?.numeric ? Column.Alignment.RIGHT : Column.Alignment.LEFT,
+        width: columnWidths[columnIndex],
+        resizable: true
+      }
+    )));
+    columns.push({ key: 'rightAlignColumn', width: 93, minWidth: 93});
+
+    // prepare data
+    data = bom.data.map( (value, rowIndex) => {
+          return value.reduce(
+            (rowData, value, columnIndex) => {
+              rowData['column-'+columnIndex] = value;
+              return rowData;
+            },
+            {
+              id: 'row-'+rowIndex,
+              parentId: null
+            }
+          );
         });
-        allStrings.push(columnStrings);
-      });
-
-      allStrings.forEach(columnStrings => {
-        // compute column width
-        columnWidths.push(getMaxColumnTextWidth(columnStrings) + 15 /*right+left padding*/);
-      });
-
-      // prepare columns
-      columns = columns.concat(bom.columns.map( (column, columnIndex) => (
-        {
-          key: 'column-'+columnIndex,
-          dataKey: 'column-'+columnIndex,
-          title: column.label,
-          align: column?.numeric ? Column.Alignment.RIGHT : Column.Alignment.LEFT,
-          width: columnWidths[columnIndex],
-          resizable: true
-        }
-      )));
-      columns.push({ key: 'rightAlignColumn', width: 93, minWidth: 93});
-
-      // prepare data
-      data = bom.data.map( (value, rowIndex) => {
-            return value.reduce(
-              (rowData, value, columnIndex) => {
-                rowData['column-'+columnIndex] = value;
-                return rowData;
-              },
-              {
-                id: 'row-'+rowIndex,
-                parentId: null
-              }
-            );
-          });
-    }
 
     return (
       <div className="fullheight">
