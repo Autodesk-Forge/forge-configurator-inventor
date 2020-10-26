@@ -31,6 +31,12 @@
 .bomEmpty .title {
     font-size: 28px;
     margin: 25px;
+    margin-top: 50px;
+}
+
+/* trick to change SVG color. https://stackoverflow.com/a/49627345 */
+.bomEmpty .title svg path {
+    fill: #FAA21B;
 }
 
 .bomEmpty .image {

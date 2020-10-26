@@ -21,6 +21,8 @@ import { connect } from 'react-redux';
 import 'react-base-table/styles.css';
 import './bom.css';
 
+import { Alert24 } from "@hig/icons";
+
 import { getActiveProject, getBom } from '../reducers/mainReducer';
 import { fetchBom } from '../actions/bomActions';
 import BaseTable, { AutoResizer, Column } from 'react-base-table';
@@ -48,25 +50,23 @@ export class Bom extends Component {
   render() {
 
     const bom = this.props.bomData;
-    if (this.props.activeProject.isAssembly && ! bom?.columns?.length) {
+    if (! bom?.columns?.length) {
       // if BOM is empty it's possible that the project has problems (like - IPT is missing).
-      // So check existence the adoption warnings, and if any - show the warning message.
-      const adoptWarning = fullWarningMsg(this.props.activeProject.adoptWarnings, '\n', []);
-      if (adoptWarning) {
-        return <div className="fullheight">
-          <div className="bomEmpty">
-            <div className="title">
-              BOM is Empty
-            </div>
-            <div className="image"></div>
-            <div className="details">
-              which possibly can be caused by the following project adoption warnings:
-              <br/>
-              {adoptWarning}
-            </div>
+      // So check existence the adoption warnings, and if any - show the warning message(s).
+      const adoptWarning = this.props.activeProject.isAssembly ? fullWarningMsg(this.props.activeProject.adoptWarnings, '\n', []) : null;
+      return <div className="fullheight">
+        <div className="bomEmpty">
+          <div className="title">
+            <Alert24 />&nbsp;BOM is Empty
           </div>
-        </div>;
-      }
+          <div className="image"></div>
+          {adoptWarning && <div className="details">
+            which possibly can be caused by the following project adoption warnings:
+            <br/>
+            {adoptWarning}
+          </div>}
+        </div>
+      </div>;
     }
 
     let columns = [{ key: 'leftAlignColumn', width: 79, minWidth: 79}];
