@@ -20,11 +20,14 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import 'react-base-table/styles.css';
 import './bom.css';
+import './drawing.css';
+
 import { getActiveProject, getBom } from '../reducers/mainReducer';
 import { fetchBom } from '../actions/bomActions';
 import BaseTable, { AutoResizer, Column } from 'react-base-table';
 import styled from 'styled-components';
-import {getMaxColumnTextWidth} from './bomUtils';
+import { getMaxColumnTextWidth } from './bomUtils';
+import { fullWarningMsg } from '../utils/conversion';
 
 const Container = styled.div`
   height: 100vh;
@@ -44,15 +47,35 @@ export class Bom extends Component {
   }
 
   render() {
+
+    const bom = this.props.bomData;
+    if (this.props.activeProject.isAssembly && ! bom?.columns?.length) {
+      // if BOM is empty it's possible that the project has problems (like - IPT is missing).
+      // So check existence the adoption warnings, and if any - show the warning message.
+      const adoptWarning = fullWarningMsg(this.props.activeProject.adoptWarnings, '<br/>', []);
+      if (adoptWarning) {
+        return <div className="fullheight">
+          <div className="drawingContainer empty">
+            <div className="drawingEmptyText">
+              BOM is empty, which possibly can be caused by the following project adoption warnings:
+              <br/>
+              {adoptWarning}
+            </div>
+          </div>
+        </div>;
+      }
+    }
+
     let columns = [{ key: 'leftAlignColumn', width: 79, minWidth: 79}];
     let data = [];
-    if(this.props.bomData) {
+
+    if (bom) {
       const columnWidths = [];
       // extract all strings from all columns to prepare columns widths
       const allStrings = [];
-      this.props.bomData.columns.forEach( (column, index) => {
+      bom.columns.forEach( (column, index) => {
         const columnStrings = [ column.label ];
-        this.props.bomData.data.forEach(row => {
+        bom.data.forEach(row => {
           columnStrings.push(row[index]);
         });
         allStrings.push(columnStrings);
@@ -64,7 +87,7 @@ export class Bom extends Component {
       });
 
       // prepare columns
-      columns = columns.concat(this.props.bomData.columns.map( (column, columnIndex) => (
+      columns = columns.concat(bom.columns.map( (column, columnIndex) => (
         {
           key: 'column-'+columnIndex,
           dataKey: 'column-'+columnIndex,
@@ -77,7 +100,7 @@ export class Bom extends Component {
       columns.push({ key: 'rightAlignColumn', width: 93, minWidth: 93});
 
       // prepare data
-      data = this.props.bomData.data.map( (value, rowIndex) => {
+      data = bom.data.map( (value, rowIndex) => {
             return value.reduce(
               (rowData, value, columnIndex) => {
                 rowData['column-'+columnIndex] = value;

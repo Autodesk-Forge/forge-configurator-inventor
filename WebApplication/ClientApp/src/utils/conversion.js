@@ -39,10 +39,10 @@ export const significantDigits = (number, minimumDigits) => {
 };
 
 // converts an array of (adoption) warnings into the final, single warning string
-export const fullWarningMsg = ( warningsArray ) => {
+export function fullWarningMsg( warningsArray, separator = '\n', extraMessages = [ 'Change of parameters may lead to incorrect results.' ] ) {
     if (!(warningsArray?.length > 0))
         return null;
 
-    const newArray = [ ...warningsArray, 'Change of parameters may lead to incorrect results.' ];
-    return newArray.join('\n');
+    const newArray = [ ...warningsArray, ...extraMessages ];
+    return newArray.join(separator);
 };
