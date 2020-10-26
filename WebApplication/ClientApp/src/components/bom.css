@@ -16,14 +16,8 @@
 * UNINTERRUPTED OR ERROR FREE.
 */
 
-.tabContainer {
-    background-color: white;
-    font-family: ArtifaktElement, sans-serif;
-}
-
 .bomEmpty {
     font-family: ArtifaktElement, sans-serif;
-    text-align: center;
     padding: 50px;
     color: #3C3C3C;
 }
@@ -32,6 +26,7 @@
     font-size: 28px;
     margin: 25px;
     margin-top: 50px;
+    text-align: center;
 }
 
 /* trick to change SVG color. https://stackoverflow.com/a/49627345 */
@@ -47,6 +42,8 @@
 }
 
 .bomEmpty .details {
-    font-family: ArtifaktElement-Medium, sans-serif;
+    /* font-family: ArtifaktElement-Medium, sans-serif; */
+    font-weight: 600;
     margin: 25px;
+    padding-left: 150px;
 }

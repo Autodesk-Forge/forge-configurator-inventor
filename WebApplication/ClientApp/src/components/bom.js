@@ -28,7 +28,6 @@ import { fetchBom } from '../actions/bomActions';
 import BaseTable, { AutoResizer, Column } from 'react-base-table';
 import styled from 'styled-components';
 import { getMaxColumnTextWidth } from './bomUtils';
-import { fullWarningMsg } from '../utils/conversion';
 
 const Container = styled.div`
   height: 100vh;
@@ -53,17 +52,19 @@ export class Bom extends Component {
     if (! bom?.columns?.length) {
       // if BOM is empty it's possible that the project has problems (like - IPT is missing).
       // So check existence the adoption warnings, and if any - show the warning message(s).
-      const adoptWarning = this.props.activeProject.isAssembly ? fullWarningMsg(this.props.activeProject.adoptWarnings, '\n', []) : null;
+      const warnings = this.props.activeProject.adoptWarnings || [];
+      const hasWarnings = this.props.activeProject.isAssembly ? (warnings.length > 0) : null;
       return <div className="fullheight">
         <div className="bomEmpty">
           <div className="title">
             <Alert24 />&nbsp;BOM is Empty
           </div>
           <div className="image"></div>
-          {adoptWarning && <div className="details">
-            which possibly can be caused by the following project adoption warnings:
-            <br/>
-            {adoptWarning}
+          {hasWarnings && <div className="details">
+            Please check the following adoption {warnings.length === 1 ? 'message' : 'messages'}:
+            <ul>
+                { warnings.map(message => (<li key={message}>{message}</li>)) }
+            </ul>
           </div>}
         </div>
       </div>;
