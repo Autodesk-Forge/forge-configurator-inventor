@@ -68,7 +68,7 @@ async function deployVersion(pipelineName, executionId, codeBuildNumber, applica
 	  OptionSettings: [{
 		  Namespace: 'aws:autoscaling:launchconfiguration',
 		  OptionName: 'SSHSourceRestriction',
-		  Value: 'tcp,22,22,127.0.0.1/32'
+		  Value: 'tcp,22,22,132.188.0.0/24'
 	  }]
    }).promise();
 }
