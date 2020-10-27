@@ -51,7 +51,7 @@ export class Bom extends Component {
     const bom = this.props.bomData;
     if (! bom?.columns?.length) {
       // if BOM is empty it's possible that the project has problems (like - IPT is missing).
-      // So check existence the adoption warnings, and if any - show the warning message(s).
+      // So check for adoption warnings, and if any - show the warning message(s).
       const warnings = this.props.activeProject.adoptWarnings || [];
       const hasWarnings = this.props.activeProject.isAssembly ? (warnings.length > 0) : null;
       return <div className="fullheight">
