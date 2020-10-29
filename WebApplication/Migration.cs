@@ -42,26 +42,26 @@ namespace MigrationApp
       private readonly IForgeOSS _forgeOSS;
       private readonly MigrationBucketKeyProvider _bucketProvider;
       private readonly IResourceProvider _resourceProvider;
-      private readonly UserResolver _userResolver;
-      private readonly ProjectWork _projectWork;
       private readonly ILogger<Migration> _logger;
       private readonly OssBucketFactory _bucketFactory;
       private readonly ProjectService _projectService;
-      private readonly IServiceProvider _serviceProvider;
+      private readonly IServiceScopeFactory _serviceScopeFactory;
 
-      public Migration(IConfiguration configuration, BucketPrefixProvider bucketPrefix, IForgeOSS forgeOSS, MigrationBucketKeyProvider bucketProvider, UserResolver userResolver, ProjectWork projectWork, ILogger<Migration> logger, IResourceProvider resourceProvider, OssBucketFactory bucketFactory, ProjectService projectService, IServiceProvider serviceProvider)
+      public Migration(IConfiguration configuration, BucketPrefixProvider bucketPrefix, IForgeOSS forgeOSS, ILogger<Migration> logger, IResourceProvider resourceProvider, OssBucketFactory bucketFactory, IServiceProvider serviceProvider)
       {
+         _serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+         using (var scope = _serviceScopeFactory.CreateScope())
+         {
+            _bucketProvider = scope.ServiceProvider.GetService<MigrationBucketKeyProvider>();
+            _projectService = scope.ServiceProvider.GetService<ProjectService>();
+         }
+         
          _forgeOSS = forgeOSS;
          _configuration = configuration;
          _bucketPrefix = bucketPrefix;
-         _bucketProvider = bucketProvider;
-         _userResolver = userResolver;
-         _projectWork = projectWork;
          _logger = logger;
          _resourceProvider = resourceProvider;
          _bucketFactory = bucketFactory;
-         _projectService = projectService;
-         _serviceProvider = serviceProvider;
       }
       public async Task<List<MigrationJob>> ScanBuckets()
       {
@@ -85,8 +85,6 @@ namespace MigrationApp
 
       private async Task ScanBucket(List<MigrationJob> migrationJobs, string bucketKeyOld)
       {
-         var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
-         
          OssBucket bucketOld = _bucketFactory.CreateBucket(bucketKeyOld);
          OssBucket bucketNew = _bucketFactory.CreateBucket(_bucketProvider.GetBucketKeyFromOld(bucketKeyOld));
 
@@ -139,7 +137,7 @@ namespace MigrationApp
                   projectInfo.TopLevelAssembly = projectMetadata.TLA;
 
                   MigrationJob migrationJob;
-                  using (var scope = serviceScopeFactory.CreateScope())
+                  using (var scope = _serviceScopeFactory.CreateScope())
                   {
                      migrationJob = scope.ServiceProvider.GetService<MigrationJob>();
                   }
@@ -165,7 +163,7 @@ namespace MigrationApp
                      projectInfo.Name = projectName;
 
                      MigrationJob migrationJob;
-                     using (var scope = serviceScopeFactory.CreateScope())
+                     using (var scope = _serviceScopeFactory.CreateScope())
                      {
                         migrationJob = scope.ServiceProvider.GetService<MigrationJob>();
                      }
@@ -183,7 +181,7 @@ namespace MigrationApp
             if (!projectNamesOld.Contains(projectName))
             {
                MigrationJob migrationJob;
-               using (var scope = serviceScopeFactory.CreateScope())
+               using (var scope = _serviceScopeFactory.CreateScope())
                {
                   migrationJob = scope.ServiceProvider.GetService<MigrationJob>();
                }
@@ -195,28 +193,55 @@ namespace MigrationApp
 
       public async Task Migrate(List<MigrationJob> migrationJobs)
       {
-         // process adoption first
-         foreach (MigrationJob job in migrationJobs)
-         {
-            switch (job.jobType)
-            {
-               case JobType.CopyAndAdopt:
-                  await job.CopyAndAdopt();
-                  break;
-               case JobType.RemoveNew:
-                  await job.RemoveNew();
-                  break;
-            }
-         }
+         int taskIndex = 0;
+         int parallelCount = 5;
+         Task[] tasks = new Task[parallelCount];
 
-         // now process configurations
-         foreach (MigrationJob job in migrationJobs)
+         for (int stage = 0; stage < 2; stage++)
          {
-            switch (job.jobType)
+            int jobIndex = 0;
+            while (jobIndex < migrationJobs.Count)
             {
-               case JobType.GenerateConfiguration:
-                  await job.GenerateConfiguration();
-                  break;
+               if (tasks[taskIndex]==null || tasks[taskIndex].IsCompleted)
+               {
+                  MigrationJob job = migrationJobs[jobIndex]; 
+                  jobIndex++;
+
+                  if (stage == 0)
+                  {
+                     // process project addoptions and deletions
+                     switch (job.jobType)
+                     {
+                        case JobType.CopyAndAdopt:
+                           tasks[taskIndex] = job.CopyAndAdopt();
+                           taskIndex = (taskIndex + 1) % parallelCount;
+                           break;
+                        case JobType.RemoveNew:
+                           tasks[taskIndex] = job.RemoveNew();
+                           taskIndex = (taskIndex + 1) % parallelCount;
+                           break;
+                     }
+                  }
+                  else if(stage == 1)
+                  {
+                     // process configurations
+                     switch (job.jobType)
+                     {
+                        case JobType.GenerateConfiguration:
+                           tasks[taskIndex] = job.GenerateConfiguration();
+                           taskIndex = (taskIndex + 1) % parallelCount;
+                           break;
+                     }
+                  }
+               }
+               await Task.Delay(1000);
+            }
+
+            // wait for completion of all tasks in stage
+            foreach(Task task in tasks)
+            {
+               if (task != null)
+                  task.Wait();
             }
          }
       }

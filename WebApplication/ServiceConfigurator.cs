@@ -102,16 +102,16 @@ namespace WebApplication
             if (Configuration.GetValue<bool>("migration"))
             {
                 services.AddHostedService<Worker>();
-                services.AddSingleton<MigrationBucketKeyProvider>();
-                services.AddSingleton<IBucketKeyProvider>(provider =>
+                services.AddScoped<MigrationBucketKeyProvider>();
+                services.AddScoped<IBucketKeyProvider>(provider =>
                 {
                     return provider.GetService<MigrationBucketKeyProvider>();
                 });
-                services.AddSingleton<UserResolver>();
+                services.AddScoped<UserResolver>();
                 services.AddSingleton<ProfileProvider>();
                 services.AddSingleton<Migration>();
                 services.AddScoped<MigrationJob>();
-                services.AddSingleton<ProjectService>();
+                services.AddScoped<ProjectService>();
             }
             else
             {
