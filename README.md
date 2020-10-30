@@ -170,6 +170,17 @@ We are using npm.
     * First change `WebApplication.Program.cs` by removing the `UseKestrel()` statement
     * You will need to change the callback in your forge app to match the URL you deploy to.
 	
+### Project file zip encoding
+* Uploading of project file can end up with error "zip file was not encoded properly". This problem typicaly hapens when you use non latin character in your project file names and the zip file is not using UTF-8 encoding for the project file names.
+* This issue can be fixed by forcing your zip program of choice to zip the file with the UTF-8 encoding
+* For 7-zip, you can follow these simple steps in order to get your valid project file zip:
+	* After selcting your files for ziping, pres right mouse button and select 7-zip from the context menu
+	* Select option "Add to archive..."
+	* On the very bottom you can see text field "Parameters:"
+	* Write "cu" without the quotes into that field
+	* Press ok
+	* Name your resulting zip
+
 ### Use ngrok for localhost callbacks
 * If you choose webhook callback network configuration for the application, you will need a way for the callbacks to get from the FDA servers to your local machine.
 * One of the tools that can assist you with this task is ngrok https://ngrok.com/ 
