@@ -63,9 +63,8 @@ namespace MigrationApp
          _resourceProvider = resourceProvider;
          _bucketFactory = bucketFactory;
       }
-      public async Task<List<MigrationJob>> ScanBuckets()
+      public async Task ScanBuckets(List<MigrationJob> adoptJobs, List<MigrationJob> configJobs)
       {
-         List<MigrationJob> migrationJobs = new List<MigrationJob>();
          string suffixFrom = _configuration.GetValue<string>("BucketKeySuffixOld");
          string bucketKeyStart = _bucketPrefix.GetBucketPrefix(suffixFrom);
          List<string> bucketKeys = await _forgeOSS.GetBucketsAsync();
@@ -76,14 +75,12 @@ namespace MigrationApp
                 bucketKey == AnonymousBucketKeyOld
                )
             {
-               await ScanBucket(migrationJobs, bucketKey);
+               await ScanBucket(adoptJobs, configJobs, bucketKey);
             }
          }
-
-         return migrationJobs;
       }
 
-      private async Task ScanBucket(List<MigrationJob> migrationJobs, string bucketKeyOld)
+      private async Task ScanBucket(List<MigrationJob> adoptJobs, List<MigrationJob> configJobs, string bucketKeyOld)
       {
          OssBucket bucketOld = _bucketFactory.CreateBucket(bucketKeyOld);
          OssBucket bucketNew = _bucketFactory.CreateBucket(_bucketProvider.GetBucketKeyFromOld(bucketKeyOld));
@@ -142,7 +139,7 @@ namespace MigrationApp
                      migrationJob = scope.ServiceProvider.GetService<MigrationJob>();
                   }
                   migrationJob.SetJob(JobType.CopyAndAdopt, bucketOld, projectInfo, ONC.ProjectUrl(projectName));
-                  migrationJobs.Add(migrationJob);
+                  adoptJobs.Add(migrationJob);
                } catch(Exception e)
                {
                   _logger.LogError(e, $"Project {projectName} in bucket {bucketKeyOld} does not have metadata file. Skipping it.");
@@ -168,7 +165,7 @@ namespace MigrationApp
                         migrationJob = scope.ServiceProvider.GetService<MigrationJob>();
                      }
                      migrationJob.SetJob(JobType.GenerateConfiguration, bucketOld, projectInfo, ONC.ProjectUrl(projectName), parameters);
-                     migrationJobs.Add(migrationJob);
+                     configJobs.Add(migrationJob);
                   }
                }
             }
@@ -186,64 +183,44 @@ namespace MigrationApp
                   migrationJob = scope.ServiceProvider.GetService<MigrationJob>();
                }
                migrationJob.SetJob(JobType.RemoveNew, bucketNew, new ProjectInfo(projectName), null);
-               migrationJobs.Add(migrationJob);
+               adoptJobs.Add(migrationJob);
             }
          }
       }
 
-      public async Task Migrate(List<MigrationJob> migrationJobs)
+      private async Task ProcessJobs(List<MigrationJob> jobs)
       {
          int taskIndex = 0;
          int parallelCount = 5;
+         int jobIndex = 0;
          Task[] tasks = new Task[parallelCount];
 
-         for (int stage = 0; stage < 2; stage++)
+         while (jobIndex < jobs.Count)
          {
-            int jobIndex = 0;
-            while (jobIndex < migrationJobs.Count)
+            if (tasks[taskIndex]==null || tasks[taskIndex].IsCompleted)
             {
-               if (tasks[taskIndex]==null || tasks[taskIndex].IsCompleted)
-               {
-                  MigrationJob job = migrationJobs[jobIndex]; 
-                  jobIndex++;
+               MigrationJob job = jobs[jobIndex]; 
+               jobIndex++;
 
-                  if (stage == 0)
-                  {
-                     // process project addoptions and deletions
-                     switch (job.jobType)
-                     {
-                        case JobType.CopyAndAdopt:
-                           tasks[taskIndex] = job.CopyAndAdopt();
-                           taskIndex = (taskIndex + 1) % parallelCount;
-                           break;
-                        case JobType.RemoveNew:
-                           tasks[taskIndex] = job.RemoveNew();
-                           taskIndex = (taskIndex + 1) % parallelCount;
-                           break;
-                     }
-                  }
-                  else if(stage == 1)
-                  {
-                     // process configurations
-                     switch (job.jobType)
-                     {
-                        case JobType.GenerateConfiguration:
-                           tasks[taskIndex] = job.GenerateConfiguration();
-                           taskIndex = (taskIndex + 1) % parallelCount;
-                           break;
-                     }
-                  }
-               }
-               await Task.Delay(1000);
+               tasks[taskIndex] = job.Process();
             }
 
-            // wait for completion of all tasks in stage
-            foreach(Task task in tasks)
-            {
-               if (task != null)
-                  task.Wait();
-            }
+            await Task.Delay(1000);
+            taskIndex = (taskIndex + 1) % parallelCount;
          }
+
+         // wait for completion of all tasks in stage
+         foreach(Task task in tasks)
+         {
+            if (task != null)
+               task.Wait();
+         }
+      }
+
+      public async Task Migrate(List<MigrationJob> adoptJobs, List<MigrationJob> configJobs)
+      {
+         await ProcessJobs(adoptJobs);
+         await ProcessJobs(configJobs);
       }
    }
 }

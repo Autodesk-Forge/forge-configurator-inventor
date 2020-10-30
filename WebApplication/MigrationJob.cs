@@ -111,5 +111,21 @@ namespace MigrationApp
             _logger.LogError(e, $"Project {projectInfo.Name} was not adopted");
          }
       }
+
+      public async Task Process()
+      {
+         switch (jobType)
+         {
+            case JobType.CopyAndAdopt:
+               await CopyAndAdopt();
+               break;
+            case JobType.RemoveNew:
+               await RemoveNew();
+               break;
+            case JobType.GenerateConfiguration:
+               await GenerateConfiguration();
+               break;
+         }
+      }
    }
 }
