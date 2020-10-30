@@ -59,7 +59,7 @@ namespace MigrationApp
             List<MigrationJob> adoptJobs = new List<MigrationJob>();
             List<MigrationJob> configJobs = new List<MigrationJob>();
             await _migration.ScanBuckets(adoptJobs, configJobs);
-            _logger.LogInformation($"Migration is performing {adoptJobs.Count + adoptJobs.Count} operations");
+            _logger.LogInformation($"Migration is performing {adoptJobs.Count + configJobs.Count} operations");
             await _migration.Migrate(adoptJobs, configJobs);
             _logger.LogInformation("Migration finished");
         }
