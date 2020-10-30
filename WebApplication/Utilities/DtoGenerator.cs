@@ -84,7 +84,7 @@ namespace WebApplication.Utilities
 
             var dto = MakeProjectDTO<ProjectDTO>(projectStorage, projectStorage.Metadata.Hash);
             dto.Id = project.Name;
-            dto.Label = Regex.Replace(project.Name, @"[^\u0000-\u007F]", m => String.Format("u{0}", ((int)m.Value[0]).ToString("X4")));
+            dto.Label = Regex.Match(project.Name, @"[^\u0000-\u007F]").Success ? "_" + project.Name : project.Name;
             dto.Image = _localCache.ToDataUrl(localAttributes.Thumbnail);
             dto.IsAssembly = projectStorage.IsAssembly;
             dto.HasDrawing = projectStorage.Metadata.HasDrawings;
