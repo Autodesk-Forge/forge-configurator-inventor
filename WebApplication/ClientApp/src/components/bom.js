@@ -20,11 +20,14 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import 'react-base-table/styles.css';
 import './bom.css';
+
+import { Alert24 } from "@hig/icons";
+
 import { getActiveProject, getBom } from '../reducers/mainReducer';
 import { fetchBom } from '../actions/bomActions';
 import BaseTable, { AutoResizer, Column } from 'react-base-table';
 import styled from 'styled-components';
-import {getMaxColumnTextWidth} from './bomUtils';
+import { getMaxColumnTextWidth } from './bomUtils';
 
 const Container = styled.div`
   height: 100vh;
@@ -44,52 +47,74 @@ export class Bom extends Component {
   }
 
   render() {
+
+    const bom = this.props.bomData;
+    if (! bom?.columns?.length) {
+      // if BOM is empty it's possible that the project has problems (like - IPT is missing).
+      // So check for adoption warnings, and if any - show the warning message(s).
+      const warnings = this.props.activeProject.adoptWarnings || [];
+      const hasWarnings = this.props.activeProject.isAssembly ? (warnings.length > 0) : null;
+      return <div className="fullheight">
+        <div className="bomEmpty">
+          <div className="title">
+            <Alert24 />&nbsp;BOM is Empty
+          </div>
+          <div className="image"></div>
+          {hasWarnings && <div className="details">
+            Please check the following adoption {warnings.length === 1 ? 'message' : 'messages'}:
+            <ul>
+                { warnings.map(message => (<li key={message}>{message}</li>)) }
+            </ul>
+          </div>}
+        </div>
+      </div>;
+    }
+
     let columns = [{ key: 'leftAlignColumn', width: 79, minWidth: 79}];
     let data = [];
-    if(this.props.bomData) {
-      const columnWidths = [];
-      // extract all strings from all columns to prepare columns widths
-      const allStrings = [];
-      this.props.bomData.columns.forEach( (column, index) => {
-        const columnStrings = [ column.label ];
-        this.props.bomData.data.forEach(row => {
-          columnStrings.push(row[index]);
+
+    const columnWidths = [];
+    // extract all strings from all columns to prepare columns widths
+    const allStrings = [];
+    bom.columns.forEach( (column, index) => {
+      const columnStrings = [ column.label ];
+      bom.data.forEach(row => {
+        columnStrings.push(row[index]);
+      });
+      allStrings.push(columnStrings);
+    });
+
+    allStrings.forEach(columnStrings => {
+      // compute column width
+      columnWidths.push(getMaxColumnTextWidth(columnStrings) + 15 /*right+left padding*/);
+    });
+
+    // prepare columns
+    columns = columns.concat(bom.columns.map( (column, columnIndex) => (
+      {
+        key: 'column-'+columnIndex,
+        dataKey: 'column-'+columnIndex,
+        title: column.label,
+        align: column?.numeric ? Column.Alignment.RIGHT : Column.Alignment.LEFT,
+        width: columnWidths[columnIndex],
+        resizable: true
+      }
+    )));
+    columns.push({ key: 'rightAlignColumn', width: 93, minWidth: 93});
+
+    // prepare data
+    data = bom.data.map( (value, rowIndex) => {
+          return value.reduce(
+            (rowData, value, columnIndex) => {
+              rowData['column-'+columnIndex] = value;
+              return rowData;
+            },
+            {
+              id: 'row-'+rowIndex,
+              parentId: null
+            }
+          );
         });
-        allStrings.push(columnStrings);
-      });
-
-      allStrings.forEach(columnStrings => {
-        // compute column width
-        columnWidths.push(getMaxColumnTextWidth(columnStrings) + 15 /*right+left padding*/);
-      });
-
-      // prepare columns
-      columns = columns.concat(this.props.bomData.columns.map( (column, columnIndex) => (
-        {
-          key: 'column-'+columnIndex,
-          dataKey: 'column-'+columnIndex,
-          title: column.label,
-          align: column?.numeric ? Column.Alignment.RIGHT : Column.Alignment.LEFT,
-          width: columnWidths[columnIndex],
-          resizable: true
-        }
-      )));
-      columns.push({ key: 'rightAlignColumn', width: 93, minWidth: 93});
-
-      // prepare data
-      data = this.props.bomData.data.map( (value, rowIndex) => {
-            return value.reduce(
-              (rowData, value, columnIndex) => {
-                rowData['column-'+columnIndex] = value;
-                return rowData;
-              },
-              {
-                id: 'row-'+rowIndex,
-                parentId: null
-              }
-            );
-          });
-    }
 
     return (
       <div className="fullheight">
