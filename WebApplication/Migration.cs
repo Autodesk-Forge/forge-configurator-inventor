@@ -27,7 +27,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Shared;
 using WebApplication.Definitions;
-using WebApplication.Processing;
 using WebApplication.Services;
 using WebApplication.State;
 using WebApplication.Utilities;
@@ -40,28 +39,20 @@ namespace MigrationApp
       private readonly IConfiguration _configuration;
       private readonly BucketPrefixProvider _bucketPrefix;
       private readonly IForgeOSS _forgeOSS;
-      private readonly MigrationBucketKeyProvider _bucketProvider;
       private readonly IResourceProvider _resourceProvider;
       private readonly ILogger<Migration> _logger;
       private readonly OssBucketFactory _bucketFactory;
-      private readonly ProjectService _projectService;
       private readonly IServiceScopeFactory _serviceScopeFactory;
 
       public Migration(IConfiguration configuration, BucketPrefixProvider bucketPrefix, IForgeOSS forgeOSS, ILogger<Migration> logger, IResourceProvider resourceProvider, OssBucketFactory bucketFactory, IServiceProvider serviceProvider)
       {
-         _serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
-         using (var scope = _serviceScopeFactory.CreateScope())
-         {
-            _bucketProvider = scope.ServiceProvider.GetService<MigrationBucketKeyProvider>();
-            _projectService = scope.ServiceProvider.GetService<ProjectService>();
-         }
-         
          _forgeOSS = forgeOSS;
          _configuration = configuration;
          _bucketPrefix = bucketPrefix;
          _logger = logger;
          _resourceProvider = resourceProvider;
          _bucketFactory = bucketFactory;
+         _serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
       }
       public async Task ScanBuckets(List<MigrationJob> adoptJobs, List<MigrationJob> configJobs)
       {
@@ -82,13 +73,21 @@ namespace MigrationApp
 
       private async Task ScanBucket(List<MigrationJob> adoptJobs, List<MigrationJob> configJobs, string bucketKeyOld)
       {
+         MigrationBucketKeyProvider bucketProvider;
+         ProjectService projectService;
+         using (var scope = _serviceScopeFactory.CreateScope())
+         {
+            bucketProvider = scope.ServiceProvider.GetService<MigrationBucketKeyProvider>();
+            projectService = scope.ServiceProvider.GetService<ProjectService>();
+         }
+
          OssBucket bucketOld = _bucketFactory.CreateBucket(bucketKeyOld);
-         OssBucket bucketNew = _bucketFactory.CreateBucket(_bucketProvider.GetBucketKeyFromOld(bucketKeyOld));
+         OssBucket bucketNew = _bucketFactory.CreateBucket(bucketProvider.GetBucketKeyFromOld(bucketKeyOld));
 
          List<string> projectNamesNew = new List<string>();
          try
          {
-            List<string> projectNamesNewFromOss = (List<string>) await _projectService.GetProjectNamesAsync(bucketNew);
+            List<string> projectNamesNewFromOss = (List<string>) await projectService.GetProjectNamesAsync(bucketNew);
             foreach (string projectName in projectNamesNewFromOss)
             {
                var ossAttributes = new OssAttributes(projectName);
@@ -119,7 +118,7 @@ namespace MigrationApp
          }
 
          // gather projects to migrate
-         List<string> projectNamesOld = (List<string>) await _projectService.GetProjectNamesAsync(bucketOld);
+         List<string> projectNamesOld = (List<string>) await projectService.GetProjectNamesAsync(bucketOld);
          foreach (string projectName in projectNamesOld)
          {
             if (!projectNamesNew.Contains(projectName))

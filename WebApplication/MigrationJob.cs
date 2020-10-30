@@ -37,11 +37,11 @@ namespace MigrationApp
       private readonly ProjectService _projectService;
 
       public enum JobType {CopyAndAdopt, RemoveNew, GenerateConfiguration };
-      public JobType jobType;
-      public OssBucket bucket;
-      public ProjectInfo projectInfo;
-      public string projectUrl;
-      public InventorParameters parameters;
+      private JobType jobType;
+      private OssBucket bucket;
+      private ProjectInfo projectInfo;
+      private string projectUrl;
+      private InventorParameters parameters;
       public MigrationJob(MigrationBucketKeyProvider bucketProvider, UserResolver userResolver, ProjectWork projectWork, ILogger<MigrationJob> logger, ProjectService projectService)
       {
          _bucketProvider = bucketProvider;
@@ -59,7 +59,7 @@ namespace MigrationApp
          parameters = parametersParam;
       }
 
-      public async Task GenerateConfiguration()
+      private async Task GenerateConfiguration()
       {
          _bucketProvider.SetBucketKeyFromOld(bucket.BucketKey);
          OssBucket bucketNew = await _userResolver.GetBucketAsync();
@@ -77,13 +77,13 @@ namespace MigrationApp
          return;
       }
 
-      public async Task RemoveNew()
+      private async Task RemoveNew()
       {
          List<string> projectList = new List<string>() {projectInfo.Name};
          await _projectService.DeleteProjects(projectList, bucket);
       }
 
-      public async Task CopyAndAdopt()
+      private async Task CopyAndAdopt()
       {
          _bucketProvider.SetBucketKeyFromOld(bucket.BucketKey);
          OssBucket bucketNew = await _userResolver.GetBucketAsync(true);
