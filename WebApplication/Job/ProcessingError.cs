@@ -24,7 +24,8 @@ namespace WebApplication.Job
     {
         Unknown = 0,
         ReportUrl = 1,
-        Messages = 2
+        Messages = 2,
+        MessageWithUrl = 3
     }
 
     public abstract class ProcessingError
@@ -61,6 +62,25 @@ namespace WebApplication.Job
         {
             Title = title;
             Messages = messages;
+        }
+    }
+
+    public class MessageWithUrl : ProcessingError
+    {
+        public override ErrorInfoType ErrorType { get; } = ErrorInfoType.MessageWithUrl;
+
+        public string Title { get; }
+
+        public string Message { get; }
+        public string Url { get; }
+        public string UrlName { get; }
+
+        public MessageWithUrl(string jobId, string title, string message, string url, string urlName) : base(jobId)
+        {
+            Title = title;
+            Message = message;
+            Url = url;
+            UrlName = urlName;
         }
     }
 }

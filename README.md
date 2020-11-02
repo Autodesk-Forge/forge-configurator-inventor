@@ -171,7 +171,7 @@ We are using npm.
     * You will need to change the callback in your forge app to match the URL you deploy to.
 	
 ### Project file zip encoding
-* Uploading of project file can end up with error "zip file was not encoded properly". This problem typically happens when you use non latin character in your project file names and the zip file is not using UTF-8 encoding for the project file names.
+* Uploading of project file can end up with error "Project name or asembly contains unsupported characters". This problem typically happens when you use non latin character in your project file names and the zip file is not using UTF-8 encoding for the project file names.
 * This issue can be fixed by forcing your zip program of choice to zip the file with the UTF-8 encoding
 * For 7-zip, you can follow these simple steps in order to get your valid project file zip:
 	* After selecting your files for zipping, press right mouse button and select 7-zip from the context menu

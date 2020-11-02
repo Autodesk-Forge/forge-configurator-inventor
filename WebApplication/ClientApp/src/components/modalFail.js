@@ -49,6 +49,11 @@ export class ModalFail extends Component {
         let reportUrlOrMessage, errorTitle;
         let isUrl = false;
 
+        let isMessageWithUrl = false;
+        let reportMessage;
+        let reportUrl;
+        let reportUrlaName;
+
         const errorData = this.props.errorData;
         if (typeof errorData === "object" && errorData.errorType) {
 
@@ -63,6 +68,13 @@ export class ModalFail extends Component {
                     reportUrlOrMessage = errorData.messages?.join(", ");
                     break;
 
+                case 3: // WebApplication.Job.ErrorInfoType.MessageWithUrl
+                    isMessageWithUrl = true;
+                    errorTitle = errorData.title;
+                    reportMessage = errorData.message;
+                    reportUrl = errorData.url;
+                    reportUrlaName = errorData.urlName;
+                    break;
                 default:
                     reportUrlOrMessage = "Unexpected error: " + JSON.stringify(errorData, null, 2);
                 break;
@@ -118,6 +130,12 @@ export class ModalFail extends Component {
                             <Typography className="errorMessage">
                                 { reportUrlOrMessage }
                             </Typography>
+                        </div>
+                    }
+                    {isMessageWithUrl &&
+                        <div>
+                            <Typography className="errorMessageTitle">{errorTitle}</Typography>
+                            <Typography className="errorMessage">{reportMessage}<a href={reportUrl}>{reportUrlaName}</a></Typography>
                         </div>
                     }
                 </div>

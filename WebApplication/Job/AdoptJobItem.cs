@@ -55,8 +55,15 @@ namespace WebApplication.Job
             {
                 Logger.LogInformation($"Replacement charcters found in project name or top level assembly name for job {Id}.");
 
-                throw new ProcessingException("Project name or asembly contains unsupported characters", 
-                    new string[] { "Please refer to https://github.com/Autodesk-Forge/forge-configurator-inventor/blob/master/README.md", "" });
+                await resultSender.SendErrorAsync(new MessageWithUrl(
+                        Id,
+                        "Project name or asembly contains unsupported characters",
+                        "Please refer to ",
+                        "https://github.com/Autodesk-Forge/forge-configurator-inventor/blob/master/README.md#project-file-zip-encoding",
+                        "readme"
+                    ));
+
+                return;
             }
 
             // upload the file to OSS
