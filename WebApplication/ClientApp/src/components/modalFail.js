@@ -49,7 +49,7 @@ export class ModalFail extends Component {
         let reportUrlOrMessage, errorTitle;
         let isUrl = false;
 
-        let isMessageWithUrl = false;
+        let isMessageWithUrl;
         let reportMessage;
         let reportUrl;
         let reportUrlaName;

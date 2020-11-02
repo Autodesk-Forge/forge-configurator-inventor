@@ -34,10 +34,11 @@ describe('modal update failed ', () => {
         const wrapperComponent = wrapper.find('.modalFailContent');
         const children = wrapperComponent.prop('children');
 
-        expect(children).toHaveLength(3);
+        expect(children).toHaveLength(4);
         expect(children[0].props.children.props.children[2]).toBe(props.label);
         expect(children[1]).toBeUndefined(); // href to report
         expect(children[2]).toBeUndefined(); // error message
+        expect(children[3]).toBeUndefined(); // error message with url
     });
 
     it('should show message that props.label is missing', () => {
@@ -47,10 +48,11 @@ describe('modal update failed ', () => {
         const wrapperComponent = wrapper.find('.modalFailContent');
         const children = wrapperComponent.prop('children');
 
-        expect(children).toHaveLength(3);
+        expect(children).toHaveLength(4);
         expect(children[0].props.children.props.children[2]).toBe("Missing label.");
         expect(children[1]).toBeUndefined(); // href to report
         expect(children[2]).toBeUndefined(); // error message
+        expect(children[3]).toBeUndefined(); // error message with url
     });
 
     it('should close when Ok button clicked', () => {
