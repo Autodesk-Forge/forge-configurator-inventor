@@ -105,7 +105,7 @@ namespace MigrationApp
          // gather list of cache paramters files from the new bucket
          List<string> configKeysNew = new List<string>();
          try {
-            List<ObjectDetails> configODsNew = await bucketNew.GetObjectsAsync($"cache/");
+            List<ObjectDetails> configODsNew = await bucketNew.GetObjectsAsync($"{ONC.CacheFolder}/");
             foreach (ObjectDetails configODNew in configODsNew)
             {
                if (configODNew.ObjectKey.EndsWith(WebApplication.Utilities.LocalName.Parameters))
@@ -146,7 +146,7 @@ namespace MigrationApp
             }
 
             // process cached configurations
-            List<ObjectDetails> configODs = await bucketOld.GetObjectsAsync($"cache/{projectName}/");
+            List<ObjectDetails> configODs = await bucketOld.GetObjectsAsync($"{ONC.CacheFolder}/{projectName}/");
             foreach (ObjectDetails configOD in configODs)
             {
                string configKey = configOD.ObjectKey;
@@ -190,7 +190,7 @@ namespace MigrationApp
       private async Task ProcessJobs(List<MigrationJob> jobs)
       {
          int taskIndex = 0;
-         int parallelCount = 5;
+         int parallelCount = Int16.Parse(_configuration.GetValue<string>("MigrationParallelCount") ?? "15");
          int jobIndex = 0;
          Task[] tasks = new Task[parallelCount];
 
@@ -199,9 +199,10 @@ namespace MigrationApp
             if (tasks[taskIndex]==null || tasks[taskIndex].IsCompleted)
             {
                MigrationJob job = jobs[jobIndex]; 
-               jobIndex++;
 
                tasks[taskIndex] = job.Process();
+
+               jobIndex++;
             }
 
             await Task.Delay(1000);

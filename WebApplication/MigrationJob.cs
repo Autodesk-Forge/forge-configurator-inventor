@@ -59,33 +59,37 @@ namespace MigrationApp
          parameters = parametersParam;
       }
 
-      private async Task GenerateConfiguration()
+      private async Task GenerateConfiguration(string logId)
       {
          _bucketProvider.SetBucketKeyFromOld(bucket.BucketKey);
+         _logger.LogInformation($"{logId}: Generating config for project {projectInfo.Name} in bucket {bucket.BucketKey}");
+
          OssBucket bucketNew = await _userResolver.GetBucketAsync();
 
          try
          {
             await _projectWork.DoSmartUpdateAsync(parameters, projectInfo.Name);
-            _logger.LogInformation($"Configuration {parameters} for project {projectInfo.Name} was generated.");
+            _logger.LogInformation($"{logId}: Configuration {parameters} for project {projectInfo.Name} was generated.");
          }
          catch(Exception e)
          {
-            _logger.LogError(e, $"Configuration {parameters} for project {projectInfo.Name} was NOT generated.");
+            _logger.LogError(e, $"{logId}: Configuration {parameters} for project {projectInfo.Name} was NOT generated.");
          }
 
          return;
       }
 
-      private async Task RemoveNew()
+      private async Task RemoveNew(string logId)
       {
+         _logger.LogInformation($"{logId}: Deleting project {projectInfo.Name} from bucket {bucket.BucketKey}");
          List<string> projectList = new List<string>() {projectInfo.Name};
          await _projectService.DeleteProjects(projectList, bucket);
       }
 
-      private async Task CopyAndAdopt()
+      private async Task CopyAndAdopt(string logId)
       {
          _bucketProvider.SetBucketKeyFromOld(bucket.BucketKey);
+         _logger.LogInformation($"{logId}: Processing new project {projectInfo.Name} in bucket {bucket.BucketKey}");
          OssBucket bucketNew = await _userResolver.GetBucketAsync(true);
 
          string signedUrlOld = await bucket.CreateSignedUrlAsync(projectUrl, ObjectAccess.Read);
@@ -97,33 +101,34 @@ namespace MigrationApp
          }
          catch(Exception e)
          {
-            _logger.LogError(e, $"Project {projectInfo.Name} cannot be copied.");
+            _logger.LogError(e, $"{logId}: Project {projectInfo.Name} cannot be copied.");
             return;
          }
 
          try
          {
             await _projectWork.AdoptAsync(projectInfo, signedUrlNew);
-            _logger.LogInformation($"Project {projectInfo.Name} was adopted");
+            _logger.LogInformation($"{logId}: Project {projectInfo.Name} was adopted");
          }
          catch(Exception e)
          {
-            _logger.LogError(e, $"Project {projectInfo.Name} was not adopted");
+            _logger.LogError(e, $"{logId}: Project {projectInfo.Name} was not adopted");
          }
       }
 
       public async Task Process()
       {
+         string logId = ( await Task.Run(() => Task.CurrentId )).ToString();
          switch (jobType)
          {
             case JobType.CopyAndAdopt:
-               await CopyAndAdopt();
+               await CopyAndAdopt(logId);
                break;
             case JobType.RemoveNew:
-               await RemoveNew();
+               await RemoveNew(logId);
                break;
             case JobType.GenerateConfiguration:
-               await GenerateConfiguration();
+               await GenerateConfiguration(logId);
                break;
          }
       }
