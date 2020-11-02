@@ -50,7 +50,7 @@
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
             "program": "${workspaceFolder}/WebApplication/bin/Debug/netcoreapp3.1/WebApplication.dll",
-            "args": ["migration=true"],
+            "args": [],
             "cwd": "${workspaceFolder}/WebApplication",
             "stopAtEntry": false,
             "justMyCode": false,
