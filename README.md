@@ -181,7 +181,7 @@ We are using npm.
 	* Press ok
 	* Name your resulting zip
 	
-* For more information on this issue please refer to FDA troubleshooting page https://forge.autodesk.com/en/docs/design-automation/v3/developers_guide/troubleshooting/
+* For more information on this issue please refer to [FDA troubleshooting page] (https://forge.autodesk.com/en/docs/design-automation/v3/developers_guide/troubleshooting/)
 
 ### Use ngrok for localhost callbacks
 * If you choose webhook callback network configuration for the application, you will need a way for the callbacks to get from the FDA servers to your local machine.
