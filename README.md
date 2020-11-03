@@ -171,17 +171,17 @@ We are using npm.
     * You will need to change the callback in your forge app to match the URL you deploy to.
 	
 ### Project file zip encoding
-* Uploading of project file can end up with error "Project name or asembly contains unsupported characters". This problem typically happens when you use non latin character in your project file names and the zip file is not using UTF-8 encoding for the project file names.
+* Uploading your project file can cause the error "Project name or assembly contains unsupported characters". This problem typically happens when you use non Latin characters in your project file names and the zip file does not use UTF-8 encoding for the project file names.
 * This issue can be fixed by forcing your zip program of choice to zip the file with the UTF-8 encoding
-* For 7-zip, you can follow these simple steps in order to get your valid project file zip:
-	* After selecting your files for zipping, press right mouse button and select 7-zip from the context menu
+* For 7-zip, you can follow these simple steps:
+	* After selecting your files for zipping, right-click them and select 7-zip from the context menu
 	* Select option "Add to archive..."
-	* On the very bottom you can see text field "Parameters:"
+	* On the very bottom you can see a text field labelled "Parameters:"
 	* Write "cu" without the quotes into that field
 	* Press ok
-	* Name your resulting zip
+	* Name your resulting zip file
 	
-* For more information on this issue please refer to [FDA troubleshooting page](https://forge.autodesk.com/en/docs/design-automation/v3/developers_guide/troubleshooting/)
+* For more information on this issue please refer to the [FDA troubleshooting page](https://forge.autodesk.com/en/docs/design-automation/v3/developers_guide/troubleshooting/)
 
 ### Use ngrok for localhost callbacks
 * If you choose webhook callback network configuration for the application, you will need a way for the callbacks to get from the FDA servers to your local machine.
