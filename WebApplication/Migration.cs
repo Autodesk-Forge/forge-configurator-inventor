@@ -193,10 +193,12 @@ namespace MigrationApp
          int parallelCount = Int16.Parse(_configuration.GetValue<string>("MigrationParallelCount") ?? "15");
          int jobIndex = 0;
          Task[] tasks = new Task[parallelCount];
+         for (int i = 0; i < parallelCount; i++)
+            tasks[i] = Task.CompletedTask;
 
          while (jobIndex < jobs.Count)
          {
-            if (tasks[taskIndex]==null || tasks[taskIndex].IsCompleted)
+            if (tasks[taskIndex].IsCompleted)
             {
                MigrationJob job = jobs[jobIndex]; 
 
@@ -209,12 +211,8 @@ namespace MigrationApp
             taskIndex = (taskIndex + 1) % parallelCount;
          }
 
-         // wait for completion of all tasks in stage
-         foreach(Task task in tasks)
-         {
-            if (task != null)
-               task.Wait();
-         }
+         // wait for completion of all tasks
+         await Task.WhenAll(tasks);
       }
 
       public async Task Migrate(List<MigrationJob> adoptJobs, List<MigrationJob> configJobs)
