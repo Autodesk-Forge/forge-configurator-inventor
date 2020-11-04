@@ -25,7 +25,6 @@ namespace WebApplication.Processing
     public class FdaClient
     {
         private readonly TransferData _transferData;
-        private readonly CreateSAT _satWork;
         private readonly CreateRFA _rfaWork;
         private readonly ExportDrawing _exportDrawingWork;
         private readonly UpdateDrawings _updateDrawingsWork;
@@ -37,7 +36,6 @@ namespace WebApplication.Processing
         public FdaClient(Publisher publisher, IOptions<AppBundleZipPaths> appBundleZipPathsOptionsAccessor)
         {
             _transferData = new TransferData(publisher);
-            _satWork = new CreateSAT(publisher);
             _rfaWork = new CreateRFA(publisher);
             _exportDrawingWork = new ExportDrawing(publisher);
             _updateDrawingsWork = new UpdateDrawings(publisher);
@@ -59,7 +57,6 @@ namespace WebApplication.Processing
             await new ExportDrawing(_publisher).InitializeAsync(_paths.ExportDrawing);
 
             await _transferData.InitializeAsync(_paths.EmptyExe);
-            await _satWork.InitializeAsync(_paths.CreateSAT);
             await _rfaWork.InitializeAsync(_paths.CreateRFA);
             await _exportDrawingWork.InitializeAsync(_paths.ExportDrawing);
             await _updateDrawingsWork.InitializeAsync(_paths.UpdateDrawings);
@@ -80,7 +77,6 @@ namespace WebApplication.Processing
             await new ExportDrawing(_publisher).CleanUpAsync();
 
             await _transferData.CleanUpAsync();
-            await _satWork.CleanUpAsync();
             await _rfaWork.CleanUpAsync();
             await _exportDrawingWork.CleanUpAsync();
             await _updateDrawingsWork.CleanUpAsync();
@@ -104,21 +100,13 @@ namespace WebApplication.Processing
             return _transferData.ProcessAsync(source, target);
         }
 
-        internal async Task<ProcessingResult> GenerateRfa(ProcessingArgs satData, ProcessingArgs rfaData)
+        internal async Task<ProcessingResult> GenerateRfa(ProcessingArgs rfaData)
         {
-            ProcessingResult satResult = await _satWork.ProcessAsync(satData);
-            if (!satResult.Success)
-            {
-                satResult.ErrorMessage = "Failed to generate SAT file";
-                return satResult;
-            }
-
             ProcessingResult rfaResult = await _rfaWork.ProcessAsync(rfaData);
             if (!rfaResult.Success)
             {
                 rfaResult.ErrorMessage = "Failed to generate RFA file";
             }
-            rfaResult.Stats.AddRange(satResult.Stats);
 
             return rfaResult;
         }
