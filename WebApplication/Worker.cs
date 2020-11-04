@@ -56,9 +56,11 @@ namespace MigrationApp
         private async Task MigrateAll()
         {
             _logger.LogInformation("Scanning buckets for migration");
-            List<MigrationJob> jobs = await _migration.ScanBuckets();
-            _logger.LogInformation($"Migration is performing {jobs.Count} operations");
-            await _migration.Migrate(jobs);
+            List<MigrationJob> adoptJobs = new List<MigrationJob>();
+            List<MigrationJob> configJobs = new List<MigrationJob>();
+            await _migration.ScanBuckets(adoptJobs, configJobs);
+            _logger.LogInformation($"Migration is performing {adoptJobs.Count + configJobs.Count} operations");
+            await _migration.Migrate(adoptJobs, configJobs);
             _logger.LogInformation("Migration finished");
         }
     }

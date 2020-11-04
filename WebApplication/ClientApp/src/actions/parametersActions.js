@@ -67,12 +67,16 @@ export const resetParameters = (projectId, parameters) => {
  *           "\"Small\""
  *           ],
  *           "value": "\"Small\"",
- *           "unit": "Text"
+ *           "unit": "Text",
+ *           "label": "Size"
+ *           "readonly": false
  *       },
  *       "JawOffset": {
  *           "values": [],
  *           "value": "10 mm",
- *           "unit": "mm"
+ *           "unit": "mm",
+ *           "label": "Jaw Offset",
+ *           "readonly": false
  *       }
  * }
  */
@@ -134,6 +138,8 @@ export function formatParameters(clientParameters) {
         const value = quoteValues ? quote(param.value) : param.value;
 
         obj[param.name] = {
+            label: param.label ? param.label : null,
+            readonly: param.readonly,
             value: value,
             unit: param.units ? param.units : null,
             values: values

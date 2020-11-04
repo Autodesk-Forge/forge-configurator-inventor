@@ -64,6 +64,11 @@ async function deployVersion(pipelineName, executionId, codeBuildNumber, applica
    console.log('Deploying version ' + versionLabel);
    await beanstalk.updateEnvironment({
       EnvironmentName: environmentName,
-      VersionLabel: versionLabel
+      VersionLabel: versionLabel,
+	  OptionSettings: [{
+		  Namespace: 'aws:autoscaling:launchconfiguration',
+		  OptionName: 'SSHSourceRestriction',
+		  Value: 'tcp,22,22,132.188.0.0/24'
+	  }]
    }).promise();
 }

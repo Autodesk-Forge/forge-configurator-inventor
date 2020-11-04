@@ -261,6 +261,17 @@ module.exports = function() {
     {
       this.waitForElement(locators.downloadsTab, 5);
       this.click(locators.downloadsTab);
+    },
+    goToProjectsTab()
+    {
+      this.waitForElement(locators.projectsTab, 5);
+      this.click(locators.projectsTab);
+    },
+    checkReportLink()
+    {
+      const workItemLink = '//div[@class="logContainer"]//a[contains(@href,"https://dasprod-store.s3.amazonaws.com/workItem/")]';
+      this.waitForVisible(workItemLink, 5);
+      this.see('Open log file', workItemLink);
     }
   });
 };
