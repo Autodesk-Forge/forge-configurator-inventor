@@ -20,6 +20,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Routing;
 using Shared;
 using WebApplication.Definitions;
@@ -82,8 +84,7 @@ namespace WebApplication.Utilities
 
             var dto = MakeProjectDTO<ProjectDTO>(projectStorage, projectStorage.Metadata.Hash);
             dto.Id = project.Name;
-            dto.Label = project.Name;
-
+            dto.Label = !Regex.Match(project.Name, @"[\u0030-\u007a]").Success ? "_" + project.Name : project.Name;
             dto.Image = _localCache.ToDataUrl(localAttributes.Thumbnail);
             dto.IsAssembly = projectStorage.IsAssembly;
             dto.HasDrawing = projectStorage.Metadata.HasDrawings;
