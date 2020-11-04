@@ -104,27 +104,30 @@ namespace RFAExportRCEPlugin
             nvm.Add("ReportFileName", reportFileName);
 
             DateTime t = DateTime.Now;
+            DateTime t2;
             using (new HeartBeat())
             {
                 try
                 {
                     bimComponent.ExportBuildingComponentWithOptions(fileName, nvm);
-                    LogTrace("Exporting finished");
-                    LogTrace($"EXPORT took : {(DateTime.Now - t).TotalSeconds} seconds");
+                    LogTrace("Export finished");
+                    t2 = DateTime.Now;
                 }
                 catch (Exception e)
                 {
-                    LogTrace($"Exporting FAILED : {e.Message}");
+                    t2 = DateTime.Now;
+                    LogTrace($"ERROR: Exporting FAILED : {e.Message}");
                 }
             }
 
             if (System.IO.File.Exists(fileName))
             {
                 LogTrace($"EXPORTED to : {fileName}");
+                LogTrace($"EXPORT took : {(t2 - t).TotalSeconds} seconds");
             }
             else
             {
-                LogTrace($"EXPORT does not exist !!!!!!!");
+                LogTrace($"ERROR: EXPORT does not exist !!!!!!!");
             }
 
             if (System.IO.File.Exists(reportFileName))
@@ -133,7 +136,7 @@ namespace RFAExportRCEPlugin
             }
             else
             {
-                LogTrace($"REPORT does not exist !!!!!!!");
+                LogTrace($"ERROR: REPORT does not exist !!!!!!!");
             }
 
         }
