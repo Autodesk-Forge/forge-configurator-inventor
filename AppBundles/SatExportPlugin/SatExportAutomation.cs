@@ -22,20 +22,18 @@ using System.Runtime.InteropServices;
 
 using Inventor;
 using Autodesk.Forge.DesignAutomation.Inventor.Utils;
+using Shared;
 
 namespace SatExportPlugin
 {
     [ComVisible(true)]
-    public class SatExportAutomation
+    public class SatExportAutomation : AutomationBase
     {
-        private readonly InventorServer inventorApplication;
-
-        public SatExportAutomation(InventorServer inventorApp)
+        public SatExportAutomation(InventorServer inventorApp) : base(inventorApp)
         {
-            inventorApplication = inventorApp;
         }
 
-        public void Run(Document doc)
+        public override void ExecWithArguments(Document doc, NameValueMap map)
         {
             LogTrace("Run called with {0}", doc.DisplayName);
             try
@@ -51,11 +49,6 @@ namespace SatExportPlugin
             }
         }
 
-        public void RunWithArguments(Document doc, NameValueMap map)
-        {
-
-        }
-        
         #region ExportSAT file 
 
         public void ExportSAT(Document doc) 
@@ -63,7 +56,7 @@ namespace SatExportPlugin
             string currentDirectory = System.IO.Directory.GetCurrentDirectory();
 
             LogTrace("Export SAT file.");
-            TranslatorAddIn SAT_AddIn = (TranslatorAddIn)inventorApplication.ApplicationAddIns.ItemById["{89162634-02B6-11D5-8E80-0010B541CD80}"];
+            TranslatorAddIn SAT_AddIn = (TranslatorAddIn)_inventorApplication.ApplicationAddIns.ItemById["{89162634-02B6-11D5-8E80-0010B541CD80}"];
 
             if (SAT_AddIn == null)
             {
@@ -71,8 +64,8 @@ namespace SatExportPlugin
                 return;
             }
 
-            TranslationContext oContext = inventorApplication.TransientObjects.CreateTranslationContext();
-            NameValueMap map = inventorApplication.TransientObjects.CreateNameValueMap();
+            TranslationContext oContext = _inventorApplication.TransientObjects.CreateTranslationContext();
+            NameValueMap map = _inventorApplication.TransientObjects.CreateNameValueMap();
 
             if (SAT_AddIn.get_HasSaveCopyAsOptions(doc, oContext, map))
             {
@@ -80,7 +73,7 @@ namespace SatExportPlugin
                 oContext.Type = IOMechanismEnum.kFileBrowseIOMechanism;
 
                 LogTrace("SAT: create data medium");
-                DataMedium oData = inventorApplication.TransientObjects.CreateDataMedium();
+                DataMedium oData = _inventorApplication.TransientObjects.CreateDataMedium();
 
                 LogTrace("SAT save to: " + currentDirectory + "\\export.sat");
                 oData.FileName = currentDirectory + "\\export.sat";
@@ -91,41 +84,6 @@ namespace SatExportPlugin
                 LogTrace("SAT exported.");
             }
         }
-        #endregion
-
-        #region Logging utilities
-        /// <summary>
-        /// Log message with 'trace' log level.
-        /// </summary>
-        private static void LogTrace(string format, params object[] args)
-        {
-            Trace.TraceInformation(format, args);
-        }
-
-        /// <summary>
-        /// Log message with 'trace' log level.
-        /// </summary>
-        private static void LogTrace(string message)
-        {
-            Trace.TraceInformation(message);
-        }
-
-        /// <summary>
-        /// Log message with 'error' log level.
-        /// </summary>
-        private static void LogError(string format, params object[] args)
-        {
-            Trace.TraceError(format, args);
-        }
-
-        /// <summary>
-        /// Log message with 'error' log level.
-        /// </summary>
-        private static void LogError(string message)
-        {
-            Trace.TraceError(message);
-        }
-
         #endregion
     }
 }

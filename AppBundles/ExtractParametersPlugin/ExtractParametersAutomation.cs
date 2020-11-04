@@ -17,25 +17,22 @@
 /////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Autodesk.Forge.DesignAutomation.Inventor.Utils;
 using Inventor;
 using PluginUtilities;
+using Shared;
 
 namespace ExtractParametersPlugin
 {
     [ComVisible(true)]
-    public class ExtractParametersAutomation
+    public class ExtractParametersAutomation : AutomationBase
     {
-        private readonly InventorServer _inventorApplication;
-
-        public ExtractParametersAutomation(InventorServer inventorApp)
+        public ExtractParametersAutomation(InventorServer inventorApp) : base(inventorApp)
         {
-            _inventorApplication = inventorApp;
         }
 
-        public void Run(Document doc)
+        public override void ExecWithArguments(Document doc, NameValueMap map)
         {
             LogTrace($"Run called with {doc.DisplayName}");
 
@@ -66,27 +63,5 @@ namespace ExtractParametersPlugin
                 LogError("Processing failed. " + e.ToString());
             }
         }
-
- 
-
-        #region Logging utilities
-
-        /// <summary>
-        /// Log message with 'trace' log level.
-        /// </summary>
-        public void LogTrace(string message)
-        {
-            Trace.TraceInformation(message);
-        }
-
-        /// <summary>
-        /// Log message with 'error' log level.
-        /// </summary>
-        public void LogError(string message)
-        {
-            Trace.TraceError(message);
-        }
-
-        #endregion
-    }
+     }
 }

@@ -18,7 +18,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -32,9 +31,8 @@ using Path = System.IO.Path;
 namespace DataCheckerPlugin
 {
     [ComVisible(true)]
-    public class DataCheckerAutomation
+    public class DataCheckerAutomation : AutomationBase
     {
-        private readonly InventorServer inventorApplication;
         private readonly List<Message> _messages = new List<Message>();
 
         private readonly HashSet<string> _interests = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -49,17 +47,11 @@ namespace DataCheckerPlugin
 
         private readonly HashSet<string> _missingReferences = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-        public DataCheckerAutomation(InventorServer inventorApp)
+        public DataCheckerAutomation(InventorServer inventorApp) : base(inventorApp)
         {
-            inventorApplication = inventorApp;
         }
 
-        public void Run(Document doc)
-        {
-            RunWithArguments(doc, null);
-        }
-
-        public void RunWithArguments(Document doc, NameValueMap map)
+        public override void ExecWithArguments(Document doc, NameValueMap map)
         {
             using (new HeartBeat())
             {
@@ -267,25 +259,5 @@ namespace DataCheckerPlugin
                 serializer.Serialize(file, data);
             }
         }
-
-        #region Logging utilities
-
-        /// <summary>
-        /// Log message with 'trace' log level.
-        /// </summary>
-        private static void LogTrace(string message)
-        {
-            Trace.TraceInformation(message);
-        }
-
-        /// <summary>
-        /// Log message with 'error' log level.
-        /// </summary>
-        private static void LogError(string message)
-        {
-            Trace.TraceError(message);
-        }
-
-        #endregion
     }
 }
