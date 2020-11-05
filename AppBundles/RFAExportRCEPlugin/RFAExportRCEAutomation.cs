@@ -22,20 +22,18 @@ using System.Runtime.InteropServices;
 
 using Inventor;
 using Autodesk.Forge.DesignAutomation.Inventor.Utils;
+using Shared;
 
 namespace RFAExportRCEPlugin
 {
     [ComVisible(true)]
-    public class RFAExportRCEAutomation
+    public class RFAExportRCEAutomation : AutomationBase
     {
-        private readonly InventorServer inventorApplication;
-
-        public RFAExportRCEAutomation(InventorServer inventorApp)
+        public RFAExportRCEAutomation(InventorServer inventorApp) : base(inventorApp)
         {
-            inventorApplication = inventorApp;
         }
 
-        public void Run(Document doc)
+        public override void ExecWithArguments(Document doc, NameValueMap map)
         {
             LogTrace("Run called with {0}", doc.DisplayName);
             try
@@ -49,11 +47,6 @@ namespace RFAExportRCEPlugin
             {
                 LogError("Processing failed. " + e.ToString());
             }
-        }
-
-        public void RunWithArguments(Document doc, NameValueMap map)
-        {
-
         }
 
         BIMComponent getBIMComponent(Document doc)
@@ -95,7 +88,7 @@ namespace RFAExportRCEPlugin
             // output file name
             var fileName = System.IO.Path.Combine(startDir, "Output.rfa");
 
-            NameValueMap nvm = inventorApplication.TransientObjects.CreateNameValueMap();
+            NameValueMap nvm = _inventorApplication.TransientObjects.CreateNameValueMap();
             LogTrace($"Exporting to {fileName}");
 
             var reportFileName = System.IO.Path.Combine(startDir, "Report.html");
@@ -140,41 +133,6 @@ namespace RFAExportRCEPlugin
             }
 
         }
-        #endregion
-
-        #region Logging utilities
-        /// <summary>
-        /// Log message with 'trace' log level.
-        /// </summary>
-        private static void LogTrace(string format, params object[] args)
-        {
-            Trace.TraceInformation(format, args);
-        }
-
-        /// <summary>
-        /// Log message with 'trace' log level.
-        /// </summary>
-        private static void LogTrace(string message)
-        {
-            Trace.TraceInformation(message);
-        }
-
-        /// <summary>
-        /// Log message with 'error' log level.
-        /// </summary>
-        private static void LogError(string format, params object[] args)
-        {
-            Trace.TraceError(format, args);
-        }
-
-        /// <summary>
-        /// Log message with 'error' log level.
-        /// </summary>
-        private static void LogError(string message)
-        {
-            Trace.TraceError(message);
-        }
-
         #endregion
     }
 }
