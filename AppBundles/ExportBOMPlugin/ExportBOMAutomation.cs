@@ -56,7 +56,7 @@ namespace ExportBOMPlugin
         {
         }
 
-        public override void ExecWithArguments(Document doc, NameValueMap map)
+        public override void Run(Document doc)
         {
             LogTrace("Processing " + doc.FullFileName);
 
@@ -74,17 +74,6 @@ namespace ExportBOMPlugin
 
                         try
                         {
-                            // TODO: remove this project activation when new inventorcoreconsole.exe is available on PROD environment
-                            var fullFileName = doc.FullFileName;
-                            // close the original doc
-                            doc.Close(true);
-                            // activate default project
-                            var dir = System.IO.Directory.GetCurrentDirectory();
-                            ActivateProject(dir);
-                            // open doc with project activated
-                            doc = _inventorApplication.Documents.Open(fullFileName);
-                            // ^
-
                             extractedBOM = ProcessAssembly((AssemblyDocument)doc);
                         }
                         catch (Exception e)
@@ -107,6 +96,11 @@ namespace ExportBOMPlugin
                 LogError("Processing failed. " + e.ToString());
             }
 
+        }
+
+        public override void ExecWithArguments(Document doc, NameValueMap map)
+        {
+            LogError("Unexpected execution path! ExportBom does not expects any extra arguments!");
         }
 
         private void ActivateProject(string dir)

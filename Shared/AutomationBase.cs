@@ -34,7 +34,7 @@ namespace Shared
             _inventorApplication = inventorApp;
         }
 
-        public void Run(Document doc)
+        public virtual void Run(Document doc)
         {
             LogTrace($"Run called with {doc.DisplayName}");
             LogError("Input arguments are expected. The processing failed.");
@@ -68,6 +68,9 @@ namespace Shared
                     doc = _inventorApplication.Documents.Open(docPath, false);
                 }
                 LogTrace($"Full document name: {doc.FullDocumentName}");
+            } else
+            {
+                throw new System.ArgumentException("Wrong usage of /i and /ilod arguments (both specified).");
             }
 
             ExecWithArguments(doc, map);
