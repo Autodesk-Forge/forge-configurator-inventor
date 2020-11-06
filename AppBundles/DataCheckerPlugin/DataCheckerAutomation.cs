@@ -51,7 +51,7 @@ namespace DataCheckerPlugin
         {
         }
 
-        public override void ExecWithArguments(Document doc, NameValueMap map)
+        public override void Run(Document doc)
         {
             using (new HeartBeat())
             {
@@ -61,6 +61,11 @@ namespace DataCheckerPlugin
 
                 SaveMessages();
             }
+        }
+
+        public override void ExecWithArguments(Document doc, NameValueMap map)
+        {
+            LogError("Unexpected execution path! DataChecker does not expect any extra arguments!");
         }
 
         private void DetectUnsupportedAddins(Document doc)

@@ -100,7 +100,7 @@ namespace ExportBOMPlugin
 
         public override void ExecWithArguments(Document doc, NameValueMap map)
         {
-            LogError("Unexpected execution path! ExportBom does not expects any extra arguments!");
+            LogError("Unexpected execution path! ExportBom does not expect any extra arguments!");
         }
 
         private void ActivateProject(string dir)
