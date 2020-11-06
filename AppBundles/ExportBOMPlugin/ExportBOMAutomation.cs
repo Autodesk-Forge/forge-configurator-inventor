@@ -31,7 +31,7 @@ namespace ExportBOMPlugin
 {
     // heavily based on https://github.com/akenson/da-update-bom
     [ComVisible(true)]
-    public class ExportBOMAutomation
+    public class ExportBOMAutomation : AutomationBase
     {
         /// <summary>
         /// File name of output JSON with BOM data.
@@ -52,14 +52,11 @@ namespace ExportBOMPlugin
 
         private static readonly ExtractedBOM EmptyBOM = new ExtractedBOM { Columns = new Shared.Column[0], Data = new object[0][] };
 
-        private readonly InventorServer inventorApplication;
-
-        public ExportBOMAutomation(InventorServer inventorApp)
+        public ExportBOMAutomation(InventorServer inventorApp) : base (inventorApp)
         {
-            inventorApplication = inventorApp;
         }
 
-        public void Run(Document doc)
+        public override void Run(Document doc)
         {
             LogTrace("Processing " + doc.FullFileName);
 
@@ -77,17 +74,6 @@ namespace ExportBOMPlugin
 
                         try
                         {
-                            // TODO: remove this project activation when new inventorcoreconsole.exe is available on PROD environment
-                            var fullFileName = doc.FullFileName;
-                            // close the original doc
-                            doc.Close(true);
-                            // activate default project
-                            var dir = System.IO.Directory.GetCurrentDirectory();
-                            ActivateProject(dir);
-                            // open doc with project activated
-                            doc = inventorApplication.Documents.Open(fullFileName);
-                            // ^
-
                             extractedBOM = ProcessAssembly((AssemblyDocument)doc);
                         }
                         catch (Exception e)
@@ -112,6 +98,11 @@ namespace ExportBOMPlugin
 
         }
 
+        public override void ExecWithArguments(Document doc, NameValueMap map)
+        {
+            LogError("Unexpected execution path! ExportBom does not expect any extra arguments!");
+        }
+
         private void ActivateProject(string dir)
         {
             var defaultProjectName = "FDADefault";
@@ -121,23 +112,18 @@ namespace ExportBOMPlugin
             DesignProject project = null;
             if (System.IO.File.Exists(projectFullFileName))
             {
-                project = inventorApplication.DesignProjectManager.DesignProjects.AddExisting(projectFullFileName);
+                project = _inventorApplication.DesignProjectManager.DesignProjects.AddExisting(projectFullFileName);
                 Trace.TraceInformation("Adding existing default project file: {0}", projectFullFileName);
 
             }
             else
             {
-                project = inventorApplication.DesignProjectManager.DesignProjects.Add(MultiUserModeEnum.kSingleUserMode, defaultProjectName, dir);
+                project = _inventorApplication.DesignProjectManager.DesignProjects.Add(MultiUserModeEnum.kSingleUserMode, defaultProjectName, dir);
                 Trace.TraceInformation("Creating default project file with name: {0} at {1}", defaultProjectName, dir);
             }
 
             Trace.TraceInformation("Activating default project {0}", project.FullFileName);
             project.Activate(true);
-        }
-
-        public void RunWithArguments(Document doc, NameValueMap map)
-        {
-            LogError("RunWithArguments is not functional");
         }
 
         private ExtractedBOM ProcessAssembly(AssemblyDocument doc)
@@ -199,25 +185,5 @@ namespace ExportBOMPlugin
                 }
             }
         }
-
-        #region Logging utilities
-
-        /// <summary>
-        /// Log message with 'trace' log level.
-        /// </summary>
-        private static void LogTrace(string message)
-        {
-            Trace.TraceInformation(message);
-        }
-
-        /// <summary>
-        /// Log message with 'error' log level.
-        /// </summary>
-        private static void LogError(string message)
-        {
-            Trace.TraceError(message);
-        }
-
-        #endregion
     }
 }

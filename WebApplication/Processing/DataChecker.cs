@@ -62,5 +62,11 @@ namespace WebApplication.Processing
             activityParams.Add(MessagesParamName, new Parameter { Verb = Verb.Put, LocalName = MessagesFileName, Zip = false });
             return activityParams;
         }
+
+        public override List<string> ActivityCommandLine =>
+            new List<string>
+            {
+                $"$(engine.path)\\InventorCoreConsole.exe /al \"$(appbundles[{ActivityId}].path)\" /i \"$(args[{InputDocParameterName}].path)\""
+            };
     }
 }
