@@ -68,9 +68,6 @@ namespace Shared
                     doc = _inventorApplication.Documents.Open(docPath, false);
                 }
                 LogTrace($"Full document name: {doc.FullDocumentName}");
-            } else
-            {
-                throw new System.ArgumentException("Wrong usage of /i and /ilod arguments (both specified).");
             }
 
             ExecWithArguments(doc, map);
