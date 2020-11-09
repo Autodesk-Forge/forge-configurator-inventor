@@ -37,64 +37,27 @@ namespace ExportDrawingAsPdfPlugin
             using (new HeartBeat())
             {
                 var dir = System.IO.Directory.GetCurrentDirectory();
-                var drawingToGenerate = map.Count>1 ? map.Item["_2"] : null;
+                var drawingToGenerate = map.Item["_2"];
 
                 if (drawingToGenerate == null)
                 {
                     LogTrace("Drawing not specified !");
-                    return;
                 }
 
                 LogTrace("Drawing to generate PDF: {0}", drawingToGenerate);
 
-                string drawing = null;
-                if (drawingToGenerate == null)
-                {
-                    if (doc == null)
-                    {
-                        ActivateDefaultProject(dir);
-                        doc = _inventorApplication.Documents.Open(map.Item["_1"]);
-                    }
-
-                    var fullFileName = doc.FullFileName;
-                    var path = System.IO.Path.GetFullPath(fullFileName);
-                    var fileName = System.IO.Path.GetFileNameWithoutExtension(fullFileName);
-                    drawing = _inventorApplication.DesignProjectManager.ResolveFile(path, fileName + ".idw");
-                    LogTrace("Looking for drawing: " + fileName + ".idw " + "inside: " + path + " with result: " + drawing);
-                    if (drawing == null)
-                    {
-                        drawing = _inventorApplication.DesignProjectManager.ResolveFile(path, fileName + ".dwg");
-                        LogTrace("Looking for drawing: " + fileName + ".dwg " + "inside: " + path + " with result: " + drawing);
-                    }
-                    if (drawing != null)
-                    {
-                        LogTrace("Found drawing to export at: " + drawing);
-                    } else
-                    {
-                        LogTrace("NO drawing found!");
-                        // do nothing and return
-                        return;
-                    }
-                }
-                else
-                {
-                    drawing = System.IO.Path.Combine(dir, /* ??? */"unzippedIam", drawingToGenerate);
-                }
-
-                if (drawing != null)
-                {
-                    LogTrace("Exporting : " + drawing);
-                    var drawingDocument = _inventorApplication.Documents.Open(drawing);
-                    LogTrace("Drawing opened");
-                    drawingDocument.Update2(true);
-                    LogTrace("Drawing updated");
-                    drawingDocument.Save2(true);
-                    LogTrace("Drawing saved");
-                    var pdfPath = System.IO.Path.Combine(dir, "Drawing.pdf");
-                    LogTrace("Exporting drawing to: " + pdfPath);
-                    ExportIDWToPDF(drawingDocument, pdfPath);
-                    LogTrace("Drawing exported");
-                }
+                string drawing = System.IO.Path.Combine(dir, /* ??? */"unzippedIam", drawingToGenerate);
+                LogTrace("Exporting : " + drawing);
+                var drawingDocument = _inventorApplication.Documents.Open(drawing);
+                LogTrace("Drawing opened");
+                drawingDocument.Update2(true);
+                LogTrace("Drawing updated");
+                drawingDocument.Save2(true);
+                LogTrace("Drawing saved");
+                var pdfPath = System.IO.Path.Combine(dir, "Drawing.pdf");
+                LogTrace("Exporting drawing to: " + pdfPath);
+                ExportIDWToPDF(drawingDocument, pdfPath);
+                LogTrace("Drawing exported");
             }
         }
 
