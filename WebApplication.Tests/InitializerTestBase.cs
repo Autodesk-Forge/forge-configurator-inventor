@@ -91,8 +91,7 @@ namespace WebApplication.Tests
                 CreateThumbnail = "../../../../WebApplication/AppBundles/CreateThumbnailPlugin.bundle.zip",
                 ExtractParameters = "../../../../WebApplication/AppBundles/ExtractParametersPlugin.bundle.zip",
                 UpdateParameters = "../../../../WebApplication/AppBundles/UpdateParametersPlugin.bundle.zip",
-                CreateSAT = "../../../../WebApplication/AppBundles/SatExportPlugin.bundle.zip",
-                CreateRFA = "../../../../WebApplication/AppBundles/RFAExportPlugin.bundle.zip",
+                CreateRFA = "../../../../WebApplication/AppBundles/RFAExportRCEPlugin.bundle.zip",
                 CreateBOM = "../../../../WebApplication/AppBundles/ExportBOMPlugin.bundle.zip",
                 ExportDrawing = "../../../../WebApplication/AppBundles/ExportDrawingAsPdfPlugin.bundle.zip",
                 UpdateDrawings = "../../../../WebApplication/AppBundles/UpdateDrawingsPlugin.bundle.zip"
