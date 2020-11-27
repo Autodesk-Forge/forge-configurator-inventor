@@ -26,6 +26,10 @@ span.user {
   margin-right: 12px !important;
 }
 
+span.avatar-custom-style {
+  background-color: white;
+}
+
 span.username, span.hyperlink {
   width: 70px;
   height: 20px;

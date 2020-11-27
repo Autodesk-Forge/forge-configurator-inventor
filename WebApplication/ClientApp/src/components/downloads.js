@@ -129,7 +129,7 @@ export class Downloads extends Component {
                 // register the row
                 data.push({
                     id: 'bom',
-                    icon: 'products-and-services-24.svg',
+                    icon: 'file-spreadsheet-24.svg',
                     type: 'BOM',
                     env: 'BOM',
                     link: bomJsx,
