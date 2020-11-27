@@ -24,6 +24,7 @@ import updateParametersReducer, * as updateParams from './updateParametersReduce
 import uiFlagsReducer, * as uiFlags from './uiFlagsReducer';
 import profileReducer from './profileReducer';
 import bomReducer, * as bom from './bomReducer';
+import { compareParameters } from "../actions/parametersActions";
 
 export const mainReducer = combineReducers({
     projectList: projectListReducer,
@@ -56,7 +57,9 @@ export const getUpdateParameters = function(projectId, state) {
 };
 
 export const parametersEditedMessageVisible = function(state) {
-    if (state.uiFlags.parametersEditedMessageClosed === true || state.uiFlags.parametersEditedMessageRejected === true )
+    const loggedIn = !state.profile.isLoggedIn;
+
+    if (state.uiFlags.parametersEditedMessageClosed === true || (loggedIn && state.uiFlags.parametersEditedMessageRejected === true) )
         return false;
 
     const activeProject = getActiveProject(state);
@@ -72,7 +75,7 @@ export const parametersEditedMessageVisible = function(state) {
     for (const parameterId in parameters) {
         const parameter = parameters[parameterId];
         const updateParameter = updateParameters.find(updatePar => updatePar.name === parameter.name);
-        if (parameter.value !== updateParameter.value) {
+        if (!compareParameters(parameter, updateParameter)) {
             return true;
         }
     }

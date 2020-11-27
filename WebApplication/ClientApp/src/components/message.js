@@ -19,7 +19,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { getActiveProject, parametersEditedMessageVisible} from '../reducers/mainReducer';
+import { getProfile, getActiveProject, parametersEditedMessageVisible} from '../reducers/mainReducer';
 import { hideUpdateMessageBanner } from '../actions/uiFlagsActions';
 
 import './message.css';
@@ -52,6 +52,7 @@ export class Message extends Component {
     }
 
     render() {
+        const loggedIn = this.props.profile.isLoggedIn;
         const visible = this.props.parametersEditedMessageVisible;
 
         return (
@@ -72,18 +73,21 @@ export class Message extends Component {
                     />
                   </Banner.Action>
                   <div className="verticalseparator"/>
-                  <Banner.Action>
-                    <Checkbox onChange={(checked) => this.dontShowAgain = checked}/>
-                    <ThemeContext.Consumer>{({ resolvedRoles }) => (
-                      <div style={{
-                          fontFamily: resolvedRoles["basics.fontFamilies.main"],
-                          fontSize: resolvedRoles["basics.fontSizes.mediumMedium"],
-                          marginLeft: '12px'
-                      }}>Don&apos;t show again.
-                      </div>
-                  )}</ThemeContext.Consumer>
-                  </Banner.Action>
-                  <div className="verticalseparator"/>
+                  { loggedIn && <div>
+                    <Banner.Action>
+                      <Checkbox onChange={(checked) => this.dontShowAgain = checked}/>
+                      <ThemeContext.Consumer>{({ resolvedRoles }) => (
+                        <div style={{
+                            fontFamily: resolvedRoles["basics.fontFamilies.main"],
+                            fontSize: resolvedRoles["basics.fontSizes.mediumMedium"],
+                            marginLeft: '12px'
+                        }}>Don&apos;t show again.
+                        </div>
+                    )}</ThemeContext.Consumer>
+                    </Banner.Action>
+                    <div className="verticalseparator"/>
+                  </div>
+                  }
                 </Banner.Interactions>
               )}
             onDismiss={this.onDismiss}
@@ -101,6 +105,7 @@ export class Message extends Component {
 export default connect(function (store) {
     return {
         activeProject: getActiveProject(store),
+        profile: getProfile(store),
         parametersEditedMessageVisible: parametersEditedMessageVisible(store)
     };
 }, { hideUpdateMessageBanner })(Message);
