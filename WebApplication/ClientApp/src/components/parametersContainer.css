@@ -108,7 +108,8 @@ div.changedOnUpdate-input-wrapper {
     white-space: pre-wrap;
 }
 
-/* trick to change SVG color. https://stackoverflow.com/a/49627345 */
+/* trick to change SVG color. https://stackoverflow.com/a/49627345 
 .buttonsContainer svg path {
     fill: #FAA21B;
 }
+*/
