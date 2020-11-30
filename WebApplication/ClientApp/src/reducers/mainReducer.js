@@ -57,7 +57,7 @@ export const getUpdateParameters = function(projectId, state) {
 };
 
 export const parametersEditedMessageVisible = function(state) {
-    const loggedIn = !state.profile.isLoggedIn;
+    const loggedIn = state.profile.isLoggedIn;
 
     if (state.uiFlags.parametersEditedMessageClosed === true || (loggedIn && state.uiFlags.parametersEditedMessageRejected === true) )
         return false;

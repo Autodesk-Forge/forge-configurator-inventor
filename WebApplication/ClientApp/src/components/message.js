@@ -73,7 +73,7 @@ export class Message extends Component {
                     />
                   </Banner.Action>
                   <div className="verticalseparator"/>
-                  { loggedIn && <div>
+                  { loggedIn && <div className="dontshowplaceholder">
                     <Banner.Action>
                       <Checkbox onChange={(checked) => this.dontShowAgain = checked}/>
                       <ThemeContext.Consumer>{({ resolvedRoles }) => (
