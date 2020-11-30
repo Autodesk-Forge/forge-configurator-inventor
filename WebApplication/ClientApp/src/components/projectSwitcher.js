@@ -28,15 +28,15 @@ export class ProjectSwitcher extends Component {
 
     constructor(props) {
         super(props);
-        this.onProjectChange = this.onProjectChange.bind(this);
+        this.onProjectClick = this.onProjectClick.bind(this);
     }
 
     componentDidMount() {
         this.props.fetchProjects();
     }
 
-    onProjectChange(data) {
-        const id = data.project.id;
+    onProjectClick(event) {
+        const id = event.target.innerHTML;
         this.props.updateActiveProject(id);
         // mark drawing as not valid if any available
         this.props.invalidateDrawing();
@@ -49,11 +49,11 @@ export class ProjectSwitcher extends Component {
     render() {
         return (
             <ProjectAccountSwitcher
-                defaultProject={this.props.projectList.activeProjectId}
-                activeProject={null}
+                defaultProject={null}
+                activeProject={this.props.projectList.activeProjectId}
                 projects={this.props.projectList.projects}
                 projectTitle="Projects"
-                onChange={this.onProjectChange}
+                onClick={this.onProjectClick}
             />
         );
     }
