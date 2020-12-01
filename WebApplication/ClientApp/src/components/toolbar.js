@@ -24,6 +24,7 @@ import UserDetails from './userDetails.js';
 import Typography from "@hig/typography";
 import ModalFail from './modalFail';
 import { showLoginFailed } from '../actions/uiFlagsActions';
+import './toolbar.css';
 
 import TopNav, {
   Logo,
@@ -92,9 +93,11 @@ export class Toolbar extends Component {
                     </p>
                   </div>
                 </NavAction>
+                <span id="ProfileActionHolder">
                 <ProfileAction avatarName={this.props.profile.name} avatarImage={this.props.profile.avatarUrl}>
                   <UserDetails profile={this.props.profile} logout={this.logout} />
                 </ProfileAction>
+                </span>
               </Interactions>
             </React.Fragment>
           }
