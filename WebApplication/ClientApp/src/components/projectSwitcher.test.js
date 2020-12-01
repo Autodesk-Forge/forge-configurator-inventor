@@ -45,6 +45,14 @@ const baseProps = {
   fetchProjects: () => {}
 };
 
+const clickEventTarget = {
+  target: {
+    lastChild: {
+      textContent: "Wheel"
+    }
+  }
+};
+
 describe('components', () => {
   describe('Project switcher', () => {
 
@@ -73,13 +81,9 @@ describe('components', () => {
 
       const wrapper = shallow(<ProjectSwitcher {...props} />);
       const projectSwitcher = wrapper.find('ProjectAccountSwitcher');
-      projectSwitcher.simulate('click', {
-        target : {
-          innerHTML: "5"
-        }
-      });
+      projectSwitcher.simulate('click', clickEventTarget);
 
-      expect(updateActiveProject).toHaveBeenLastCalledWith("5");
+      expect(updateActiveProject).toHaveBeenLastCalledWith("Wheel");
     });
 
     it('should activate model tab when project changed', () => {
@@ -100,11 +104,7 @@ describe('components', () => {
 
       const wrapper = shallow(<ProjectSwitcher {...props} />);
       const projectSwitcher = wrapper.find('ProjectAccountSwitcher');
-      projectSwitcher.simulate('click', {
-        target : {
-          innerHTML: "2"
-        }
-      });
+      projectSwitcher.simulate('click', clickEventTarget);
 
       expect(updateActiveTabIndex).toHaveBeenCalledWith(1); // model tab index
     });
