@@ -51,9 +51,10 @@ describe('components', () => {
     it('should propagate data to proper properties', () => {
       const wrapper = shallow(<ProjectSwitcher {...baseProps} />);
 
-      expect(wrapper.props().activeProject).toBe(projectList.activeProjectId);
-      expect(wrapper.props().projects).toBe(projectList.projects);
-      expect(wrapper.props().projectTitle).toBe('Projects');
+      const projectSwitcher = wrapper.find('ProjectAccountSwitcher');
+      expect(projectSwitcher.props().activeProject).toBe(projectList.activeProjectId);
+      expect(projectSwitcher.props().projects).toBe(projectList.projects);
+      expect(projectSwitcher.props().projectTitle).toBe('Projects');
     });
 
     it('should call onChange with given handler',  () => {
@@ -71,7 +72,8 @@ describe('components', () => {
       };
 
       const wrapper = shallow(<ProjectSwitcher {...props} />);
-      wrapper.simulate('click', {
+      const projectSwitcher = wrapper.find('ProjectAccountSwitcher');
+      projectSwitcher.simulate('click', {
         target : {
           innerHTML: "5"
         }
@@ -97,7 +99,8 @@ describe('components', () => {
       };
 
       const wrapper = shallow(<ProjectSwitcher {...props} />);
-      wrapper.simulate('click', {
+      const projectSwitcher = wrapper.find('ProjectAccountSwitcher');
+      projectSwitcher.simulate('click', {
         target : {
           innerHTML: "2"
         }

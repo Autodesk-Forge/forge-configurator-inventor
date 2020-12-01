@@ -23,6 +23,7 @@ import { fetchProjects, updateActiveProject } from '../actions/projectListAction
 import { updateActiveTabIndex, invalidateDrawing } from '../actions/uiFlagsActions';
 import { fetchParameters } from '../actions/parametersActions';
 import {addLog} from '../actions/notificationActions';
+import './projectSwitcher.css';
 
 export class ProjectSwitcher extends Component {
 
@@ -48,6 +49,7 @@ export class ProjectSwitcher extends Component {
 
     render() {
         return (
+            <span id="PAS">
             <ProjectAccountSwitcher
                 defaultProject={null}
                 activeProject={this.props.projectList.activeProjectId}
@@ -55,6 +57,7 @@ export class ProjectSwitcher extends Component {
                 projectTitle="Projects"
                 onClick={this.onProjectClick}
             />
+            </span>
         );
     }
 }
