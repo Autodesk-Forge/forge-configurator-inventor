@@ -208,7 +208,7 @@ const stripUnits = (parameter) => {
 };
 
 // Compares the two parameter values and returns true if they represent the same value
-export const compareParamaters = (firstParameter, secondParameter) => {
+export const compareParameters = (firstParameter, secondParameter) => {
     if(!firstParameter || !secondParameter) {
         return false;
     }

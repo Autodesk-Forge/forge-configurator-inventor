@@ -30,7 +30,8 @@ describe('components', () => {
         const fnMock = jest.fn();
         const props = {
           parametersEditedMessageVisible: true,
-          hideUpdateMessageBanner: fnMock
+          hideUpdateMessageBanner: fnMock,
+          profile: {isLoggedIn: true}
         };
 
         const wrapper = shallow(<Message {...props}/>);
@@ -43,7 +44,8 @@ describe('components', () => {
         const fnMock = jest.fn();
         const props = {
           parametersEditedMessageVisible: true,
-          hideUpdateMessageBanner: fnMock
+          hideUpdateMessageBanner: fnMock,
+          profile: {isLoggedIn: true}
         };
 
         const wrapper = mount(<Message {...props}/>);
@@ -56,6 +58,36 @@ describe('components', () => {
 
         bannerComponent.props().onDismiss();
         expect(fnMock).toHaveBeenCalledWith(true);
+      });
+      it('check dont Show Again does not exist when anonymous', () => {
+        const fnMock = jest.fn();
+        const props = {
+          parametersEditedMessageVisible: true,
+          hideUpdateMessageBanner: fnMock,
+          profile: {isLoggedIn: false}
+        };
+
+        const wrapper = mount(<Message {...props}/>);
+        const bannerComponent = wrapper.find('Banner');
+        expect(bannerComponent.length).toEqual(1);
+
+        const dontShowAgain = wrapper.find(Checkbox);
+        expect(dontShowAgain.length).toEqual(0);
+      });
+      it('check dont Show Again exists when loggedIn', () => {
+        const fnMock = jest.fn();
+        const props = {
+          parametersEditedMessageVisible: true,
+          hideUpdateMessageBanner: fnMock,
+          profile: {isLoggedIn: true}
+        };
+
+        const wrapper = mount(<Message {...props}/>);
+        const bannerComponent = wrapper.find('Banner');
+        expect(bannerComponent.length).toEqual(1);
+
+        const dontShowAgain = wrapper.find(Checkbox);
+        expect(dontShowAgain.length).toEqual(1);
       });
   });
 });
