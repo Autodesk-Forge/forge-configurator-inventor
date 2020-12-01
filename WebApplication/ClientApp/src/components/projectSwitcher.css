@@ -1,0 +1,8 @@
+#PAS ul>li:hover {
+    background-color: #f5f5f5;
+    outline: none;
+}
+
+#PAS div[role="button"] {
+    outline: none;
+}
