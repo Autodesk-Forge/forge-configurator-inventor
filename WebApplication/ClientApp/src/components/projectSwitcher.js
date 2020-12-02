@@ -37,7 +37,9 @@ export class ProjectSwitcher extends Component {
     }
 
     onProjectClick(event) {
-        const id = event.target.innerHTML;
+        // depending on where exactly you click in the row (the anchor text vs outside of the text),
+        // event.target.innerText is not sufficient match for the id. event.target.lastChild.textContent seems to be fine.
+        const id = event.target.lastChild.textContent;
         this.props.updateActiveProject(id);
         // mark drawing as not valid if any available
         this.props.invalidateDrawing();
