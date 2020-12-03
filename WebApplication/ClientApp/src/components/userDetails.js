@@ -44,7 +44,7 @@ export class UserDetails extends Component {
                 </div>
                 <span className="username">{this.props.profile.name}</span>
                 <Button className="auth-button" style={
-                            { width: '244px', height: '36px', borderRadius: '2px', border: '1px solid rgb(128, 128, 128)', margin: '12px'}}
+                            { width: '244px', height: '36px', borderRadius: '2px', border: '1px solid #0696d7;', margin: '12px'}}
                             type="secondary"
                             size="small"
                             title={this.props.profile.isLoggedIn ? "Sign Out" : "Sign In"}

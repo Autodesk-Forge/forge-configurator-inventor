@@ -30,6 +30,13 @@ span.avatar-custom-style {
   background-color: white;
 }
 
+.auth-button:focus {
+  border-radius: 5%;
+  border-style: solid;
+  border-color: #0696d7;
+  box-shadow:  0 0 0 3px rgba(6,150,215, 0.35);
+}
+
 span.username, span.hyperlink {
   width: 70px;
   height: 20px;
@@ -65,3 +72,9 @@ span.auth-button-text {
   height: 0;
   width: 0;
 }
+
+.hyperlink a:focus {
+  outline: none;  
+  text-decoration: underline;
+}
+

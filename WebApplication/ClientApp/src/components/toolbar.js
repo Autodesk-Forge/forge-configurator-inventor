@@ -79,11 +79,12 @@ export class Toolbar extends Component {
           }
           rightActions={
             <React.Fragment>
-              <PlaceCenterContainer>
+              <PlaceCenterContainer className={"ProjectSwitcher"}>
                 {this.props.children}
               </PlaceCenterContainer>
               <Interactions>
                 <Separator />
+                <span id="NavActionHolder">
                 <NavAction title="Log" icon={<Service24 />}>
                   <div>
                     <h3>Navigation Action</h3>
@@ -93,6 +94,7 @@ export class Toolbar extends Component {
                     </p>
                   </div>
                 </NavAction>
+                </span>
                 <span id="ProfileActionHolder">
                 <ProfileAction avatarName={this.props.profile.name} avatarImage={this.props.profile.avatarUrl}>
                   <UserDetails profile={this.props.profile} logout={this.logout} />

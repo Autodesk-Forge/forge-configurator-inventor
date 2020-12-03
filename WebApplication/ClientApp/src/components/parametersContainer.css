@@ -108,6 +108,14 @@ div.changedOnUpdate-input-wrapper {
     white-space: pre-wrap;
 }
 
+#resetButton:focus
+{
+    border-style: solid;
+    border-color: #0696D7;
+    border-radius: 2px;
+    outline: none;
+}
+
 /* trick to change SVG color. https://stackoverflow.com/a/49627345 
 .buttonsContainer svg path {
     fill: #FAA21B;

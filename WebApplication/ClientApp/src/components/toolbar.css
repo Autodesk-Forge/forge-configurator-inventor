@@ -3,5 +3,21 @@
 }
 
 #ProfileActionHolder button {
+  outline: #0696D7;
+}
+
+#NavActionHolder button {
+  outline: #0696D7;
+}
+
+.ProjectSwitcher li{
+  padding-bottom: 8px;
+}
+
+.ProjectSwitcher li:focus{
+  border-style: solid;
+  border-color: #0696D7;
+  border-radius: 2px;
   outline: none;
 }
+

@@ -79,7 +79,8 @@ export class ParametersContainer extends Component {
                 </div>
                 <hr className="parametersSeparator"/>
                 <div className={buttonsContainerClass}>
-                    <Button style={{width: '125px'}}
+                    <Button id="resetButton"
+                        style={{width: '125px'}}
                         size="standard"
                         title="Reset"
                         type="secondary"
