@@ -20,7 +20,7 @@ import { addError, addLog } from './notificationActions';
 import { Jobs } from '../JobManager';
 import { showAdoptWithParamsFailed, showAdoptWithParametersProgress, updateActiveTabIndex } from './uiFlagsActions';
 import { updateActiveProject } from '../actions/projectListActions';
-import { addOrUpdateProject } from './projectListActions';
+import { addProject } from './projectListActions';
 import { adaptParameters, updateParameters } from './parametersActions';
 
 export const adoptProjectWithParameters = (parameters) => async (dispatch) => {
@@ -54,7 +54,7 @@ export const adoptProjectWithParameters = (parameters) => async (dispatch) => {
 
                 // hide modal dialog
                 dispatch(showAdoptWithParametersProgress(false));
-                dispatch(addOrUpdateProject(project));
+                dispatch(addProject(project));
                 const adaptedParams = adaptParameters(params);
                 dispatch(updateParameters(project.id, adaptedParams));
                 dispatch(updateActiveProject(project.id));

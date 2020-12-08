@@ -56,23 +56,6 @@ function ensureActiveProjectId(projects, currId) {
     return prjId;
 }
 
-function addOrUpdateProject(projects, newProject) {
-    let updatedList = projects ? [].concat(projects) : [newProject];
-
-    // find the project if it already exists, update it
-    for (let i = 0; i < updatedList.length; ++i) {
-        if (updatedList[i].id === newProject.id) {
-            updatedList[i] = newProject;
-            return updatedList;
-        }
-    }
-
-    // concat it to the project list otherwise
-    updatedList = projects.concat(newProject);
-
-    return updatedList;
-}
-
 export default function(state = initialState, action) {
     switch(action.type) {
         case projectListActionTypes.PROJECT_LIST_UPDATED: {
@@ -92,17 +75,9 @@ export default function(state = initialState, action) {
             });
             return { ...state, projects };
         }
-
-        case projectListActionTypes.ADD_OR_UPDATE_PROJECT: {
-            const updatedList = addOrUpdateProject(state.projects, action.project);
-            const sortedProjects = sortProjects(updatedList);
-            const prjId = ensureActiveProjectId(sortedProjects, state.activeProjectId);
-            return { activeProjectId: prjId, projects: sortedProjects };
-        }
         case projectListActionTypes.ADD_PROJECT: {
-            // TODO: QUESTION - no check for existing project with the same ID. OK?
-
-            const updatedList = state.projects ? state.projects.concat(action.newProject) : [action.newProject];
+            const filteredList = state.projects ? state.projects.filter((project) => project.id !== action.newProject.id) : [];
+            const updatedList = filteredList.concat(action.newProject);
 
             const sortedProjects = sortProjects(updatedList);
             const prjId = ensureActiveProjectId(sortedProjects, state.activeProjectId);
