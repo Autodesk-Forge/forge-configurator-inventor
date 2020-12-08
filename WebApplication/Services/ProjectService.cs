@@ -45,7 +45,7 @@ namespace WebApplication.Services
         /// </summary>
         /// <param name="payload">project configuration with parameters</param>
         /// <returns>project storage</returns>
-        public async Task<ProjectWithParametersDTO> AdoptProjectWithParametersAsync(AdoptProjectWithParametersPayload payload)
+        public async Task<ProjectDTO> AdoptProjectWithParametersAsync(AdoptProjectWithParametersPayload payload)
         {
             if (!await DoesProjectAlreadyExistAsync(payload.Name))
             {
@@ -59,9 +59,10 @@ namespace WebApplication.Services
             }
 
             var updateDto = (await _projectWork.DoSmartUpdateAsync(payload.Config, payload.Name)).dto;
-            var projectDto = _dtoGenerator.ToDTO(await _userResolver.GetProjectStorageAsync(payload.Name));
+            // use update hash for projectDto generation
+            var projectDto = _dtoGenerator.ToDTO(await _userResolver.GetProjectStorageAsync(payload.Name), updateDto.Hash);
 
-            return new ProjectWithParametersDTO(projectDto, updateDto);
+            return projectDto;
         }
 
         private async Task<bool> DoesProjectAlreadyExistAsync(string projectName)
