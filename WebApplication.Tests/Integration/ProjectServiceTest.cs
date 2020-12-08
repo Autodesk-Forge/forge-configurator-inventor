@@ -75,7 +75,7 @@ namespace WebApplication.Tests.Integration
         {
             var projectWithParameters = await _projectService.AdoptProjectWithParametersAsync(payload);
 
-            _output.WriteLine($"adopted project with parameters, project label: {projectWithParameters.Project.Label}");
+            _output.WriteLine($"adopted project with parameters, project label: {projectWithParameters.Label}");
         }
 
         [Fact(Skip = "not a real test, just for development purposes")]
