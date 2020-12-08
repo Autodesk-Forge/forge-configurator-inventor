@@ -96,6 +96,7 @@ namespace WebApplication
             services.AddSingleton<LocalCache>();
             services.AddSingleton<Uploads>();
             services.AddSingleton<OssBucketFactory>();
+            services.AddSingleton<AdoptProjectWithParametersPayloadProvider>();
 
             services.AddSingleton<IGuidGenerator, GuidGenerator>();
 
