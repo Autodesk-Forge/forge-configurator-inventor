@@ -20,12 +20,7 @@ import { addError, addLog } from './notificationActions';
 import { Jobs } from '../JobManager';
 import { showAdoptWithParamsFailed, showAdoptWithParametersProgress, updateActiveTabIndex } from './uiFlagsActions';
 import { updateActiveProject } from '../actions/projectListActions';
-<<<<<<< HEAD
 import { addProject } from './projectListActions';
-import { adaptParameters, updateParameters } from './parametersActions';
-=======
-import { addOrUpdateProject } from './projectListActions';
->>>>>>> INVGEN-48194-finish-cpq-poc
 
 export const adoptProjectWithParameters = (parameters) => async (dispatch) => {
     dispatch(addLog('adoptProjectWithParameters invoked'));
