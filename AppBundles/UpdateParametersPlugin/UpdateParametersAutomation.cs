@@ -17,11 +17,11 @@
 /////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 using Inventor;
 using Autodesk.Forge.DesignAutomation.Inventor.Utils;
+using Autodesk.Forge.DesignAutomation.Inventor.Utils.Helpers;
 using Newtonsoft.Json;
 using Shared;
 using PluginUtilities;
@@ -29,24 +29,15 @@ using PluginUtilities;
 namespace UpdateParametersPlugin
 {
     [ComVisible(true)]
-    public class UpdateParametersAutomation
+    public class UpdateParametersAutomation : AutomationBase
     {
-        private readonly InventorServer _inventorApplication;
-
-        public UpdateParametersAutomation(InventorServer inventorApp)
+        public UpdateParametersAutomation(InventorServer inventorApp) : base(inventorApp)
         {
-            _inventorApplication = inventorApp;
         }
 
-        public void Run(Document doc)
+        public override void ExecWithArguments(Document doc, NameValueMap map)
         {
-            LogTrace($"Run called with {doc.DisplayName}");
-            LogError("Input arguments are expected. The processing failed.");
-        }
-
-        public void RunWithArguments(Document doc, NameValueMap map)
-        {
-            LogTrace($"RunWithArguments called with {doc.DisplayName} with {map.Count} arguments");
+            LogTrace($"ExecWithArguments called with {doc.DisplayName} with {map.Count} arguments");
 
             using (new HeartBeat())
             {
@@ -54,10 +45,10 @@ namespace UpdateParametersPlugin
                 switch (doc.DocumentType)
                 {
                     case DocumentTypeEnum.kPartDocumentObject:
-                        parameters = ((PartDocument) doc).ComponentDefinition.Parameters;
+                        parameters = ((PartDocument)doc).ComponentDefinition.Parameters;
                         break;
                     case DocumentTypeEnum.kAssemblyDocumentObject:
-                        parameters = ((AssemblyDocument) doc).ComponentDefinition.Parameters;
+                        parameters = ((AssemblyDocument)doc).ComponentDefinition.Parameters;
                         break;
                     default:
                         LogError($"Unsupported document type: {doc.DocumentType}");
@@ -66,7 +57,7 @@ namespace UpdateParametersPlugin
 
                 LogTrace("Read parameters");
 
-                string paramFile = (string) map.Value["_1"];
+                string paramFile = map.AsString("paramFile");
                 string json = System.IO.File.ReadAllText(paramFile);
                 LogTrace(json);
 
@@ -82,7 +73,7 @@ namespace UpdateParametersPlugin
                         var userParameter = parameters[paramName];
 
                         string expression = userParameter.Expression;
-                        if (! paramData.Value.Equals(expression))
+                        if (!paramData.Value.Equals(expression))
                         {
                             LogTrace($"Applying '{paramData.Value}' to '{paramName}'");
                             SetExpression(userParameter, paramData, doc);
@@ -118,7 +109,7 @@ namespace UpdateParametersPlugin
             // and using dynamic (late binding) helps. So stick with it.
             dynamic dynParameter = parameter;
 
-            string expression  = paramData.Value;
+            string expression = paramData.Value;
 
             if (dynParameter.Units != "Text")
             {
@@ -157,41 +148,5 @@ namespace UpdateParametersPlugin
                 paramData.ErrorMessage = "Parameter's expression is not valid for its unit type";
             }
         }
-
-        #region Logging utilities
-
-        /// <summary>
-        /// Log message with 'trace' log level.
-        /// </summary>
-        private static void LogTrace(string format, params object[] args)
-        {
-            Trace.TraceInformation(format, args);
-        }
-
-        /// <summary>
-        /// Log message with 'trace' log level.
-        /// </summary>
-        private static void LogTrace(string message)
-        {
-            Trace.TraceInformation(message);
-        }
-
-        /// <summary>
-        /// Log message with 'error' log level.
-        /// </summary>
-        private static void LogError(string format, params object[] args)
-        {
-            Trace.TraceError(format, args);
-        }
-
-        /// <summary>
-        /// Log message with 'error' log level.
-        /// </summary>
-        private static void LogError(string message)
-        {
-            Trace.TraceError(message);
-        }
-
-        #endregion
     }
 }

@@ -46,6 +46,7 @@ export const initialState = {
    embeddedModeEnabled: true,
    drawingUrls: {},
    stats: {},
+   reportUrl: null,
    activeDrawing: null,
    drawings: null
 };
@@ -142,9 +143,13 @@ export const getStats = function(state) {
    return state.stats;
 };
 
+export const getReportUrl = function(state) {
+   return state.reportUrl;
+};
+
 export const embeddedModeEnabled = function(state) {
    return state.embeddedModeEnabled;
-}
+};
 
 export const getDrawingsList = function(state) {
    return state.drawings;
@@ -248,6 +253,8 @@ export default function(state = initialState, action) {
             const stats = action.stats === null ? {} : action.stats;
             return { ...state, stats: stats };
          }
+      case uiFlagsActionTypes.SET_REPORT_URL:
+         return { ...state, reportUrl: action.reportUrl };
 
       case uiFlagsActionTypes.SET_ENABLE_EMBEDDED_MODE:
          return { ...state, embeddedModeEnabled: action.enabled };

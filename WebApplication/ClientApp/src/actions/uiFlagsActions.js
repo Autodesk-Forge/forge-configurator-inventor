@@ -46,6 +46,7 @@ export const actionTypes = {
     SET_DRAWING_URL: 'SET_DRAWING_URL',
     INVALIDATE_DRAWING: 'INVALIDATE_DRAWING',
     SET_STATS: 'SET_STATS',
+    SET_REPORT_URL: 'SET_REPORT_URL',
     SET_ENABLE_EMBEDDED_MODE: 'SET_ENABLE_EMBEDDED_MODE',
     ACTIVE_DRAWING_UPDATED: 'ACTIVE_DRAWING_UPDATED',
     DRAWING_LIST_UPDATED: 'DRAWING_LIST_UPDATED'
@@ -252,6 +253,13 @@ export const setStats = (stats, key) => {
         type: actionTypes.SET_STATS,
         stats,
         key
+    };
+};
+
+export const setReportUrl = (reportUrl) => {
+    return {
+        type: actionTypes.SET_REPORT_URL,
+        reportUrl
     };
 };
 

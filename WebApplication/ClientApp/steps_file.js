@@ -78,7 +78,7 @@ module.exports = function() {
       this.waitForElement(locators.xpProjectList, 10);
 
       // emulate click to trigger project loading
-      this.click( locators.getProject(name));
+      this.click( locators.getProjectFromSwitcher(name));
     },
     clickToModelTab() { // we create this method because we need to wait for viewer - https://jira.autodesk.com/browse/INVGEN-41877
       // click on Model tab
@@ -165,7 +165,14 @@ module.exports = function() {
       // Wait for Upload Failed dialog
       this.waitForVisible(uploadFailedDialog, locators.FDAActionTimeout);
     },
-    /** Close Succeded/Failed dialog (on completion of async operation) */
+    uploadProjectWarning(projectZipFile, assemblyLocation) {
+
+      this.uploadProjectBase(projectZipFile, assemblyLocation);
+
+      // Wait for Upload Finished dialog with a warning message
+      this.waitForVisible(uploadConfirmationDialog, locators.FDAActionTimeout);
+    },
+    /** Close Succeeded/Failed dialog (on completion of async operation) */
     closeCompletionDialog() {
       this.click(closeButton);
     },
@@ -209,8 +216,8 @@ module.exports = function() {
       this.moveCursorTo(projectRowWithName);
 
       // click the checkbox to select project
-      this.waitForVisible(checkBox);
-      this.click(checkBox);
+      this.waitForVisible(projectRowWithName + checkBox);
+      this.click(projectRowWithName + checkBox);
 
       // click the delete button
       this.waitForVisible(deleteProjectButton);
@@ -254,6 +261,17 @@ module.exports = function() {
     {
       this.waitForElement(locators.downloadsTab, 5);
       this.click(locators.downloadsTab);
+    },
+    goToProjectsTab()
+    {
+      this.waitForElement(locators.projectsTab, 5);
+      this.click(locators.projectsTab);
+    },
+    checkReportLink()
+    {
+      const workItemLink = '//div[@class="logContainer"]//a[contains(@href,"https://dasprod-store.s3.amazonaws.com/workItem/")]';
+      this.waitForVisible(workItemLink, 5);
+      this.see('Open log file', workItemLink);
     }
   });
 };

@@ -16,7 +16,14 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Routing;
+using Shared;
 using WebApplication.Definitions;
 using WebApplication.Middleware;
 using WebApplication.State;
@@ -73,14 +80,31 @@ namespace WebApplication.Utilities
         public ProjectDTO ToDTO(ProjectStorage projectStorage)
         {
             Project project = projectStorage.Project;
+            var localAttributes = project.LocalAttributes;
 
             var dto = MakeProjectDTO<ProjectDTO>(projectStorage, projectStorage.Metadata.Hash);
             dto.Id = project.Name;
-            dto.Label = project.Name;
-            dto.Image = _localCache.ToDataUrl(project.LocalAttributes.Thumbnail);
+            dto.Label = !Regex.Match(project.Name, @"[\u0030-\u007a]").Success ? "_" + project.Name : project.Name;
+            dto.Image = _localCache.ToDataUrl(localAttributes.Thumbnail);
             dto.IsAssembly = projectStorage.IsAssembly;
             dto.HasDrawing = projectStorage.Metadata.HasDrawings;
-            dto.DrawingsListUrl = _localCache.ToDataUrl(project.LocalAttributes.DrawingsList);
+            dto.DrawingsListUrl = _localCache.ToDataUrl(localAttributes.DrawingsList);
+
+            // fill array with adoption messages
+            if (File.Exists(localAttributes.AdoptMessages))
+            {
+                // we are interested only in warning messages
+                var allMessages = Json.DeserializeFile<List<Message>>(localAttributes.AdoptMessages);
+                dto.AdoptWarnings = allMessages
+                    .Where(m => m.Severity == Severity.Warning)
+                    .Select(m => m.Text)
+                    .ToArray();
+            }
+            else
+            {
+                dto.AdoptWarnings = Array.Empty<string>();
+            }
+
             return dto;
         }
     }

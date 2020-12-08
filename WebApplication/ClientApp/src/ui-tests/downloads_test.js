@@ -36,5 +36,6 @@ Scenario('should check switch to downloads tab shows the downloads links', async
     I.see('BOM', '.BaseTable__row-cell a');
     I.see('Drawing', '.BaseTable__row-cell a');
     // check icons
-    I.seeNumberOfElements({ css: '[src="products-and-services-24.svg"]'}, 4);
+    I.seeNumberOfElements({ css: '[src="products-and-services-24.svg"]'}, 3);
+    I.seeNumberOfElements({ css: '[src="file-spreadsheet-24.svg"]'}, 1);
 });

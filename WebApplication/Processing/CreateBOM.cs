@@ -16,6 +16,7 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
 using WebApplication.Definitions;
 
 namespace WebApplication.Processing
@@ -29,5 +30,11 @@ namespace WebApplication.Processing
         protected override string OutputName => "bom.json";
 
         public CreateBOM(Publisher publisher) : base(publisher) {}
+
+        public override List<string> ActivityCommandLine =>
+            new List<string>
+            {
+                $"$(engine.path)\\InventorCoreConsole.exe /al \"$(appbundles[{ActivityId}].path)\" /i \"$(args[{InputDocParameterName}].path)\""
+            };
     }
 }

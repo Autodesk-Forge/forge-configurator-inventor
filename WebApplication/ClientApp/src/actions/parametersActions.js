@@ -19,7 +19,7 @@
 import repo from '../Repository';
 import { addError, addLog } from './notificationActions';
 import { Jobs } from '../JobManager';
-import { showModalProgress, showUpdateFailed, setErrorData, setStats } from './uiFlagsActions';
+import { showModalProgress, showUpdateFailed, setErrorData, setStats, setReportUrl } from './uiFlagsActions';
 
 import { updateProject } from './projectListActions';
 
@@ -67,12 +67,16 @@ export const resetParameters = (projectId, parameters) => {
  *           "\"Small\""
  *           ],
  *           "value": "\"Small\"",
- *           "unit": "Text"
+ *           "unit": "Text",
+ *           "label": "Size"
+ *           "readonly": false
  *       },
  *       "JawOffset": {
  *           "values": [],
  *           "value": "10 mm",
- *           "unit": "mm"
+ *           "unit": "mm",
+ *           "label": "Jaw Offset",
+ *           "readonly": false
  *       }
  * }
  */
@@ -134,6 +138,8 @@ export function formatParameters(clientParameters) {
         const value = quoteValues ? quote(param.value) : param.value;
 
         obj[param.name] = {
+            label: param.label ? param.label : null,
+            readonly: param.readonly,
             value: value,
             unit: param.units ? param.units : null,
             values: values
@@ -163,9 +169,10 @@ export const updateModelWithParameters = (projectId, data) => async (dispatch) =
                 dispatch(setErrorData(null)); // cleanup url link
             },
             // onComplete
-            (updatedState, stats) => {
+            (updatedState, stats, reportUrl) => {
                 dispatch(addLog('JobManager: Received onComplete'));
                 dispatch(setStats(stats));
+                dispatch(setReportUrl(reportUrl));
 
                 // parameters and "base project state" should be handled differently,
                 // so split the incoming updated state to pieces.
@@ -201,7 +208,7 @@ const stripUnits = (parameter) => {
 };
 
 // Compares the two parameter values and returns true if they represent the same value
-export const compareParamaters = (firstParameter, secondParameter) => {
+export const compareParameters = (firstParameter, secondParameter) => {
     if(!firstParameter || !secondParameter) {
         return false;
     }

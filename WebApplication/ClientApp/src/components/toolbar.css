@@ -1,0 +1,7 @@
+#ProfileActionHolder button>span {
+    background-color: white;
+}
+
+#ProfileActionHolder button {
+  outline: none;
+}

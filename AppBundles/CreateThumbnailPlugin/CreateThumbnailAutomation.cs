@@ -17,7 +17,6 @@
 /////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -26,21 +25,20 @@ using Path = System.IO.Path;
 using System.Runtime.InteropServices;
 using Inventor;
 using Color = Inventor.Color;
+using Shared;
 
 namespace CreateThumbnailPlugin
 {
     [ComVisible(true)]
-    public class CreateThumbnailAutomation
+    public class CreateThumbnailAutomation : AutomationBase
     {
         private const int ThumbnailSize = 30;
-        private readonly InventorServer inventorApplication;
 
-        public CreateThumbnailAutomation(InventorServer inventorApp)
+        public CreateThumbnailAutomation(InventorServer inventorApp) : base(inventorApp)
         {
-            inventorApplication = inventorApp;
         }
 
-        public void Run(Document doc)
+        public override void ExecWithArguments(Document doc, NameValueMap map)
         {
             try
             {
@@ -61,14 +59,14 @@ namespace CreateThumbnailPlugin
                 string filePathLarge = Path.Combine(Directory.GetCurrentDirectory(), fileNameLarge);
 
 
-                inventorApplication.DisplayOptions.Show3DIndicator = false;
-                Camera cam = inventorApplication.TransientObjects.CreateCamera();
+                _inventorApplication.DisplayOptions.Show3DIndicator = false;
+                Camera cam = _inventorApplication.TransientObjects.CreateCamera();
                 cam.SceneObject = invDoc.ComponentDefinition;
                 cam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation;
                 cam.Fit();
                 cam.ApplyWithoutTransition();
 
-                Color backgroundColor = inventorApplication.TransientObjects.CreateColor(0xEC, 0xEC, 0xEC, 0.0); // hardcoded. Make as a parameter
+                Color backgroundColor = _inventorApplication.TransientObjects.CreateColor(0xEC, 0xEC, 0xEC, 0.0); // hardcoded. Make as a parameter
 
                 // generate image twice as large, and then downsample it (antialiasing)
                 cam.SaveAsBitmap(filePathLarge, ThumbnailSize * 2, ThumbnailSize * 2, backgroundColor, backgroundColor);
@@ -109,41 +107,5 @@ namespace CreateThumbnailPlugin
                 LogError("Processing failed. " + e.ToString());
             }
         }
-
-        #region Logging utilities
-
-        /// <summary>
-        /// Log message with 'trace' log level.
-        /// </summary>
-        private static void LogTrace(string format, params object[] args)
-        {
-            Trace.TraceInformation(format, args);
-        }
-
-        /// <summary>
-        /// Log message with 'trace' log level.
-        /// </summary>
-        private static void LogTrace(string message)
-        {
-            Trace.TraceInformation(message);
-        }
-
-        /// <summary>
-        /// Log message with 'error' log level.
-        /// </summary>
-        private static void LogError(string format, params object[] args)
-        {
-            Trace.TraceError(format, args);
-        }
-
-        /// <summary>
-        /// Log message with 'error' log level.
-        /// </summary>
-        private static void LogError(string message)
-        {
-            Trace.TraceError(message);
-        }
-
-        #endregion
     }
 }

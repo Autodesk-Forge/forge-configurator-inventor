@@ -27,7 +27,7 @@ getMaxColumnTextWidth.mockImplementation(() => 10);
 
 Enzyme.configure({ adapter: new Adapter() });
 
-const activeProject = { id: 'projectB' };
+const activeProject = { id: 'projectB', isAssembly: true };
 const bomDataB = {
     columns: [ {label: "Part Number"}, {label: "Description"} ],
     data: [ [ "1101", "Crew cabin"], [ "7.11", "Ejector"] ]
@@ -61,19 +61,19 @@ describe('BOM component', () => {
     });
 
     it('Base table has expected columns', () => {
-    const wrapper = shallow(<Bom { ...props } />);
-    const autoresizer = wrapper.find('AutoResizer');
-    const basetable = autoresizer.renderProp('children')( {width: 100, height: 200} );
-    expect(basetable.prop('columns').length).toEqual(bomDataB.columns.length + 2); // +2 for left and right align column
+        const wrapper = shallow(<Bom { ...props } />);
+        const autoresizer = wrapper.find('AutoResizer');
+        const basetable = autoresizer.renderProp('children')( {width: 100, height: 200} );
+        expect(basetable.prop('columns').length).toEqual(bomDataB.columns.length + 2); // +2 for left and right align column
     });
 
     it('Base table has expected data', () => {
-    const wrapper = shallow(<Bom { ...props } />);
-    const autoresizer = wrapper.find('AutoResizer');
-    const basetable = autoresizer.renderProp('children')( {width: 100, height: 200} );
-    const tabledata = basetable.prop('data');
+        const wrapper = shallow(<Bom { ...props } />);
+        const autoresizer = wrapper.find('AutoResizer');
+        const basetable = autoresizer.renderProp('children')( {width: 100, height: 200} );
+        const tabledata = basetable.prop('data');
 
-    expect(tabledata).toEqual(sampleBTData);
+        expect(tabledata).toEqual(sampleBTData);
     });
 
     it('Fetches bom on first render', () => {
@@ -94,5 +94,58 @@ describe('BOM component', () => {
         const updatedProps = Object.assign(localProps, { activeProject: proj1 });
         wrapper.setProps(updatedProps);
         expect(fetchBomMock).toHaveBeenCalledWith(proj1);
+    });
+
+    describe('empty BOM', () => {
+
+        it('should show adoption warning details for empty BOM (single message)', () => {
+
+            const localProps = {
+                activeProject: { ...activeProject, adoptWarnings: ['Bad addins!'] },
+                fetchBom: fetchBomMock
+            };
+
+            const wrapper = shallow(<Bom { ...localProps } />);
+            expect(wrapper.exists('.bomEmpty')).toEqual(true);
+
+            const detailsBlock = wrapper.find('.bomEmpty .details');
+            expect(detailsBlock.exists()).toEqual(true);
+
+            // details message should be singular
+            const text = detailsBlock.render().text();
+            expect(text.indexOf('message:')).not.toEqual(-1);
+        });
+
+        it('should show adoption warning details for empty BOM (multiple messages)', () => {
+
+            const localProps = {
+                activeProject: { ...activeProject, adoptWarnings: ['Bad addins!', "Missing parts!"] },
+                fetchBom: fetchBomMock
+            };
+
+            const wrapper = shallow(<Bom { ...localProps } />);
+            expect(wrapper.exists('.bomEmpty')).toEqual(true);
+
+            const detailsBlock = wrapper.find('.bomEmpty .details');
+            expect(detailsBlock.exists()).toEqual(true);
+
+            // details message should be plural
+            const text = detailsBlock.render().text();
+            expect(text.indexOf('messages:')).not.toEqual(-1);
+        });
+
+        it('should show empty BOM for IPT', () => {
+
+            const localProps = {
+                activeProject: { ...activeProject, isAssembly: false },
+                fetchBom: fetchBomMock
+            };
+
+            const wrapper = shallow(<Bom { ...localProps } />);
+            expect(wrapper.exists('.bomEmpty')).toEqual(true);
+
+            // no warning messages, etc
+            expect(wrapper.exists('.bomEmpty .details')).toEqual(false);
+        });
     });
 });

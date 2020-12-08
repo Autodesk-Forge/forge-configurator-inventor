@@ -42,7 +42,7 @@ namespace WebApplication.Job
 
             Logger.LogInformation($"ProcessJob (Drawing) {Id} for project {ProjectId} started.");
 
-            FdaStatsDTO stats = await ProjectWork.GenerateDrawingAsync(ProjectId, _hash);
+            (FdaStatsDTO stats, string reportUrl) = await ProjectWork.GenerateDrawingAsync(ProjectId, _hash);
             Logger.LogInformation($"ProcessJob (Drawing) {Id} for project {ProjectId} completed.");
 
             // TODO: this url can be generated right away... we can simply acknowledge that OSS file is ready,
@@ -52,7 +52,7 @@ namespace WebApplication.Job
                                                             values: new { projectName = ProjectId, hash = _hash });
 
             // send resulting URL to the client
-            await resultSender.SendSuccessAsync(drawingUrl, stats);
+            await resultSender.SendSuccessAsync(drawingUrl, stats, reportUrl);
         }
     }
 }

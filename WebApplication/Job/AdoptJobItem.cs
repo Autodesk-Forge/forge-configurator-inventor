@@ -23,6 +23,7 @@ using WebApplication.State;
 using WebApplication.Definitions;
 using WebApplication.Utilities;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace WebApplication.Job
 {
@@ -47,7 +48,17 @@ namespace WebApplication.Job
             using var scope = Logger.BeginScope("Project Adoption ({Id})");
 
             Logger.LogInformation($"ProcessJob (Adopt) {Id} for project {_projectInfo.Name} started.");
-            
+
+            // Check for valid project and root names (where applicable)
+            if ((!string.IsNullOrEmpty(_projectInfo.TopLevelAssembly) && Regex.Match(_projectInfo.TopLevelAssembly, @"[\uFFF0-\uFFFF]").Success) ||
+                Regex.Match(_projectInfo.Name, @"[\uFFF0-\uFFFF]").Success) 
+            {
+                Logger.LogInformation($"Replacement charcters found in project name or top level assembly name for job {Id}.");
+
+                throw new ProcessingException("Project name or assembly contains unsupported characters", 
+                    new[] { "Please refer to https://github.com/Autodesk-Forge/forge-configurator-inventor/blob/master/README.md#project-file-zip-encoding" });
+            }
+
             // upload the file to OSS
             var bucket = await _userResolver.GetBucketAsync(tryToCreate: true);
             ProjectStorage projectStorage = await _userResolver.GetProjectStorageAsync(_projectInfo.Name);
@@ -62,11 +73,12 @@ namespace WebApplication.Job
             // adopt the project
             bool adopted = false;
             FdaStatsDTO stats;
+            string reportUrl = null;
             try
             {
                 string signedUploadedUrl = await bucket.CreateSignedUrlAsync(ossSourceModel);
 
-                stats = await ProjectWork.AdoptAsync(_projectInfo, signedUploadedUrl);
+                (stats, reportUrl) = await ProjectWork.AdoptAsync(_projectInfo, signedUploadedUrl);
                 adopted = true;
             }
             finally
@@ -80,7 +92,7 @@ namespace WebApplication.Job
             }
 
             Logger.LogInformation($"ProcessJob (Adopt) {Id} for project {_projectInfo.Name} completed.");
-            await resultSender.SendSuccessAsync(_dtoGenerator.ToDTO(projectStorage), stats);
+            await resultSender.SendSuccessAsync(_dtoGenerator.ToDTO(projectStorage), stats, reportUrl);
         }
     }
 }

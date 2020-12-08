@@ -45,15 +45,24 @@ const baseProps = {
   fetchProjects: () => {}
 };
 
+const clickEventTarget = {
+  target: {
+    lastChild: {
+      textContent: "Wheel"
+    }
+  }
+};
+
 describe('components', () => {
   describe('Project switcher', () => {
 
     it('should propagate data to proper properties', () => {
       const wrapper = shallow(<ProjectSwitcher {...baseProps} />);
 
-      expect(wrapper.props().defaultProject).toBe(projectList.activeProjectId);
-      expect(wrapper.props().projects).toBe(projectList.projects);
-      expect(wrapper.props().projectTitle).toBe('Projects');
+      const projectSwitcher = wrapper.find('ProjectAccountSwitcher');
+      expect(projectSwitcher.props().activeProject).toBe(projectList.activeProjectId);
+      expect(projectSwitcher.props().projects).toBe(projectList.projects);
+      expect(projectSwitcher.props().projectTitle).toBe('Projects');
     });
 
     it('should call onChange with given handler',  () => {
@@ -71,13 +80,10 @@ describe('components', () => {
       };
 
       const wrapper = shallow(<ProjectSwitcher {...props} />);
-      wrapper.simulate('change', {
-        project : {
-          id: 5
-        }
-      });
+      const projectSwitcher = wrapper.find('ProjectAccountSwitcher');
+      projectSwitcher.simulate('click', clickEventTarget);
 
-      expect(updateActiveProject).toHaveBeenLastCalledWith(5);
+      expect(updateActiveProject).toHaveBeenLastCalledWith("Wheel");
     });
 
     it('should activate model tab when project changed', () => {
@@ -97,11 +103,8 @@ describe('components', () => {
       };
 
       const wrapper = shallow(<ProjectSwitcher {...props} />);
-      wrapper.simulate('change', {
-        project : {
-          id: 2
-        }
-      });
+      const projectSwitcher = wrapper.find('ProjectAccountSwitcher');
+      projectSwitcher.simulate('click', clickEventTarget);
 
       expect(updateActiveTabIndex).toHaveBeenCalledWith(1); // model tab index
     });

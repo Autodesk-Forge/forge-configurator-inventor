@@ -48,5 +48,5 @@ Scenario('Updating parameters for model', async (I) => {
     const jawOffsetInput = '//div[text() = "'+ paramName +'"]//input';
     I.waitForVisible(jawOffsetInput, 20);
     const currentParamValue = await I.grabValueFrom(jawOffsetInput);
-    assert.equal(newParamValue, currentParamValue, 'Error: Parameter "' + paramName + '" has incorrect value!');
+    assert.strictEqual(newParamValue, currentParamValue, 'Error: Parameter "' + paramName + '" has incorrect value!');
 });

@@ -16,95 +16,48 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 using Inventor;
 using Autodesk.Forge.DesignAutomation.Inventor.Utils;
+using Shared;
 
 namespace ExportDrawingAsPdfPlugin
 {
     [ComVisible(true)]
-    public class Automation
+    public class Automation : AutomationBase
     {
-        private readonly InventorServer inventorApplication;
-
-        public Automation(InventorServer inventorApp)
+        public Automation(InventorServer inventorApp) : base(inventorApp)
         {
-            inventorApplication = inventorApp;
         }
 
-        public void Run(Document doc)
-        {
-            
-
-
-        }
-
-        public void RunWithArguments(Document doc, NameValueMap map)
+        public override void ExecWithArguments(Document doc, NameValueMap map)
         {
             using (new HeartBeat())
             {
                 var dir = System.IO.Directory.GetCurrentDirectory();
-                var drawingToGenerate = map.Count>1 ? map.Item["_2"] : null;
+                var drawingToGenerate = map.Item["_2"];
 
                 if (drawingToGenerate == null)
                 {
                     LogTrace("Drawing not specified !");
-                    return;
                 }
 
                 LogTrace("Drawing to generate PDF: {0}", drawingToGenerate);
 
-                string drawing = null;
-                if (drawingToGenerate == null)
-                {
-                    if (doc == null)
-                    {
-                        ActivateDefaultProject(dir);
-                        doc = inventorApplication.Documents.Open(map.Item["_1"]);
-                    }
-
-                    var fullFileName = doc.FullFileName;
-                    var path = System.IO.Path.GetFullPath(fullFileName);
-                    var fileName = System.IO.Path.GetFileNameWithoutExtension(fullFileName);
-                    drawing = inventorApplication.DesignProjectManager.ResolveFile(path, fileName + ".idw");
-                    LogTrace("Looking for drawing: " + fileName + ".idw " + "inside: " + path + " with result: " + drawing);
-                    if (drawing == null)
-                    {
-                        drawing = inventorApplication.DesignProjectManager.ResolveFile(path, fileName + ".dwg");
-                        LogTrace("Looking for drawing: " + fileName + ".dwg " + "inside: " + path + " with result: " + drawing);
-                    }
-                    if (drawing != null)
-                    {
-                        LogTrace("Found drawing to export at: " + drawing);
-                    } else
-                    {
-                        LogTrace("NO drawing found!");
-                        // do nothing and return
-                        return;
-                    }
-                }
-                else
-                {
-                    drawing = System.IO.Path.Combine(dir, /* ??? */"unzippedIam", drawingToGenerate);
-                }
-
-                if (drawing != null)
-                {
-                    LogTrace("Exporting : " + drawing);
-                    var drawingDocument = inventorApplication.Documents.Open(drawing);
-                    LogTrace("Drawing opened");
-                    drawingDocument.Update2(true);
-                    LogTrace("Drawing updated");
-                    drawingDocument.Save2(true);
-                    LogTrace("Drawing saved");
-                    var pdfPath = System.IO.Path.Combine(dir, "Drawing.pdf");
-                    LogTrace("Exporting drawing to: " + pdfPath);
-                    ExportIDWToPDF(drawingDocument, pdfPath);
-                    LogTrace("Drawing exported");
-                }
+                string drawing = System.IO.Path.Combine(dir, /* ??? */"unzippedIam", drawingToGenerate);
+                LogTrace("Exporting : " + drawing);
+                var drawingDocument = _inventorApplication.Documents.Open(drawing);
+                LogTrace("Drawing opened");
+                drawingDocument.Update2(true);
+                LogTrace("Drawing updated");
+                drawingDocument.Save2(true);
+                LogTrace("Drawing saved");
+                var pdfPath = System.IO.Path.Combine(dir, "Drawing.pdf");
+                LogTrace("Exporting drawing to: " + pdfPath);
+                ExportIDWToPDF(drawingDocument, pdfPath);
+                LogTrace("Drawing exported");
             }
         }
 
@@ -117,12 +70,12 @@ namespace ExportDrawingAsPdfPlugin
             DesignProject project = null;
             if (System.IO.File.Exists(projectFullFileName))
             {
-                project = inventorApplication.DesignProjectManager.DesignProjects.AddExisting(projectFullFileName);
+                project = _inventorApplication.DesignProjectManager.DesignProjects.AddExisting(projectFullFileName);
                 Trace.TraceInformation("Adding existing default project file: {0}", projectFullFileName);
 
             } else
             {
-                project = inventorApplication.DesignProjectManager.DesignProjects.Add(MultiUserModeEnum.kSingleUserMode, defaultProjectName, dir);
+                project = _inventorApplication.DesignProjectManager.DesignProjects.Add(MultiUserModeEnum.kSingleUserMode, defaultProjectName, dir);
                 Trace.TraceInformation("Creating default project file with name: {0} at {1}", defaultProjectName, dir);
             }
             
@@ -144,7 +97,7 @@ namespace ExportDrawingAsPdfPlugin
             LogTrace("PDF file full path : " + exportFileName);
 
             LogTrace("Create PDF Translator Addin");
-            TranslatorAddIn PDFAddIn = (TranslatorAddIn)inventorApplication.ApplicationAddIns.ItemById["{0AC6FD96-2F4D-42CE-8BE0-8AEA580399E4}"];
+            TranslatorAddIn PDFAddIn = (TranslatorAddIn)_inventorApplication.ApplicationAddIns.ItemById["{0AC6FD96-2F4D-42CE-8BE0-8AEA580399E4}"];
 
             if (PDFAddIn == null)
             {
@@ -152,12 +105,12 @@ namespace ExportDrawingAsPdfPlugin
                 return;
             }
 
-            TranslationContext context = inventorApplication.TransientObjects.CreateTranslationContext();
-            NameValueMap options = inventorApplication.TransientObjects.CreateNameValueMap();
+            TranslationContext context = _inventorApplication.TransientObjects.CreateTranslationContext();
+            NameValueMap options = _inventorApplication.TransientObjects.CreateNameValueMap();
             if (PDFAddIn.HasSaveCopyAsOptions[doc, context, options])
             {
                 context.Type = IOMechanismEnum.kFileBrowseIOMechanism;
-                DataMedium dataMedium = inventorApplication.TransientObjects.CreateDataMedium();
+                DataMedium dataMedium = _inventorApplication.TransientObjects.CreateDataMedium();
 
                 options.Value["Sheet_Range"] = PrintRangeEnum.kPrintAllSheets;
                 options.Value["Vector_Resolution"] = 300;
@@ -177,10 +130,10 @@ namespace ExportDrawingAsPdfPlugin
         {
             DrawingDocument drawingDocument = doc as DrawingDocument;
 
-            NameValueMap sheets = inventorApplication.TransientObjects.CreateNameValueMap();
+            NameValueMap sheets = _inventorApplication.TransientObjects.CreateNameValueMap();
             foreach (Sheet sheet in drawingDocument.Sheets)
             {
-                NameValueMap option = inventorApplication.TransientObjects.CreateNameValueMap();
+                NameValueMap option = _inventorApplication.TransientObjects.CreateNameValueMap();
                 option.Add("Name", sheet.Name);
                 option.Add("3DModel", false);
                 sheets.Add("Sheet" + sheets.Count + 1, option);
@@ -188,41 +141,5 @@ namespace ExportDrawingAsPdfPlugin
 
             return sheets;
         }
-
-        #region Logging utilities
-
-        /// <summary>
-        /// Log message with 'trace' log level.
-        /// </summary>
-        private static void LogTrace(string format, params object[] args)
-        {
-            Trace.TraceInformation(format, args);
-        }
-
-        /// <summary>
-        /// Log message with 'trace' log level.
-        /// </summary>
-        private static void LogTrace(string message)
-        {
-            Trace.TraceInformation(message);
-        }
-
-        /// <summary>
-        /// Log message with 'error' log level.
-        /// </summary>
-        private static void LogError(string format, params object[] args)
-        {
-            Trace.TraceError(format, args);
-        }
-
-        /// <summary>
-        /// Log message with 'error' log level.
-        /// </summary>
-        private static void LogError(string message)
-        {
-            Trace.TraceError(message);
-        }
-
-        #endregion
     }
 }

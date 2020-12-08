@@ -24,6 +24,7 @@ import updateParametersReducer, * as updateParams from './updateParametersReduce
 import uiFlagsReducer, * as uiFlags from './uiFlagsReducer';
 import profileReducer from './profileReducer';
 import bomReducer, * as bom from './bomReducer';
+import { compareParameters } from "../actions/parametersActions";
 
 export const mainReducer = combineReducers({
     projectList: projectListReducer,
@@ -43,6 +44,10 @@ export const getProject = function(id, state) {
     return list.getProject(id, state.projectList);
 };
 
+export const getAdoptWarnings = function(projectId, state) {
+    return list. getAdoptWarnings(projectId, state.projectList);
+};
+
 export const getParameters = function(projectId, state) {
     return params.getParameters(projectId, state.parameters);
 };
@@ -52,7 +57,9 @@ export const getUpdateParameters = function(projectId, state) {
 };
 
 export const parametersEditedMessageVisible = function(state) {
-    if (state.uiFlags.parametersEditedMessageClosed === true || state.uiFlags.parametersEditedMessageRejected === true )
+    const loggedIn = state.profile.isLoggedIn;
+
+    if (state.uiFlags.parametersEditedMessageClosed === true || (loggedIn && state.uiFlags.parametersEditedMessageRejected === true) )
         return false;
 
     const activeProject = getActiveProject(state);
@@ -68,7 +75,7 @@ export const parametersEditedMessageVisible = function(state) {
     for (const parameterId in parameters) {
         const parameter = parameters[parameterId];
         const updateParameter = updateParameters.find(updatePar => updatePar.name === parameter.name);
-        if (parameter.value !== updateParameter.value) {
+        if (!compareParameters(parameter, updateParameter)) {
             return true;
         }
     }
@@ -177,6 +184,10 @@ export const getStats = function(state) {
     return uiFlags.getStats(state.uiFlags);
 };
 
+export const getReportUrl = function(state) {
+    return uiFlags.getReportUrl(state.uiFlags);
+};
+
 export const embeddedModeEnabled = function(state) {
     return uiFlags.embeddedModeEnabled(state.uiFlags);
 };
@@ -188,3 +199,4 @@ export const getDrawingsList = function(state) {
 export const getActiveDrawing = function(state) {
     return uiFlags.getActiveDrawing(state.uiFlags);
 };
+

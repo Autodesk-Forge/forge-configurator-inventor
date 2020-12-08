@@ -16,7 +16,7 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-import { fetchParameters, formatParameters, updateModelWithParameters, compareParamaters } from './parametersActions';
+import { fetchParameters, formatParameters, updateModelWithParameters, compareParameters } from './parametersActions';
 import parameterActionTypes from './parametersActions';
 import notificationTypes from '../actions/notificationActions';
 
@@ -202,7 +202,9 @@ describe('fetchParameters', () => {
                         name: 'WrenchSz',
                         value: 'Small',
                         units: 'Text',
-                        allowedValues: ['Large', 'Medium', 'Small']
+                        allowedValues: ['Large', 'Medium', 'Small'],
+                        label: "Size",
+                        readonly: false
                     }
                 ];
 
@@ -210,7 +212,9 @@ describe('fetchParameters', () => {
                     WrenchSz: {
                         value: '"Small"',
                         unit: 'Text',
-                        values: ['"Large"', '"Medium"', '"Small"']
+                        values: ['"Large"', '"Medium"', '"Small"'],
+                        label: "Size",
+                        readonly: false
                     }
                 };
 
@@ -303,32 +307,32 @@ describe('fetchParameters', () => {
         };
 
         it('makes exact match', () => {
-            expect(compareParamaters(first, first)).toBeTruthy();
+            expect(compareParameters(first, first)).toBeTruthy();
         });
 
         it('makes match if units ommited', () => {
-            expect(compareParamaters(first, { value: "12000", units: "mm"})).toBeTruthy();
+            expect(compareParameters(first, { value: "12000", units: "mm"})).toBeTruthy();
         });
 
         it('does not make match if units differ in both value and units', () => {
-            expect(compareParamaters(first, { value: "12000 in", units: "in"})).toBeFalsy();
+            expect(compareParameters(first, { value: "12000 in", units: "in"})).toBeFalsy();
         });
 
         it('does not make match if units differ in value only', () => {
-            expect(compareParamaters(first, { value: "12000 in", units: "mm"})).toBeFalsy();
+            expect(compareParameters(first, { value: "12000 in", units: "mm"})).toBeFalsy();
         });
 
         it('does not make match if units differ and not present in value', () => {
-            expect(compareParamaters(first, { value: "12000", units: "in"})).toBeFalsy();
+            expect(compareParameters(first, { value: "12000", units: "in"})).toBeFalsy();
         });
 
         it('does not make match if units same in units attribute, but are different than what is in both values', () => {
-            expect(compareParamaters({ value: "12000 cm", units: "mm"}, { value: "12000 km", units: "mm"})).toBeFalsy();
+            expect(compareParameters({ value: "12000 cm", units: "mm"}, { value: "12000 km", units: "mm"})).toBeFalsy();
         });
 
         it('handles undefined parameters', () => {
-            expect(compareParamaters(first, undefined)).toBeFalsy();
-            expect(compareParamaters(first, null)).toBeFalsy();
+            expect(compareParameters(first, undefined)).toBeFalsy();
+            expect(compareParameters(first, null)).toBeFalsy();
         });
     });
 });

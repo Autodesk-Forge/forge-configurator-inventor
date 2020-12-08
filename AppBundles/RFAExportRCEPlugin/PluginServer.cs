@@ -22,9 +22,9 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using Inventor;
 
-namespace SatExportPlugin
+namespace RFAExportRCEPlugin
 {
-    [Guid("506ce94e-88ba-4891-b989-d4cf85ba0f5f")]
+    [Guid("506ce94e-88ba-4891-b989-d4cf85ba0fff")]
     public class PluginServer : ApplicationAddInServer
     {
         // Inventor application object.
@@ -34,16 +34,16 @@ namespace SatExportPlugin
 
         public void Activate(ApplicationAddInSite addInSiteObject, bool firstTime)
         {
-            Trace.TraceInformation(": SatExportPlugin (" + Assembly.GetExecutingAssembly().GetName().Version.ToString(4) + "): initializing... ");
+            Trace.TraceInformation(": RFAExportRCEPlugin (" + Assembly.GetExecutingAssembly().GetName().Version.ToString(4) + "): initializing... ");
 
             // Initialize AddIn members.
             _inventorServer = addInSiteObject.InventorServer;
-            Automation = new SatExportAutomation(_inventorServer);
+            Automation = new RFAExportRCEAutomation(_inventorServer);
         }
 
         public void Deactivate()
         {
-            Trace.TraceInformation(": SatExportPlugin: deactivating... ");
+            Trace.TraceInformation(": RFAExportRCEPlugin: deactivating... ");
 
             // Release objects.
             Marshal.ReleaseComObject(_inventorServer);

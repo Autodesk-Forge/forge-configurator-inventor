@@ -26,7 +26,7 @@ const originalParameters = {
    [projectId]: [
       {
          "name": "editedParameter",
-         "value": null,
+         "value": "",
          "type": "xyz"
       },
       {
@@ -65,7 +65,8 @@ describe('main reducer', () => {
          uiFlags: uiFlagsReducer.initialState,
          projectList: projectList,
          parameters: originalParameters,
-         updateParameters: originalParameters
+         updateParameters: originalParameters,
+         profile: {isLoggedIn: true}
       };
       expect(reducer.parametersEditedMessageVisible(state)).toEqual(false);
    }),
@@ -74,7 +75,8 @@ describe('main reducer', () => {
          uiFlags: uiFlagsReducer.initialState,
          projectList: projectList,
          parameters: originalParameters,
-         updateParameters: editedParameters
+         updateParameters: editedParameters,
+         profile: {isLoggedIn: true}
       };
       expect(reducer.parametersEditedMessageVisible(state)).toEqual(true);
    });

@@ -25,20 +25,18 @@ using Autodesk.Forge.DesignAutomation.Inventor.Utils;
 using Inventor;
 using Path = System.IO.Path;
 using File = System.IO.File;
+using Shared;
 
 namespace CreateSVFPlugin
 {
     [ComVisible(true)]
-    public class CreateSvfAutomation
+    public class CreateSvfAutomation : AutomationBase
     {
-        private readonly InventorServer inventorApplication;
-
-        public CreateSvfAutomation(InventorServer inventorApp)
+        public CreateSvfAutomation(InventorServer inventorApp) : base(inventorApp)
         {
-            inventorApplication = inventorApp;
         }
 
-        public void Run(Document doc)
+        public override void ExecWithArguments(Document doc, NameValueMap map)
         {
             LogTrace("Processing " + doc.FullFileName);
 
@@ -52,11 +50,6 @@ namespace CreateSVFPlugin
             }
         }
 
-        public void RunWithArguments(Document doc, NameValueMap map)
-        {
-
-        }
-
         private void SaveAsSVF(Document Doc)
         {
             using (new HeartBeat())
@@ -65,7 +58,7 @@ namespace CreateSVFPlugin
 
                 try
                 {
-                    ApplicationAddIn svfAddin = inventorApplication
+                    ApplicationAddIn svfAddin = _inventorApplication
                         .ApplicationAddIns
                         .Cast<ApplicationAddIn>()
                         .FirstOrDefault(item => item.ClassIdString == "{C200B99B-B7DD-4114-A5E9-6557AB5ED8EC}");
@@ -75,13 +68,13 @@ namespace CreateSVFPlugin
                     if (oAddin != null)
                     {
                         Trace.TraceInformation("SVF Translator addin is available");
-                        TranslationContext oContext = inventorApplication.TransientObjects.CreateTranslationContext();
+                        TranslationContext oContext = _inventorApplication.TransientObjects.CreateTranslationContext();
                         // Setting context type
                         oContext.Type = IOMechanismEnum.kFileBrowseIOMechanism;
 
-                        NameValueMap oOptions = inventorApplication.TransientObjects.CreateNameValueMap();
+                        NameValueMap oOptions = _inventorApplication.TransientObjects.CreateNameValueMap();
                         // Create data medium;
-                        DataMedium oData = inventorApplication.TransientObjects.CreateDataMedium();
+                        DataMedium oData = _inventorApplication.TransientObjects.CreateDataMedium();
 
                         Trace.TraceInformation("SVF save");
                         var sessionDir = Path.Combine(Directory.GetCurrentDirectory(), "SvfOutput");
@@ -114,41 +107,5 @@ namespace CreateSVFPlugin
                 }
             }
         }
-
-        #region Logging utilities
-
-        /// <summary>
-        /// Log message with 'trace' log level.
-        /// </summary>
-        private static void LogTrace(string format, params object[] args)
-        {
-            Trace.TraceInformation(format, args);
-        }
-
-        /// <summary>
-        /// Log message with 'trace' log level.
-        /// </summary>
-        private static void LogTrace(string message)
-        {
-            Trace.TraceInformation(message);
-        }
-
-        /// <summary>
-        /// Log message with 'error' log level.
-        /// </summary>
-        private static void LogError(string format, params object[] args)
-        {
-            Trace.TraceError(format, args);
-        }
-
-        /// <summary>
-        /// Log message with 'error' log level.
-        /// </summary>
-        private static void LogError(string message)
-        {
-            Trace.TraceError(message);
-        }
-
-        #endregion
     }
 }

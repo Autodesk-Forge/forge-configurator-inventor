@@ -18,7 +18,7 @@
 
 import { addError, addLog } from './notificationActions';
 import { Jobs } from '../JobManager';
-import { showDownloadProgress, showDownloadFailed, setDownloadLink, setErrorData, setStats, hideDownloadProgress } from './uiFlagsActions';
+import { showDownloadProgress, showDownloadFailed, setDownloadLink, setErrorData, setStats, setReportUrl, hideDownloadProgress } from './uiFlagsActions';
 import { showDrawingExportProgress, setDrawingPdfUrl } from './uiFlagsActions';
 
 /**
@@ -51,11 +51,12 @@ export const getDownloadLink = (methodName, projectId, hash, dialogTitle, key) =
                 dispatch(setErrorData(null)); // cleanup url link
             },
             // onComplete
-            (downloadUrl, stats) => {
+            (downloadUrl, stats, reportUrl) => {
                 dispatch(addLog(`JobManager.doDownloadJob: '${methodName}' completed for project : ${projectId}`));
                 // set download link, it will show link in UI
                 dispatch(setDownloadLink(downloadUrl));
                 dispatch(setStats(stats));
+                dispatch(setReportUrl(reportUrl));
             },
             // onError
             (errorData) => {
@@ -90,11 +91,12 @@ export const fetchDrawing = (project, drawingKey) => async (dispatch) => {
                 dispatch(addLog('JobManager.doDrawingExportJob: HubConnection started for project : ' + project.id + ' (drawing: ' + drawingKey + ')'));
             },
             // onComplete
-            (drawingPdfUrl, stats) => {
+            (drawingPdfUrl, stats, reportUrl) => {
                 dispatch(addLog('JobManager.doDrawingExportJob: Received onComplete'));
                 // store drawings link
                 dispatch(setDrawingPdfUrl(drawingKey, drawingPdfUrl));
                 dispatch(setStats(stats, drawingKey));
+                dispatch(setReportUrl(reportUrl));
             },
             // onError
             (errorData) => {

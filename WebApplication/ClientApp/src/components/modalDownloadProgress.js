@@ -17,15 +17,15 @@
 /////////////////////////////////////////////////////////////////////
 
 import React, { Component } from 'react';
-
 import Modal from '@hig/modal';
 import ProgressBar from '@hig/progress-bar';
 import Typography from "@hig/typography";
 import './modalProgress.css';
 import merge from "lodash.merge";
-import HyperLink from './hyperlink';
 import Button from '@hig/button';
+import HyperLink from './hyperlink';
 import CreditCost from './creditCost';
+import ReportUrl from './reportUrl';
 
 export class ModalDownloadProgress extends Component {
 
@@ -66,6 +66,7 @@ export class ModalDownloadProgress extends Component {
               {(done) &&
                 <React.Fragment>
                     <CreditCost/>
+                    <ReportUrl/>
                     <div className="modalLink">
                         <HyperLink
                             onAutostart={(downloadHyperlink) => {
@@ -92,4 +93,5 @@ export class ModalDownloadProgress extends Component {
     }
 }
 
+/* istanbul ignore next */
 export default ModalDownloadProgress;

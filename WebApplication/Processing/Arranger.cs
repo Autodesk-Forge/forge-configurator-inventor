@@ -166,8 +166,7 @@ namespace WebApplication.Processing
             var bucket = await _userResolver.GetBucketAsync();
 
             var ossNames = project.OssNameProvider(hash);
-            await Task.WhenAll(bucket.RenameObjectAsync(OutputRFA, ossNames.Rfa),
-                                bucket.DeleteObjectAsync(OutputSAT));
+            await bucket.RenameObjectAsync(OutputRFA, ossNames.Rfa);
         }
 
         /// <summary>
@@ -189,22 +188,6 @@ namespace WebApplication.Processing
             await bucket.RenameObjectAsync(OutputDrawing, ossNames.Drawing, true);
         }
 
-        internal async Task<ProcessingArgs> ForSatAsync(string inputDocUrl, string topLevelAssembly)
-        {
-            var bucket = await _userResolver.GetBucketAsync();
-
-            // SAT file is intermediate and will be used later for further conversion (to RFA),
-            // so request both read and write access to avoid extra calls to OSS
-            var satUrl = await bucket.CreateSignedUrlAsync(OutputSAT, ObjectAccess.ReadWrite);
-
-            return new ProcessingArgs
-            {
-                InputDocUrl = inputDocUrl,
-                TLA = topLevelAssembly,
-                SatUrl = satUrl
-            };
-        }
-
         internal async Task<ProcessingArgs> ForDrawingAsync(string inputDocUrl, string topLevelAssembly)
         {
             var bucket = await _userResolver.GetBucketAsync();
@@ -218,7 +201,7 @@ namespace WebApplication.Processing
             };
         }
 
-        internal async Task<ProcessingArgs> ForRfaAsync(string inputDocUrl)
+        internal async Task<ProcessingArgs> ForRfaAsync(string inputDocUrl, string topLevelAssembly)
         {
             var bucket = await _userResolver.GetBucketAsync();
             var rfaUrl = await bucket.CreateSignedUrlAsync(OutputRFA, ObjectAccess.Write);
@@ -226,6 +209,7 @@ namespace WebApplication.Processing
             return new ProcessingArgs
             {
                 InputDocUrl = inputDocUrl,
+                TLA = topLevelAssembly,
                 RfaUrl = rfaUrl
             };
         }

@@ -24,6 +24,7 @@ import CheckboxTableHeader from './checkboxTableHeader';
 import CheckboxTableRow from './checkboxTableRow';
 import { checkedProjects } from '../reducers/mainReducer';
 import { setProjectChecked, setCheckedProjects, clearCheckedProjects } from '../actions/uiFlagsActions';
+import { fullWarningMsg } from '../utils/conversion';
 
 import styled from 'styled-components';
 
@@ -35,6 +36,7 @@ const Icon = ({ iconname }) => (
 );
 
 const iconRenderer = ({ cellData: iconname }) => <Icon iconname={iconname} />;
+const detailsRenderer = ( {cellData: details } ) => <div style={{ whiteSpace: 'pre-wrap'}}>{details}</div>;
 
 const cellBackgroundColor = 'white';
 const cellHoverColor = '#f3f3f3';
@@ -117,6 +119,14 @@ export class CheckboxTable extends Component {
             dataKey: 'label',
             align: Column.Alignment.LEFT,
             width: 200
+        },
+        {
+            key: 'details',
+            title: 'Details',
+            dataKey: 'details',
+            align: Column.Alignment.LEFT,
+            width: 900,
+            cellRenderer: detailsRenderer
         }
       ];
     }
@@ -140,8 +150,9 @@ export class CheckboxTable extends Component {
         data = this.props.projectList.projects.map((project) => (
           {
             id: project.id,
-            icon: 'Archive.svg',
+            icon: project.adoptWarnings?.length ? 'alert-24.svg' : 'Archive.svg',
             label: project.label,
+            details: fullWarningMsg(project.adoptWarnings)
           }
         ));
       }
@@ -154,6 +165,7 @@ export class CheckboxTable extends Component {
                   height={height}
                   columns={this.projectListColumns}
                   data={data}
+                  estimatedRowHeight={50}
                   rowEventHandlers={{
                     onClick: ({ rowData }) => {
                       this.props.onProjectClick(rowData.id);

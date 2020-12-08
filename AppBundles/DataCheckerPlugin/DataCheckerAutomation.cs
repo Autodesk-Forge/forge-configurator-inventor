@@ -18,7 +18,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -32,9 +31,8 @@ using Path = System.IO.Path;
 namespace DataCheckerPlugin
 {
     [ComVisible(true)]
-    public class DataCheckerAutomation
+    public class DataCheckerAutomation : AutomationBase
     {
-        private readonly InventorServer inventorApplication;
         private readonly List<Message> _messages = new List<Message>();
 
         private readonly HashSet<string> _interests = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -47,25 +45,27 @@ namespace DataCheckerPlugin
                                                                        { "{BB8FE430-83BF-418D-8DF9-9B323D3DB9B9}", "Design Accelerator" },
                                                                     };
 
-        public DataCheckerAutomation(InventorServer inventorApp)
+        private readonly HashSet<string> _missingReferences = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        public DataCheckerAutomation(InventorServer inventorApp) : base(inventorApp)
         {
-            inventorApplication = inventorApp;
         }
 
-        public void Run(Document doc)
-        {
-            RunWithArguments(doc, null);
-        }
-
-        public void RunWithArguments(Document doc, NameValueMap map)
+        public override void Run(Document doc)
         {
             using (new HeartBeat())
             {
                 ExtractDrawingList(doc);
                 DetectUnsupportedAddins(doc);
+                CheckForMissingReferences(doc);
 
                 SaveMessages();
             }
+        }
+
+        public override void ExecWithArguments(Document doc, NameValueMap map)
+        {
+            LogError("Unexpected execution path! DataChecker does not expect any extra arguments!");
         }
 
         private void DetectUnsupportedAddins(Document doc)
@@ -93,12 +93,12 @@ namespace DataCheckerPlugin
             switch (addinNames.Count)
             {
                 case 1:
-                    AddMessage($"Detected unsupported plugin: {addinNames[0]}", Severity.Error);
+                    AddMessage($"Detected unsupported plugin: {addinNames[0]}.", Severity.Warning);
                     break;
                 case 0:
                     break;
                 default:
-                    AddMessage($"Detected unsupported plugins: {string.Join(", ", addinNames)}", Severity.Error);
+                    AddMessage($"Detected unsupported plugins: {string.Join(", ", addinNames)}.", Severity.Warning);
                     break;
             }
         }
@@ -128,8 +128,8 @@ namespace DataCheckerPlugin
             public DefaultDocComparer(string defaultDoc) { _defaultDoc = defaultDoc; }
             public int Compare(string x, string y)
             {
-                var filenameX = System.IO.Path.GetFileNameWithoutExtension(x).ToLower();
-                var filenameY = System.IO.Path.GetFileNameWithoutExtension(y).ToLower();
+                var filenameX = Path.GetFileNameWithoutExtension(x).ToLower();
+                var filenameY = Path.GetFileNameWithoutExtension(y).ToLower();
 
                 if (filenameX.Equals(filenameY))
                     return 0;
@@ -164,7 +164,7 @@ namespace DataCheckerPlugin
 
             var rootDir = Directory.GetCurrentDirectory();
             var index = Path.Combine(rootDir, "unzippedIam").Length + 1;
-            var fileName = System.IO.Path.GetFileNameWithoutExtension(doc.FullFileName).ToLower();
+            var fileName = Path.GetFileNameWithoutExtension(doc.FullFileName).ToLower();
             var drawings = Directory.GetFiles(rootDir, "*.*", SearchOption.AllDirectories)
                 .Where(file =>
                 {
@@ -173,7 +173,7 @@ namespace DataCheckerPlugin
                            !lowName.Contains(oldVersionMask);
                 })
                 .Select(path => path.Substring(index))
-                .OrderBy(path => System.IO.Path.GetFileName(path), new DefaultDocComparer(fileName))
+                .OrderBy(path => Path.GetFileName(path), new DefaultDocComparer(fileName))
                 .ToArray();
 
             // drawings is also valid when no drawings exists, so test drawings?.Length
@@ -184,7 +184,59 @@ namespace DataCheckerPlugin
             AddMessage($"Found {drawings.Length} drawings", Severity.Info);
 
             foreach (var (d, i) in drawings.Select((v, i) => (v, i)))
-                LogTrace("Drawing {0}: {1}", i, d);
+                LogTrace($"Drawing {i}: {d}");
+        }
+
+        private void CheckForMissingReferences(Document doc)
+        {
+            LogTrace("Scan document for missing references");
+
+            ProcessFileReferences(doc.File);
+
+            if (_missingReferences.Count == 0) return;
+
+            // generate message about files
+            var count = _missingReferences.Count;
+            var filenames = _missingReferences
+                                .Take(2)
+                                .ToArray();
+
+            string message;
+            switch (count)
+            {
+                case 1:
+                    message = $"Unresolved file: '{filenames[0]}'.";
+                    break;
+                case 2:
+                    message = $"Unresolved files: '{filenames[0]}' and '{filenames[1]}'.";
+                    break;
+                default: // 3+
+                    message = $"Unresolved files: '{filenames[0]}', '{filenames[1]}', and {count - 2} other file(s).";
+                    break;
+            }
+
+            AddMessage(message, Severity.Warning);
+        }
+
+        private void ProcessFileReferences(Inventor.File file)
+        {
+            foreach (FileDescriptor descriptor in file.ReferencedFileDescriptors)
+            {
+                if (descriptor.ReferenceMissing)
+                {
+                    var fileName = Path.GetFileName(descriptor.FullFileName);
+
+                    if (_missingReferences.Contains(fileName)) continue;
+
+                    _missingReferences.Add(fileName);
+                    LogError($"Missing '{descriptor.FullFileName}'");
+                }
+                else if (descriptor.ReferencedFileType != FileTypeEnum.kForeignFileType)
+                {
+                    // go deeper
+                    ProcessFileReferences(descriptor.ReferencedFile);
+                }
+            }
         }
 
         private void SaveMessages()
@@ -212,41 +264,5 @@ namespace DataCheckerPlugin
                 serializer.Serialize(file, data);
             }
         }
-
-        #region Logging utilities
-
-        /// <summary>
-        /// Log message with 'trace' log level.
-        /// </summary>
-        private static void LogTrace(string format, params object[] args)
-        {
-            Trace.TraceInformation(format, args);
-        }
-
-        /// <summary>
-        /// Log message with 'trace' log level.
-        /// </summary>
-        private static void LogTrace(string message)
-        {
-            Trace.TraceInformation(message);
-        }
-
-        /// <summary>
-        /// Log message with 'error' log level.
-        /// </summary>
-        private static void LogError(string format, params object[] args)
-        {
-            Trace.TraceError(format, args);
-        }
-
-        /// <summary>
-        /// Log message with 'error' log level.
-        /// </summary>
-        private static void LogError(string message)
-        {
-            Trace.TraceError(message);
-        }
-
-        #endregion
     }
 }

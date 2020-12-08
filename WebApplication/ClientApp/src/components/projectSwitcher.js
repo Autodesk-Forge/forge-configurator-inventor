@@ -23,20 +23,23 @@ import { fetchProjects, updateActiveProject } from '../actions/projectListAction
 import { updateActiveTabIndex, invalidateDrawing } from '../actions/uiFlagsActions';
 import { fetchParameters } from '../actions/parametersActions';
 import {addLog} from '../actions/notificationActions';
+import './projectSwitcher.css';
 
 export class ProjectSwitcher extends Component {
 
     constructor(props) {
         super(props);
-        this.onProjectChange = this.onProjectChange.bind(this);
+        this.onProjectClick = this.onProjectClick.bind(this);
     }
 
     componentDidMount() {
         this.props.fetchProjects();
     }
 
-    onProjectChange(data) {
-        const id = data.project.id;
+    onProjectClick(event) {
+        // depending on where exactly you click in the row (the anchor text vs outside of the text),
+        // event.target.innerText is not sufficient match for the id. event.target.lastChild.textContent seems to be fine.
+        const id = event.target.lastChild.textContent;
         this.props.updateActiveProject(id);
         // mark drawing as not valid if any available
         this.props.invalidateDrawing();
@@ -48,13 +51,15 @@ export class ProjectSwitcher extends Component {
 
     render() {
         return (
+            <span id="PAS">
             <ProjectAccountSwitcher
-                defaultProject={this.props.projectList.activeProjectId}
-                activeProject={null}
+                defaultProject={null}
+                activeProject={this.props.projectList.activeProjectId}
                 projects={this.props.projectList.projects}
                 projectTitle="Projects"
-                onChange={this.onProjectChange}
+                onClick={this.onProjectClick}
             />
+            </span>
         );
     }
 }

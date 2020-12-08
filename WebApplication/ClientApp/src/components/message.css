@@ -21,3 +21,8 @@
     background: #9bd5ef;
     margin: 8px 0 8px 24px;
 }
+
+.dontshowplaceholder {
+    margin-top: auto;
+    padding-left: 24px;
+}

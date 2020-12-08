@@ -20,11 +20,13 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Autodesk.Forge.Client;
+using Autodesk.Forge.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Shared;
 using WebApplication.Definitions;
-using WebApplication.Processing;
 using WebApplication.Services;
 using WebApplication.State;
 using WebApplication.Utilities;
@@ -37,30 +39,23 @@ namespace MigrationApp
       private readonly IConfiguration _configuration;
       private readonly BucketPrefixProvider _bucketPrefix;
       private readonly IForgeOSS _forgeOSS;
-      private readonly MigrationBucketKeyProvider _bucketProvider;
-      private readonly ResourceProvider _resourceProvider;
-      private readonly UserResolver _userResolver;
-      private readonly ProjectWork _projectWork;
+      private readonly IResourceProvider _resourceProvider;
       private readonly ILogger<Migration> _logger;
       private readonly OssBucketFactory _bucketFactory;
-      private readonly ProjectService _projectService;
+      private readonly IServiceScopeFactory _serviceScopeFactory;
 
-      public Migration(IConfiguration configuration, BucketPrefixProvider bucketPrefix, IForgeOSS forgeOSS, MigrationBucketKeyProvider bucketProvider, UserResolver userResolver, ProjectWork projectWork, ILogger<Migration> logger, ResourceProvider resourceProvider, OssBucketFactory bucketFactory, ProjectService projectService)
+      public Migration(IConfiguration configuration, BucketPrefixProvider bucketPrefix, IForgeOSS forgeOSS, ILogger<Migration> logger, IResourceProvider resourceProvider, OssBucketFactory bucketFactory, IServiceProvider serviceProvider)
       {
          _forgeOSS = forgeOSS;
          _configuration = configuration;
          _bucketPrefix = bucketPrefix;
-         _bucketProvider = bucketProvider;
-         _userResolver = userResolver;
-         _projectWork = projectWork;
          _logger = logger;
          _resourceProvider = resourceProvider;
          _bucketFactory = bucketFactory;
-         _projectService = projectService;
+         _serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
       }
-      public async Task<List<MigrationJob>> ScanBuckets()
+      public async Task ScanBuckets(List<MigrationJob> adoptJobs, List<MigrationJob> configJobs)
       {
-         List<MigrationJob> migrationJobs = new List<MigrationJob>();
          string suffixFrom = _configuration.GetValue<string>("BucketKeySuffixOld");
          string bucketKeyStart = _bucketPrefix.GetBucketPrefix(suffixFrom);
          List<string> bucketKeys = await _forgeOSS.GetBucketsAsync();
@@ -71,22 +66,28 @@ namespace MigrationApp
                 bucketKey == AnonymousBucketKeyOld
                )
             {
-               await ScanBucket(migrationJobs, bucketKey);
+               await ScanBucket(adoptJobs, configJobs, bucketKey);
             }
          }
-
-         return migrationJobs;
       }
 
-      private async Task ScanBucket(List<MigrationJob> migrationJobs, string bucketKeyOld)
+      private async Task ScanBucket(List<MigrationJob> adoptJobs, List<MigrationJob> configJobs, string bucketKeyOld)
       {
+         MigrationBucketKeyProvider bucketProvider;
+         ProjectService projectService;
+         using (var scope = _serviceScopeFactory.CreateScope())
+         {
+            bucketProvider = scope.ServiceProvider.GetService<MigrationBucketKeyProvider>();
+            projectService = scope.ServiceProvider.GetService<ProjectService>();
+         }
+
          OssBucket bucketOld = _bucketFactory.CreateBucket(bucketKeyOld);
-         OssBucket bucketNew = _bucketFactory.CreateBucket(_bucketProvider.GetBucketKeyFromOld(bucketKeyOld));
+         OssBucket bucketNew = _bucketFactory.CreateBucket(bucketProvider.GetBucketKeyFromOld(bucketKeyOld));
 
          List<string> projectNamesNew = new List<string>();
          try
          {
-            List<string> projectNamesNewFromOss = (List<string>) await _projectService.GetProjectNamesAsync(bucketNew);
+            List<string> projectNamesNewFromOss = (List<string>) await projectService.GetProjectNamesAsync(bucketNew);
             foreach (string projectName in projectNamesNewFromOss)
             {
                var ossAttributes = new OssAttributes(projectName);
@@ -101,7 +102,23 @@ namespace MigrationApp
             // swallow non existing item
          }
 
-         List<string> projectNamesOld = (List<string>) await _projectService.GetProjectNamesAsync(bucketOld);
+         // gather list of cache paramters files from the new bucket
+         List<string> configKeysNew = new List<string>();
+         try {
+            List<ObjectDetails> configODsNew = await bucketNew.GetObjectsAsync($"{ONC.CacheFolder}/");
+            foreach (ObjectDetails configODNew in configODsNew)
+            {
+               if (configODNew.ObjectKey.EndsWith(WebApplication.Utilities.LocalName.Parameters))
+                  configKeysNew.Add(configODNew.ObjectKey);
+            }
+         }
+         catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
+         {
+            // swallow non existing item
+         }
+
+         // gather projects to migrate
+         List<string> projectNamesOld = (List<string>) await projectService.GetProjectNamesAsync(bucketOld);
          foreach (string projectName in projectNamesOld)
          {
             if (!projectNamesNew.Contains(projectName))
@@ -115,10 +132,40 @@ namespace MigrationApp
                   projectInfo.Name = projectName;
                   projectInfo.TopLevelAssembly = projectMetadata.TLA;
 
-                  migrationJobs.Add(new MigrationJob(JobType.CopyAndAdopt, bucketOld, projectInfo, ONC.ProjectUrl(projectName)));
+                  MigrationJob migrationJob;
+                  using (var scope = _serviceScopeFactory.CreateScope())
+                  {
+                     migrationJob = scope.ServiceProvider.GetService<MigrationJob>();
+                  }
+                  migrationJob.SetJob(JobType.CopyAndAdopt, bucketOld, projectInfo, ONC.ProjectUrl(projectName));
+                  adoptJobs.Add(migrationJob);
                } catch(Exception e)
                {
                   _logger.LogError(e, $"Project {projectName} in bucket {bucketKeyOld} does not have metadata file. Skipping it.");
+               }
+            }
+
+            // process cached configurations
+            List<ObjectDetails> configODs = await bucketOld.GetObjectsAsync($"{ONC.CacheFolder}/{projectName}/");
+            foreach (ObjectDetails configOD in configODs)
+            {
+               string configKey = configOD.ObjectKey;
+               if (configKey.EndsWith(WebApplication.Utilities.LocalName.Parameters))
+               {
+                  if (! configKeysNew.Contains(configKey))
+                  {
+                     InventorParameters parameters = await bucketOld.DeserializeAsync<InventorParameters>(configKey);;
+                     ProjectInfo projectInfo = new ProjectInfo();
+                     projectInfo.Name = projectName;
+
+                     MigrationJob migrationJob;
+                     using (var scope = _serviceScopeFactory.CreateScope())
+                     {
+                        migrationJob = scope.ServiceProvider.GetService<MigrationJob>();
+                     }
+                     migrationJob.SetJob(JobType.GenerateConfiguration, bucketOld, projectInfo, ONC.ProjectUrl(projectName), parameters);
+                     configJobs.Add(migrationJob);
+                  }
                }
             }
          }
@@ -128,59 +175,50 @@ namespace MigrationApp
          foreach (string projectName in projectNamesNew)
          {
             if (!projectNamesOld.Contains(projectName))
-               migrationJobs.Add(new MigrationJob(JobType.RemoveNew, bucketNew, new ProjectInfo(projectName), null));
-         }
-      }
-
-      public async Task Migrate(List<MigrationJob> migrationJobs)
-      {
-         foreach (MigrationJob job in migrationJobs)
-         {
-            switch (job.jobType)
             {
-               case JobType.CopyAndAdopt:
-                  await CopyAndAdopt(job);
-                  break;
-               case JobType.RemoveNew:
-                  await RemoveNew(job);
-                  break;
+               MigrationJob migrationJob;
+               using (var scope = _serviceScopeFactory.CreateScope())
+               {
+                  migrationJob = scope.ServiceProvider.GetService<MigrationJob>();
+               }
+               migrationJob.SetJob(JobType.RemoveNew, bucketNew, new ProjectInfo(projectName), null);
+               adoptJobs.Add(migrationJob);
             }
          }
       }
 
-      private async Task RemoveNew(MigrationJob job)
+      private async Task ProcessJobs(List<MigrationJob> jobs)
       {
-         List<string> projectList = new List<string>() {job.projectInfo.Name};
-         await _projectService.DeleteProjects(projectList, job.bucket);
+         int taskIndex = 0;
+         int parallelCount = Int16.Parse(_configuration.GetValue<string>("MigrationParallelCount") ?? "15");
+         int jobIndex = 0;
+         Task[] tasks = new Task[parallelCount];
+         for (int i = 0; i < parallelCount; i++)
+            tasks[i] = Task.CompletedTask;
+
+         while (jobIndex < jobs.Count)
+         {
+            if (tasks[taskIndex].IsCompleted)
+            {
+               MigrationJob job = jobs[jobIndex]; 
+
+               tasks[taskIndex] = job.Process();
+
+               jobIndex++;
+            }
+
+            await Task.Delay(1000);
+            taskIndex = (taskIndex + 1) % parallelCount;
+         }
+
+         // wait for completion of all tasks
+         await Task.WhenAll(tasks);
       }
 
-      private async Task CopyAndAdopt(MigrationJob job)
+      public async Task Migrate(List<MigrationJob> adoptJobs, List<MigrationJob> configJobs)
       {
-         _bucketProvider.SetBucketKeyFromOld(job.bucket.BucketKey);
-         OssBucket bucketNew = await _userResolver.GetBucketAsync(true);
-
-         string signedUrlOld = await job.bucket.CreateSignedUrlAsync(job.projectUrl, ObjectAccess.Read);
-         string signedUrlNew = await bucketNew.CreateSignedUrlAsync(job.projectUrl, ObjectAccess.ReadWrite);
-
-         try
-         {
-            await _projectWork.FileTransferAsync(signedUrlOld, signedUrlNew);
-         }
-         catch(Exception e)
-         {
-            _logger.LogError(e, $"Project {job.projectInfo.Name} cannot be copied.");
-            return;
-         }
-
-         try
-         {
-            await _projectWork.AdoptAsync(job.projectInfo, signedUrlNew);
-            _logger.LogInformation($"Project {job.projectInfo.Name} was adopted");
-         }
-         catch(Exception e)
-         {
-            _logger.LogError(e, $"Project {job.projectInfo.Name} was not adopted");
-         }
+         await ProcessJobs(adoptJobs);
+         await ProcessJobs(configJobs);
       }
    }
 }
