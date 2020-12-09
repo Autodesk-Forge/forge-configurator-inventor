@@ -45,5 +45,39 @@ describe('components', () => {
         expect(fetchShowParametersChanged).toHaveBeenCalled();
         expect(setEnableEmbeddedMode).toBeCalledWith(false);
     });
+
+    describe('overwrite window.location for embedded url test', () => {
+      const { location } = window;
+      const url = "https://inventorio-dev-holecep.s3-us-west-2.amazonaws.com/Interaction/wrench.json";
+      const search = "?url=" + url;
+
+      beforeAll(() => {
+        delete window.location;
+        window.location = { search: search };
+      });
+
+      afterAll(() => {
+        window.location = location;
+      });
+
+      it('Sets the embedded mode when the window has the prop', () => {
+        const fetchShowParametersChanged = jest.fn();
+        const detectToken = jest.fn();
+        const setEnableEmbeddedMode = jest.fn();
+        const adoptProjectWithParameters = jest.fn();
+
+        const props = {
+          fetchShowParametersChanged,
+          detectToken,
+          setEnableEmbeddedMode,
+          adoptProjectWithParameters
+        };
+
+        shallow(<App {...props}/>);
+        expect(setEnableEmbeddedMode).toBeCalledWith(true);
+        expect(adoptProjectWithParameters).toBeCalledWith(url);
+      });
+    });
+
   });
 });
