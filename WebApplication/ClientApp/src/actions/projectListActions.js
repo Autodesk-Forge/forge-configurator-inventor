@@ -57,13 +57,6 @@ export const addProject = (newProject) => {
     };
 };
 
-export const addOrUpdateProject = (project) => {
-    return {
-        type: actionTypes.ADD_OR_UPDATE_PROJECT,
-        project
-    };
-};
-
 // eslint-disable-next-line no-unused-vars
 export const fetchProjects = () => async (dispatch, getState) => {
     dispatch(addLog('Load Projects invoked'));
