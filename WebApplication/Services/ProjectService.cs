@@ -65,6 +65,15 @@ namespace WebApplication.Services
             return projectDto;
         }
 
+        public async Task<ProjectStateDTO> getProjectParameters(string projectName, string hash)
+        {
+            var storage = await _userResolver.GetProjectStorageAsync(projectName, ensureDir: false);
+            var dto = _dtoGenerator.MakeProjectDTO<ProjectStateDTO>(storage, hash);
+            var localNames = storage.GetLocalNames(hash);
+            dto.Parameters = Json.DeserializeFile<Shared.InventorParameters>(localNames.Parameters);
+            return dto;
+        }
+
         private async Task<bool> DoesProjectAlreadyExistAsync(string projectName)
         {
             var existingProjects = await GetProjectNamesAsync();
