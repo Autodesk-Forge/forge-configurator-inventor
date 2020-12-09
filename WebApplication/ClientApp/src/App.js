@@ -91,6 +91,7 @@ export class App extends Component {
   }
 }
 
+/* istanbul ignore next */
 export default connect(function (store) {
   return {
     adoptWithParamsProgressShowing: adoptWithParamsProgressShowing(store),
