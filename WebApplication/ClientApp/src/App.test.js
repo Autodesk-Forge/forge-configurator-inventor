@@ -32,15 +32,18 @@ describe('components', () => {
     it('Test that app will fetch info about showing changed parameters ', () => {
         const fetchShowParametersChanged = jest.fn();
         const detectToken = jest.fn();
+        const setEnableEmbeddedMode = jest.fn();
 
         const props = {
           fetchShowParametersChanged,
-          detectToken
+          detectToken,
+          setEnableEmbeddedMode
         };
 
         shallow(<App {...props}/>);
         expect(detectToken).toHaveBeenCalled();
         expect(fetchShowParametersChanged).toHaveBeenCalled();
+        expect(setEnableEmbeddedMode).toBeCalledWith(false);
     });
   });
 });

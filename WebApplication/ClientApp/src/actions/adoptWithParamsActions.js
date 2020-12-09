@@ -20,8 +20,7 @@ import { addError, addLog } from './notificationActions';
 import { Jobs } from '../JobManager';
 import { showAdoptWithParamsFailed, showAdoptWithParametersProgress, updateActiveTabIndex } from './uiFlagsActions';
 import { updateActiveProject } from '../actions/projectListActions';
-import { addOrUpdateProject } from './projectListActions';
-import { adaptParameters, updateParameters } from './parametersActions';
+import { addProject } from './projectListActions';
 
 export const adoptProjectWithParameters = (parameters) => async (dispatch) => {
     dispatch(addLog('adoptProjectWithParameters invoked'));
@@ -38,25 +37,12 @@ export const adoptProjectWithParameters = (parameters) => async (dispatch) => {
                 dispatch(addLog('JobManager: HubConnection started for adopt project with params'));
             },
             // onComplete
-            (projectWithParams) => {
+            (project) => {
                 dispatch(addLog('JobManager: Adopt project with paramscReceived onComplete'));
-
-                const project = projectWithParams.project;
-                const projectUpdate = projectWithParams.parameters;
-                const params = projectWithParams.parameters.parameters;
-
-                // Adapt the incoming update directly to our model
-                project.svf = projectUpdate.svf;
-                project.bomDownloadUrl = projectUpdate.bomDownloadUrl;
-                project.bomJsonUrl = projectUpdate.bomJsonUrl;
-                project.modelDownloadUrl = projectUpdate.modelDownloadUrl;
-                project.hash = projectUpdate.hash;
 
                 // hide modal dialog
                 dispatch(showAdoptWithParametersProgress(false));
-                dispatch(addOrUpdateProject(project));
-                const adaptedParams = adaptParameters(params);
-                dispatch(updateParameters(project.id, adaptedParams));
+                dispatch(addProject(project));
                 dispatch(updateActiveProject(project.id));
                 dispatch(updateActiveTabIndex(0));
             },
