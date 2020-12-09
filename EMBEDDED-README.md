@@ -1,6 +1,6 @@
 # Embedded version of the application
 
-The application can be run in embedded mode that allows it to be easily integrated into existing solutions. In this mode, most of the UI and interaction is removed and only essential funcionality remains. You can still interact with the model but cannot change its parameters directly using UI. Instead you are able to provide the target parameters as part of JSON object that is passed into the application as a get URL parameter. This funcionality extends the use cases of the original app and allows your solutions to control the show content programatically.
+The application can be run in embedded mode that allows it to be easily integrated into existing solutions. In this mode, the projects, parameters and user management UI is removed and only essential functionality remains. You can still upload any model and change its parameters, but instead of doing so using UI, you do so by passing the data through a JSON object that is passed into the application. This functionality extends the use cases of the original app and allows your solution to control the shown content programmatically.
 
 ## Setup
 
@@ -40,3 +40,5 @@ We can now start the application (make sure embedded mode is enabled) and go to 
 https://localhost:5001/?url=https://inventorio-dev-holecep.s3-us-west-2.amazonaws.com/Interaction/wrench.json
 
 After short processing, you will see your model loaded inside of the embedded window. 
+
+**Please also note that the project is uploaded only once and then it is cached alongside the parameters so consequent calls with the same JSON parameters will result in fast processing time. You can also modify the JSON data on the url and then the project will undergo update accordingly without the need to upload the project again.**
