@@ -276,10 +276,3 @@ export const updateDrawingsList = drawingsList => {
         drawingsList
     };
 };
-
-export const setEnableEmbeddedMode = (enabled) => {
-    return {
-        type: actionTypes.SET_ENABLE_EMBEDDED_MODE,
-        enabled
-    };
-};

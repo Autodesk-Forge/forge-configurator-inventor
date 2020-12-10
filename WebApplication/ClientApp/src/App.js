@@ -23,10 +23,10 @@ import './app.css';
 import Toolbar from './components/toolbar';
 import TabsContainer from './components/tabsContainer';
 import ProjectSwitcher from './components/projectSwitcher';
-import { showAdoptWithParamsFailed, setEnableEmbeddedMode, fetchShowParametersChanged } from './actions/uiFlagsActions';
+import { showAdoptWithParamsFailed, fetchShowParametersChanged } from './actions/uiFlagsActions';
 import { detectToken } from './actions/profileActions';
 import ModalProgress from './components/modalProgress';
-import { adoptWithParamsFailed, embeddedModeEnabled, adoptWithParamsProgressShowing } from './reducers/mainReducer';
+import { adoptWithParamsFailed, embeddedModeEnabled, embeddedModeUrl, adoptWithParamsProgressShowing } from './reducers/mainReducer';
 import { adoptProjectWithParameters } from './actions/adoptWithParamsActions';
 import ModalFail from './components/modalFail';
 
@@ -36,29 +36,11 @@ export class App extends Component {
     props.detectToken();
   }
   componentDidMount() {
-    this.props.fetchShowParametersChanged();
+    if (!this.props.embeddedModeEnabled)
+      this.props.fetchShowParametersChanged();
 
-    /* we are looking for url parameter that points to configuration JSON file for project adoption / project update
-       the expected format should look like: ?url=www.mydata.com/jsonConfig
-
-       the configuration JSON consists of:
-       "Url": url to your project zip
-       "Name": unique project name
-       "TopLevelAssembly": example.iam
-       "Config": desired parameters for adoption/update
-    */
-    const rawParams = window.location.search.substring(1);
-    let pocEnabled = false;
-    if (rawParams !== '') {
-      const params = JSON.parse('{"' + rawParams.replace(/&/g, '","').replace(/=/g,'":"') + '"}', function(key, value) { return key===""?value:decodeURIComponent(value);});
-
-      if (params.url) {
-        pocEnabled = true;
-        this.props.adoptProjectWithParameters(params.url);
-      }
-    }
-    // ugly way to do this, just for POC demo
-    this.props.setEnableEmbeddedMode(pocEnabled);
+    if (this.props.embeddedModeUrl != null)
+      this.props.adoptProjectWithParameters(this.props.embeddedModeUrl);
   }
 
   render () {
@@ -96,8 +78,9 @@ export default connect(function (store) {
   return {
     adoptWithParamsProgressShowing: adoptWithParamsProgressShowing(store),
     adoptWithParamsFailed: adoptWithParamsFailed(store),
-    embeddedModeEnabled: embeddedModeEnabled(store)
+    embeddedModeEnabled: embeddedModeEnabled(store),
+    embeddedModeUrl: embeddedModeUrl(store)
   };}, {
-    showAdoptWithParamsFailed, adoptProjectWithParameters, setEnableEmbeddedMode, fetchShowParametersChanged, detectToken
+    showAdoptWithParamsFailed, adoptProjectWithParameters, fetchShowParametersChanged, detectToken
 })(App);
 

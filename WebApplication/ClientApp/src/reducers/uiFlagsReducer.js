@@ -20,6 +20,26 @@ import parametersActionTypes from '../actions/parametersActions';
 import uiFlagsActionTypes from '../actions/uiFlagsActions';
 import uploadPackagesActionTypes from '../actions/uploadPackageActions';
 
+/*
+   we are looking for url parameter that points to configuration JSON file for project adoption / project update
+   the expected format should look like: ?url=www.mydata.com/jsonConfig
+
+   the configuration JSON consists of:
+   "Url": url to your project zip
+   "Name": unique project name
+   "TopLevelAssembly": example.iam
+   "Config": desired parameters for adoption/update
+*/
+
+function getEmbeddedModeUrl() {
+   const query = new URLSearchParams(window.location.search);
+   const embeddedMode = query.has('url');
+   if (embeddedMode === true) {
+      return query.get('url');
+   }
+   return null;
+}
+
 export const initialState = {
    parametersEditedMessageClosed: false,
    parametersEditedMessageRejected: false,
@@ -43,7 +63,7 @@ export const initialState = {
    drawingProgressShowing: false,
    adoptWithParamsProgressShowing: false,
    adoptWithParamsFailed: false,
-   embeddedModeEnabled: true,
+   embeddedModeUrl: getEmbeddedModeUrl(),
    drawingUrls: {},
    stats: {},
    reportUrl: null,
@@ -148,7 +168,11 @@ export const getReportUrl = function(state) {
 };
 
 export const embeddedModeEnabled = function(state) {
-   return state.embeddedModeEnabled;
+   return state.embeddedModeUrl !== null;
+};
+
+export const embeddedModeUrl = function(state) {
+   return state.embeddedModeUrl;
 };
 
 export const getDrawingsList = function(state) {

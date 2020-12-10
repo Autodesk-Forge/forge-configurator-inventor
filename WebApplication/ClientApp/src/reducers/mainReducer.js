@@ -192,6 +192,10 @@ export const embeddedModeEnabled = function(state) {
     return uiFlags.embeddedModeEnabled(state.uiFlags);
 };
 
+export const embeddedModeUrl = function(state) {
+    return uiFlags.embeddedModeUrl(state.uiFlags);
+};
+
 export const getDrawingsList = function(state) {
     return uiFlags.getDrawingsList(state.uiFlags);
 };
