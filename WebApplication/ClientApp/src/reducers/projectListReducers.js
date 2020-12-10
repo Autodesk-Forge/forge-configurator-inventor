@@ -24,6 +24,7 @@ export const initialState = {
 
 export const getActiveProject = function(state) {
     // when no projects are available, returns empty project for correct UI initialization
+    // TODO: (although it seems to be dangerous for other pieces of code, where we are just checking activeProject not to be null: !activeProject , or activeProject?.something)
     if (! state.projects || state.projects.length === 0) return { };
     return getProject(state.activeProjectId, state);
 };

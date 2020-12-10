@@ -25,6 +25,7 @@ import uiFlagsReducer, * as uiFlags from './uiFlagsReducer';
 import profileReducer from './profileReducer';
 import bomReducer, * as bom from './bomReducer';
 import { compareParameters } from "../actions/parametersActions";
+import { isEmptyObject } from 'jquery';
 
 export const mainReducer = combineReducers({
     projectList: projectListReducer,
@@ -63,7 +64,7 @@ export const parametersEditedMessageVisible = function(state) {
         return false;
 
     const activeProject = getActiveProject(state);
-    if (!activeProject)
+    if (!activeProject || isEmptyObject(activeProject))
         return false;
 
     const parameters = getParameters(activeProject.id, state);

@@ -26,6 +26,7 @@ export const testState = {
     downloadDrawingFailedShowing: 7,
     errorData: { type:1, reportUrl: 'https://foo' },
     downloadProgressShowing: 9,
+    downloadProgressTitle: "Download Title",
     downloadUrl: 11,
     showUploadPackage: 13,
     uploadProgressShowing: 14,
@@ -40,7 +41,11 @@ export const testState = {
     drawingUrls: { "1" : "url1", "2" : "url2" },
     stats: { "1" : { credits: 3, processing: 2 }},
     activeDrawing: "1",
-    drawings: [ "1", "2", "3" ]
+    drawings: [ "1", "2", "3" ],
+    reportUrl: "http://report",
+    adoptWithParamsProgressShowing: true,
+    adoptWithParamsFailed: false,
+    embeddedModeUrl: "http://embedded.json"
 };
 
  export const fullState = {
