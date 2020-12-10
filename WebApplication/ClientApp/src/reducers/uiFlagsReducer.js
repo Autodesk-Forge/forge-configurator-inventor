@@ -31,7 +31,7 @@ import uploadPackagesActionTypes from '../actions/uploadPackageActions';
    "Config": desired parameters for adoption/update
 */
 
-function getEmbeddedModeUrl() {
+export function getEmbeddedModeUrl() {
    const query = new URLSearchParams(window.location.search);
    const embeddedMode = query.has('url');
    if (embeddedMode === true) {
@@ -279,9 +279,6 @@ export default function(state = initialState, action) {
          }
       case uiFlagsActionTypes.SET_REPORT_URL:
          return { ...state, reportUrl: action.reportUrl };
-
-      case uiFlagsActionTypes.SET_ENABLE_EMBEDDED_MODE:
-         return { ...state, embeddedModeEnabled: action.enabled };
 
       case uiFlagsActionTypes.DRAWING_LIST_UPDATED: {
 
