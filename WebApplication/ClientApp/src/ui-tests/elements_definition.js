@@ -55,5 +55,6 @@ module.exports = {
      getProjectRowByName: (name) => locate('div').withAttr({role: 'row'}).withChild('div').withText(name),
      xpErrorMessageTitle: '//div[@class="modalFailContent"]//p[contains(@class,"errorMessageTitle")]',
      xpErrorMessage: '//div[@class="modalFailContent"]//p[contains(@class,"errorMessage")][2]',
-     xpWarningMessage: '#warningMsg'
+     xpWarningMessage: '#warningMsg',
+     embeddedLoadingFailButtonOk: locate('.modalFailButtonsContainer').find('button').withText('Ok')
 };
