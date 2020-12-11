@@ -134,17 +134,10 @@ export function formatParameters(clientParameters) {
 
     const invFormatedParameters = clientParameters.reduce( (obj, param) => {
         const quoteValues = param.allowedValues != null && param.allowedValues.length > 0;
-        const values = quoteValues ? param.allowedValues.map(item => quote(item)) : [];
         const value = quoteValues ? quote(param.value) : param.value;
-
-        obj[param.name] = {
-            label: param.label ? param.label : null,
-            readonly: param.readonly,
-            value: value,
-            unit: param.units ? param.units : null,
-            values: values
-        };
-
+        // we are creating parameter HASH only from key and value, so post only these values
+        // others are not necessary
+        obj[param.name] = { value: value };
         return obj;
     }, {});
 

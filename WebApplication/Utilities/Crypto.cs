@@ -16,8 +16,11 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
+using Shared;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -76,14 +79,20 @@ namespace WebApplication.Utilities
         }
 
         /// <summary>
-        /// Generate hash for object.
+        /// Generate hash for stringified key/value representation of InventorParameters object.
         /// </summary>
-        /// <remarks>It generates JSON string for the object and then generates hash for the string.</remarks>
+        /// <remarks>It generates hash for the string, parameters are sorted by key, key-value;key-value;....</remarks>
         /// <returns>Hash string.</returns>
-        public static string GenerateObjectHashString<T>(T data)
+        public static string GenerateParametersHashString(InventorParameters parameters)
         {
-            using var stream = Json.ToStream(data);
-            return GenerateStreamHashString(stream);
+            // make key-value string ONLY to generate hash
+            string keyValuesStr = "";
+            foreach (KeyValuePair<string, InventorParameter> param in parameters.OrderBy(kvp => kvp.Key))
+            {
+                keyValuesStr += $"{param.Key}-{param.Value.Value};";
+            }
+
+            return GenerateHashString(keyValuesStr);
         }
 
         private static HashAlgorithm CreateHasher()
