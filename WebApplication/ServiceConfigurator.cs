@@ -97,7 +97,6 @@ namespace WebApplication
             services.AddSingleton<Uploads>();
             services.AddSingleton<OssBucketFactory>();
             services.AddSingleton<AdoptProjectWithParametersPayloadProvider>();
-
             services.AddSingleton<IGuidGenerator, GuidGenerator>();
 
             if (Configuration.GetValue<bool>("migration"))

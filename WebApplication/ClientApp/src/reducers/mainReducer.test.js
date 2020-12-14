@@ -132,6 +132,16 @@ describe('main reducer', () => {
          };
          expect(reducer.parametersEditedMessageVisible(state)).toEqual(false);
       });
+      it('Will show parameters changed notification string when parameters are changed', () => {
+         const state = {
+            uiFlags: uiFlagsReducer.initialState,
+            projectList: projectList,
+            parameters: originalParameters,
+            updateParameters: editedParameters,
+            profile: {isLoggedIn: true}
+         };
+         expect(reducer.parametersEditedMessageVisible(state)).toEqual(true);
+      });
    });
 
    describe('UI Flags getters', () => {

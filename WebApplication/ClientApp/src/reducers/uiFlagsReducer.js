@@ -279,7 +279,6 @@ export default function(state = initialState, action) {
          }
       case uiFlagsActionTypes.SET_REPORT_URL:
          return { ...state, reportUrl: action.reportUrl };
-
       case uiFlagsActionTypes.DRAWING_LIST_UPDATED: {
 
          const prev = state.activeDrawing;
