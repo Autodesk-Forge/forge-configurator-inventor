@@ -187,7 +187,7 @@ namespace WebApplication.Controllers
         {
             if (!_configuration.GetValue<bool>("embedded"))
             {
-                _logger.LogInformation("PoC AdoptProjectWithParameters feature is not turned on, quitting");
+                _logger.LogInformation("Embedded AdoptProjectWithParameters feature is not turned on, quitting");
                 return;
             }
 
