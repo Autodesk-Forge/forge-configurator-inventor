@@ -25,7 +25,7 @@ exports.config = {
   helpers: {
     Playwright: {
       url: 'https://localhost:5001',
-      show: false,
+      show: true,
       browser: 'chromium',
       chromium: {args: chromiumArgs},
       waitForTimeout: 30000,
