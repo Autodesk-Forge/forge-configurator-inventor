@@ -35,5 +35,5 @@ Scenario('Should check the adoption is started and finished', async (I) => {
     // viewer loaded
     const viewerModelSelector = '#ViewerModelStructurePanel';
     I.waitForElement(locators.xpViewerCanvas, 300);
-    I.waitForElement(viewerModelSelector, 10);
+    I.waitForElement(viewerModelSelector, 60);
 });
