@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -17,10 +18,13 @@ using Xunit.Abstractions;
 
 namespace WebApplication.Tests.Integration
 {
-    public class AdoptProjectWithParametersTest : IClassFixture<WebApplicationFactory<WebApplication.Startup>>
+    [Collection("IntegrationTests1")]
+    public class AdoptProjectWithParametersTest : InitializerTestBase, IClassFixture<WebApplicationFactory<WebApplication.Startup>>, IAsyncLifetime
     {
         private readonly ITestOutputHelper _output;
         private readonly ProjectService _projectService;
+
+        private static readonly DefaultProjectsConfiguration defaultProjectsConfiguration = new DefaultProjectsConfiguration();
 
         private class DefaultHttpClientFactory : IHttpClientFactory
         {
@@ -28,12 +32,24 @@ namespace WebApplication.Tests.Integration
         }
 
         public AdoptProjectWithParametersTest(WebApplicationFactory<WebApplication.Startup> factory, ITestOutputHelper output)
+            : base(defaultProjectsConfiguration)
         {
             _output = output;
             XUnitUtils.RedirectConsoleToXUnitOutput(output);
 
             using var scope = factory.Services.CreateScope();
             _projectService = scope.ServiceProvider.GetRequiredService<ProjectService>();
+        }
+
+        public async Task DisposeAsync()
+        {
+            await initializer.ClearAsync(false);
+        }
+
+        public async Task InitializeAsync()
+        {
+            await initializer.ClearAsync(false);
+            await initializer.InitializeAsync();
         }
 
         [Fact(DisplayName = "testAdoptProjectWithParams")]

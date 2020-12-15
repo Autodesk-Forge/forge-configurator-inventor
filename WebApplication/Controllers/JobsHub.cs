@@ -185,11 +185,11 @@ namespace WebApplication.Controllers
 
         public async Task CreateAdoptProjectWithParametersJob(string payloadUrl, string token = null)
         {
-            // if (!_configuration.GetValue<bool>("poc"))
-            // {
-            //     _logger.LogInformation("PoC AdoptProjectWithParameters feature is not turned on, quitting");
-            //     return;
-            // }
+            if (!_configuration.GetValue<bool>("embedded"))
+            {
+                _logger.LogInformation("Embedded AdoptProjectWithParameters feature is not turned on, quitting");
+                return;
+            }
 
             _logger.LogInformation($"invoked CreateDrawingPdfJob, connectionId : {Context.ConnectionId}");
 

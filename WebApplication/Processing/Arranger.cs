@@ -267,7 +267,7 @@ namespace WebApplication.Processing
             // generate hash for parameters
             var stream = await response.Content.ReadAsStreamAsync();
             var parameters = await JsonSerializer.DeserializeAsync<InventorParameters>(stream);
-            return Crypto.GenerateObjectHashString(parameters);
+            return Crypto.GenerateParametersHashString(parameters);
         }
 
         /// <summary>
