@@ -20,6 +20,26 @@ import parametersActionTypes from '../actions/parametersActions';
 import uiFlagsActionTypes from '../actions/uiFlagsActions';
 import uploadPackagesActionTypes from '../actions/uploadPackageActions';
 
+/*
+   we are looking for url parameter that points to configuration JSON file for project adoption / project update
+   the expected format should look like: ?url=www.mydata.com/jsonConfig
+
+   the configuration JSON consists of:
+   "Url": url to your project zip
+   "Name": unique project name
+   "TopLevelAssembly": example.iam
+   "Config": desired parameters for adoption/update
+*/
+
+export function getEmbeddedModeUrl() {
+   const query = new URLSearchParams(window.location.search);
+   const embeddedMode = query.has('url');
+   if (embeddedMode === true) {
+      return query.get('url');
+   }
+   return null;
+}
+
 export const initialState = {
    parametersEditedMessageClosed: false,
    parametersEditedMessageRejected: false,
@@ -41,6 +61,9 @@ export const initialState = {
    showDeleteProject: false,
    checkedProjects: [],
    drawingProgressShowing: false,
+   adoptWithParamsProgressShowing: false,
+   adoptWithParamsFailed: false,
+   embeddedModeUrl: getEmbeddedModeUrl(),
    drawingUrls: {},
    stats: {},
    reportUrl: null,
@@ -128,12 +151,28 @@ export const drawingProgressShowing = function(state) {
    return state.drawingProgressShowing;
 };
 
+export const adoptWithParamsProgressShowing = function(state) {
+   return state.adoptWithParamsProgressShowing;
+};
+
+export const adoptWithParamsFailed = function(state) {
+   return state.adoptWithParamsFailed;
+};
+
 export const getStats = function(state) {
    return state.stats;
 };
 
 export const getReportUrl = function(state) {
    return state.reportUrl;
+};
+
+export const embeddedModeEnabled = function(state) {
+   return state.embeddedModeUrl !== null;
+};
+
+export const embeddedModeUrl = function(state) {
+   return state.embeddedModeUrl;
 };
 
 export const getDrawingsList = function(state) {
@@ -192,6 +231,10 @@ export default function(state = initialState, action) {
          return { ...state, projectAlreadyExists: action.exists};
       case uiFlagsActionTypes.SHOW_DELETE_PROJECT:
          return { ...state, showDeleteProject: action.visible};
+      case uiFlagsActionTypes.SHOW_ADOPT_WITH_PROPERTIES_PROGRESS:
+         return { ...state, adoptWithParamsProgressShowing: action.visible, stats: null};
+      case uiFlagsActionTypes.SHOW_ADOPT_WITH_PARAMS_FAILED:
+         return { ...state, adoptWithParamsFailed: action.visible};
       case uiFlagsActionTypes.SET_PROJECT_CHECKED:
          {
             const idx = state.checkedProjects.indexOf(action.projectId);
@@ -226,15 +269,13 @@ export default function(state = initialState, action) {
       case uiFlagsActionTypes.INVALIDATE_DRAWING:
          return { ...state, drawingUrls: {}, activeDrawing: null, drawings: null };
       case uiFlagsActionTypes.SET_STATS:
-         {
-            if (action.key != null) {
-               const new_stats = { ...state.stats };
-               new_stats[action.key] = action.stats;
-               return { ...state, stats: new_stats };
-            } else {
-               const stats = action.stats === null ? {} : action.stats;
-               return { ...state, stats: stats };
-            }
+         if (action.key != null) {
+            const new_stats = { ...state.stats };
+            new_stats[action.key] = action.stats;
+            return { ...state, stats: new_stats };
+         } else {
+            const stats = action.stats === null ? {} : action.stats;
+            return { ...state, stats: stats };
          }
       case uiFlagsActionTypes.SET_REPORT_URL:
          return { ...state, reportUrl: action.reportUrl };

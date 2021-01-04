@@ -272,6 +272,11 @@ module.exports = function() {
       const workItemLink = '//div[@class="logContainer"]//a[contains(@href,"https://dasprod-store.s3.amazonaws.com/workItem/")]';
       this.waitForVisible(workItemLink, 5);
       this.see('Open log file', workItemLink);
+    },
+    dismissContentLoadingFailDlg()
+    {
+      this.waitForElement(locators.embeddedLoadingFailButtonOk, 3);
+      this.click(locators.embeddedLoadingFailButtonOk);
     }
   });
 };

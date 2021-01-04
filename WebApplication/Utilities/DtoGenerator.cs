@@ -77,12 +77,12 @@ namespace WebApplication.Utilities
         /// <summary>
         /// Generate project DTO.
         /// </summary>
-        public ProjectDTO ToDTO(ProjectStorage projectStorage)
+        public ProjectDTO ToDTO(ProjectStorage projectStorage, string hash=null)
         {
             Project project = projectStorage.Project;
             var localAttributes = project.LocalAttributes;
 
-            var dto = MakeProjectDTO<ProjectDTO>(projectStorage, projectStorage.Metadata.Hash);
+            var dto = MakeProjectDTO<ProjectDTO>(projectStorage, string.IsNullOrEmpty(hash) ? projectStorage.Metadata.Hash : hash);
             dto.Id = project.Name;
             dto.Label = !Regex.Match(project.Name, @"[\u0030-\u007a]").Success ? "_" + project.Name : project.Name;
             dto.Image = _localCache.ToDataUrl(localAttributes.Thumbnail);

@@ -60,25 +60,88 @@ const projectList = {
 };
 
 describe('main reducer', () => {
-   it('Notification strip will not be shown if parameters are not changed', () => {
+   it('Gets user profile correctly', () => {
+      const profile = {isLoggedIn: true};
       const state = {
-         uiFlags: uiFlagsReducer.initialState,
-         projectList: projectList,
-         parameters: originalParameters,
-         updateParameters: originalParameters,
-         profile: {isLoggedIn: true}
+         profile: profile
       };
-      expect(reducer.parametersEditedMessageVisible(state)).toEqual(false);
-   }),
-   it('Will show parameters changed notification string when parameters are changed', () => {
-      const state = {
-         uiFlags: uiFlagsReducer.initialState,
-         projectList: projectList,
-         parameters: originalParameters,
-         updateParameters: editedParameters,
-         profile: {isLoggedIn: true}
-      };
-      expect(reducer.parametersEditedMessageVisible(state)).toEqual(true);
+      expect(reducer.getProfile(state)).toEqual(profile);
+   });
+
+   describe('Parameters changed notification strip', () => {
+      it('Strip will not be shown if parameters are not changed', () => {
+         const state = {
+            uiFlags: uiFlagsReducer.initialState,
+            projectList: projectList,
+            parameters: originalParameters,
+            updateParameters: originalParameters,
+            profile: {isLoggedIn: true}
+         };
+         expect(reducer.parametersEditedMessageVisible(state)).toEqual(false);
+      }),
+      it('Strip is shown when parameters are changed', () => {
+         const state = {
+            uiFlags: uiFlagsReducer.initialState,
+            projectList: projectList,
+            parameters: originalParameters,
+            updateParameters: editedParameters,
+            profile: {isLoggedIn: true}
+         };
+         expect(reducer.parametersEditedMessageVisible(state)).toEqual(true);
+      });
+      it('Strip is not shown when it was closed by the user', () => {
+         const state = {
+            uiFlags: { parametersEditedMessageClosed : true },
+            profile: {isLoggedIn: true}
+         };
+         expect(reducer.parametersEditedMessageVisible(state)).toEqual(false);
+      });
+      it('Strip is not shown when it was denied by the user to show it', () => {
+         const state = {
+            uiFlags: { parametersEditedMessageClosed : false,
+                       parametersEditedMessageRejected: true },
+            profile: {isLoggedIn: true}
+         };
+         expect(reducer.parametersEditedMessageVisible(state)).toEqual(false);
+      });
+      it('Strip is not shown when there is no active project', () => {
+         const state = {
+            uiFlags: uiFlagsReducer.initialState,
+            projectList: { activeProjectId: null },
+            profile: {isLoggedIn: true}
+         };
+         expect(reducer.parametersEditedMessageVisible(state)).toEqual(false);
+      });
+      it('Strip is not shown when parameters to compare to are missing', () => {
+         const state = {
+            uiFlags: uiFlagsReducer.initialState,
+            projectList: projectList,
+            parameters: {[projectId]: null},
+            updateParameters: originalParameters,
+            profile: {isLoggedIn: true}
+         };
+         expect(reducer.parametersEditedMessageVisible(state)).toEqual(false);
+      });
+      it('Strip is not shown when edit parameters to compare to are missing', () => {
+         const state = {
+            uiFlags: uiFlagsReducer.initialState,
+            projectList: projectList,
+            parameters: originalParameters,
+            updateParameters: {[projectId]: null},
+            profile: {isLoggedIn: true}
+         };
+         expect(reducer.parametersEditedMessageVisible(state)).toEqual(false);
+      });
+      it('Will show parameters changed notification string when parameters are changed', () => {
+         const state = {
+            uiFlags: uiFlagsReducer.initialState,
+            projectList: projectList,
+            parameters: originalParameters,
+            updateParameters: editedParameters,
+            profile: {isLoggedIn: true}
+         };
+         expect(reducer.parametersEditedMessageVisible(state)).toEqual(true);
+      });
    });
 
    describe('UI Flags getters', () => {
@@ -102,6 +165,9 @@ describe('main reducer', () => {
       }),
       it('gets downloadProgressShowing', () => {
          expect(reducer.downloadProgressShowing(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.downloadProgressShowing);
+      }),
+      it('gets download progress title', () => {
+         expect(reducer.downloadProgressTitle(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.downloadProgressTitle);
       }),
       it('gets downloadUrl', () => {
          expect(reducer.downloadUrl(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.downloadUrl);
@@ -147,6 +213,21 @@ describe('main reducer', () => {
       }),
       it('gets the drawings list', () => {
          expect(reducer.getDrawingsList(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.drawings); /* method and flag name differ */
+      }),
+      it('gets progress state for adoptWithParams', () => {
+         expect(reducer.adoptWithParamsProgressShowing(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.adoptWithParamsProgressShowing);
+      }),
+      it('gets failure state for adoptWithParams', () => {
+         expect(reducer.adoptWithParamsFailed(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.adoptWithParamsFailed);
+      }),
+      it('gets report url', () => {
+         expect(reducer.getReportUrl(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.reportUrl); /* method and flag name differ */
+      }),
+      it('gets embedded mode enabled state', () => {
+         expect(reducer.embeddedModeEnabled(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.embeddedModeUrl !== null); /* method and flag name differ */
+      }),
+      it('gets embedded mode url', () => {
+         expect(reducer.embeddedModeUrl(uiFlagsTestState)).toEqual(uiFlagsTestState.uiFlags.embeddedModeUrl);
       });
    });
 

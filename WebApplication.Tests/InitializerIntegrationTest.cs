@@ -95,7 +95,7 @@ namespace WebApplication.Tests
             await CompareOutputFileBytes(testComparisonFilePath, signedOssUrl);
 
             // check parameters generated with hashed name
-            var ossNames = project.OssNameProvider("13B8EF6A8506CC3ECB08FF6F0B09ACD194DE6A55");
+            var ossNames = project.OssNameProvider("C93A317155D203B2C67D000446B32FAC8DF0B5F0");
             objects = await forgeOSS.GetBucketObjectsAsync(projectsBucketKey, ossNames.Parameters);
             Assert.Single(objects);
             signedOssUrl = await forgeOSS.CreateSignedUrlAsync(projectsBucketKey, objects[0].ObjectKey);

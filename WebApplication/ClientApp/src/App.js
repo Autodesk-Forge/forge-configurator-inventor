@@ -23,8 +23,12 @@ import './app.css';
 import Toolbar from './components/toolbar';
 import TabsContainer from './components/tabsContainer';
 import ProjectSwitcher from './components/projectSwitcher';
-import { fetchShowParametersChanged } from './actions/uiFlagsActions';
+import { showAdoptWithParamsFailed, fetchShowParametersChanged } from './actions/uiFlagsActions';
 import { detectToken } from './actions/profileActions';
+import ModalProgress from './components/modalProgress';
+import { adoptWithParamsFailed, embeddedModeEnabled, embeddedModeUrl, adoptWithParamsProgressShowing } from './reducers/mainReducer';
+import { adoptProjectWithParameters } from './actions/adoptWithParamsActions';
+import ModalFail from './components/modalFail';
 
 export class App extends Component {
   constructor(props) {
@@ -32,21 +36,51 @@ export class App extends Component {
     props.detectToken();
   }
   componentDidMount() {
-    this.props.fetchShowParametersChanged();
+    if (!this.props.embeddedModeEnabled)
+      this.props.fetchShowParametersChanged();
+
+    if (this.props.embeddedModeUrl != null)
+      this.props.adoptProjectWithParameters(this.props.embeddedModeUrl);
   }
+
   render () {
+    const showToolbar = !this.props.embeddedModeEnabled;
+
     return (
       <Surface className="fullheight" id="main" level={200}>
-        <Toolbar>
-          <ProjectSwitcher />
-        </Toolbar>
+        { showToolbar &&
+          <Toolbar>
+            <ProjectSwitcher />
+          </Toolbar>
+        }
         <TabsContainer/>
-      </Surface>
+        {this.props.adoptWithParamsProgressShowing &&
+          <ModalProgress
+              open={true}
+              title="Loading Content"
+              label=" "
+              icon="/Assembly_icon.svg"/>
+        }
+        {this.props.adoptWithParamsFailed &&
+          <ModalFail
+              open={true}
+              title={ "Content loading failed" }
+              contentName=""
+              label="See console for more details"
+              onClose={ () => this.props.showAdoptWithParamsFailed(false) } />}
+          </Surface>
     );
   }
 }
 
-export default connect(null, {
-  fetchShowParametersChanged, detectToken
+/* istanbul ignore next */
+export default connect(function (store) {
+  return {
+    adoptWithParamsProgressShowing: adoptWithParamsProgressShowing(store),
+    adoptWithParamsFailed: adoptWithParamsFailed(store),
+    embeddedModeEnabled: embeddedModeEnabled(store),
+    embeddedModeUrl: embeddedModeUrl(store)
+  };}, {
+    showAdoptWithParamsFailed, adoptProjectWithParameters, fetchShowParametersChanged, detectToken
 })(App);
 

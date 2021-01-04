@@ -210,11 +210,7 @@ describe('fetchParameters', () => {
 
                 const invParameters = {
                     WrenchSz: {
-                        value: '"Small"',
-                        unit: 'Text',
-                        values: ['"Large"', '"Medium"', '"Small"'],
-                        label: "Size",
-                        readonly: false
+                        value: '"Small"'
                     }
                 };
 

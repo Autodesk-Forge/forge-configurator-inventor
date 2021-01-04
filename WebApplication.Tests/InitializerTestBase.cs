@@ -109,7 +109,7 @@ namespace WebApplication.Tests
             var dtoGenerator = new DtoGenerator(linkGenerator: null, localCache);
             var projectWork = new ProjectWork(new NullLogger<ProjectWork>(), arranger, fdaClient, dtoGenerator, userResolver);
 
-            var projectService = new ProjectService(new NullLogger<ProjectService>(), userResolver, projectWork);
+            var projectService = new ProjectService(new NullLogger<ProjectService>(), userResolver, projectWork, dtoGenerator);
 
             initializer = new Initializer(new NullLogger<Initializer>(), fdaClient,
                                             defaultProjectsOptions, projectWork, userResolver, localCache,

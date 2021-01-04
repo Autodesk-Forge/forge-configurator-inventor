@@ -198,7 +198,8 @@ We are using npm.
 	* You are now ready to use and debug callbacks locally
 	* If you experience issues running ngrok tunnel with the web application using https settings, the simple workaround is to switch the app to http mode (only for local use). 
 	* In order to set the callback URL for local development it is recomended to create an appsettings.Local.json file in the WebApplication directory (if you don't have it already) and then put following settings into it:
-```json		  
+```
+    json		  
     {
         "Publisher": {
             "CompletionCheck": "Callback",
@@ -206,5 +207,6 @@ We are using npm.
 	    }
     }
 ```
-	
+### Embedded mode
+You can read about embedded mode [here](EMBEDDED-README.md)
 	

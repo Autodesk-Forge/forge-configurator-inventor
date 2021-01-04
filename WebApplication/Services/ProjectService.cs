@@ -22,12 +22,14 @@ namespace WebApplication.Services
         private readonly UserResolver _userResolver;
         private readonly ProjectWork _projectWork;
         private readonly RetryPolicy _waitForBucketPolicy;
+        private readonly DtoGenerator _dtoGenerator;
 
-        public ProjectService(ILogger<ProjectService> logger, UserResolver userResolver, ProjectWork projectWork)
+        public ProjectService(ILogger<ProjectService> logger, UserResolver userResolver, ProjectWork projectWork, DtoGenerator dtoGenerator)
         {
             _logger = logger;
             _userResolver = userResolver;
             _projectWork = projectWork;
+            _dtoGenerator = dtoGenerator;
 
             _waitForBucketPolicy = Policy
                 .Handle<ApiException>(e => e.ErrorCode == StatusCodes.Status404NotFound)
@@ -36,6 +38,47 @@ namespace WebApplication.Services
                     retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
                     (exception, timeSpan) => _logger.LogWarning("Cannot get fresh OSS bucket. Repeating")
                 );
+        }
+
+        /// <summary>
+        /// https://jira.autodesk.com/browse/INVGEN-45256
+        /// </summary>
+        /// <param name="payload">project configuration with parameters</param>
+        /// <returns>project storage</returns>
+        public async Task<ProjectDTO> AdoptProjectWithParametersAsync(AdoptProjectWithParametersPayload payload)
+        {
+            if (!await DoesProjectAlreadyExistAsync(payload.Name))
+            {
+                var bucket = await _userResolver.GetBucketAsync();
+                var signedUrl = await TransferProjectToOssAsync(bucket, payload);
+                await _projectWork.AdoptAsync(payload, signedUrl);
+            }
+            else
+            {
+                _logger.LogInformation($"project with name {payload.Name} already exists");
+            }
+
+            var updateDto = (await _projectWork.DoSmartUpdateAsync(payload.Config, payload.Name)).dto;
+            // use update hash for projectDto generation
+            var projectDto = _dtoGenerator.ToDTO(await _userResolver.GetProjectStorageAsync(payload.Name), updateDto.Hash);
+
+            return projectDto;
+        }
+
+        public async Task<ProjectStateDTO> getProjectParameters(string projectName, string hash)
+        {
+            var storage = await _userResolver.GetProjectStorageAsync(projectName, ensureDir: false);
+            var dto = _dtoGenerator.MakeProjectDTO<ProjectStateDTO>(storage, hash);
+            var localNames = storage.GetLocalNames(hash);
+            dto.Parameters = Json.DeserializeFile<Shared.InventorParameters>(localNames.Parameters);
+            return dto;
+        }
+
+        private async Task<bool> DoesProjectAlreadyExistAsync(string projectName)
+        {
+            var existingProjects = await GetProjectNamesAsync();
+
+            return existingProjects.Contains(projectName);
         }
 
         public async Task<string> TransferProjectToOssAsync(OssBucket bucket, DefaultProjectConfiguration projectConfig)
@@ -112,6 +155,12 @@ namespace WebApplication.Services
                 var projectStorage = await _userResolver.GetProjectStorageAsync(projectName, ensureDir: false);
                 projectStorage.DeleteLocal();
             }
+        }
+
+        public async Task DeleteAllProjects()
+        {
+            var projectsNames = await GetProjectNamesAsync();
+            await DeleteProjects(projectsNames);
         }
     }
 }

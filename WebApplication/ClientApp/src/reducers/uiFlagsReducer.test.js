@@ -43,6 +43,23 @@ describe('uiFlags reducer', () => {
       expect(uiFlagsReducer(uiFlags.initialState, uiFlagsActions.showDeleteProject(true)).showDeleteProject).toEqual(true);
    });
 
+   it('Hides the download progress', () => {
+      expect(uiFlagsReducer(uiFlags.initialState, uiFlagsActions.hideDownloadProgress()).downloadProgressShowing).toEqual(false);
+   });
+
+   it('Sets the progress for adoption with params', () => {
+      expect(uiFlagsReducer(uiFlags.initialState, uiFlagsActions.showAdoptWithParametersProgress(true)).adoptWithParamsProgressShowing).toEqual(true);
+   });
+
+   it('Sets the failure dlg flag for adoption with params', () => {
+      expect(uiFlagsReducer(uiFlags.initialState, uiFlagsActions.showAdoptWithParamsFailed(true)).adoptWithParamsFailed).toEqual(true);
+   });
+
+   it('Sets the report url', () => {
+      const url = "http://foo";
+      expect(uiFlagsReducer(uiFlags.initialState, uiFlagsActions.setReportUrl(url)).reportUrl).toEqual(url);
+   });
+
    describe('Upload package', () => {
       it('Sets the show package dlg', () => {
          expect(uiFlagsReducer(uiFlags.initialState, uiFlagsActions.showUploadPackage(true)).showUploadPackage).toEqual(true);
@@ -144,6 +161,25 @@ describe('uiFlags reducer', () => {
       it('does not alters checked projects if one unchecks a project that is not already there', () => {
          const projectId = '1';
          expect(uiFlagsReducer(haveSomeCheckedState, uiFlagsActions.setProjectChecked(projectId, false)).checkedProjects).toEqual(initialCheckedProjects);
+      });
+   });
+
+   describe('Embedded mode with overwriten window.location', () => {
+      const { location } = window;
+      const url = "https://inventorio-dev-holecep.s3.us-west-2.amazonaws.com/Interaction/wrench_v2.json";
+      const search = "?url=" + url;
+
+      beforeAll(() => {
+         delete window.location;
+         window.location = { search: search };
+      });
+
+      afterAll(() => {
+         window.location = location;
+      });
+
+      it('Reads correctly the url parameter from window location', () => {
+         expect(uiFlags.getEmbeddedModeUrl()).toEqual(url);
       });
    });
 

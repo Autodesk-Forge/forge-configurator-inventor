@@ -26,6 +26,21 @@
             "problemMatcher": "$msCompile"
         },
         {
+            "label": "publish-release",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "publish",
+                "${workspaceFolder}/WebApplication/WebApplication.csproj",
+                "--configuration",
+                "Release",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile",
+            "dependsOn": "clean"
+        },
+        {
             "label": "watch",
             "command": "dotnet",
             "type": "process",

@@ -171,5 +171,23 @@ describe('projectList reducer', () => {
             expect(result.activeProjectId).toEqual(initialState.activeProjectId); // active project is not changed
             expect(result.projects.map(p => p.id)).toEqual(['1', '2', '3']);
         });
+
+        it('should replace the project during add if a project with given id already exists', () => {
+            const existingProjects = [
+                { id: '1', label: '1' },
+                { id: '3', label: '3' }
+            ];
+            const initialState = {
+                activeProjectId: '3', projects: existingProjects
+            };
+
+            // the project should be inserted in the middle of the existing projects
+            const newProject = { id: '1', label: '1new', data: 'other data' };
+            const result = projectListReducer(initialState, addProject(newProject));
+
+            expect(result.activeProjectId).toEqual(initialState.activeProjectId); // active project is not changed
+            expect(result.projects.map(p => p.id)).toEqual(['1', '3']);
+            expect(result.projects.find(p => p.id === '1')).toEqual(newProject);
+        })
     });
 });

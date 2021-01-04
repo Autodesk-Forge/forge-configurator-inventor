@@ -101,7 +101,7 @@ namespace WebApplication.Processing
         public async Task<(ProjectStateDTO dto, FdaStatsDTO stats, string reportUrl)> DoSmartUpdateAsync(InventorParameters parameters, 
             string projectId, bool bForceUpdate = false)
         {
-            var hash = Crypto.GenerateObjectHashString(parameters);
+            var hash = Crypto.GenerateParametersHashString(parameters);
             _logger.LogInformation($"Incoming parameters hash is {hash}");
 
             var storage = await _userResolver.GetProjectStorageAsync(projectId);

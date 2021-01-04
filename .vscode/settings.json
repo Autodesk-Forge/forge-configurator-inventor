@@ -47,5 +47,8 @@
             "begin": "/*",
             "end": "*/"
         }
-    ]
+    ],
+    "appService.preDeployTask": "publish-release",
+    "appService.deploySubpath": "WebApplication/bin/Release/netcoreapp3.1/publish",
+    "appService.defaultWebAppToDeploy": "None"
 }

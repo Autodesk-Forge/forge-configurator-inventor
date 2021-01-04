@@ -19,30 +19,21 @@
 /* eslint-disable no-undef */
 const locators = require('./elements_definition.js');
 
-Feature('Downloads');
+Feature('Embedded Adoption');
 
+// This test uses existing json pointing to existing dataset.
+// It's purpose is just to verify the first step of adoption. it's fine if it uses cached data -
+// - the embedded adoption processing is already tested on server side.
 Before((I) => {
-    I.amOnPage('/');
+    I.amOnPage('/?url=https://inventorio-dev-holecep.s3.us-west-2.amazonaws.com/Interaction/wrench_v2.json');
 });
 
-Scenario('should check switch to downloads tab shows the downloads links', async (I) => {
+Scenario('Should check the adoption is started and finished', async (I) => {
+    // check if exists the Model tab
+    I.see("Model", locators.modelTab);
 
-    // select the Wheel project
-    I.selectProject('Wheel');
-    I.see('Downloads', locators.downloadsTab);
-    I.goToDownloadsTab();
-    I.waitForElement('.BaseTable');
-
-    // check number of rows in the Downloads tab
-    I.seeNumberOfElements('.BaseTable__row', 4);
-
-    // all expected download types are available
-    I.see('IAM', '.BaseTable__row-cell a');
-    I.see('RFA', '.BaseTable__row-cell a');
-    I.see('BOM', '.BaseTable__row-cell a');
-    I.see('Drawing', '.BaseTable__row-cell a');
-
-    // check icons
-    I.seeNumberOfElements({ css: '[src="products-and-services-24.svg"]'}, 3);
-    I.seeNumberOfElements({ css: '[src="file-spreadsheet-24.svg"]'}, 1);
+    // viewer loaded
+    const viewerModelSelector = '#ViewerModelStructurePanel';
+    I.waitForElement(locators.xpViewerCanvas, 300);
+    I.waitForElement(viewerModelSelector, 300);
 });

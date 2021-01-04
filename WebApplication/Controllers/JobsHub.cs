@@ -20,6 +20,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Shared;
 using WebApplication.Definitions;
@@ -102,9 +103,13 @@ namespace WebApplication.Controllers
         private readonly Sender _sender;
         private readonly Uploads _uploads;
         private readonly DtoGenerator _dtoGenerator;
+        private readonly ProjectService _projectService;
+        private readonly AdoptProjectWithParametersPayloadProvider _adoptProjectWithParametersPayloadProvider;
+        private readonly IConfiguration _configuration;
 
         public JobsHub(ILogger<JobsHub> logger, ProjectWork projectWork, LinkGenerator linkGenerator, UserResolver userResolver, 
-            ProfileProvider profileProvider, Uploads uploads, DtoGenerator dtoGenerator)
+            ProfileProvider profileProvider, Uploads uploads, DtoGenerator dtoGenerator, ProjectService projectService,
+            AdoptProjectWithParametersPayloadProvider adoptProjectWithParametersPayloadProvider, IConfiguration configuration)
         {
             _logger = logger;
             _projectWork = projectWork;
@@ -113,7 +118,9 @@ namespace WebApplication.Controllers
             _userResolver = userResolver;
             _uploads = uploads;
             _dtoGenerator = dtoGenerator;
-
+            _projectService = projectService;
+            _adoptProjectWithParametersPayloadProvider = adoptProjectWithParametersPayloadProvider;
+            _configuration = configuration;
             _sender = new Sender(this);
         }
 
@@ -173,6 +180,23 @@ namespace WebApplication.Controllers
 
             // create job and run it
             var job = new ExportDrawingPdfJobItem(_logger, projectId, hash, drawingKey, _projectWork, _linkGenerator);
+            await RunJobAsync(job);
+        }
+
+        public async Task CreateAdoptProjectWithParametersJob(string payloadUrl, string token = null)
+        {
+            if (!_configuration.GetValue<bool>("embedded"))
+            {
+                _logger.LogInformation("Embedded AdoptProjectWithParameters feature is not turned on, quitting");
+                return;
+            }
+
+            _logger.LogInformation($"invoked CreateDrawingPdfJob, connectionId : {Context.ConnectionId}");
+
+            _profileProvider.Token = token;
+
+            // create job and run it
+            var job = new AdoptProjectWithParametersJobItem(_logger, _projectService, payloadUrl, _adoptProjectWithParametersPayloadProvider);
             await RunJobAsync(job);
         }
 

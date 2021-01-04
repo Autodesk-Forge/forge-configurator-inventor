@@ -30,7 +30,7 @@ module.exports = {
      ForgeViewer : '#ForgeViewer',
      xpLinkAdskForge : '//a[@href="https://forge.autodesk.com"]',
      xpComboProjects : '//div[@role="button"] //*[local-name()="svg"]',
-     xpProjectWrench : '//li[contains(@role,"menuitem") and .//span[contains(., "Wrench")]]',
+     xpProjectWrench : '//li[contains(@role,"menuitem") and .//span[text()="Wrench"]]',
      xpProjectWheel : '//li[contains(@role,"menuitem") and .//span[contains(., "Wheel")]]',
      xpProjectList : '//ul//span[text()="Projects"]',
      xpButtonLog : '//button[contains(@title, "Log")]',
@@ -50,10 +50,13 @@ module.exports = {
      xpFirstInputOnModelTab : '//*[@id="model"]/div/div[1]/div[2]/div[1] //input',
      FDAActionTimeout: 600,
      xpButtonExportPDF: locate('button').find('span').withText('Export PDF'),
-     getProjectFromSwitcher: (name) => locate('li').find('span').withAttr({role: 'button'}).withText(name),
+     getProjectFromSwitcher: (name) => { xp = '//li[contains(@role,"menuitem") and .//span[text()="' + name + '"]]';
+          return locate(xp);
+     },
      getProjectByName: (name) => locate('div').withAttr({role: 'gridcell'}).find('div').withText(name),
      getProjectRowByName: (name) => locate('div').withAttr({role: 'row'}).withChild('div').withText(name),
      xpErrorMessageTitle: '//div[@class="modalFailContent"]//p[contains(@class,"errorMessageTitle")]',
      xpErrorMessage: '//div[@class="modalFailContent"]//p[contains(@class,"errorMessage")][2]',
-     xpWarningMessage: '#warningMsg'
+     xpWarningMessage: '#warningMsg',
+     embeddedLoadingFailButtonOk: locate('.modalFailButtonsContainer').find('button').withText('Ok')
 };
