@@ -40,11 +40,11 @@ As an example we can use the wrench project (One of the applications default pro
 }
 ```
 
-For purpose of this guide we have already uploaded the JSON file to S3: https://inventorio-dev-holecep.s3-us-west-2.amazonaws.com/Interaction/wrench.json
+For purpose of this guide we have already uploaded the JSON file to S3: https://inventorio-dev-holecep.s3.us-west-2.amazonaws.com/Interaction/wrench_v2.json
 
 We can now start the application (make sure embedded mode is enabled) and go to the browser. Assuming that we run the application locally and with default settings we can now call the embedded application with our model like this:
 
-https://localhost:5001/?url=https://inventorio-dev-holecep.s3-us-west-2.amazonaws.com/Interaction/wrench.json
+https://localhost:5001/?url=https://inventorio-dev-holecep.s3.us-west-2.amazonaws.com/Interaction/wrench_v2.json
 
 After the processing, you will see your model loaded inside of the embedded window. 
 

@@ -166,7 +166,7 @@ describe('uiFlags reducer', () => {
 
    describe('Embedded mode with overwriten window.location', () => {
       const { location } = window;
-      const url = "https://inventorio-dev-holecep.s3-us-west-2.amazonaws.com/Interaction/wrench.json";
+      const url = "https://inventorio-dev-holecep.s3.us-west-2.amazonaws.com/Interaction/wrench_v2.json";
       const search = "?url=" + url;
 
       beforeAll(() => {
