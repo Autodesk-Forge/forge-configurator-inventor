@@ -30,7 +30,7 @@ module.exports = {
      ForgeViewer : '#ForgeViewer',
      xpLinkAdskForge : '//a[@href="https://forge.autodesk.com"]',
      xpComboProjects : '//div[@role="button"] //*[local-name()="svg"]',
-     xpProjectWrench : '//li[contains(@role,"menuitem") and .//span[contains(., "Wrench")]]',
+     xpProjectWrench : '//li[contains(@role,"menuitem") and .//span[text()="Wrench"]]',
      xpProjectWheel : '//li[contains(@role,"menuitem") and .//span[contains(., "Wheel")]]',
      xpProjectList : '//ul//span[text()="Projects"]',
      xpButtonLog : '//button[contains(@title, "Log")]',
