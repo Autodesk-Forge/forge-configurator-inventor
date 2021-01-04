@@ -45,6 +45,9 @@ Scenario('should check if All tabs are available', async (I) => {
 
 Scenario('should check if all Tabs are loaded after click', async (I) => {
 
+    // select the Wheel project
+    I.selectProject('Wheel');
+
     // click on Model tab
     I.clickToModelTab();
 
