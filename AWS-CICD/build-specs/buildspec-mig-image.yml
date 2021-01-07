@@ -24,5 +24,5 @@ phases:
 artifacts:
   files:
     - Dockerrun.aws.json
-    - 'AWS-CICD/.ebextensions/**/*'
+    - '.ebextensions/**/*'
   base-directory: AWS-CICD
