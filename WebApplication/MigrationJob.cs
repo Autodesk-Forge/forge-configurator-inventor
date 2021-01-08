@@ -65,6 +65,8 @@ namespace MigrationApp
          _logger.LogInformation($"{logId}: Generating config for project {projectInfo.Name} in bucket {bucket.BucketKey}");
 
          OssBucket bucketNew = await _userResolver.GetBucketAsync();
+         var storage = await _userResolver.GetProjectStorageAsync(projectInfo.Name);
+         await storage.EnsureAttributesAsync(bucketNew);
 
          try
          {

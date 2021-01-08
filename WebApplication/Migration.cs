@@ -73,6 +73,7 @@ namespace MigrationApp
 
       private async Task ScanBucket(List<MigrationJob> adoptJobs, List<MigrationJob> configJobs, string bucketKeyOld)
       {
+         _logger.LogInformation($"Scanning bucket {bucketKeyOld}");
          MigrationBucketKeyProvider bucketProvider;
          ProjectService projectService;
          using (var scope = _serviceScopeFactory.CreateScope())

@@ -100,17 +100,8 @@ namespace WebApplication.State
         public async Task<string> GetFullUserDir()
         {
             string userDir;
-            if (_profileProvider.IsAuthenticated)
-            {
-                var profile = await _profileProvider.GetProfileAsync();
-
-                // generate dirname to hide Oxygen user ID
-                userDir = Crypto.GenerateHashString("SDRA" + profile.userId);
-            }
-            else
-            {
-                userDir = "_anonymous";
-            }
+            var bucketKey = await _bucketKeyProvider.GetBucketKeyAsync();
+            userDir = Crypto.GenerateHashString("SDRA" + bucketKey);
 
             return Path.Combine(_localCache.LocalRootName, userDir);
         }
