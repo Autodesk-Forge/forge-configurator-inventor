@@ -118,9 +118,8 @@ namespace MigrationApp
          }
       }
 
-      public async Task Process()
+      public async Task Process(string logId)
       {
-         string logId = ( await Task.Run(() => Task.CurrentId )).ToString();
          switch (jobType)
          {
             case JobType.CopyAndAdopt:
