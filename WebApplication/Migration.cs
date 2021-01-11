@@ -156,8 +156,8 @@ namespace MigrationApp
                   // calculate parameter hash based on new algorithmes
                   InventorParameters parameters = await bucketOld.DeserializeAsync<InventorParameters>(configKey);
                   string newHash = Crypto.GenerateParametersHashString(parameters);
-                  string [] splittedConfigKey = configKey.Split("/");
-                  configKey = $"{splittedConfigKey[0]}/{splittedConfigKey[1]}/{newHash}/{splittedConfigKey[3]}";
+                  OSSObjectNameProvider onp = new OSSObjectNameProvider(projectName, newHash);
+                  configKey = onp.Parameters;
 
                   if (! configKeysNew.Contains(configKey))
                   {
