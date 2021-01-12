@@ -153,9 +153,14 @@ namespace MigrationApp
                string configKey = configOD.ObjectKey;
                if (configKey.EndsWith(WebApplication.Utilities.LocalName.Parameters))
                {
+                  // calculate parameter hash based on new algorithmes
+                  InventorParameters parameters = await bucketOld.DeserializeAsync<InventorParameters>(configKey);
+                  string newHash = Crypto.GenerateParametersHashString(parameters);
+                  OSSObjectNameProvider onp = new OSSObjectNameProvider(projectName, newHash);
+                  configKey = onp.Parameters;
+
                   if (! configKeysNew.Contains(configKey))
                   {
-                     InventorParameters parameters = await bucketOld.DeserializeAsync<InventorParameters>(configKey);;
                      ProjectInfo projectInfo = new ProjectInfo();
                      projectInfo.Name = projectName;
 
@@ -188,7 +193,7 @@ namespace MigrationApp
          }
       }
 
-      private async Task ProcessJobs(List<MigrationJob> jobs)
+      private async Task ProcessJobs(List<MigrationJob> jobs, int logIdStart, int logIdTotalCount)
       {
          int taskIndex = 0;
          int parallelCount = Int16.Parse(_configuration.GetValue<string>("MigrationParallelCount") ?? "15");
@@ -203,7 +208,8 @@ namespace MigrationApp
             {
                MigrationJob job = jobs[jobIndex]; 
 
-               tasks[taskIndex] = job.Process();
+               string logId = $"{logIdStart+jobIndex+1}/{logIdTotalCount}";
+               tasks[taskIndex] = job.Process(logId);
 
                jobIndex++;
             }
@@ -218,8 +224,9 @@ namespace MigrationApp
 
       public async Task Migrate(List<MigrationJob> adoptJobs, List<MigrationJob> configJobs)
       {
-         await ProcessJobs(adoptJobs);
-         await ProcessJobs(configJobs);
+         int logIdTotalCount = adoptJobs.Count + configJobs.Count;
+         await ProcessJobs(adoptJobs, 0, logIdTotalCount);
+         await ProcessJobs(configJobs, adoptJobs.Count, logIdTotalCount);
       }
    }
 }
