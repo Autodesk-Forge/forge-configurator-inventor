@@ -18,7 +18,7 @@
 
 import { addError, addLog } from './notificationActions';
 import { Jobs } from '../JobManager';
-import { showAdoptWithParamsFailed, showAdoptWithParametersProgress, updateActiveTabIndex } from './uiFlagsActions';
+import { showAdoptWithParamsFailed, showAdoptWithParametersProgress, updateActiveTabIndex, setErrorData } from './uiFlagsActions';
 import { updateActiveProject } from '../actions/projectListActions';
 import { addProject } from './projectListActions';
 
@@ -47,9 +47,10 @@ export const adoptProjectWithParameters = (parameters) => async (dispatch) => {
                 dispatch(updateActiveTabIndex(0));
             },
             // onError
-            (jobId, reportUrl) => {
-                dispatch(addLog('JobManager: Adopt project with params Received onError reportUrl: ' + reportUrl));
+            (errorData) => {
+                dispatch(addLog('JobManager: Adopt project with params Received onError reportUrl: ' + errorData.messages[0]));
                 // hide progress modal dialog
+                dispatch(setErrorData(errorData));
                 dispatch(showAdoptWithParametersProgress(false));
                 dispatch(showAdoptWithParamsFailed(true));
             }

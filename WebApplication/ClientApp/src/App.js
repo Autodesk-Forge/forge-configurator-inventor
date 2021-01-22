@@ -26,7 +26,7 @@ import ProjectSwitcher from './components/projectSwitcher';
 import { showAdoptWithParamsFailed, fetchShowParametersChanged } from './actions/uiFlagsActions';
 import { detectToken } from './actions/profileActions';
 import ModalProgress from './components/modalProgress';
-import { adoptWithParamsFailed, embeddedModeEnabled, embeddedModeUrl, adoptWithParamsProgressShowing } from './reducers/mainReducer';
+import { adoptWithParamsFailed, embeddedModeEnabled, embeddedModeUrl, adoptWithParamsProgressShowing, errorData } from './reducers/mainReducer';
 import { adoptProjectWithParameters } from './actions/adoptWithParamsActions';
 import ModalFail from './components/modalFail';
 
@@ -66,8 +66,11 @@ export class App extends Component {
               open={true}
               title={ "Content loading failed" }
               contentName=""
-              label="See console for more details"
-              onClose={ () => this.props.showAdoptWithParamsFailed(false) } />}
+              label="Project operation failed"
+              onClose={ () => this.props.showAdoptWithParamsFailed(false) }
+              errorData={this.props.errorData}
+              />
+          }
           </Surface>
     );
   }
@@ -79,7 +82,8 @@ export default connect(function (store) {
     adoptWithParamsProgressShowing: adoptWithParamsProgressShowing(store),
     adoptWithParamsFailed: adoptWithParamsFailed(store),
     embeddedModeEnabled: embeddedModeEnabled(store),
-    embeddedModeUrl: embeddedModeUrl(store)
+    embeddedModeUrl: embeddedModeUrl(store),
+    errorData: errorData(store)
   };}, {
     showAdoptWithParamsFailed, adoptProjectWithParameters, fetchShowParametersChanged, detectToken
 })(App);
