@@ -28,7 +28,6 @@ import { detectToken } from './actions/profileActions';
 import ModalProgress from './components/modalProgress';
 import { adoptWithParamsFailed, embeddedModeEnabled, embeddedModeUrl, adoptWithParamsProgressShowing, errorData } from './reducers/mainReducer';
 import { adoptProjectWithParameters } from './actions/adoptWithParamsActions';
-import ModalFail from './components/modalFail';
 
 export class App extends Component {
   constructor(props) {
