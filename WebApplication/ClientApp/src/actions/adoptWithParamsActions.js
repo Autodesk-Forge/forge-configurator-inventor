@@ -48,7 +48,7 @@ export const adoptProjectWithParameters = (parameters) => async (dispatch) => {
             },
             // onError
             (errorData) => {
-                dispatch(addLog('JobManager: Adopt project with params Received onError reportUrl: ' + errorData.messages[0]));
+                dispatch(addLog('JobManager: Adopt project with params Received onError'));
                 // hide progress modal dialog
                 dispatch(setErrorData(errorData));
                 dispatch(showAdoptWithParametersProgress(false));

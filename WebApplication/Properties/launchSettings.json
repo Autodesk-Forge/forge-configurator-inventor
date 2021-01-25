@@ -18,11 +18,11 @@
     "forge-configurator-inventor": {
       "commandName": "Project",
       "commandLineArgs": "poc=true",
-      "launchBrowser": true,
+      "launchBrowser": false,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "https://localhost:5001"
+      "applicationUrl": "http://localhost:5001"
     }
   }
 }
