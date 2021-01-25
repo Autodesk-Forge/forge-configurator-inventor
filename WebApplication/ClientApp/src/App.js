@@ -61,17 +61,7 @@ export class App extends Component {
               label=" "
               icon="/Assembly_icon.svg"/>
         }
-        {this.props.adoptWithParamsFailed &&
-          <ModalFail
-              open={true}
-              title={ "Content loading failed" }
-              contentName=""
-              label="Project operation failed"
-              onClose={ () => this.props.showAdoptWithParamsFailed(false) }
-              errorData={this.props.errorData}
-              />
-          }
-          </Surface>
+      </Surface>
     );
   }
 }
