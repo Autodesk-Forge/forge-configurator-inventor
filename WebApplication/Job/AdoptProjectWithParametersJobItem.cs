@@ -43,8 +43,6 @@ namespace WebApplication.Job
         {
             using var scope = Logger.BeginScope("Project Adoption ({Id})");
 
-            try
-            {
                 var payload = await _adoptProjectWithParametersPayloadProvider.GetParametersAsync(_payloadUrl);
 
                 Logger.LogInformation($"ProcessJob (AdoptProjectWithParameters) {Id} for project {payload.Name} started.");
@@ -52,13 +50,8 @@ namespace WebApplication.Job
                 var projectWithParameters = await _projectService.AdoptProjectWithParametersAsync(payload);
 
                 Logger.LogInformation($"ProcessJob (AdoptProjectWithParameters) {Id} for project {payload.Name} completed.");
-                
+
                 await resultSender.SendSuccessAsync(projectWithParameters);
-            }
-            catch (Exception ex)
-            {
-                await resultSender.SendErrorAsync(new MessagesError(Id, "Adopt project went wrong", new string[] { ex.Message }));
-            }
         }
     }
 }

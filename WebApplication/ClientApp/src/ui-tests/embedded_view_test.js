@@ -30,14 +30,14 @@ Before((I) => {
 
 Scenario('Toolbar elements are not present', async (I) => {
     // wait until page loads
-    I.dismissContentLoadingFailDlg();
+    //I.dismissContentLoadingFailDlg();
 
     I.dontSee("AUTODESK");
 });
 
 Scenario('should check if only required tabs are available', async (I) => {
     // wait until page loads
-    I.dismissContentLoadingFailDlg();
+    //I.dismissContentLoadingFailDlg();
 
     // check if exists the Model tab
     I.see("Model", locators.modelTab);
@@ -57,7 +57,7 @@ Scenario('should check if only required tabs are available', async (I) => {
 
 Scenario('should check that model tab doesnt have parameters pane', async (I) => {
     // wait until page loads
-    I.dismissContentLoadingFailDlg();
+    //I.dismissContentLoadingFailDlg();
 
     // click on Model tab
     I.clickToModelTab();
@@ -69,7 +69,7 @@ Scenario('should check that model tab doesnt have parameters pane', async (I) =>
 
 Scenario('should check if other Tabs are loaded after click', async (I) => {
     // wait until page loads
-    I.dismissContentLoadingFailDlg();
+    //I.dismissContentLoadingFailDlg();
 
     // click on BOM tab
     I.click( locators.bomTab);
