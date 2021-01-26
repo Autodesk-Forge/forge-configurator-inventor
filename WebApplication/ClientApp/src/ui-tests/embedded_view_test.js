@@ -30,7 +30,7 @@ Before((I) => {
 
 Scenario('Toolbar elements are not present', async (I) => {
     // wait until page loads
-    I.dismissContentLoadingFailDlg();
+    // I.dismissContentLoadingFailDlg();
 
     I.dontSee("AUTODESK");
 });
