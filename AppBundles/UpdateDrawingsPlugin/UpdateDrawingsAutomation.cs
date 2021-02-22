@@ -78,8 +78,9 @@ namespace UpdateDrawingsPlugin
 
                 foreach (var filePath in drawings)
                 {
+                    NameValueMap openOptions = inventorApplication.TransientObjects.CreateNameValueMap();
                     LogTrace($"Updating drawing {filePath}");
-                    var drawingDocument = inventorApplication.Documents.Open(filePath);
+                    var drawingDocument = inventorApplication.Documents.OpenWithOptions(filePath, openOptions, true);
                     LogTrace("Drawing opened");
                     drawingDocument.Update2(true);
                     LogTrace("Drawing updated");
