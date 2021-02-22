@@ -46,6 +46,7 @@ namespace Shared
             {
                 string docPath = map.AsString("ilod");
                 LogTrace($"Opening /ilod document name: {docPath}");
+                NameValueMap openOptions = _inventorApplication.TransientObjects.CreateNameValueMap();
 
                 if (docPath.ToUpper().EndsWith(".IAM"))
                 {
@@ -57,15 +58,15 @@ namespace Shared
                     string lodActRep = fm.GetLastActiveLevelOfDetailRepresentation(docPath);
                     LogTrace($"LastActiveLevelOfDetailRepresentation: {lodActRep}");
 
-                    NameValueMap openOptions = _inventorApplication.TransientObjects.CreateNameValueMap();
+                    
                     openOptions.Add("LevelOfDetailRepresentation", lodActRep);
                     openOptions.Add("DesignViewRepresentation", dvActRep);
 
-                    doc = _inventorApplication.Documents.OpenWithOptions(docPath, openOptions, false);
+                    doc = _inventorApplication.Documents.OpenWithOptions(docPath, openOptions, true);
                 }
                 else
                 {
-                    doc = _inventorApplication.Documents.Open(docPath, false);
+                    doc = _inventorApplication.Documents.OpenWithOptions(docPath, openOptions, true);
                 }
                 LogTrace($"Full document name: {doc.FullDocumentName}");
             }

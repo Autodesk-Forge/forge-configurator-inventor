@@ -46,9 +46,11 @@ namespace ExportDrawingAsPdfPlugin
 
                 LogTrace("Drawing to generate PDF: {0}", drawingToGenerate);
 
+                NameValueMap openOptions = _inventorApplication.TransientObjects.CreateNameValueMap();
+
                 string drawing = System.IO.Path.Combine(dir, /* ??? */"unzippedIam", drawingToGenerate);
                 LogTrace("Exporting : " + drawing);
-                var drawingDocument = _inventorApplication.Documents.Open(drawing);
+                var drawingDocument = _inventorApplication.Documents.OpenWithOptions(drawing, openOptions, true);
                 LogTrace("Drawing opened");
                 drawingDocument.Update2(true);
                 LogTrace("Drawing updated");
