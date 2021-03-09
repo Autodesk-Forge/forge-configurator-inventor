@@ -30,7 +30,6 @@ namespace WebApplication.Processing
     {
         public TransferData(Publisher publisher) : base(publisher) {}
 
-        public override string Engine => "Autodesk.AutoCAD+22";
         public override string Id => nameof(TransferData);
         public override string Description => "Transfer input to output";
 
