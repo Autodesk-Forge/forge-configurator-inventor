@@ -30,7 +30,7 @@ namespace WebApplication.Tests
     [Collection("IntegrationTests1")]
     public class InitializerIntegrationTest : InitializerTestBase, IAsyncLifetime
     {
-        const string testZippedIamUrl = "http://testipt.s3-us-west-2.amazonaws.com/Basic.zip";
+        const string testZippedIamUrl = "https://testipt.s3-us-west-2.amazonaws.com/Basic.zip";
         const string testIamPathInZip = "iLogicBasic1.iam";
 
         private static readonly DefaultProjectsConfiguration defaultProjectsConfiguration = new DefaultProjectsConfiguration
@@ -91,7 +91,7 @@ namespace WebApplication.Tests
             List<ObjectDetails> objects = await forgeOSS.GetBucketObjectsAsync(projectsBucketKey, project.OssAttributes.Thumbnail);
             Assert.Single(objects);
             string signedOssUrl = await forgeOSS.CreateSignedUrlAsync(projectsBucketKey, objects[0].ObjectKey);
-            string testComparisonFilePath = await DownloadTestComparisonFile("http://testipt.s3-us-west-2.amazonaws.com/iLogicBasic1IamThumbnail.png", "iLogicBasic1IamThumbnail.png");
+            string testComparisonFilePath = await DownloadTestComparisonFile("https://testipt.s3-us-west-2.amazonaws.com/iLogicBasic1IamThumbnail.png", "iLogicBasic1IamThumbnail.png");
             await CompareOutputFileBytes(testComparisonFilePath, signedOssUrl);
 
             // check parameters generated with hashed name
@@ -99,7 +99,7 @@ namespace WebApplication.Tests
             objects = await forgeOSS.GetBucketObjectsAsync(projectsBucketKey, ossNames.Parameters);
             Assert.Single(objects);
             signedOssUrl = await forgeOSS.CreateSignedUrlAsync(projectsBucketKey, objects[0].ObjectKey);
-            testComparisonFilePath = await DownloadTestComparisonFile("http://testipt.s3-us-west-2.amazonaws.com/iLogicBasic1IamDocumentParams.json", "iLogicBasic1IamDocumentParams.json");
+            testComparisonFilePath = await DownloadTestComparisonFile("https://testipt.s3-us-west-2.amazonaws.com/iLogicBasic1IamDocumentParams.json", "iLogicBasic1IamDocumentParams.json");
             await CompareOutputFileBytes(testComparisonFilePath, signedOssUrl);
 
             // check model view generated with hashed name (zip of SVF size/content varies slightly each time so we can only check if it was created)
