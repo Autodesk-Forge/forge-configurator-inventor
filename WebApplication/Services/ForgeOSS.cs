@@ -65,10 +65,12 @@ namespace WebApplication.Services
         /// </summary>
         public ForgeOSS(IHttpClientFactory clientFactory, IOptions<ForgeConfiguration> optionsAccessor, ILogger<ForgeOSS> logger)
         {
-            //Autodesk.Forge.Client.Configuration.Default.setApiClientUsingDefault(new ApiClient(Configuration.AuthenticationAddress.GetLeftPart(System.UriPartial.Authority)));
             _clientFactory = clientFactory;
             _logger = logger;
             Configuration = optionsAccessor.Value.Validate();
+
+            string apiBaseUrl = Configuration.AuthenticationAddress.GetLeftPart(System.UriPartial.Authority);
+            Autodesk.Forge.Client.Configuration.Default.setApiClientUsingDefault(new ApiClient(apiBaseUrl));
 
             RefreshApiToken();
 
@@ -291,7 +293,7 @@ namespace WebApplication.Services
         {
             await _ossResiliencyPolicy.ExecuteAsync(async () =>
                     {
-                        var api = new BucketsApi(Configuration.AuthenticationAddress.GetLeftPart(System.UriPartial.Authority)) { Configuration = { AccessToken = await TwoLeggedAccessToken } };
+                        var api = new BucketsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } };
                         await action(api);
                     });
         }
@@ -304,7 +306,7 @@ namespace WebApplication.Services
         {
             return await _ossResiliencyPolicy.ExecuteAsync(async () =>
             {
-                var api = new BucketsApi(Configuration.AuthenticationAddress.GetLeftPart(System.UriPartial.Authority)) { Configuration = { AccessToken = await TwoLeggedAccessToken } };
+                var api = new BucketsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } };
                 return await action(api);
             });
         }
@@ -317,7 +319,7 @@ namespace WebApplication.Services
         {
             await _ossResiliencyPolicy.ExecuteAsync(async () =>
                     {
-                        var api = new ObjectsApi(Configuration.AuthenticationAddress.GetLeftPart(System.UriPartial.Authority)) { Configuration = { AccessToken = await TwoLeggedAccessToken } };
+                        var api = new ObjectsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } };
                         await action(api);
                     });
         }
@@ -330,7 +332,7 @@ namespace WebApplication.Services
         {
             return await _ossResiliencyPolicy.ExecuteAsync(async () =>
             {
-                var api = new ObjectsApi(Configuration.AuthenticationAddress.GetLeftPart(System.UriPartial.Authority)) { Configuration = { AccessToken = await TwoLeggedAccessToken } };
+                var api = new ObjectsApi { Configuration = { AccessToken = await TwoLeggedAccessToken } };
                 return await action(api);
             });
         }
@@ -351,7 +353,7 @@ namespace WebApplication.Services
 
             // Call the asynchronous version of the 2-legged client with HTTP information
             // HTTP information helps to verify if the call was successful as well as read the HTTP transaction headers.
-            var twoLeggedApi = new TwoLeggedApi(Configuration.AuthenticationAddress.GetLeftPart(System.UriPartial.Authority));
+            var twoLeggedApi = new TwoLeggedApi();
             Autodesk.Forge.Client.ApiResponse<dynamic> response = await twoLeggedApi.AuthenticateAsyncWithHttpInfo(Configuration.ClientId, Configuration.ClientSecret, oAuthConstants.CLIENT_CREDENTIALS, _scope);
             if (response.StatusCode != StatusCodes.Status200OK)
             {
