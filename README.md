@@ -91,15 +91,7 @@ See [high level diagram](architecture.png)
 ## Specify Forge credentials
 Use one of the following approaches:
 * Set environment variables `FORGE_CLIENT_ID` and `FORGE_CLIENT_SECRET`.
-* Create `appsettings.Local.json` in the `WebApplication` directory and use the following as its content template:
-```json
-{
-    "Forge": {
-        "clientId": "<YOUR CLIENT ID>",
-        "clientSecret": "<YOUR CLIENT SECRET>"
-       }
-}
-```
+* Copy `appsettings.Local.template.json` in the `WebApplication` directory and replace the `<clientId>` and `<clientSecret>`.
 * Set environment variables `Forge__ClientId` and `Forge__ClientSecret`.
 * _(not on dev machine)_ Modify `appsettings.json` (or `appsettings.<ENVIRONMENT>.json`) with the template above.
 
