@@ -20,7 +20,9 @@ See [high level diagram](architecture.png)
 1. Autodesk Inventor 2021
 1. Visual Studio 2019
 
-## Setup
+## Run the application for the first time
+
+### 1. Setup
 1. Clone repository
 1. Create a forge app at https://forge.autodesk.com/, and select the `Design Automation API` and `Data Management API` APIs
 1. Enter https://localhost:5001 as the callback URL.
@@ -33,14 +35,21 @@ See [high level diagram](architecture.png)
    Change `"CompletionCheck"` value from `"Polling"` to `"Callback"` and set `"CallbackUrlBase"` url to your server URL or ngrok tunnel URL for a locally run application.
    To run and debug callbacks locally please refer to the [ngrok section](#Use-ngrok-for-localhost-callbacks).
 1. *(Optional) Specify if access should be limited in `WebApplication\appsettings.json`. Set `Enabled` to `true` or `false`, and populate the `Domains` and `Addresses` fields with comma delimited lists such as `["autodesk.com", "company.com"]` and `["person@company2.com", "person@company3.com"]`*.
-## Build
-* Building the projects also installs required packages (this can take several minutes).
-### Web Application and App Bundles
+### 2. Build (Web Application and App Bundles)
 * Open the `forge-configurator-inventor.sln` file with Visual Studio 2019 and build the solution.
-### Web Application Alone
-* From a command prompt, go to the `WebApplication` directory, and run `dotnet build`.
+* Building the projects also installs required packages (this can take several minutes).
+### 3. Run application from VisualStudio
+* Choose WebApplication startup project
+* Choose profile named forge-configurator-demo (initially it used to be IIS Express)
+### 4. Open site
+ - Navigate to https://localhost:5001
+     * You may need to refresh the browser after it launches if you see the error `This site can't be reached`
+    * If you see the error `Your Connection is not private`, click `Advanced` and then `Proceed to localhost (unsafe)`. This is due a development certificate being used.
 
-## (Optional) Update the npm packages
+
+## Building/Running during the development 
+
+### Update the npm packages
 * If you are not running the Application for the first time, but rather getting an update, you may need to install npm packages that were added since your last successfull run:
 1.  Using command line go to `WebApplication/ClientApp` and run `npm install`. See [Adding npm package](#Add-npm-package-to-project) for more information.
 
@@ -52,10 +61,7 @@ See [high level diagram](architecture.png)
  - When the app finishes the initialization process it remains running and expects client calls. You can leave it running and follow by [opening the site](#open-site) or stop it and move to the the [Debugging section](#Debug-The-Web-Application-With-VS-Code)
 ### Run after initial data is created
  - From a command prompt, go to the `WebApplication` directory, and run `dotnet run`
-### Open site
- - Navigate to https://localhost:5001
-     * You may need to refresh the browser after it launches if you see the error `This site can't be reached`
-    * If you see the error `Your Connection is not private`, click `Advanced` and then `Proceed to localhost (unsafe)`. This is due a development certificate being used.
+
 
 ## Debug The Web Application With VS Code
 
