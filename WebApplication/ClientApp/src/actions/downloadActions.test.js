@@ -31,25 +31,12 @@ const errorReportLink = 'https://error.link';
 const jobId = 'job1';
 const theStats = { credits: 1 };
 
-// prepare mock for signalR
-import connectionMock from './connectionMock';
+import signalRConnectionMock from '../test/mockSignalR';
 
-import * as signalR from '@aspnet/signalr';
-signalR.HubConnectionBuilder = jest.fn();
-signalR.HubConnectionBuilder.mockImplementation(() => ({
-    withUrl: function(/*url*/) {
-        return {
-            configureLogging: function(/*trace*/) {
-                return { build: function() { return connectionMock; }};
-            }
-        };
-    }
-}));
-
-// prepare mock for Repository module
-jest.mock('../Repository');
 import repoInstance from '../Repository';
-repoInstance.getAccessToken.mockImplementation(() => tokenMock);
+repoInstance.getAccessToken = function() {
+    return tokenMock;
+};
 
 Enzyme.configure({ adapter: new Adapter() });
 
@@ -72,7 +59,7 @@ describe('downloadActions', () => {
         it('check getDownloadLink onComplete action', async () => {
             await store.dispatch(downloadActions.getDownloadLink("Method", "ProjectId", "hash", "title"));
             // simulate conection.onComplete(rfaLink);
-            connectionMock.simulateComplete(aLink, theStats);
+            signalRConnectionMock.simulateComplete(aLink, theStats);
 
             // check expected store actions
             const actions = store.getActions();
@@ -84,7 +71,7 @@ describe('downloadActions', () => {
 
         it('check getDownloadLink onError action', async () => {
             await store.dispatch(downloadActions.getDownloadLink("Method", "ProjectId", "hash", "title"));
-            connectionMock.simulateErrorWithReport(jobId, errorReportLink);
+            signalRConnectionMock.simulateErrorWithReport(jobId, errorReportLink);
 
             // check expected store actions
             const actions = store.getActions();
@@ -97,7 +84,7 @@ describe('downloadActions', () => {
     describe('Drawing', () => {
         it('check fetchDrawing action', async () => {
             await store.dispatch(downloadActions.fetchDrawing({ id: "ProjectId" }, "DrawingKey"));
-            connectionMock.simulateComplete(aLink, theStats);
+            signalRConnectionMock.simulateComplete(aLink, theStats);
 
             // check expected store actions
             const actions = store.getActions();
@@ -110,7 +97,7 @@ describe('downloadActions', () => {
 
         it('check fetchDrawing error handling', async () => {
             await store.dispatch(downloadActions.fetchDrawing({ id: "ProjectId" }, "DrawingKey"));
-            connectionMock.simulateErrorWithReport(jobId,errorReportLink);
+            signalRConnectionMock.simulateErrorWithReport(jobId,errorReportLink);
 
             // check expected store actions
             const actions = store.getActions();

@@ -24,12 +24,11 @@ import notificationTypes from '../actions/notificationActions';
 // prepare mock for signalR
 import { actionTypes as uiFlagsActionTypes } from './uiFlagsActions';
 import { actionTypes as projectListActionTypes } from './projectListActions';
-import * as signalR from '@aspnet/signalr';
 
 const errorReportLink = 'https://error.link';
 const jobId = 'job1';
 
-import connectionMock from './connectionMock';
+import signalRConnectionMock from '../test/mockSignalR';
 
 // end of "for testing the updateModelWithParameters"
 
@@ -240,20 +239,6 @@ describe('fetchParameters', () => {
     });
 
     describe('updateModelWithParameters', () => {
-        beforeAll(() => {
-            // prepare mock for signalR
-            signalR.HubConnectionBuilder = jest.fn();
-            signalR.HubConnectionBuilder.mockImplementation(() => ({
-                withUrl: function(/*url*/) {
-                    return {
-                        configureLogging: function(/*trace*/) {
-                            return { build: function() { return connectionMock; }};
-                        }
-                    };
-                }
-            }));
-        });
-
         beforeEach(() => { // Runs before each test in the suite
             store.clearActions();
         });
@@ -269,7 +254,7 @@ describe('fetchParameters', () => {
             };
             const theStats = { credits: 1 };
 
-            connectionMock.simulateComplete(updatedState, theStats);
+            signalRConnectionMock.simulateComplete(updatedState, theStats);
 
             // check expected store actions
             const actions = store.getActions();
@@ -286,7 +271,7 @@ describe('fetchParameters', () => {
 
         it('check updateModelWithParameters error path', async () => {
             await store.dispatch(updateModelWithParameters(projectId, []));
-            connectionMock.simulateErrorWithReport(jobId, errorReportLink);
+            signalRConnectionMock.simulateErrorWithReport(jobId, errorReportLink);
 
             // check expected store actions
             const actions = store.getActions();
