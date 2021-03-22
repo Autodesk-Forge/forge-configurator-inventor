@@ -22,14 +22,14 @@ const locators = require('./elements_definition.js');
 
 Feature('Download drawing');
 
-Before((I) => {
+Before(({ I }) => {
     I.amOnPage('/');
 });
 
 const downloadsData = new DataTable(['linkText', 'dlgTitle', 'urlTail']);
 downloadsData.add(['Drawing', 'Preparing Drawings', /\/drawing$/]);             // ZIP with drawings
 
-Data(downloadsData).Scenario('should check file download on downloads link click', async (I, current) => {
+Data(downloadsData).Scenario('should check file download on downloads link click', async ({ I, current }) => {
 
     I.selectProject('Wheel');
     I.goToDownloadsTab();

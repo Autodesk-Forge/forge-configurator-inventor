@@ -52,12 +52,12 @@ function compareArrays(array1, array2)
 
 Feature('iLogic Parameters');
 
-Before((I) => {
+Before(({ I }) => {
     I.amOnPage('/');
 });
 
 // validate that all parameters in iLogic form are displayed in the List of Parameters
-Scenario('should check parameters in iLogic Form with list of parameters in Model Tab', async (I) => {
+Scenario('should check parameters in iLogic Form with list of parameters in Model Tab', async ({ I }) => {
 
   // select Wheel project in the Project Switcher
   I.selectProject('Wheel');
@@ -72,7 +72,7 @@ Scenario('should check parameters in iLogic Form with list of parameters in Mode
 });
 
 // validate that all Read only parameters in iLogic form are displayed in the List of Parameters
-Scenario('should check parameters in iLogic Form with list of Read Only parameters in Model Tab', async (I) => {
+Scenario('should check parameters in iLogic Form with list of Read Only parameters in Model Tab', async ({ I }) => {
 
   await I.signIn();
 
@@ -91,7 +91,7 @@ Scenario('should check parameters in iLogic Form with list of Read Only paramete
 
 });
 
-Scenario('Delete the project', async (I) => {
+Scenario('Delete the project', async ({ I }) => {
 
   await I.signIn();
   I.deleteProject('EndCap');

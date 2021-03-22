@@ -49,14 +49,14 @@ const updatedRows =  [
 
 Feature('Bom Data Validation');
 
-Before((I) => {
+Before(({ I }) => {
     I.amOnPage('/');
 });
 
 // this test checks that BOM data are correct. There are two validations
 // first validation is before update
 // second validation is after a parameter change - PartMaterial parameter
-Scenario('should check BOM data after change', async (I) => {
+Scenario('should check BOM data after change', async ({ I }) => {
 
     // select project in the Project Switcher
     I.selectProject('Wrench');
