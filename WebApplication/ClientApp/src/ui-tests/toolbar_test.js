@@ -67,11 +67,11 @@ Feature('Log button');
 Scenario('should check presence of Log button', async ({ I }) => {
 
     // check if exists the button
-    I.waitForElement( locators.xpButtonLog, 2);
+    I.waitForElement( locators.xpButtonLog, 5);
     I.click( locators.xpButtonLog);
 
     // wait until log popup is displayed
-    I.waitForElement( locators.xpPopUpLog, 2);
+    I.waitForElement( locators.xpPopUpLog, 5);
 
     // check content of the log popup
     I.see("Navigation Action", '//h3');
