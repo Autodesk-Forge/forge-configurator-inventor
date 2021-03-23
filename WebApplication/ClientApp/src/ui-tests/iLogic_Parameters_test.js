@@ -20,7 +20,7 @@
 const assert = require('assert');
 const { debug } = require('console');
 
-const parametersElement = '.parameters';
+const parametersElement = '.parameter';
 
 const elements = '//div[@class="parameter" or @class="parameter checkbox"]';
 const iLogicParameterList = ['Wheel Size', 'Number Of Spokes', 'Slot', 'Wheel Finish', 'Brake Material', 'Caliper Finish', 'Total Price'];
@@ -63,7 +63,6 @@ Scenario('should check parameters in iLogic Form with list of parameters in Mode
   // select Wheel project in the Project Switcher
   I.selectProject('Wheel');
   I.waitForElement(parametersElement, 20);
-  I.wait(1); // Wait for element didnt work here after the update, codeceptjs was unable to grab the values since they didnt appear to be loaded for him yet
 
   // get list of parameter from Model tab
   const modelTabParamList = await I.grabTextFromAll(elements);
@@ -83,7 +82,6 @@ Scenario('should check parameters in iLogic Form with list of Read Only paramete
   // select EndCap project in the Project Switcher
   I.selectProject('EndCap');
   I.waitForElement(parametersElement, 20);
-  I.wait(1); // Wait for element didnt work here after the update, codeceptjs was unable to grab the values since they didnt appear to be loaded for him yet
 
   // get list of read Only inputs from Model tab
   const modelTabReadOnlyParamList = await I.grabTextFromAll(readOnlyElements);
