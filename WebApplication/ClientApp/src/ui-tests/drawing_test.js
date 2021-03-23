@@ -93,7 +93,7 @@ Scenario('should check if an Assembly does not have any drawings then No data pa
 
 Scenario('should check if a drawing has more sheets it will show arrow buttons', async ({ I }) => {
 
-    I.signIn();
+    await I.signIn();
 
     I.uploadProject('src/ui-tests/dataset/SimpleBox2asm.zip', 'Assembly1.iam');
 
@@ -139,7 +139,7 @@ Scenario('should check if a drawing has more sheets it will show arrow buttons',
 
 Scenario('should check that IPT do not display any data', async ({ I }) => {
 
-    I.signIn();
+    await I.signIn();
 
     I.uploadIPTFile('src/ui-tests/dataset/EndCap.ipt');
 
@@ -176,7 +176,7 @@ Scenario('should check if Wheel has more drawings listed in the drawing panel an
 
     // get all drawing names and check if they are correctly sorted
     const tableRows = '//div[@class="BaseTable__row" or @class="BaseTable__row drawing-selected"]';
-    const currentDrawings = await I.grabTextFrom(tableRows);
+    const currentDrawings = await I.grabTextFromAll(tableRows);
 
     const correctOrder = [
         "WheelAssembly.idw",
@@ -234,9 +234,9 @@ Scenario('should check drawing PDF download when "Export PDF" button click', asy
     I.wait(2); // we seem to have a timing issue in test that end with physical file downloads
 });
 
-Scenario('Delete the project', ({ I }) => {
+Scenario('Delete the project', async ({ I }) => {
 
-    I.signIn();
+    await I.signIn();
     I.deleteProject('EndCap');
     I.deleteProject('SimpleBox2asm');
 });
