@@ -78,7 +78,7 @@ Scenario('should check parameters in iLogic Form with list of Read Only paramete
 
   await I.signIn();
 
-  //I.uploadIPTFile('src/ui-tests/dataset/EndCap.ipt');
+  I.uploadIPTFile('src/ui-tests/dataset/EndCap.ipt');
 
   // select EndCap project in the Project Switcher
   I.selectProject('EndCap');
