@@ -1,10 +1,11 @@
 # Forge Configurator Inventor
 Demo application showcasing Configuration with Design Automation for Inventor
 
-![thumbnail](/thumbnail.gif)
+![thumbnail](/img/thumbnail.gif)
 
 ## Architecture
-See [high level diagram](architecture.png)
+
+![thumbnail](/img/architecture.png)
 
 ## Prerequisites
 
@@ -20,23 +21,45 @@ See [high level diagram](architecture.png)
 1. Autodesk Inventor 2021
 1. Visual Studio 2019
 
-## Setup
+## Run sample for the first time
 1. Clone repository
-1. Create a forge app at https://forge.autodesk.com/, and select the `Design Automation API` and `Data Management API` APIs
-1. Enter https://localhost:5001 as the callback URL.
-1. Note the Client ID and Secret generated.
-1. Specify [forge credentials](#specify-forge-credentials).
-1. Copy `AppBundles\InventorBinFolder.props.template` to `AppBundles\InventorBinFolder.props`
-1. Replace the `PATH_TO_YOUR_INVENTOR_BIN` string in the `AppBundles\InventorBinFolder.props` file with your actual Inventor bin folder path, for example: `C:\Program Files\Autodesk\Inventor 2021\Bin`
+1. Create a forge app at https://forge.autodesk.com/, and select `Design Automation API` and `Data Management API` in the **APIs** section
+![thumbnail](/img/APIs.png)
+1. Enter https://localhost:5001 as the callback URL
+1. Note the `Client ID` and `Client Secret` generated
+1. Specify **Forge credentials** using **one** of the following approaches:\
+    **a)** Set environment variables `FORGE_CLIENT_ID` and `FORGE_CLIENT_SECRET`\
+    **b)** Set environment variables `Forge__ClientId` and `Forge__ClientSecret`\
+    **c)** Make a copy of `appsettings.Local.template.json` in the `WebApplication` directory named `appsettings.Local.json` and replace the `<clientId>` and `<clientSecret>` in it\
+    **d)** (not on dev machine) Modify `appsettings.json` (or `appsettings.<ENVIRONMENT>.json`) with the template mentioned in **c)**
+
+1. Make a copy of `InventorBinFolder.props.template` in the top `AppBundles` folder named `InventorBinFolder.props` and replace the `PATH_TO_YOUR_INVENTOR_BIN` string in it with your actual Inventor bin folder path, for example: `C:\Program Files\Autodesk\Inventor 2021\Bin`
 1. (Optional) Choose network configuration for your application. By default polling is enabled as it offers an easier way to setup and run the application. This is OK for locally run applications and debugging. However
    in production using the new callback option is highly recommended to conserve resources. In order to enable the callback option modify the `Publisher` section of the appsettings.json file. 
    Change `"CompletionCheck"` value from `"Polling"` to `"Callback"` and set `"CallbackUrlBase"` url to your server URL or ngrok tunnel URL for a locally run application.
-   To run and debug callbacks locally please refer to the [ngrok section](#Use-ngrok-for-localhost-callbacks).
-1. *(Optional) Specify if access should be limited in `WebApplication\appsettings.json`. Set `Enabled` to `true` or `false`, and populate the `Domains` and `Addresses` fields with comma delimited lists such as `["autodesk.com", "company.com"]` and `["person@company2.com", "person@company3.com"]`*.
+   To run and debug callbacks locally please refer to the [ngrok section](#Use-ngrok-for-localhost-callbacks)
+1. *(Optional) Specify if access should be limited in `WebApplication\appsettings.json`. Set `Enabled` to `true` or `false`, and populate the `Domains` and `Addresses` fields with comma delimited lists such as `["autodesk.com", "company.com"]` and `["person@company2.com", "person@company3.com"]`*
+1. Open the `forge-configurator-inventor.sln` file with **Visual Studio 2019** and build the solution
+![thumbnail](/img/BuildSolution.png)\
+This will also generate the **zip** files of all the **app bundles** that the **web app** will need to upload to the **Design Automation** server\
+![thumbnail](/img/AppBundleZips.png)\
+When building the solution, make sure that all those **app bundles** got generated successfully
+![thumbnail](/img/SuccessfulBuild.png)\
+Now we have to initialize things both on the **Design Automation** server and locally. In the **terminal** (in **Visual Studio** or outside) navigate to the `WebApplication` folder and run `dotnet run initialize=true`
+![thumbnail](/img/DotnetRunInitialize.png)\
+Once the output reaches the `Now listening on: https://localhost:5001` line just open that **URL** in your browser\
+**Next time** you'll also be able to start the app from the **Visual Studio** debugger. 
+In the **Debug** drop-down menu select `forge-configurator-inventor` and start debugging
+![thumbnail](/img/DebugApp.png)
+This time your browser should open up **automatically** showing the correct **URL** 
+
 ## Build
+
 * Building the projects also installs required packages (this can take several minutes).
+
 ### Web Application and App Bundles
-* Open the `forge-configurator-inventor.sln` file with Visual Studio 2019 and build the solution.
+* Open the `forge-configurator-inventor.sln` file with **Visual Studio 2019** and build the solution
+
 ### Web Application Alone
 * From a command prompt, go to the `WebApplication` directory, and run `dotnet build`.
 
@@ -86,14 +109,6 @@ See [high level diagram](architecture.png)
 1. From the `WebApplication/ClientApp` directory:
     * For all UI tests Run this command: `npx codeceptjs run` or `npm run uitest`.
     * For particular file you can use this command: `npx codeceptjs run src/ui-tests/<test file name>`
-
-# Additional Information
-## Specify Forge credentials
-Use one of the following approaches:
-* Set environment variables `FORGE_CLIENT_ID` and `FORGE_CLIENT_SECRET`.
-* Copy `appsettings.Local.template.json` in the `WebApplication` directory and replace the `<clientId>` and `<clientSecret>`.
-* Set environment variables `Forge__ClientId` and `Forge__ClientSecret`.
-* _(not on dev machine)_ Modify `appsettings.json` (or `appsettings.<ENVIRONMENT>.json`) with the template above.
 
 ## Backend
 We are using the forge service on the backend https://forge.autodesk.com/
@@ -190,15 +205,14 @@ We are using npm.
 	* You are now ready to use and debug callbacks locally
 	* If you experience issues running ngrok tunnel with the web application using https settings, the simple workaround is to switch the app to http mode (only for local use). 
 	* In order to set the callback URL for local development it is recomended to create an appsettings.Local.json file in the WebApplication directory (if you don't have it already) and then put following settings into it:
-```
-    json		  
-    {
+      ```json		  
+      {
         "Publisher": {
             "CompletionCheck": "Callback",
             "CallbackUrlBase": "<YOUR NGROK URL>"
 	    }
-    }
-```
+      }
+      ```
 ### Embedded mode
 You can read about embedded mode [here](EMBEDDED-README.md)
 	
