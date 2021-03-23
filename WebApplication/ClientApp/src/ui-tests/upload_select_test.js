@@ -41,7 +41,7 @@ Scenario('upload assembly with non-supported addins', async ({ I }) => {
 
     // get warning message
     I.waitForVisible(locators.xpWarningMessage, locators.FDAActionTimeout);
-    const warningMessage = await I.grabTextFrom(locators.xpWarningMessage);
+    const warningMessage = await I.grabTextFromAll(locators.xpWarningMessage);
 
     // validate if all names of all unsupported plugins are there
     [
@@ -62,7 +62,7 @@ Scenario('upload assembly with non-supported addins', async ({ I }) => {
     I.waitForVisible(locators.getProjectByName('NotSupportedAddins'), 30);
 
     // get Details text for uploaded project
-    const projectRow = await I.grabTextFrom(locators.getProjectRowByName('NotSupportedAddins'));
+    const projectRow = await I.grabTextFromAll(locators.getProjectRowByName('NotSupportedAddins'));
 
     const [, details1, details2, details3] = projectRow.split('\n');
 

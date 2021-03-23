@@ -86,7 +86,7 @@ Scenario('should check BOM data after change', async ({ I }) => {
     I.waitForVisible(partMaterialParameter,10);
     I.clearField(partMaterialParameter);
     I.click(partMaterialParameter);
-    I.waitForVisible(listbox, 3);
+    I.waitForVisible(listbox, 6);
     I.click(optionStainlessSteel);
 
     I.updateProject();
