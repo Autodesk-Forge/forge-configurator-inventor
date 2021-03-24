@@ -21,11 +21,11 @@ const locators = require('./elements_definition.js');
 
 Feature('Viewer');
 
-Before((I) => {
+Before(({ I }) => {
     I.amOnPage('/');
 });
 
-Scenario('should check switch to model tab loads the viewer', (I) => {
+Scenario('should check switch to model tab loads the viewer', ({ I }) => {
 
     const viewerModelSelector = '#ViewerModelStructurePanel';
 

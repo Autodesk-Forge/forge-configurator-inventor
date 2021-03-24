@@ -38,7 +38,7 @@ exports.config = {
     I: './steps_file.js'
   },
   bootstrap: null,
-  teardown: "./teardown.js",
+  teardown: require("./teardown.js"),
   mocha: { bail: true },
   name: 'ClientApp',
   plugins: {

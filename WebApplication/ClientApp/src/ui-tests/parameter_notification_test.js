@@ -24,13 +24,13 @@ const parameterTestNotify = '//div[contains(@class , "parameter") and contains(t
 
 Feature('Parameter Notification');
 
-Before(async (I) => {
+Before(async ({ I }) => {
     I.amOnPage('/');
     await I.signIn();
 });
 
 // validate that Parameter notification is displayed
-Scenario('should check parameter notification', async (I) => {
+Scenario('should check parameter notification', async ({ I }) => {
 
     I.uploadIPTFile('src/ui-tests/dataset/EndCap.ipt');
 
@@ -53,7 +53,7 @@ Scenario('should check parameter notification', async (I) => {
     I.seeTextEquals("Parameter has changed\nInventor Server updated the parameter. Your initial input was overridden.", tooltipTestNotify);
   });
 
-  Scenario('Delete the project', (I) => {
+  Scenario('Delete the project', ({ I }) => {
 
     I.deleteProject('EndCap');
   });

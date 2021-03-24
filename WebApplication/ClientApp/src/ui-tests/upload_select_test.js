@@ -22,16 +22,16 @@ const locators = require('./elements_definition.js');
 
 Feature('Select Upload Assembly');
 
-Before(async (I) => {
+Before(async ({ I }) => {
     I.amOnPage('/');
     await I.signIn();
 });
 
-Scenario('upload workflow 2nd assembly', (I) => {
+Scenario('upload workflow 2nd assembly', ({ I }) => {
     I.uploadProject('src/ui-tests/dataset/SimpleBox2asm.zip', 'Assembly2.iam');
 });
 
-Scenario('upload assembly with non-supported addins', async (I) => {
+Scenario('upload assembly with non-supported addins', async ({ I }) => {
 
     I.dontSeeElement(locators.getProjectByName('NotSupportedAddins'));
 
@@ -73,7 +73,7 @@ Scenario('upload assembly with non-supported addins', async (I) => {
 });
 
 
-Scenario('delete workflow', (I) => {
+Scenario('delete workflow', ({ I }) => {
     I.deleteProject('SimpleBox2asm');
     I.deleteProject('NotSupportedAddins');
 });

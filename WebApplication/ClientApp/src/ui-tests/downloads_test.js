@@ -21,11 +21,11 @@ const locators = require('./elements_definition.js');
 
 Feature('Downloads');
 
-Before((I) => {
+Before(({ I }) => {
     I.amOnPage('/');
 });
 
-Scenario('should check switch to downloads tab shows the downloads links', async (I) => {
+Scenario('should check switch to downloads tab shows the downloads links', async ({ I }) => {
 
     // select the Wheel project
     I.selectProject('Wheel');

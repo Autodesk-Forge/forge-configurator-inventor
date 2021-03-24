@@ -30,12 +30,12 @@ const drawingLink = '//div[@role="gridcell"]//a[text()="Drawing"]';
 
 Feature('Validate report link');
 
-Before(async (I) => {
+Before(async ({ I }) => {
     I.amOnPage('/');
     await I.signIn();
 });
 
-Scenario('should check dialogs where is Report link located', (I) => {
+Scenario('should check dialogs where is Report link located', ({ I }) => {
     I.uploadProjectBase('src/ui-tests/dataset/SimpleBox2asm.zip', 'Assembly1.iam');
 
     // Wait for Upload Finished dialog

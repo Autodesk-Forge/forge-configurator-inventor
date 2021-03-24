@@ -24,18 +24,18 @@ Feature('Embedded View');
 // This test intentionally uses non existing json.
 // It's purpose is just to verify correct parts of UI are hidden and correct parts are available.
 // As a side effect, it tests also the adoption failure path.
-Before((I) => {
+Before(({ I }) => {
     I.amOnPage('/?url=foo.json');
 });
 
-Scenario('Toolbar elements are not present', async (I) => {
+Scenario('Toolbar elements are not present', async ({ I }) => {
     // wait until page loads
     //I.dismissContentLoadingFailDlg();
 
     I.dontSee("AUTODESK");
 });
 
-Scenario('should check if only required tabs are available', async (I) => {
+Scenario('should check if only required tabs are available', async ({ I }) => {
     // wait until page loads
     //I.dismissContentLoadingFailDlg();
 
@@ -55,7 +55,7 @@ Scenario('should check if only required tabs are available', async (I) => {
     I.dontSee("Projects", locate('li').find('p'));
 });
 
-Scenario('should check that model tab doesnt have parameters pane', async (I) => {
+Scenario('should check that model tab doesnt have parameters pane', async ({ I }) => {
     // wait until page loads
     //I.dismissContentLoadingFailDlg();
 
@@ -67,7 +67,7 @@ Scenario('should check that model tab doesnt have parameters pane', async (I) =>
     I.dontSeeElement(locators.ParametersContainer);
 });
 
-Scenario('should check if other Tabs are loaded after click', async (I) => {
+Scenario('should check if other Tabs are loaded after click', async ({ I }) => {
     // wait until page loads
     //I.dismissContentLoadingFailDlg();
 

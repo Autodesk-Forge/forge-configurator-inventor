@@ -24,7 +24,7 @@ const assert = require('assert');
 
 Feature('Downloads RFA');
 
-Before((I) => {
+Before(({ I }) => {
     I.amOnPage('/');
 });
 
@@ -34,7 +34,7 @@ const divDownloads = locate('div').withAttr({ id: 'downloads' });
 const titleDataFileForWrench = locate('p').withText('Wrench').inside(progressDialog);
 const linkRFA = locate('a').withText('RFA').inside(rowForRFA);
 
-Scenario('should check downloads tab with RFA link for Wrench', async (I) => {
+Scenario('should check downloads tab with RFA link for Wrench', async ({ I }) => {
 
     // wait until project combo is displayed
     I.selectProject('Wrench');
