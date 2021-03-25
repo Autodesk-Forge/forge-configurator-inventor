@@ -24,11 +24,11 @@ const paramName = 'Jaw Offset';
 
 Feature('Update params');
 
-Before((I) => {
+Before(({ I }) => {
     I.amOnPage('/');
 });
 
-Scenario('Updating parameters for model', async (I) => {
+Scenario('Updating parameters for model', async ({ I }) => {
 
     I.selectProject("Wrench");
 

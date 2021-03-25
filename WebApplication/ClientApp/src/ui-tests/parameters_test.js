@@ -22,11 +22,11 @@ const locators = require('./elements_definition.js');
 
 Feature('Parameters panel');
 
-Before((I) => {
+Before(({ I }) => {
     I.amOnPage('/');
 });
 
-Scenario('should check if Parameter panel has Reset and Update button', async (I) => {
+Scenario('should check if Parameter panel has Reset and Update button', async ({ I }) => {
 
     // click on Model tab
     I.clickToModelTab();
@@ -37,7 +37,7 @@ Scenario('should check if Parameter panel has Reset and Update button', async (I
 });
 
 //ensure that Stripe panel is not disabled!!!
-Scenario('should check if Stripe panel is displayed and hidden', async (I) => {
+Scenario('should check if Stripe panel is displayed and hidden', async ({ I }) => {
 
     I.selectProject('Wrench');
 

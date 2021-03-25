@@ -25,7 +25,7 @@ exports.config = {
   helpers: {
     Playwright: {
       url: 'https://localhost:5001',
-      show: false,
+      show: true,
       browser: 'chromium',
       chromium: {args: chromiumArgs},
       waitForTimeout: 30000,
@@ -38,8 +38,8 @@ exports.config = {
     I: './steps_file.js'
   },
   bootstrap: null,
-  teardown: "./teardown.js",
-  mocha: { bail: process.env.STOP_AFTER_FAIL },
+  teardown: require("./teardown.js"),
+  mocha: { bail: true },
   name: 'ClientApp',
   plugins: {
     retryFailedStep: {

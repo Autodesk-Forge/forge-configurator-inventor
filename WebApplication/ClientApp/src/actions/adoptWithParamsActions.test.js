@@ -21,21 +21,7 @@ import { adoptProjectWithParameters } from './adoptWithParamsActions';
 import { actionTypes as uiFlagsActionTypes } from './uiFlagsActions';
 import { actionTypes as projectListActionTypes } from './projectListActions';
 
-// prepare mock for signalR
-import connectionMock from './connectionMock';
-
-import * as signalR from '@aspnet/signalr';
-signalR.HubConnectionBuilder = jest.fn();
-signalR.HubConnectionBuilder.mockImplementation(() => ({
-    withUrl: function(/*url*/) {
-        return {
-            configureLogging: function(/*trace*/) {
-                return { build: function() { return connectionMock; }};
-            }
-        };
-    }
-}));
-
+import signalRConnectionMock from '../test/mockSignalR';
 
 // mock store
 import configureMockStore from 'redux-mock-store';
@@ -54,7 +40,7 @@ describe('adoptProjectWithParameters workflows for embedded mode ', () => {
         await store.dispatch(adoptProjectWithParameters("url"));
         const projectData = { id: "1", data: "someData" };
 
-        connectionMock.simulateComplete(projectData, "cloudCrreditStats");
+        signalRConnectionMock.simulateComplete(projectData, "cloudCrreditStats");
 
         // check expected store actions
         const actions = store.getActions();
@@ -69,7 +55,7 @@ describe('adoptProjectWithParameters workflows for embedded mode ', () => {
 
     it('check adoptProjectWithParameters error path', async () => {
         await store.dispatch(adoptProjectWithParameters("url"));
-        connectionMock.simulateErrorWithReport("jobId", "errorReportLink");
+        signalRConnectionMock.simulateErrorWithReport("jobId", "errorReportLink");
 
         // check expected store actions
         const actions = store.getActions();

@@ -21,7 +21,7 @@
 }
 
 .drawingContainer.empty {
-    background-image: url('/empty_state.svg');
+    background-image: url('./empty_state.svg');
     background-position: center;
     background-repeat: no-repeat;
 }

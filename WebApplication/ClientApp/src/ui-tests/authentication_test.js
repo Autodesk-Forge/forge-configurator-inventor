@@ -21,11 +21,11 @@
 
 Feature('Authentication');
 
-Before((I) => {
+Before(({ I }) => {
     I.amOnPage('/');
 });
 
-Scenario('check Sign-in and Sign-out workflow', async (I) => {
+Scenario('check Sign-in and Sign-out workflow', async ({ I }) => {
     await I.signIn();
 
     I.signOut();

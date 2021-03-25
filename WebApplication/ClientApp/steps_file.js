@@ -40,7 +40,8 @@ const uploadButton = '//button[@id="upload_button"]';
 const uploadConfirmationDialog = '//p[text()="Upload Finished"]';
 const uploadFailedDialog = '//p[text()="Upload Failed"]';
 const uploadFailLogLink = '//*[contains(@href,"report.txt")]';
-const closeButton = '//button[@title="Close"]';
+const closeButton = '//button[.//*[text() = "Close"]]';
+const okButton = '//button[.//*[text() = "Ok"]]';
 
 // Delete
 const projectRow = '//div[div/div/text()="ProjectName"]';
@@ -189,6 +190,7 @@ module.exports = function() {
 
       // Wait for file to be uploaded
       this.waitForVisible(uploadConfirmationDialog, locators.FDAActionTimeout);
+
       this.closeCompletionDialog();
     },
     uploadInvalidIPTFile(IPT_File) {
@@ -207,7 +209,7 @@ module.exports = function() {
       // check log url link
       this.seeElement(uploadFailLogLink);
 
-      this.closeCompletionDialog();
+      this.click(okButton);
     },
     deleteProject(projectName) {
       // hover above project

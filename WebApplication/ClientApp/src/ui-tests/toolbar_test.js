@@ -24,11 +24,11 @@ const currentProjectName =  locate('p').inside(projectButton);
 
 Feature('Project Switcher');
 
-Before((I) => {
+Before(({ I }) => {
     I.amOnPage('/');
 });
 
-Scenario('should check Project switcher is loaded', async (I) => {
+Scenario('should check Project switcher is loaded', async ({ I }) => {
     // wait until project combo is displayed
     I.waitForElement( locators.xpComboProjects, 10);
     I.click( locators.xpComboProjects);
@@ -47,7 +47,7 @@ Scenario('should check Project switcher is loaded', async (I) => {
 
 });
 
-Scenario('should check Project switcher is correctly changed', async (I) => {
+Scenario('should check Project switcher is correctly changed', async ({ I }) => {
 
     // click to show popup menu with list of projects
     I.selectProject('Wrench');
@@ -64,14 +64,14 @@ Scenario('should check Project switcher is correctly changed', async (I) => {
 
 Feature('Log button');
 
-Scenario('should check presence of Log button', async (I) => {
+Scenario('should check presence of Log button', async ({ I }) => {
 
     // check if exists the button
-    I.waitForElement( locators.xpButtonLog, 2);
+    I.waitForElement( locators.xpButtonLog, 5);
     I.click( locators.xpButtonLog);
 
     // wait until log popup is displayed
-    I.waitForElement( locators.xpPopUpLog, 2);
+    I.waitForElement( locators.xpPopUpLog, 5);
 
     // check content of the log popup
     I.see("Navigation Action", '//h3');
@@ -79,7 +79,7 @@ Scenario('should check presence of Log button', async (I) => {
 
 Feature('User button');
 
-Scenario('should check presence of User button', async (I) => {
+Scenario('should check presence of User button', async ({ I }) => {
 
     //I.amOnPage(testPage);
 

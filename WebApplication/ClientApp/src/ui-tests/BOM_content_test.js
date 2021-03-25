@@ -49,14 +49,14 @@ const updatedRows =  [
 
 Feature('Bom Data Validation');
 
-Before((I) => {
+Before(({ I }) => {
     I.amOnPage('/');
 });
 
 // this test checks that BOM data are correct. There are two validations
 // first validation is before update
 // second validation is after a parameter change - PartMaterial parameter
-Scenario('should check BOM data after change', async (I) => {
+Scenario('should check BOM data after change', async ({ I }) => {
 
     // select project in the Project Switcher
     I.selectProject('Wrench');
@@ -65,7 +65,7 @@ Scenario('should check BOM data after change', async (I) => {
     I.click(locators.bomTab);
     I.waitForVisible(bomTable, 5);
 
-    const htmlData = await I.grabTextFrom(bomRows);
+    const htmlData = await I.grabTextFromAll(bomRows);
 
     assert.strictEqual(htmlData.length , baseRows.length, 'Error: Different number of BOM rows!');
 
@@ -86,7 +86,7 @@ Scenario('should check BOM data after change', async (I) => {
     I.waitForVisible(partMaterialParameter,10);
     I.clearField(partMaterialParameter);
     I.click(partMaterialParameter);
-    I.waitForVisible(listbox, 3);
+    I.waitForVisible(listbox, 6);
     I.click(optionStainlessSteel);
 
     I.updateProject();
@@ -95,7 +95,7 @@ Scenario('should check BOM data after change', async (I) => {
     I.click(locators.bomTab);
     I.waitForVisible(bomTable, 5);
 
-    const updatedHtmlData = await I.grabTextFrom(bomRows);
+    const updatedHtmlData = await I.grabTextFromAll(bomRows);
 
     assert.strictEqual(updatedHtmlData.length , updatedRows.length, 'Error: Different number of BOM rows after update!');
 

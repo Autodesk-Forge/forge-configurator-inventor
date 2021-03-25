@@ -22,20 +22,7 @@ import { actionTypes as uiFlagsActionTypes } from './uiFlagsActions';
 
 // the test based on https://redux.js.org/recipes/writing-tests#async-action-creators
 
-// prepare mock for signalR
-import connectionMock from './connectionMock';
-
-import * as signalR from '@aspnet/signalr';
-signalR.HubConnectionBuilder = jest.fn();
-signalR.HubConnectionBuilder.mockImplementation(() => ({
-    withUrl: function(/*url*/) {
-        return {
-            configureLogging: function(/*trace*/) {
-                return { build: function() { return connectionMock; }};
-            }
-        };
-    }
-}));
+import signalRConnectionMock from '../test/mockSignalR';
 
 // prepare mock for Repository module
 jest.mock('../Repository');
@@ -70,7 +57,7 @@ describe('uploadPackage', () => {
 
         const newProject = { name: "newProject" };
         const theStats = { credits: 1 };
-        connectionMock.simulateComplete(newProject, theStats);
+        signalRConnectionMock.simulateComplete(newProject, theStats);
 
         const actions = store.getActions();
 

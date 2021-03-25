@@ -26,28 +26,26 @@ import Adapter from 'enzyme-adapter-react-16';
 import { UploadPackage } from './uploadPackage';
 
 // prepare mock for unzipit module
-jest.mock('unzipit');
-import { unzip, setOptions } from 'unzipit';
+jest.mock('unzipit', () => ({
+  setOptions: () => {},
+  unzip: (file) => {
+    const files = [ { name: file1ipt}, { name: file2iam} ];
+    if (file.name === 'packageWithMoreAssemblies.zip') {
+      files.push({ name: file3iam });
+    }
+
+    const entries = {};
+    files.forEach(item => {
+      entries[item.name] = item;
+    });
+
+    return { entries: entries };
+  }
+}));
 
 const file1ipt = '1.ipt';
 const file2iam = '2.iam';
 const file3iam = '3.iam';
-
-setOptions.mockImplementation(() => {});
-unzip.mockImplementation((file) =>
-{
-  const files = [ { name: file1ipt}, { name: file2iam} ];
-  if (file.name === 'packageWithMoreAssemblies.zip') {
-    files.push({ name: file3iam });
-  }
-
-  const entries = {};
-  files.forEach(item => {
-    entries[item.name] = item;
-  });
-
-  return { entries: entries };
-});
 
 Enzyme.configure({ adapter: new Adapter() });
 

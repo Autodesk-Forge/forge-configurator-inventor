@@ -188,6 +188,6 @@ describe('projectList reducer', () => {
             expect(result.activeProjectId).toEqual(initialState.activeProjectId); // active project is not changed
             expect(result.projects.map(p => p.id)).toEqual(['1', '3']);
             expect(result.projects.find(p => p.id === '1')).toEqual(newProject);
-        })
+        });
     });
 });

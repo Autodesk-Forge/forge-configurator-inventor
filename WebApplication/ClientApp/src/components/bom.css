@@ -35,7 +35,7 @@
 }
 
 .bomEmpty .image {
-    background-image: url('/no-data.svg');
+    background-image: url('./no-data.svg');
     background-position: center;
     background-repeat: no-repeat;
     height: 150px;

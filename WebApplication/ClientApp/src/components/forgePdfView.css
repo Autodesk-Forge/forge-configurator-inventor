@@ -33,11 +33,11 @@
 }
 
 .drawing-icon-prev {
-    -webkit-mask-image: url(/prev.svg);
-    mask-image: url(/prev.svg);
+    -webkit-mask-image: url(./prev.svg);
+    mask-image: url(./prev.svg);
 }
 
 .drawing-icon-next {
-    -webkit-mask-image: url(/next.svg);
-    mask-image: url(/next.svg);
+    -webkit-mask-image: url(./next.svg);
+    mask-image: url(./next.svg);
 }

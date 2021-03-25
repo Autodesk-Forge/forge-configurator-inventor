@@ -143,7 +143,7 @@ export class ProjectList extends Component {
 export default connect(function (store) {
   const filename = uploadPackageData(store)?.file?.name;
   // use file name without extension as ID of uploaded project
-  const uploadProjectName = filename ? (filename.substring(0, filename.lastIndexOf('.')) || filename) : null; // TODO: project name should be received from the server  
+  const uploadProjectName = filename ? (filename.substring(0, filename.lastIndexOf('.')) || filename) : null; // TODO: project name should be received from the server
   const adoptWarning = fullWarningMsg(getAdoptWarnings(uploadProjectName, store));
   return {
     isLoggedIn: store.profile.isLoggedIn,

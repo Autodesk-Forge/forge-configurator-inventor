@@ -21,11 +21,11 @@ const locators = require('./elements_definition.js');
 
 Feature('Tabs');
 
-Before((I) => {
+Before(({ I }) => {
     I.amOnPage('/');
 });
 
-Scenario('should check if All tabs are available', async (I) => {
+Scenario('should check if All tabs are available', async ({ I }) => {
 
     // check if exists the Projects tab
     I.see("Projects", locators.projectsTab);
@@ -43,7 +43,7 @@ Scenario('should check if All tabs are available', async (I) => {
     I.see("Downloads", locators.downloadsTab);
 });
 
-Scenario('should check if all Tabs are loaded after click', async (I) => {
+Scenario('should check if all Tabs are loaded after click', async ({ I }) => {
 
     // select the Wheel project
     I.selectProject('Wheel');

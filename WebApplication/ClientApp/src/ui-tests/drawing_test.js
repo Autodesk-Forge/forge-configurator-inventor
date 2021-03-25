@@ -49,14 +49,14 @@ function compareDrawings(array1, array2)
 
 Feature('Drawing Validation');
 
-Before((I) => {
+Before(({ I }) => {
     I.amOnPage('/');
 });
 
 // this test checks that Drawing tab displays correct data
 // if an assembly has a drawing then the drawing should be displayed
 // If there is no drawing or only IPT - no content is displayed
-Scenario('should check that Drawing tab shows drawing for an Assembly', async (I) => {
+Scenario('should check that Drawing tab shows drawing for an Assembly', async ({ I }) => {
 
     // select project in the Project Switcher
     I.selectProject('Wheel');
@@ -76,7 +76,7 @@ Scenario('should check that Drawing tab shows drawing for an Assembly', async (I
 
 });
 
-Scenario('should check if an Assembly does not have any drawings then No data page is displayed', async (I) => {
+Scenario('should check if an Assembly does not have any drawings then No data page is displayed', async ({ I }) => {
 
     // select project in the Project Switcher
     I.selectProject('Wrench');
@@ -91,9 +91,9 @@ Scenario('should check if an Assembly does not have any drawings then No data pa
 
 });
 
-Scenario('should check if a drawing has more sheets it will show arrow buttons', async (I) => {
+Scenario('should check if a drawing has more sheets it will show arrow buttons', async ({ I }) => {
 
-    I.signIn();
+    await I.signIn();
 
     I.uploadProject('src/ui-tests/dataset/SimpleBox2asm.zip', 'Assembly1.iam');
 
@@ -137,9 +137,9 @@ Scenario('should check if a drawing has more sheets it will show arrow buttons',
 
 });
 
-Scenario('should check that IPT do not display any data', async (I) => {
+Scenario('should check that IPT do not display any data', async ({ I }) => {
 
-    I.signIn();
+    await I.signIn();
 
     I.uploadIPTFile('src/ui-tests/dataset/EndCap.ipt');
 
@@ -156,7 +156,7 @@ Scenario('should check that IPT do not display any data', async (I) => {
 
 });
 
-Scenario('should check if Wheel has more drawings listed in the drawing panel and in correct order', async (I) => {
+Scenario('should check if Wheel has more drawings listed in the drawing panel and in correct order', async ({ I }) => {
 
     // select project in the Project Switcher
     I.selectProject('Wheel');
@@ -176,7 +176,7 @@ Scenario('should check if Wheel has more drawings listed in the drawing panel an
 
     // get all drawing names and check if they are correctly sorted
     const tableRows = '//div[@class="BaseTable__row" or @class="BaseTable__row drawing-selected"]';
-    const currentDrawings = await I.grabTextFrom(tableRows);
+    const currentDrawings = await I.grabTextFromAll(tableRows);
 
     const correctOrder = [
         "WheelAssembly.idw",
@@ -203,7 +203,7 @@ Scenario('should check if Wheel has more drawings listed in the drawing panel an
 
 });
 
-Scenario('should check drawing PDF download when "Export PDF" button click', async (I) => {
+Scenario('should check drawing PDF download when "Export PDF" button click', async ({ I }) => {
 
     I.selectProject('Wheel');
 
@@ -234,9 +234,9 @@ Scenario('should check drawing PDF download when "Export PDF" button click', asy
     I.wait(2); // we seem to have a timing issue in test that end with physical file downloads
 });
 
-Scenario('Delete the project', (I) => {
+Scenario('Delete the project', async ({ I }) => {
 
-    I.signIn();
+    await I.signIn();
     I.deleteProject('EndCap');
     I.deleteProject('SimpleBox2asm');
 });
