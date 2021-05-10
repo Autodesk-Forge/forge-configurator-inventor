@@ -62,11 +62,11 @@ namespace Shared
                     openOptions.Add("LevelOfDetailRepresentation", lodActRep);
                     openOptions.Add("DesignViewRepresentation", dvActRep);
 
-                    doc = _inventorApplication.Documents.OpenWithOptions(docPath, openOptions, true);
+                    doc = _inventorApplication.Documents.OpenWithOptions(docPath, openOptions, false);
                 }
                 else
                 {
-                    doc = _inventorApplication.Documents.OpenWithOptions(docPath, openOptions, true);
+                    doc = _inventorApplication.Documents.OpenWithOptions(docPath, openOptions, false);
                 }
                 LogTrace($"Full document name: {doc.FullDocumentName}");
             }
