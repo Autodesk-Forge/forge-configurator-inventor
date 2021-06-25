@@ -103,6 +103,7 @@ This time your browser should open up **automatically** showing the correct **UR
 ### UI Tests
 * For UI tests we are using `CodeCeptJs` framework. All tests are stored in `ClientApp/src/ui-tests/` and we filter all files end with `*_test.js`. 
 * Set environment variables `SDRA_USERNAME` and `SDRA_PASSWORD` for `Sign-in` workflow. We are using Autodesk Account credentials for `Sign-in`.
+* Set in root structure `"embedded" : true` into your `appsettings.<ENVIRONMENT>.json` file mentioned in `Run sample for the first time` 1d)
     * Also you can create a `.env` file in the `WebApplication/ClientApp` directory to define the environment variables - for more details follow this link: https://www.npmjs.com/package/dotenv
 * Note that the server needs to be running for these tests
 

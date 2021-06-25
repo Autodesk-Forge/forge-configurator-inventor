@@ -48,7 +48,7 @@ namespace WebApplication.Processing
     /// </summary>
     public abstract class ForgeAppBase : IForgeAppBase
     {
-        public virtual string Engine { protected set; get; } = "Autodesk.Inventor+2021";
+        public virtual string Engine { protected set; get; } = "Autodesk.Inventor+2022";
         public readonly string Label = Environment.GetEnvironmentVariable("ProductionEnv") ?? "alpha";
         public abstract string Id { get; }
         public abstract string Description { get; }
