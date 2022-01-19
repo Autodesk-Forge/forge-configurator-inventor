@@ -24,7 +24,7 @@
     "@hig/tooltip": "^1.1.2",
     "@hig/top-nav": "^3.4.2",
     "aws-sdk": "^2.1058.0",
-    "axios": "^0.21.1",
+    "axios": "^0.21.4",
     "bootstrap": "^4.6.1",
     "dotenv": "^8.6.0",
     "jquery": "^3.5.1",
