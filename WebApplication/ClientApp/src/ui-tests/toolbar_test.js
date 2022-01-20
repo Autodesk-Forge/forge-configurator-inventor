@@ -62,8 +62,6 @@ Scenario('should check Project switcher is correctly changed', async ({ I }) => 
     I.see("Wheel", currentProjectName);
 });
 
-Feature('Log button');
-
 Scenario('should check presence of Log button', async ({ I }) => {
 
     // check if exists the button
@@ -76,8 +74,6 @@ Scenario('should check presence of Log button', async ({ I }) => {
     // check content of the log popup
     I.see("Navigation Action", '//h3');
 });
-
-Feature('User button');
 
 Scenario('should check presence of User button', async ({ I }) => {
 
