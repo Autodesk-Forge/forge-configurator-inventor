@@ -95,7 +95,7 @@
     "extends": "react-app"
   },
   "scripts": {
-    "start": "rimraf ./build && react-scripts start",
+    "start": "rimraf ./build && react-scripts --openssl-legacy-provider start",
     "build": "react-scripts build",
     "test": "cross-env CI=true react-scripts test --env=./src/test/custom-test-env.js",
     "eject": "react-scripts eject",
