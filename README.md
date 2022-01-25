@@ -11,8 +11,9 @@ Demo application showcasing Configuration with Design Automation for Inventor
 
 ### Web Application 
 1. .NET Core 3.1
-1. Node.js
-1. (recommended) Visual Studio Code with extensions:
+2. Node.js    
+	**Important note:** In Node.js even releases are stable, and odd-numbered versions are unstable. That's said we won't support or guarantee the work of the application using the odd-numbered Node.js versions. Currently the latest version we support is the even version **v16.13.2**. Unless version **v18** will be released we are not supporting versions newer than **v16**.
+3. (recommended) Visual Studio Code with extensions:
     * [Debugger for Chrome](https://marketplace.visualstudio.com/items?itemName=msjsdiag.debugger-for-chrome) (for debugging client side code)
     * [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
     * [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
