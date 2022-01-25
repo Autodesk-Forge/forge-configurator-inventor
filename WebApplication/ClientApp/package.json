@@ -89,7 +89,6 @@
     "eslint-plugin-react": ">=7.28.0",
     "eslint-plugin-react-hooks": ">=4.3.0",
     "playwright": "1.19.0-alpha-jan-24-2022",
-    "prettier": ">=2.5.1",
     "redux-mock-store": ">=1.5.4",
     "stylelint": ">=14.3.0",
     "stylelint-config-standard": ">=24.0.0",
