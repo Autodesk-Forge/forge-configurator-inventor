@@ -33,8 +33,6 @@ import './uploadPackage.css';
 import { unzip, setOptions } from 'unzipit';
 import Select from 'react-select';
 
-const path = require('path');
-
 export class UploadPackage extends Component {
 
     constructor(props) {
@@ -53,7 +51,7 @@ export class UploadPackage extends Component {
 
         const {entries} = await unzip(file);
         Object.entries(entries).forEach(([name]) => {
-            if (name.toLowerCase().endsWith('.iam') && !name.toLowerCase().includes('oldversions' + path.sep)) {
+            if (name.toLowerCase().endsWith('.iam') && !name.toLowerCase().includes('oldversions')){
                 assemblies.push(name);
             }
         });
