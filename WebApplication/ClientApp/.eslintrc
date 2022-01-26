@@ -24,6 +24,7 @@
         "react",
         "jest"
     ],
+    "parser": "@babel/eslint-parser",
     "rules": {
         "no-console": "warn",
         "linebreak-style": "off",
