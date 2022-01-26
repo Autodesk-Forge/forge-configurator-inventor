@@ -29,7 +29,7 @@ Enzyme.configure({ adapter: new Adapter() });
 
 describe('components', () => {
   describe('App', () => {
-    it('Test that app will not call adopt with parameters ', () => {
+    it('Test that app will not call adopt with parameters', () => {
         const fetchShowParametersChanged = jest.fn();
         const detectToken = jest.fn();
         const adoptProjectWithParameters = jest.fn();

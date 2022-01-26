@@ -23,7 +23,7 @@ import { ModalDownloadProgress } from './modalDownloadProgress';
 
 Enzyme.configure({ adapter: new Adapter() });
 
-describe('modal progress ', () => {
+describe('modal progress', () => {
 
     it('should show message from props.label', () => {
 

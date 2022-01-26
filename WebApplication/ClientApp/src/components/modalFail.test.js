@@ -22,7 +22,7 @@ import Adapter from 'enzyme-adapter-react-16';
 import { ModalFail } from './modalFail';
 Enzyme.configure({ adapter: new Adapter() });
 
-describe('modal update failed ', () => {
+describe('modal update failed', () => {
 
     it('should show message from props.label', () => {
         const props = {
@@ -119,10 +119,7 @@ describe('modal update failed ', () => {
             // validate title
             const titleBlock = wrapper.find('.errorMessageTitle');
             expect(titleBlock.exists()).toEqual(!! errorData.title);
-            if (errorData.title) {
-                expect(titleBlock.render().text()).toEqual(errorData.title);
-            }
-
+            expect(titleBlock.render().text()).toEqual(errorData.title);
             expect(wrapper.find('.logContainer').exists()).toEqual(false); // 'Open link' area is not visible
         });
 

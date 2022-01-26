@@ -77,7 +77,7 @@ describe('DrawingsContainer component', () => {
             expect(bt.prop('height')).toEqual(184);
         });
 
-        it('Row event handlers calls the inner function - and does nothing with activeDrawing id ', () => {
+        it('Row event handlers calls the inner function - and does nothing with activeDrawing id', () => {
             const wrapper = shallow(<DrawingsContainer { ...props } />);
             const as = wrapper.find('AutoResizer');
             const bt = as.renderProp('children')( {width: 100, height: 200} );
@@ -85,7 +85,7 @@ describe('DrawingsContainer component', () => {
             expect(updateActiveDrawingMock).toHaveBeenCalledTimes(0);
         });
 
-        it('Row event handlers calls the inner function - and calls update with other than activeDrawing id ', () => {
+        it('Row event handlers calls the inner function - and calls update with other than activeDrawing id', () => {
             const wrapper = shallow(<DrawingsContainer { ...props } />);
             const as = wrapper.find('AutoResizer');
             const bt = as.renderProp('children')( {width: 100, height: 200} );

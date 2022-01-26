@@ -23,7 +23,7 @@ import { ModalProgress } from './modalProgress';
 
 Enzyme.configure({ adapter: new Adapter() });
 
-describe('modal progress ', () => {
+describe('modal progress', () => {
     it('should show default title when in progress', () => {
         const title = 'a title';
         const props = {
