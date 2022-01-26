@@ -85,7 +85,7 @@
     "ajv": ">=8.9.0",
     "babel-eslint": "11.0.0-beta.2",
     "codeceptjs": ">=3.2.3",
-    "cross-env": ">=7.0.3",
+    "cross-env": "^5.2.0",
     "enzyme": "^3.11.0",
     "playwright": "1.19.0-alpha-jan-24-2022",
     "redux-mock-store": ">=1.5.4",
