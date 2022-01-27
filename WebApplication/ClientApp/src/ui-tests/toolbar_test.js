@@ -55,6 +55,11 @@ Scenario('should check Project switcher is correctly changed', async ({ I }) => 
     // check the current project name
     I.see("Wrench", currentProjectName);
 
+    // after selection of the project it take some minor time for popup menu to collapse
+    // thus we need to put a timeout for the next selectProject to trigger
+    // if we don't put this wait timeout, next selectProject action would cause a collapse of a popup instead of select
+    I.wait(2);
+
     // click to show popup menu with list of projects
     I.selectProject('Wheel');
 
