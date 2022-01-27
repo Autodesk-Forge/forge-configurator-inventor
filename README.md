@@ -33,6 +33,7 @@ Demo application showcasing Configuration with Design Automation for Inventor
     **b)** Set environment variables `Forge__ClientId` and `Forge__ClientSecret`\
     **c)** Make a copy of `appsettings.Local.template.json` in the `WebApplication` directory named `appsettings.Local.json` and replace the `<clientId>` and `<clientSecret>` in it\
     **d)** (not on dev machine) Modify `appsettings.json` (or `appsettings.<ENVIRONMENT>.json`) with the template mentioned in **c)**
+    **e)** Set environment variable 'set NODE_ENV=production'
 
 1. Make a copy of `InventorBinFolder.props.template` in the top `AppBundles` folder named `InventorBinFolder.props` and replace the `PATH_TO_YOUR_INVENTOR_BIN` string in it with your actual Inventor bin folder path, for example: `C:\Program Files\Autodesk\Inventor 2021\Bin`
 1. (Optional) Choose network configuration for your application. By default polling is enabled as it offers an easier way to setup and run the application. This is OK for locally run applications and debugging. However
