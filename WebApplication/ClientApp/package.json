@@ -70,6 +70,7 @@
     "react-select": ">=5.2.2",
     "reactstrap": ">=9.0.1",
     "redux": ">=4.1.2",
+    "redux-mock-store": ">=1.5.4",
     "redux-thunk": ">=2.4.1",
     "rimraf": ">=3.0.2",
     "styled-components": ">=5.3.3",
@@ -88,7 +89,6 @@
     "codeceptjs": ">=3.2.3",
     "enzyme": "^3.11.0",
     "playwright": "1.19.0-alpha-jan-24-2022",
-    "redux-mock-store": ">=1.5.4",
     "stylelint": ">=14.3.0",
     "stylelint-config-standard": ">=24.0.0",
     "typescript": ">=4.5.5"
