@@ -118,7 +118,13 @@ describe('modal update failed', () => {
 
             // validate title
             const titleBlock = wrapper.find('.errorMessageTitle');
-            expect(titleBlock.exists()).toEqual(!! errorData.title);
+            expect(titleBlock.exists()).toEqual(!!errorData.title);
+
+            var titleBlockRender = null;
+            if (errorData.title) {
+                titleBlockRender = titleBlock.render().text();
+            }
+            expect(titleBlockRender).toEqual(errorData.title);
             expect(wrapper.find('.logContainer').exists()).toEqual(false); // 'Open link' area is not visible
         });
 
