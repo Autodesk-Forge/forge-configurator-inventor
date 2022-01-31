@@ -32,9 +32,6 @@
     "axios": ">=0.21.2",
     "bootstrap": "^4.6.1",
     "browserslist": ">=4.16.5",
-    "codeceptjs": "^3.2.3",
-    "codeceptjs-chai": "^2.3.2",
-    "@codeceptjs/configure": "^0.7.0",
     "cross-env": "^7.0.3",
     "dns-packet": ">=1.3.2",
     "dotenv": "^8.6.0",
@@ -73,7 +70,12 @@
     "ws": ">=6.2.2",
     "@types/jest": "^27.4.0",
     "@types/react-redux": "^7.1.22",
-    "@types/redux-mock-store": "^1.0.3",
+    "@types/redux-mock-store": "^1.0.3"
+  },
+  "devDependencies": {
+    "codeceptjs": "^3.2.3",
+    "codeceptjs-chai": "^2.3.2",
+    "@codeceptjs/configure": "^0.7.0",
     "ajv": ">=8.9.0",
     "babel-eslint": "^10.1.0",
     "enzyme": "^3.11.0",
@@ -92,8 +94,6 @@
     "stylelint": ">=14.3.0",
     "stylelint-config-standard": ">=24.0.0",
     "typescript": ">=4.5.5"
-  },
-  "devDependencies": {
   },
   "eslintConfig": {
     "extends": "react-app"
