@@ -120,7 +120,7 @@ describe('modal update failed', () => {
             const titleBlock = wrapper.find('.errorMessageTitle');
             expect(titleBlock.exists()).toEqual(!!errorData.title);
 
-            var titleBlockRender = null;
+            var titleBlockRender;
             if (errorData.title) {
                 titleBlockRender = titleBlock.render().text();
             }
