@@ -32,7 +32,6 @@
     "axios": ">=0.21.2",
     "bootstrap": "^4.6.1",
     "browserslist": ">=4.16.5",
-    "cross-env": "^7.0.3",
     "dns-packet": ">=1.3.2",
     "dotenv": "^8.6.0",
     "hosted-git-info": ">=2.8.9",
@@ -75,6 +74,7 @@
   "devDependencies": {
     "codeceptjs": "^3.2.3",
     "codeceptjs-chai": "^2.3.2",
+    "cross-env": "^7.0.3",
     "@codeceptjs/configure": "^0.7.0",
     "ajv": ">=8.9.0",
     "babel-eslint": "^10.1.0",
