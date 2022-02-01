@@ -31,7 +31,7 @@ const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 const store = mockStore({});
 
-describe('adoptProjectWithParameters workflows for embedded mode ', () => {
+describe('adoptProjectWithParameters workflows for embedded mode', () => {
     beforeEach(() => { // Runs before each test in the suite
         store.clearActions();
     });

@@ -18,12 +18,12 @@
 
 import React from 'react';
 import Enzyme, { shallow } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 import { UserDetails } from './userDetails';
 
 Enzyme.configure({ adapter: new Adapter() });
 
-describe('user dialog ', () => {
+describe('user dialog', () => {
 
     it('check there is contained a hyperlink to README.md', () => {
 

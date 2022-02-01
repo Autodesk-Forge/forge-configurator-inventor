@@ -110,11 +110,18 @@ module.exports = function() {
 
       // specify Sign-in Email
       this.fillField(inputUserName, loginName);
+      // after updating dependencies we are so quick on click action that user name don't have time to be filled in
+      // this is why we need a delay for printing the username
+      this.wait(3);
       this.click(buttonNext);
 
       // specify Sign-in password
       this.waitForVisible(inputPassword, 10);
       this.fillField(inputPassword, password);
+      // after updating dependencies we are so quick on click action that password don't have time to be filled in
+      // this is why we need a delay for printing the password
+      this.wait(3);
+
       this.click(buttonSubmit);
 
       // look for the URL to determine if we are asked

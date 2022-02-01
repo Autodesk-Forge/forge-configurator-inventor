@@ -18,11 +18,11 @@
 
 import React from 'react';
 import Enzyme, { shallow } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 import { ModalFail } from './modalFail';
 Enzyme.configure({ adapter: new Adapter() });
 
-describe('modal update failed ', () => {
+describe('modal update failed', () => {
 
     it('should show message from props.label', () => {
         const props = {
@@ -118,11 +118,13 @@ describe('modal update failed ', () => {
 
             // validate title
             const titleBlock = wrapper.find('.errorMessageTitle');
-            expect(titleBlock.exists()).toEqual(!! errorData.title);
-            if (errorData.title) {
-                expect(titleBlock.render().text()).toEqual(errorData.title);
-            }
+            expect(titleBlock.exists()).toEqual(!!errorData.title);
 
+            var titleBlockRender;
+            if (errorData.title) {
+                titleBlockRender = titleBlock.render().text();
+            }
+            expect(titleBlockRender).toEqual(errorData.title);
             expect(wrapper.find('.logContainer').exists()).toEqual(false); // 'Open link' area is not visible
         });
 

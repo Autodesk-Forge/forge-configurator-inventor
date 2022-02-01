@@ -22,14 +22,14 @@
 
 import React from 'react';
 import Enzyme, { shallow } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 import { App } from './App';
 
 Enzyme.configure({ adapter: new Adapter() });
 
 describe('components', () => {
   describe('App', () => {
-    it('Test that app will not call adopt with parameters ', () => {
+    it('Test that app will not call adopt with parameters', () => {
         const fetchShowParametersChanged = jest.fn();
         const detectToken = jest.fn();
         const adoptProjectWithParameters = jest.fn();

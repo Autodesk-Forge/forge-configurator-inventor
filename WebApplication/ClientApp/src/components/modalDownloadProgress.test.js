@@ -18,12 +18,12 @@
 
 import React from 'react';
 import Enzyme, { shallow } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 import { ModalDownloadProgress } from './modalDownloadProgress';
 
 Enzyme.configure({ adapter: new Adapter() });
 
-describe('modal progress ', () => {
+describe('modal progress', () => {
 
     it('should show message from props.label', () => {
 
