@@ -38,9 +38,21 @@ namespace WebApplication.Definitions
         /// </summary>
         public CompletionCheck CompletionCheck { get; set; } = CompletionCheck.Polling;
 
+        private string callbackUrlBase;
+
         /// <summary>
         /// Base URL for callback.
         /// </summary>
-        public string CallbackUrlBase { get; set; }
+        public string CallbackUrlBase
+        {
+            get
+            {
+                return callbackUrlBase + "\\";
+            }
+            set
+            {
+                callbackUrlBase = value;
+            }
+        }
     }
 }
