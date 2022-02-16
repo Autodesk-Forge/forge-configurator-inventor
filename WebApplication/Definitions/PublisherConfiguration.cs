@@ -47,7 +47,7 @@ namespace WebApplication.Definitions
         {
             get
             {
-                return callbackUrlBase + "\\";
+                return callbackUrlBase + "/";
             }
             set
             {
