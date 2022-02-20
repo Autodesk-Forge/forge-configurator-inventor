@@ -179,7 +179,7 @@ We are using npm.
 * For a simple method of deploying to Azure, see [Publish a Web app to Azure App Service using Visual Studio](https://docs.microsoft.com/en-us/visualstudio/deployment/quickstart-deploy-to-azure?view=vs-2019)
     * First change `WebApplication.Program.cs` by removing the `UseKestrel()` statement
     * You will need to change the callback in your forge app to match the URL you deploy to.
-* Example of the real-life deploy of **FDA** as an [App Service](https://github.com/Autodesk-Forge/forge-configurator-inventor/wiki/AppServiceDeploy)
+* Example of the real-life deploy of an **FDA** as a [App Service](https://github.com/Autodesk-Forge/forge-configurator-inventor/wiki/AppServiceDeploy)
 	
 ### Project file zip encoding
 * Uploading your project file can cause the error "Project name or assembly contains unsupported characters". This problem typically happens when you use non Latin characters in your project file names and the zip file does not use UTF-8 encoding for the project file names.
