@@ -134,9 +134,8 @@ namespace UpdateParametersPlugin
             }
 
             var docUnitsOfMeasure = doc.UnitsOfMeasure;
-            var unitType = docUnitsOfMeasure.GetTypeFromString(dynParameter.Units);
-            LogTrace($"Checking expression validity on update for {expression} and unit type {dynParameter.Units} / {unitType}");
-            if (docUnitsOfMeasure.IsExpressionValid(expression, unitType))
+            LogTrace($"Updating the value for the unit type: {dynParameter.Units}");
+            if (docUnitsOfMeasure.IsExpressionValid(expression, dynParameter.Units))
             {
                 // apply the expression
                 paramData.ErrorMessage = null;
@@ -144,7 +143,7 @@ namespace UpdateParametersPlugin
             }
             else
             {
-                LogTrace($"Expression '{expression}' invalid for unit type '{unitType}' on update attempt");
+                LogTrace($"Expression '{expression}' is invalid and can't be updated");
                 paramData.ErrorMessage = "Parameter's expression is not valid for its unit type";
             }
         }
