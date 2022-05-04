@@ -14,18 +14,18 @@ if ($githubOAuthToken -eq $null)
 	exit 1
 }
 
-$app_publish_dir=".\WebApplication\bin\$targetConfiguration\$dotnetCore\$targetRuntime\publish"
+$app_publish_dir=".\webapplication\bin\$targetConfiguration\$dotnetCore\$targetRuntime\publish"
 
 
 ##############################
-#build WebApplication project
+#build webapplication project
 ##############################
 Write-Host "Building App"
-dotnet publish --configuration $targetConfiguration --runtime $targetRuntime .\WebApplication\WebApplication.csproj
+dotnet publish --configuration $targetConfiguration --runtime $targetRuntime .\webapplication\webapplication.csproj
 rm $app_publish_dir\appsettings.Local.json
 
 Write-Host "Including app bundles"
-xcopy /Y /E .\WebApplication\AppBundles\* "$app_publish_dir\AppBundles\"
+xcopy /Y /E .\webapplication\AppBundles\* "$app_publish_dir\AppBundles\"
 
 Write-Host "Zipping the App"
 Compress-Archive -Path "$app_publish_dir\*" -DestinationPath "$release_zip_filename" -Force

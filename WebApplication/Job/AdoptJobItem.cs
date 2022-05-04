@@ -18,14 +18,14 @@
 
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
-using WebApplication.Processing;
-using WebApplication.State;
-using WebApplication.Definitions;
-using WebApplication.Utilities;
+using webapplication.Processing;
+using webapplication.State;
+using webapplication.Definitions;
+using webapplication.Utilities;
 using System.IO;
 using System.Text.RegularExpressions;
 
-namespace WebApplication.Job
+namespace webapplication.Job
 {
     internal class AdoptJobItem : JobItemBase
     {

@@ -18,7 +18,7 @@
 
 using Microsoft.AspNetCore.Http;
 
-namespace WebApplication.State
+namespace webapplication.State
 {
     public class NewProjectModel
     {

@@ -8,13 +8,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Retry;
-using WebApplication.Definitions;
-using WebApplication.Processing;
-using WebApplication.Services.Exceptions;
-using WebApplication.State;
-using WebApplication.Utilities;
+using webapplication.Definitions;
+using webapplication.Processing;
+using webapplication.Services.Exceptions;
+using webapplication.State;
+using webapplication.Utilities;
 
-namespace WebApplication.Services
+namespace webapplication.Services
 {
     public class ProjectService
     {
@@ -105,7 +105,7 @@ namespace WebApplication.Services
         /// <summary>
         /// Get list of project names for a bucket.
         /// </summary>
-        public async Task<ICollection<string>> GetProjectNamesAsync(OssBucket bucket = null)
+        public async Task<ICollection<string>> GetProjectNamesAsync(OssBucket? bucket = null)
         {
             bucket ??= await _userResolver.GetBucketAsync(true);
 
@@ -116,7 +116,7 @@ namespace WebApplication.Services
             return projectNames;
         }
 
-        public async Task DeleteProjects(ICollection<string> projectNameList, OssBucket bucket = null)
+        public async Task DeleteProjects(ICollection<string> projectNameList, OssBucket? bucket = null)
         {
             bucket ??= await _userResolver.GetBucketAsync(true);
 

@@ -24,7 +24,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace WebApplication.Utilities
+namespace webapplication.Utilities
 {
     public class Crypto
     {

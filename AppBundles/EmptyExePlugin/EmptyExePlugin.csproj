@@ -62,7 +62,7 @@
     </ItemGroup>
     <Copy SourceFiles="$(ProjectDir)PackageContents.xml" DestinationFolder="$(TargetDir)..\Bundle\$(MSBuildProjectName).bundle" />
     <Copy SourceFiles="@(PluginBundle)" DestinationFolder="$(TargetDir)..\Bundle\$(MSBuildProjectName).bundle\Contents\" />
-    <MakeDir Directories="$(SolutionDir)WebApplication\AppBundles" />
-    <ZipDirectory SourceDirectory="$(TargetDir)..\Bundle" DestinationFile="$(SolutionDir)WebApplication\AppBundles\$(MSBuildProjectName).bundle.zip" Overwrite="true" />
+    <MakeDir Directories="$(SolutionDir)webapplication\AppBundles" />
+    <ZipDirectory SourceDirectory="$(TargetDir)..\Bundle" DestinationFile="$(SolutionDir)webapplication\AppBundles\$(MSBuildProjectName).bundle.zip" Overwrite="true" />
   </Target>
 </Project>

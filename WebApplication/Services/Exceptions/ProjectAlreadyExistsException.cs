@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WebApplication.Services.Exceptions
+namespace webapplication.Services.Exceptions
 {
     public class ProjectAlreadyExistsException : Exception
     {

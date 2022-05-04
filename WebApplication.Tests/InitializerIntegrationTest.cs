@@ -21,11 +21,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
-using WebApplication.Definitions;
+using webapplication.Definitions;
 using Xunit;
-using Project = WebApplication.State.Project;
+using Project = webapplication.State.Project;
 
-namespace WebApplication.Tests
+namespace webapplication.Tests
 {
     [Collection("IntegrationTests1")]
     public class InitializerIntegrationTest : InitializerTestBase, IAsyncLifetime

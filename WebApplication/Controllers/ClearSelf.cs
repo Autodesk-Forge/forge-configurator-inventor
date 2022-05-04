@@ -24,36 +24,35 @@ using Microsoft.Extensions.Logging;
 // application shutdown, where we would eventually do the clean up
 // That is potential tech debt work
 
-namespace WebApplication.Controllers
+namespace webapplication.Controllers;
+
+[Route("[controller]")]
+public class ClearSelfController : ControllerBase
 {
-    [Route("[controller]")]
-    public class ClearSelfController : ControllerBase
+    private readonly ILogger<ClearSelfController> _logger;
+    Initializer _initializer;
+    IConfiguration _configuration;
+
+    public ClearSelfController(ILogger<ClearSelfController> logger, Initializer initializer, IConfiguration configuration)
     {
-        private readonly ILogger<ClearSelfController> _logger;
-        Initializer _initializer;
-        IConfiguration _configuration;
+        _logger = logger;
+        _initializer = initializer;
+        _configuration = configuration;
+    }
 
-        public ClearSelfController(ILogger<ClearSelfController> logger, Initializer initializer, IConfiguration configuration)
+    [HttpGet("")]
+    public string Clear()
+    {
+        if (_configuration.GetValue<bool>("allowCleanSelf"))
         {
-            _logger = logger;
-            _initializer = initializer;
-            _configuration = configuration;
+            _logger.LogInformation("Clearing the data...");
+            _initializer.ClearAsync(true).Wait();
+            _logger.LogInformation("Data deleted.");
+            return "{ \"Cleared\": \"true\" }";
         }
+        else
+            _logger.LogInformation("Self clean not allowed.");
 
-        [HttpGet("")]
-        public string Clear()
-        {
-            if (_configuration.GetValue<bool>("allowCleanSelf"))
-            {
-               _logger.LogInformation("Clearing the data...");
-               _initializer.ClearAsync(true).Wait();
-               _logger.LogInformation("Data deleted.");
-               return "{ \"Cleared\": \"true\" }";
-            }
-            else
-               _logger.LogInformation("Self clean not allowed.");
-
-            return "{ \"Cleared\": \"false\" }";
-        }
+        return "{ \"Cleared\": \"false\" }";
     }
 }

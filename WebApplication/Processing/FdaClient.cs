@@ -18,9 +18,9 @@
 
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
-using WebApplication.Definitions;
+using webapplication.Definitions;
 
-namespace WebApplication.Processing
+namespace webapplication.Processing
 {
     public class FdaClient
     {

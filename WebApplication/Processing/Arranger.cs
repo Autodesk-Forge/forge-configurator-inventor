@@ -22,12 +22,12 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Shared;
-using WebApplication.Definitions;
-using WebApplication.Services;
-using WebApplication.State;
-using WebApplication.Utilities;
+using webapplication.Definitions;
+using webapplication.Services;
+using webapplication.State;
+using webapplication.Utilities;
 
-namespace WebApplication.Processing
+namespace webapplication.Processing
 {
     /// <summary>
     /// Class to place generated data files to expected places.

@@ -6,8 +6,8 @@
         "AppBundles/packages": true,
         "AppBundles/Output": true
     },
-    "eslint.workingDirectories": [ "WebApplication/ClientApp" ],
-    "jest.pathToJest": "WebApplication/ClientApp/node_modules/.bin/jest",
+    "eslint.workingDirectories": [ "webapplication/ClientApp" ],
+    "jest.pathToJest": "webapplication/ClientApp/node_modules/.bin/jest",
     "psi-header.templates": [
         {
             "language": "*",
@@ -49,6 +49,6 @@
         }
     ],
     "appService.preDeployTask": "publish-release",
-    "appService.deploySubpath": "WebApplication/bin/Release/netcoreapp3.1/publish",
+    "appService.deploySubpath": "webapplication/bin/Release/netcoreapp3.1/publish",
     "appService.defaultWebAppToDeploy": "None"
 }

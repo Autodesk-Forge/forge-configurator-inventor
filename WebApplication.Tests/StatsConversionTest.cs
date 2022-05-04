@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Autodesk.Forge.DesignAutomation.Model;
-using WebApplication.Definitions;
+using webapplication.Definitions;
 using Xunit;
 // ReSharper disable PossibleInvalidOperationException
 
-namespace WebApplication.Tests
+namespace webapplication.Tests
 {
     public class StatsConversionTest
     {

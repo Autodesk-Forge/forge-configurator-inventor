@@ -18,9 +18,9 @@
 
 using System.Collections.Generic;
 using Autodesk.Forge.DesignAutomation.Model;
-using WebApplication.Definitions;
+using webapplication.Definitions;
 
-namespace WebApplication.Processing
+namespace webapplication.Processing
 {
     /// <summary>
     /// Universal plugin to extract different kinds of data during adoption:

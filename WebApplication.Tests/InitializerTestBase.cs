@@ -26,14 +26,14 @@ using System;
 using System.IO;
 using System.Net.Http;
 using Autodesk.Forge.DesignAutomation.Http;
-using WebApplication.Definitions;
-using WebApplication.Middleware;
-using WebApplication.Processing;
-using WebApplication.Services;
-using WebApplication.State;
-using WebApplication.Utilities;
+using webapplication.Definitions;
+using webapplication.Middleware;
+using webapplication.Processing;
+using webapplication.Services;
+using webapplication.State;
+using webapplication.Utilities;
 
-namespace WebApplication.Tests
+namespace webapplication.Tests
 {
     // Base class to setup Initializer class for other tests
     public abstract class InitializerTestBase

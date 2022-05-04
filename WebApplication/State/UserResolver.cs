@@ -23,11 +23,11 @@ using System.Threading.Tasks;
 using Autodesk.Forge.Client;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using WebApplication.Middleware;
-using WebApplication.Services;
-using WebApplication.Utilities;
+using webapplication.Middleware;
+using webapplication.Services;
+using webapplication.Utilities;
 
-namespace WebApplication.State
+namespace webapplication.State
 {
     /// <summary>
     /// Business logic to differentiate state for logged in and anonymous users.
@@ -90,7 +90,7 @@ namespace WebApplication.State
         /// <summary>
         /// Get project storage by project name.
         /// </summary>
-        public async Task<ProjectStorage> GetProjectStorageAsync(string projectName, bool ensureDir = true)
+        public async Task<ProjectStorage> GetProjectStorageAsync(string? projectName, bool ensureDir = true)
         {
             var project = await GetProjectAsync(projectName, ensureDir);
             return new ProjectStorage(project);
@@ -113,7 +113,7 @@ namespace WebApplication.State
         /// <param name="fileName">Short file name.</param>
         /// <param name="hash">Parameters hash (default is used if not provided).</param>
         /// <returns>Full path to the existing local file.</returns>
-        public async Task<string> EnsureLocalFile(string projectName, string fileName, string hash = null)
+        public async Task<string> EnsureLocalFile(string projectName, string fileName, string? hash = null)
         {
             var projectStorage = await GetProjectStorageAsync(projectName);
 

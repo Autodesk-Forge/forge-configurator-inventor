@@ -26,10 +26,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Shared;
-using WebApplication.Definitions;
-using WebApplication.Services;
-using WebApplication.State;
-using WebApplication.Utilities;
+using webapplication.Definitions;
+using webapplication.Services;
+using webapplication.State;
+using webapplication.Utilities;
 using static MigrationApp.MigrationJob;
 
 namespace MigrationApp
@@ -109,7 +109,7 @@ namespace MigrationApp
             List<ObjectDetails> configODsNew = await bucketNew.GetObjectsAsync($"{ONC.CacheFolder}/");
             foreach (ObjectDetails configODNew in configODsNew)
             {
-               if (configODNew.ObjectKey.EndsWith(WebApplication.Utilities.LocalName.Parameters))
+               if (configODNew.ObjectKey.EndsWith(LocalName.Parameters))
                   configKeysNew.Add(configODNew.ObjectKey);
             }
          }
@@ -151,7 +151,7 @@ namespace MigrationApp
             foreach (ObjectDetails configOD in configODs)
             {
                string configKey = configOD.ObjectKey;
-               if (configKey.EndsWith(WebApplication.Utilities.LocalName.Parameters))
+               if (configKey.EndsWith(LocalName.Parameters))
                {
                   // calculate parameter hash based on new algorithmes
                   InventorParameters parameters = await bucketOld.DeserializeAsync<InventorParameters>(configKey);

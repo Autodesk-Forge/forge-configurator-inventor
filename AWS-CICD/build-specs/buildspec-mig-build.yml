@@ -8,7 +8,7 @@ phases:
       - apt-get install -y npm
   build:
     commands:
-       - cd WebApplication
+       - cd webapplication
        - dotnet publish -c Release -o ../mig
 artifacts:
   files:
