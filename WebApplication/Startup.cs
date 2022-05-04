@@ -30,15 +30,15 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MigrationApp;
 using Serilog;
-using WebApplication.Controllers;
-using WebApplication.Definitions;
-using WebApplication.Middleware;
-using WebApplication.Processing;
-using WebApplication.Services;
-using WebApplication.State;
-using WebApplication.Utilities;
+using webapplication.Controllers;
+using webapplication.Definitions;
+using webapplication.Middleware;
+using webapplication.Processing;
+using webapplication.Services;
+using webapplication.State;
+using webapplication.Utilities;
 
-namespace WebApplication
+namespace webapplication
 {
     public class Startup
     {

@@ -19,9 +19,9 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
-using WebApplication.Processing;
+using webapplication.Processing;
 
-namespace WebApplication.Job
+namespace webapplication.Job
 {
     public abstract class JobItemBase
     {

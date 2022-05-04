@@ -2,8 +2,34 @@
   "name": "forge-configurator-inventor",
   "license": "MIT",
   "version": "0.1.1",
-  "private": true,
   "dependencies": {
+    "bootstrap": "^5.1.0",
+    "http-proxy-middleware": "^0.19.1",
+    "@emotion/react": "11.9.0",
+    "jquery": "^3.5.1",
+    "merge": "^2.1.1",
+    "oidc-client": "^1.11.5",
+    "caniuse-lite": "^1.0.30001335",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-router-bootstrap": "^0.25.0",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "^4.0.3",
+    "reactstrap": "^8.9.0",
+    "rimraf": "^2.6.2",
+    "web-vitals": "^0.2.4",
+    "workbox-background-sync": "^5.1.3",
+    "workbox-broadcast-update": "^5.1.3",
+    "workbox-cacheable-response": "^5.1.3",
+    "workbox-core": "^5.1.3",
+    "workbox-expiration": "^5.1.3",
+    "workbox-google-analytics": "^5.1.3",
+    "workbox-navigation-preload": "^5.1.3",
+    "workbox-precaching": "^5.1.3",
+    "workbox-range-requests": "^5.1.3",
+    "workbox-routing": "^5.1.3",
+    "workbox-strategies": "^5.1.3",
+    "workbox-streams": "^5.1.3",
     "@aspnet/signalr": "^1.1.4",
     "@hig/avatar": "^2.1.0",
     "@hig/banner": "^3.1.0",
@@ -30,37 +56,26 @@
     "ansi-regex": ">=5.0.1",
     "aws-sdk": ">=2.814.0",
     "axios": ">=0.21.2",
-    "bootstrap": "^4.6.1",
     "browserslist": ">=4.16.5",
     "dns-packet": ">=1.3.2",
     "dotenv": "^8.6.0",
     "hosted-git-info": ">=2.8.9",
     "immer": ">=9.0.6",
     "is-svg": ">=4.3.0",
-    "jquery": ">=3.6.0",
     "json-schema": ">=0.4.0",
-    "merge": ">=2.1.1",
     "node-forge": ">=1.0.0",
     "nth-check": ">=2.0.1",
-    "oidc-client": ">=1.11.5",
     "path-browserify": "^1.0.1",
     "path-parse": ">=1.0.7",
     "postcss": ">=8.2.13",
-    "react": "17.0.2",
     "react-base-table": ">=1.13.0",
-    "react-dom": ">=17.0.2",
     "react-error-overlay": "^7.0.0-next.117",
     "react-load-script": "0.0.6",
     "react-redux": ">=7.2.6",
-    "react-router-bootstrap": ">=0.26.0",
-    "react-router-dom": ">=6.2.1",
-    "react-scripts": ">=5.0.0",
     "react-select": ">=5.2.2",
-    "reactstrap": ">=9.0.1",
     "redux": ">=4.1.2",
     "redux-mock-store": ">=1.5.4",
     "redux-thunk": ">=2.4.1",
-    "rimraf": ">=3.0.2",
     "styled-components": ">=5.3.3",
     "tar": ">=6.1.9",
     "trim-newlines": ">=3.0.1",
@@ -69,58 +84,44 @@
     "ws": ">=6.2.2",
     "@types/jest": "^27.4.0",
     "@types/react-redux": "^7.1.22",
-    "@types/redux-mock-store": "^1.0.3"
+    "@types/redux-mock-store": "^1.0.3",
+    "@emotion/utils": "1.1.0"
   },
   "devDependencies": {
+    "ajv": "^6.9.1",
+    "cross-env": "^7.0.3",
+    "eslint": "^7.25.0",
+    "eslint-config-react-app": "^6.0.0",
+    "eslint-plugin-flowtype": "^5.7.2",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-react": "^7.23.2",
+    "nan": "^2.14.2",
+    "typescript": "^4.2.4",
     "codeceptjs": "^3.2.3",
     "codeceptjs-chai": "^2.3.2",
-    "cross-env": "^7.0.3",
     "@codeceptjs/configure": "^0.7.0",
-    "ajv": ">=8.9.0",
     "babel-eslint": "^10.1.0",
     "enzyme": "^3.11.0",
     "eslint-config-airbnb": ">=19.0.4",
     "eslint-config-node": ">=4.1.0",
     "eslint-config-prettier": ">=8.3.0",
-    "eslint-config-react-app": ">=7.0.0",
-    "eslint-plugin-flowtype": ">=8.0.3",
-    "eslint-plugin-import": ">=2.25.4",
-    "eslint-plugin-jest": ">=26.0.0",
-    "eslint-plugin-jsx-a11y": ">=6.5.1",
     "eslint-plugin-node": ">=11.1.0",
-    "eslint-plugin-react": ">=7.28.0",
     "eslint-plugin-react-hooks": ">=4.3.0",
     "playwright": "^1.18.0",
     "stylelint": ">=14.3.0",
-    "stylelint-config-standard": ">=24.0.0",
-    "typescript": ">=4.5.5"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
+    "stylelint-config-standard": ">=24.0.0"
   },
   "scripts": {
+    "prestart": "node aspnetcore-https && node aspnetcore-react",
     "start": "rimraf ./build && react-scripts start",
     "build": "react-scripts build",
-    "test": "cross-env CI=true react-scripts test --env=./src/test/custom-test-env.js",
+    "test": "cross-env CI=true react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "lint": "eslint ./src/",
-    "lint-css": "stylelint src/**/*.css",
-    "uitest": "npx codeceptjs run"
+    "lint": "eslint ./src/"
   },
-  "jest": {
-    "transformIgnorePatterns": [
-      "/node_modules/(?!@hig/theme-data)"
-    ],
-    "moduleNameMapper": {
-      "\\.(css|less)$": "identity-obj-proxy"
-    },
-    "coveragePathIgnorePatterns": [
-      "/node_modules/",
-      "<rootDir>/src/ui-tests"
-    ]
-  },
-  "babel": {
-    "presets": [
+  "eslintConfig": {
+    "extends": [
       "react-app"
     ]
   },
@@ -135,5 +136,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "proxy": "https://localhost:5001/"
 }

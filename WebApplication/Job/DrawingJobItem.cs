@@ -19,10 +19,10 @@
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
-using WebApplication.Definitions;
-using WebApplication.Processing;
+using webapplication.Definitions;
+using webapplication.Processing;
 
-namespace WebApplication.Job
+namespace webapplication.Job
 {
     internal class DrawingJobItem : JobItemBase
     {

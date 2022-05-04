@@ -19,10 +19,10 @@
 using System;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
-using WebApplication.Definitions;
-using WebApplication.Services;
+using webapplication.Definitions;
+using webapplication.Services;
 
-namespace WebApplication.Job
+namespace webapplication.Job
 {
     internal class AdoptProjectWithParametersJobItem : JobItemBase
     {

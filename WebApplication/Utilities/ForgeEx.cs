@@ -21,7 +21,7 @@ using System.Text;
 using Autodesk.Forge.Core;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
-namespace WebApplication.Utilities
+namespace webapplication.Utilities
 {
     /// <summary>
     /// Extensions for Forge stuff.

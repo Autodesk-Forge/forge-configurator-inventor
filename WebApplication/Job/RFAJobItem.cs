@@ -19,9 +19,9 @@
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
-using WebApplication.Processing;
+using webapplication.Processing;
 
-namespace WebApplication.Job
+namespace webapplication.Job
 {
     internal class RFAJobItem : JobItemBase
     {

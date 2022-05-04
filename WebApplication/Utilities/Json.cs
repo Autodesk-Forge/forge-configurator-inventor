@@ -20,7 +20,7 @@ using System.IO;
 using System.Text;
 using System.Text.Json;
 
-namespace WebApplication.Utilities
+namespace webapplication.Utilities
 {
     public static class Json
     {

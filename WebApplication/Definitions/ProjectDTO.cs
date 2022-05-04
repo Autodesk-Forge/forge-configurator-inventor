@@ -19,7 +19,7 @@
 using System;
 using Shared;
 
-namespace WebApplication.Definitions
+namespace webapplication.Definitions
 {
     public class ProjectDTO : ProjectDTOBase
     {

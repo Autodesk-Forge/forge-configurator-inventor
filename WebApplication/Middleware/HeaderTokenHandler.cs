@@ -19,10 +19,10 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
-using WebApplication.Services;
-using WebApplication.State;
+using webapplication.Services;
+using webapplication.State;
 
-namespace WebApplication.Middleware
+namespace webapplication.Middleware
 {
     /// <summary>
     /// Middleware to extract access token from HTTP headers.
