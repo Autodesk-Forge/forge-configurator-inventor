@@ -8,18 +8,18 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Serilog.Extensions.Logging;
 using Shared;
-using WebApplication.Definitions;
-using WebApplication.Processing;
-using WebApplication.Services;
-using WebApplication.State;
-using WebApplication.Utilities;
+using webapplication.Definitions;
+using webapplication.Processing;
+using webapplication.Services;
+using webapplication.State;
+using webapplication.Utilities;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace WebApplication.Tests.Integration
+namespace webapplication.Tests.Integration
 {
     [Collection("IntegrationTests1")]
-    public class AdoptProjectWithParametersTest : InitializerTestBase, IClassFixture<WebApplicationFactory<WebApplication.Startup>>, IAsyncLifetime
+    public class AdoptProjectWithParametersTest : InitializerTestBase, IClassFixture<WebApplicationFactory<webapplication.Startup>>, IAsyncLifetime
     {
         private readonly ITestOutputHelper _output;
         private readonly ProjectService _projectService;
@@ -31,7 +31,7 @@ namespace WebApplication.Tests.Integration
             public HttpClient CreateClient(string name) => new HttpClient();
         }
 
-        public AdoptProjectWithParametersTest(WebApplicationFactory<WebApplication.Startup> factory, ITestOutputHelper output)
+        public AdoptProjectWithParametersTest(WebApplicationFactory<webapplication.Startup> factory, ITestOutputHelper output)
             : base(defaultProjectsConfiguration)
         {
             _output = output;

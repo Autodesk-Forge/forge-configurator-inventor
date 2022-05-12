@@ -20,10 +20,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Autodesk.Forge.DesignAutomation.Model;
-using WebApplication.Definitions;
-using WebApplication.Utilities;
+using webapplication.Definitions;
+using webapplication.Utilities;
 
-namespace WebApplication.Processing
+namespace webapplication.Processing
 {
     /// <summary>
     /// Special definition for aggregated activities, where all bundles are "external".

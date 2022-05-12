@@ -24,11 +24,11 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Routing;
 using Shared;
-using WebApplication.Definitions;
-using WebApplication.Middleware;
-using WebApplication.State;
+using webapplication.Definitions;
+using webapplication.Middleware;
+using webapplication.State;
 
-namespace WebApplication.Utilities
+namespace webapplication.Utilities
 {
     /// <summary>
     /// Utility class to deal with stuff like URLs in generated DTOs.
@@ -47,7 +47,7 @@ namespace WebApplication.Utilities
         /// <summary>
         /// Create ProjectDTOBase based DTO and fill its properties.
         /// </summary>
-        public TProjectDTOBase MakeProjectDTO<TProjectDTOBase>(ProjectStorage projectStorage, string hash) where TProjectDTOBase: ProjectDTOBase, new()
+        public TProjectDTOBase MakeProjectDTO<TProjectDTOBase>(ProjectStorage projectStorage, string? hash) where TProjectDTOBase: ProjectDTOBase, new()
         {
             Project project = projectStorage.Project;
             // TODO: fix workaround for `_linkGenerator` check for null
@@ -77,7 +77,7 @@ namespace WebApplication.Utilities
         /// <summary>
         /// Generate project DTO.
         /// </summary>
-        public ProjectDTO ToDTO(ProjectStorage projectStorage, string hash=null)
+        public ProjectDTO ToDTO(ProjectStorage projectStorage, string? hash=null)
         {
             Project project = projectStorage.Project;
             var localAttributes = project.LocalAttributes;

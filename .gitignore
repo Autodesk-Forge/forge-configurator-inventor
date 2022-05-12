@@ -237,9 +237,9 @@ _Pvt_Extensions
 Output/
 
 # preserve `LocalCache` dir
-WebApplication/LocalCache/
+webapplication/LocalCache/
 
 AWS-CICD/scripts/config.json
 
 AppBundles/InventorBinFolder.props
-WebApplication/package-lock.json
+webapplication/package-lock.json

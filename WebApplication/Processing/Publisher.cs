@@ -27,11 +27,11 @@ using Autodesk.Forge.DesignAutomation.Http;
 using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using WebApplication.Definitions;
-using WebApplication.Utilities;
+using webapplication.Definitions;
+using webapplication.Utilities;
 using Activity = Autodesk.Forge.DesignAutomation.Model.Activity;
 
-namespace WebApplication.Processing
+namespace webapplication.Processing
 {
     public class Publisher
     {

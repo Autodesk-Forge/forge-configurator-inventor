@@ -2,7 +2,7 @@
 using System.IO;
 using Xunit.Abstractions;
 
-namespace WebApplication.Tests.Integration
+namespace webapplication.Tests.Integration
 {
     internal static class XUnitUtils
     {

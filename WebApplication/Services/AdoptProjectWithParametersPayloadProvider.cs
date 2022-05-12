@@ -3,9 +3,9 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using WebApplication.Definitions;
+using webapplication.Definitions;
 
-namespace WebApplication.Services
+namespace webapplication.Services
 {
     public class AdoptProjectWithParametersPayloadProvider
     {

@@ -18,7 +18,7 @@
 
 using System.Collections.Generic;
 
-namespace WebApplication.Utilities
+namespace webapplication.Utilities
 {
     public class Collections
     {

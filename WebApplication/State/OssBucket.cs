@@ -25,10 +25,10 @@ using Autodesk.Forge.Client;
 using Autodesk.Forge.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using WebApplication.Services;
-using WebApplication.Utilities;
+using webapplication.Services;
+using webapplication.Utilities;
 
-namespace WebApplication.State
+namespace webapplication.State
 {
     /// <summary>
     /// Wrapper to work with OSS bucket.
@@ -98,7 +98,7 @@ namespace WebApplication.State
         /// Get bucket objects.
         /// </summary>
         /// <param name="beginsWith">Search filter ("begin with")</param>
-        public async Task<List<ObjectDetails>> GetObjectsAsync(string beginsWith = null)
+        public async Task<List<ObjectDetails>> GetObjectsAsync(string? beginsWith = null)
         {
             return await _forgeOSS.GetBucketObjectsAsync(BucketKey, beginsWith);
         }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace WebApplication.Services
+namespace webapplication.Services
 {
     public class ProfileProvider
     {

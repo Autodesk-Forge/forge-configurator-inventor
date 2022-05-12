@@ -23,82 +23,81 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Shared;
-using WebApplication.Middleware;
-using WebApplication.State;
-using WebApplication.Utilities;
+using webapplication.Middleware;
+using webapplication.State;
+using webapplication.Utilities;
 
-namespace WebApplication.Controllers
+namespace webapplication.Controllers;
+
+// The app is not keeping user session, so it's necessary to pass auth token
+// for authenticated users to resolve the downloaded item correctly.
+// By implementation the token will be appended by client-side to the end of download URL, so
+// the download route should contain optional `token` argument, which will be extracted
+// and applied to the execution context by `RouteTokenPipeline` middleware.
+[ApiController]
+[Route("download")]
+[MiddlewareFilter(typeof(RouteTokenPipeline))]
+public class DownloadController : ControllerBase
 {
-    // The app is not keeping user session, so it's necessary to pass auth token
-    // for authenticated users to resolve the downloaded item correctly.
-    // By implementation the token will be appended by client-side to the end of download URL, so
-    // the download route should contain optional `token` argument, which will be extracted
-    // and applied to the execution context by `RouteTokenPipeline` middleware.
-    [ApiController]
-    [Route("download")]
-    [MiddlewareFilter(typeof(RouteTokenPipeline))]
-    public class DownloadController : ControllerBase
+    private readonly ILogger<DownloadController> _logger;
+    private readonly UserResolver _userResolver;
+
+    public DownloadController(ILogger<DownloadController> logger, UserResolver userResolver)
     {
-        private readonly ILogger<DownloadController> _logger;
-        private readonly UserResolver _userResolver;
+        _logger = logger;
+        _userResolver = userResolver;
+    }
 
-        public DownloadController(ILogger<DownloadController> logger, UserResolver userResolver)
-        {
-            _logger = logger;
-            _userResolver = userResolver;
-        }
+    [HttpGet("{projectName}/{hash}/model/{token?}")]
+    public Task<RedirectResult> Model(string projectName, string hash, string? token = null)
+    {
+        return RedirectToOssObject(projectName, hash, (ossNames, isAssembly) => ossNames.GetCurrentModel(isAssembly));
+    }
 
-        [HttpGet("{projectName}/{hash}/model/{token?}")]
-        public Task<RedirectResult> Model(string projectName, string hash, string token = null)
-        {
-            return RedirectToOssObject(projectName, hash, (ossNames, isAssembly) => ossNames.GetCurrentModel(isAssembly));
-        }
+    [HttpGet("{projectName}/{hash}/rfa/{token?}")]
+    public Task<RedirectResult> RFA(string projectName, string hash, string? token = null)
+    {
+        return RedirectToOssObject(projectName, hash, (ossNames, _) => ossNames.Rfa);
+    }
 
-        [HttpGet("{projectName}/{hash}/rfa/{token?}")]
-        public Task<RedirectResult> RFA(string projectName, string hash, string token = null)
-        {
-            return RedirectToOssObject(projectName, hash, (ossNames, _)=> ossNames.Rfa);
-        }
+    [HttpGet("{projectName}/{hash}/bom/{token?}")]
+    public async Task<ActionResult> BOM(string projectName, string hash, string? token = null)
+    {
+        string localFileName = await _userResolver.EnsureLocalFile(projectName, LocalName.BOM, hash);
+        var bom = Json.DeserializeFile<ExtractedBOM>(localFileName);
+        string csv = bom.ToCSV();
 
-        [HttpGet("{projectName}/{hash}/bom/{token?}")]
-        public async Task<ActionResult> BOM(string projectName, string hash, string token = null)
-        {
-            string localFileName = await _userResolver.EnsureLocalFile(projectName, LocalName.BOM, hash);
-            var bom = Json.DeserializeFile<ExtractedBOM>(localFileName);
-            string csv = bom.ToCSV();
+        // BOM size is small, so ignore potential performance improvements with direct stream writing
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(csv));
+        return File(stream, "text/csv", "bom.csv");
+    }
 
-            // BOM size is small, so ignore potential performance improvements with direct stream writing
-            var stream = new MemoryStream(Encoding.UTF8.GetBytes(csv));
-            return File(stream, "text/csv", "bom.csv");
-        }
+    // viewer expects PDF extension, so `drawing.pdf` is a piece of the route
+    [HttpGet("{projectName}/{hash}/{index}/drawing.pdf/{token?}")]
+    public async Task<ActionResult> DrawingPdf(string projectName, string hash, int index, string? token = null)
+    {
+        string localFileName = await _userResolver.EnsureLocalFile(projectName, LocalName.DrawingPdf(index), hash);
+        return new PhysicalFileResult(localFileName, "application/pdf") { FileDownloadName = LocalName.DrawingPdf(index) };
+    }
 
-        // viewer expects PDF extension, so `drawing.pdf` is a piece of the route
-        [HttpGet("{projectName}/{hash}/{index}/drawing.pdf/{token?}")]
-        public async Task<ActionResult> DrawingPdf(string projectName, string hash, int index, string token = null)
-        {
-            string localFileName = await _userResolver.EnsureLocalFile(projectName, LocalName.DrawingPdf(index), hash);
-            return new PhysicalFileResult(localFileName, "application/pdf") { FileDownloadName = LocalName.DrawingPdf(index) };
-        }
+    [HttpGet("{projectName}/{hash}/drawing/{token?}")]
+    public Task<RedirectResult> Drawing(string projectName, string hash, string? token = null)
+    {
+        return RedirectToOssObject(projectName, hash, (ossNames, _) => ossNames.Drawing);
+    }
 
-        [HttpGet("{projectName}/{hash}/drawing/{token?}")]
-        public Task<RedirectResult> Drawing(string projectName, string hash, string token = null)
-        {
-            return RedirectToOssObject(projectName, hash, (ossNames, _) => ossNames.Drawing);
-        }
+    private async Task<RedirectResult> RedirectToOssObject(string projectName, string hash, Func<OSSObjectNameProvider, bool, string> nameExtractor)
+    {
+        ProjectStorage projectStorage = await _userResolver.GetProjectStorageAsync(projectName);
 
-        private async Task<RedirectResult> RedirectToOssObject(string projectName, string hash, Func<OSSObjectNameProvider, bool, string> nameExtractor)
-        {
-            ProjectStorage projectStorage = await _userResolver.GetProjectStorageAsync(projectName);
-            
-            var ossNameProvider = projectStorage.GetOssNames(hash);
-            string ossObjectName = nameExtractor(ossNameProvider, projectStorage.IsAssembly);
+        var ossNameProvider = projectStorage.GetOssNames(hash);
+        string ossObjectName = nameExtractor(ossNameProvider, projectStorage.IsAssembly);
 
-            _logger.LogInformation($"Downloading '{ossObjectName}'");
+        _logger.LogInformation($"Downloading '{ossObjectName}'");
 
-            var bucket = await _userResolver.GetBucketAsync();
-            var url = await bucket.CreateSignedUrlAsync(ossObjectName);
+        var bucket = await _userResolver.GetBucketAsync();
+        var url = await bucket.CreateSignedUrlAsync(ossObjectName);
 
-            return Redirect(url);
-        }
+        return Redirect(url);
     }
 }

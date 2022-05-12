@@ -26,11 +26,11 @@ using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Shared;
-using WebApplication.Definitions;
-using WebApplication.State;
-using WebApplication.Utilities;
+using webapplication.Definitions;
+using webapplication.State;
+using webapplication.Utilities;
 
-namespace WebApplication.Processing
+namespace webapplication.Processing
 {
     /// <summary>
     /// Business logic for project tasks (adapt, update parameters, rfa generation)
@@ -98,8 +98,8 @@ namespace WebApplication.Processing
         /// <summary>
         /// Update project state with the parameters (or take it from cache).
         /// </summary>
-        public async Task<(ProjectStateDTO dto, FdaStatsDTO stats, string reportUrl)> DoSmartUpdateAsync(InventorParameters parameters, 
-            string projectId, bool bForceUpdate = false)
+        public async Task<(ProjectStateDTO dto, FdaStatsDTO stats, string? reportUrl)> DoSmartUpdateAsync(InventorParameters parameters, 
+            string? projectId, bool bForceUpdate = false)
         {
             var hash = Crypto.GenerateParametersHashString(parameters);
             _logger.LogInformation($"Incoming parameters hash is {hash}");
@@ -109,7 +109,7 @@ namespace WebApplication.Processing
             FdaStatsDTO stats;
             var localNames = storage.GetLocalNames(hash);
 
-            string reportUrl;
+            string? reportUrl;
 
             // check if the data cached already
             if (Directory.Exists(localNames.SvfDir) && !bForceUpdate)
@@ -124,7 +124,7 @@ namespace WebApplication.Processing
             }
             else
             {
-                string resultingHash;
+                string? resultingHash;
                 (resultingHash, stats, reportUrl) = await UpdateAsync(storage, parameters, hash, bForceUpdate);
                 if (! hash.Equals(resultingHash, StringComparison.Ordinal))
                 {
@@ -145,7 +145,7 @@ namespace WebApplication.Processing
         /// <summary>
         /// Generate RFA (or take it from cache).
         /// </summary>
-        public async Task<(FdaStatsDTO stats, string reportUrl)> GenerateRfaAsync(string projectName, string hash)
+        public async Task<(FdaStatsDTO stats, string? reportUrl)> GenerateRfaAsync(string? projectName, string? hash)
         {
             _logger.LogInformation($"Generating RFA for hash {hash}");
 
@@ -178,7 +178,7 @@ namespace WebApplication.Processing
             return (FdaStatsDTO.All(result.Stats), result.ReportUrl);
         }
 
-        public async Task<(FdaStatsDTO stats, int drawingIdx, string reportUrl)> ExportDrawingPdfAsync(string projectName, string hash, string drawingKey)
+        public async Task<(FdaStatsDTO stats, int drawingIdx, string? reportUrl)> ExportDrawingPdfAsync(string? projectName, string? hash, string? drawingKey)
         {
             _logger.LogInformation($"Getting drawing pdf for hash {hash}");
 
@@ -264,7 +264,7 @@ namespace WebApplication.Processing
         /// <summary>
         /// Generate Drawing zip with folder structure (or take it from cache).
         /// </summary>
-        public async Task<(FdaStatsDTO stats, string reportUrl)> GenerateDrawingAsync(string projectName, string hash)
+        public async Task<(FdaStatsDTO stats, string? reportUrl)> GenerateDrawingAsync(string projectName, string hash)
         {
             _logger.LogInformation($"Generating Drawing for hash {hash}");
 
@@ -310,15 +310,15 @@ namespace WebApplication.Processing
         /// Generate project data for the given parameters and cache results locally.
         /// </summary>
         /// <returns>Resulting parameters hash</returns>
-        private async Task<(string hash, FdaStatsDTO stats, string reportUrl)> UpdateAsync(ProjectStorage storage, InventorParameters parameters, 
-            string hash, bool bForceUpdate = false)
+        private async Task<(string? hash, FdaStatsDTO stats, string? reportUrl)> UpdateAsync(ProjectStorage storage, InventorParameters parameters, 
+            string? hash, bool bForceUpdate = false)
         {
             _logger.LogInformation("Update the project");
             var bucket = await _userResolver.GetBucketAsync();
 
             var isUpdateExists = bForceUpdate ? false : await IsGenerated(bucket, storage.GetOssNames(hash));
             FdaStatsDTO stats;
-            string reportUrl;
+            string? reportUrl;
 
             if (isUpdateExists)
             {
@@ -370,7 +370,7 @@ namespace WebApplication.Processing
             return await bucket.ObjectExistsAsync(ossNames.Parameters);
         }
 
-        private async Task CopyStateAsync(Project project, string hashFrom, string hashTo, bool isAssembly)
+        private async Task CopyStateAsync(Project project, string? hashFrom, string? hashTo, bool isAssembly)
         {
             // see if the dir exists already
             LocalNameProvider localTo = project.LocalNameProvider(hashTo);

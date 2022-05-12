@@ -32,9 +32,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Polly;
-using WebApplication.Utilities;
+using webapplication.Utilities;
 
-namespace WebApplication.Services
+namespace webapplication.Services
 {
     /// <summary>
     /// Class to work with Forge APIs.
@@ -102,7 +102,7 @@ namespace WebApplication.Services
             return property != null;
         }
 
-        public async Task<List<ObjectDetails>> GetBucketObjectsAsync(string bucketKey, string beginsWith = null)
+        public async Task<List<ObjectDetails>> GetBucketObjectsAsync(string bucketKey, string? beginsWith = null)
         {
             var objects = new List<ObjectDetails>();
             string startAt = null; // next page pointer
