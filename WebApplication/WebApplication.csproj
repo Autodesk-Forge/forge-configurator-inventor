@@ -34,12 +34,6 @@
     <Compile Remove="WeatherForecast.cs" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="Autodesk.Inventor.Interop">
-      <HintPath>..\..\..\..\Program Files\Autodesk\Inventor 2022\Bin\Public Assemblies\Autodesk.Inventor.Interop.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <!-- Ensure Node.js is installed -->
     <Exec Command="node --version" ContinueOnError="true">
