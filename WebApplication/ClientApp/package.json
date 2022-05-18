@@ -115,8 +115,8 @@
   "scripts": {
     "prestart": "node aspnetcore-https && node aspnetcore-react",
     "start": "rimraf ./build && react-scripts --openssl-legacy-provider start",
-    "build": "react-scripts build",
-    "test": "cross-env CI=true react-scripts test --env=jsdom",
+    "build": "react-scripts --openssl-legacy-provider build",
+    "test": "cross-env CI=true react-scripts --openssl-legacy-provider test --env=jsdom",
     "eject": "react-scripts eject",
     "lint": "eslint ./src/"
   },
