@@ -25,6 +25,7 @@ public static class Dummy {
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 # while ($statusCode -ne 200) {
 #   # wait a bit between requests
+Start-Sleep 1000
 #   sleep 10
 #   # make request agains local server
 #   $statusCode = try {
