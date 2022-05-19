@@ -32,11 +32,11 @@ phases:
       - Start-Process -NoNewWindow dotnet -ArgumentList "webapplication.dll", "clear=true", "initialize=true", "allowCleanSelf=true"
       - cd $slnDir\WebApplication
       - echo "Waiting for server to initialize"
-      - ..\AWS-CICD\build-specs\waitForServer.ps1
+      #- ..\AWS-CICD\build-specs\waitForServer.ps1
       - echo "**** running the UI tests ****"
       - cd ClientApp
       - mkdir output
-      - npx codeceptjs run $env:UITestParams
+      #- npx codeceptjs run $env:UITestParams
   post_build:
     commands:
       - cd $slnDir
