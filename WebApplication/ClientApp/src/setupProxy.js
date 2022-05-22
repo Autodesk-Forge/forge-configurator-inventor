@@ -12,8 +12,4 @@ module.exports = function(app) {
     app.use(proxy('/ClearSelf',
         { target: 'https://localhost:5001/', "changeOrigin": true, "secure": false }
     ));
-
-    app.use(proxy('/favicon.ico',
-        { target: 'https://localhost:5001/', "changeOrigin": true, "secure": false }
-    ));
 }
