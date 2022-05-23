@@ -2,7 +2,7 @@ $version="1.0.$env:CODEBUILD_BUILD_NUMBER"
 
 $targetConfiguration='Release'
 $targetRuntime='win7-x64'
-$dotnetCore='net6.0'
+$dotnetCore='netcoreapp3.1'
 
 $release_zip_filename="ForgeConvInv-$targetConfiguration-$targetRuntime-$version.zip"
 
