@@ -13,8 +13,8 @@ phases:
       - echo "Selecting right ClientId and Secret from the list"
       - .\AWS-CICD\build-specs\setClientId.ps1
       - echo "**** Building ****"
-      #- msbuild -restore /property:Configuration=Release
-      #- msbuild /property:Configuration=Release /Target:Publish
+      - msbuild -restore /property:Configuration=Release
+      - msbuild /property:Configuration=Release /Target:Publish
       - echo "**** running backend tests ****"
       #- dotnet test
       - echo "**** running linter ****"
@@ -24,18 +24,18 @@ phases:
       #- npm test -- --coverage
       - echo "**** Starting the server ****"
       - cd $slnDir
-      #- xcopy /Y /E WebApplication\bin\Release\net6.0\publish\* app\
-      #- xcopy /Y /E WebApplication\AppBundles\* app\AppBundles\
+      - xcopy /Y /E WebApplication\bin\Release\net6.0\publish\* app\
+      - xcopy /Y /E WebApplication\AppBundles\* app\AppBundles\
       #- xcopy /Y /E app\* uitest\
-      #- rm app\appsettings.Local.json
+      - rm app\appsettings.Local.json
       #- cd uitest\
-      #- Start-Process -NoNewWindow dotnet -ArgumentList "WebApplication.dll", "clear=true", "initialize=true", "allowCleanSelf=true"
-      #- cd $slnDir\WebApplication
+      #- Start-Process -NoNewWindow dotnet -ArgumentList "webapplication.dll", "clear=true", "initialize=true", "allowCleanSelf=true"
+      - cd $slnDir\WebApplication
       #- echo "Waiting for server to initialize"
       #- ..\AWS-CICD\build-specs\waitForServer.ps1
       - echo "**** running the UI tests ****"
-      #- cd ClientApp
-      #- mkdir output
+      - cd ClientApp
+      - mkdir output
       #- npx codeceptjs run $env:UITestParams
   post_build:
     commands:
