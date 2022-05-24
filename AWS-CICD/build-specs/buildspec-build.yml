@@ -42,7 +42,7 @@ phases:
       #- cd $slnDir
       #- xcopy /Y /E WebApplication\ClientApp\output\* report\errorScreenShots\
       #- xcopy /Y /E WebApplication\ClientApp\coverage\* report\coverage\
-      - if ($githubOAuthToken -ne $null) { .\AWS-CICD\build-specs\CreateRelease.ps1 }
+      #- if ($githubOAuthToken -ne $null) { .\AWS-CICD\build-specs\CreateRelease.ps1 }
 artifacts:
   files:
     - 'app/**/*'
