@@ -8,6 +8,7 @@ $release_zip_filename="ForgeConvInv-$targetConfiguration-$targetRuntime-$version
 
 $githubReleasesApiUrl='https://api.github.com/repos/Autodesk-Forge/forge-configurator-inventor/releases'
 
+Write-Host 'Github OAuth token check.'
 if ($githubOAuthToken -eq $null)
 {
 	Write-Host 'Github OAuth token not defined. Please specify variable $githubOAuthToken'
