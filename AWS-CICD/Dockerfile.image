@@ -8,4 +8,4 @@ COPY /AWS-CICD/amazon-cloudwatch-agent.json /opt/aws/amazon-cloudwatch-agent/etc
 COPY /AWS-CICD/commands.sh .
 RUN chmod +x commands.sh
 
-ENTRYPOINT ["./commands.sh"]
+#ENTRYPOINT ["./commands.sh"]
