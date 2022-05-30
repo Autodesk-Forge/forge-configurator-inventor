@@ -43,6 +43,8 @@ phases:
   post_build:
     commands:
       - cd $slnDir
+      - mkdir report\errorScreenShots\
+      - mkdir report\coverage\
       #- xcopy /Y /E WebApplication\ClientApp\output\* report\errorScreenShots\
       #- xcopy /Y /E WebApplication\ClientApp\coverage\* report\coverage\
       - if ($githubOAuthToken -ne $null) { .\AWS-CICD\build-specs\CreateRelease.ps1 }
