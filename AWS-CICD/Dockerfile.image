@@ -9,4 +9,4 @@ COPY /AWS-CICD/commands.sh .
 RUN chmod +x commands.sh
 
 #ENTRYPOINT ["./commands.sh"]
-ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
+ENTRYPOINT ["/bin/bash"]
