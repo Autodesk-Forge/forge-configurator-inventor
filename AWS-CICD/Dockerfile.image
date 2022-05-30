@@ -8,14 +8,4 @@ COPY /AWS-CICD/amazon-cloudwatch-agent.json /opt/aws/amazon-cloudwatch-agent/etc
 COPY /AWS-CICD/commands.sh .
 RUN chmod +x commands.sh
 
-RUN powershell.exe -Command Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-
-RUN choco install -y nodejs
-RUN choco install -y awscli
-RUN choco install -y dotnet-5.0-aspnetruntime
-RUN choco install -y dotnet-6.0-sdk-2xx
-RUN choco install -y git.install
-
-ENV NUGET_PACKAGES=c:\\sdra\\nuget
-
 ENTRYPOINT ["./commands.sh"]
