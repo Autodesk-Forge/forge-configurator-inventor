@@ -36,10 +36,13 @@ phases:
       - echo "**** running the UI tests ****"
       - cd ClientApp
       - mkdir output
+      - echo "Switching to the SolutionDir"
+      - cd $slnDir
+      - echo $slnDir
       #- npx codeceptjs run $env:UITestParams
   post_build:
     commands:
-      #- cd $slnDir
+      - cd $slnDir
       #- xcopy /Y /E WebApplication\ClientApp\output\* report\errorScreenShots\
       #- xcopy /Y /E WebApplication\ClientApp\coverage\* report\coverage\
       - if ($githubOAuthToken -ne $null) { .\AWS-CICD\build-specs\CreateRelease.ps1 }
