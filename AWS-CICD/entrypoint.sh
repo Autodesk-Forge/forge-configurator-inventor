@@ -1,1 +1,2 @@
-echo "Test"
+#!/bin/sh -e
+dotnet webapplication.dll bundles=true
