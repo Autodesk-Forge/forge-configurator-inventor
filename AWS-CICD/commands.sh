@@ -1,2 +1,3 @@
 #!/bin/sh -e
-dotnet WebApplication.dll bundles=true
+/bin/bash
+#dotnet WebApplication.dll bundles=true
