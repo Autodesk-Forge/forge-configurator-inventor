@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
 COPY app/ app/
 COPY amazon-cloudwatch-agent.deb /app
 WORKDIR /app
@@ -9,4 +9,3 @@ COPY /AWS-CICD/commands.sh .
 RUN chmod +x commands.sh
 
 ENTRYPOINT ["./commands.sh"]
-#ENTRYPOINT ["/bin/bash"]
