@@ -14,7 +14,7 @@ phases:
       - .\AWS-CICD\build-specs\setClientId.ps1
       - echo "**** Building ****"
       - msbuild -restore /property:Configuration=Release
-      - msbuild /property:Configuration=Release /Target:Publish
+      - msbuild /property:Configuration=Release
       - echo "**** running backend tests ****"
       - dotnet test
       - echo "**** running linter ****"
@@ -24,7 +24,7 @@ phases:
       - npm test -- --coverage
       - echo "**** Starting the server ****"
       - cd $slnDir
-      - xcopy /Y /E WebApplication\bin\Release\net6.0\publish\* app\
+      - xcopy /Y /E WebApplication\bin\Release\net6.0\* app\
       - xcopy /Y /E WebApplication\AppBundles\* app\AppBundles\
       #Remove once fixed - start
       - xcopy /Y /E WebApplication\Controllers\* app\Controllers\
