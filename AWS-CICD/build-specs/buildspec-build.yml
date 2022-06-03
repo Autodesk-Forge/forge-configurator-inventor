@@ -26,6 +26,7 @@ phases:
       - cd $slnDir
       - xcopy /Y /E /s WebApplication\bin\Release\net6.0\publish\* app\
       - xcopy /Y /E /s WebApplication\AppBundles\* app\AppBundles\
+      - xcopy /Y /E /s WebApplication\ClientApp\build\* app\ClientApp\build\
       - xcopy /Y /E app\* uitest\
       - rm app\appsettings.Local.json
       - cd uitest\
