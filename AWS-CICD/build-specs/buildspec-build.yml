@@ -26,6 +26,19 @@ phases:
       - cd $slnDir
       - xcopy /Y /E WebApplication\bin\Release\net6.0\publish\* app\
       - xcopy /Y /E WebApplication\AppBundles\* app\AppBundles\
+      #Remove once fixed - start
+      - xcopy /Y /E WebApplication\Controllers\* app\Controllers\
+      - xcopy /Y /E WebApplication\Definitions\* app\Definitions\
+      - xcopy /Y /E WebApplication\Job\* app\Job\
+      - xcopy /Y /E WebApplication\Middleware\* app\Middleware\
+      - xcopy /Y /E WebApplication\Pages\* app\Pages\
+      - xcopy /Y /E WebApplication\Processing\* app\Processing\
+      - xcopy /Y /E WebApplication\Properties\* app\Properties\
+      - xcopy /Y /E WebApplication\Services\* app\Services\
+      - xcopy /Y /E WebApplication\Shared\* app\Shared\
+      - xcopy /Y /E WebApplication\State\* app\State\
+      - xcopy /Y /E WebApplication\Utilities\* app\Utilities\
+      #Remove once fixed - end
       - xcopy /Y /E app\* uitest\
       - rm app\appsettings.Local.json
       - cd uitest\
