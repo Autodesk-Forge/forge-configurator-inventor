@@ -51,7 +51,7 @@ async function deployVersion(pipelineName, executionId, codeBuildNumber, applica
    console.log("Creating application version " + versionLabel + " from artifacts " + deployLocation.key)
 
    await beanstalk.createApplicationVersion({
-      ApplicationName: applicationName,
+      ApplicationName: "SDRA",
       Description: commitMessage.substring(0, 199),
       VersionLabel: versionLabel,
       Process: true,
