@@ -29,6 +29,8 @@ async function deployVersion(pipelineName, executionId, codeBuildNumber, applica
          }
    }).promise()).actionExecutionDetails;
 
+   applicationName = "SDRA";
+   environmentName = "sdra-dev";
    const sourceAction = getAction(actions, 'Source'); 
    let commitMessage = sourceAction.output.outputVariables.CommitMessage;
 
@@ -51,7 +53,7 @@ async function deployVersion(pipelineName, executionId, codeBuildNumber, applica
    console.log("Creating application version " + versionLabel + " from artifacts " + deployLocation.key)
 
    await beanstalk.createApplicationVersion({
-      ApplicationName: "SDRA",
+      ApplicationName: applicationName,
       Description: commitMessage.substring(0, 199),
       VersionLabel: versionLabel,
       Process: true,
