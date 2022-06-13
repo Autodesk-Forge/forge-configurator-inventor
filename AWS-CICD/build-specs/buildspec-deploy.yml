@@ -5,4 +5,4 @@ phases:
       - echo "Buildspec-deploy initialize"
       - cd AWS-CICD/Deploy
       - npm install
-      - node deploy-version.js $pipelineName $PipelineExecutionId $CODEBUILD_BUILD_NUMBER "$appName" $environmentName
+      - node deploy-version.js $pipelineName $PipelineExecutionId $CommitId "$appName" $environmentName
