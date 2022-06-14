@@ -17,9 +17,7 @@ phases:
       - msbuild /property:Configuration=Release /Target:Publish
       - echo "**** running backend tests ****"
       - dotnet test
-      - echo "**** running linter ****"
       - cd WebApplication/ClientApp
-      #- npm run lint
       - echo "**** running frontend tests ****"
       - npm test -- --coverage
       - echo "**** Starting the server ****"
@@ -30,17 +28,13 @@ phases:
       - xcopy /Y /E app\* uitest\
       - rm app\appsettings.Local.json
       - cd uitest\
-      #- Start-Process -NoNewWindow dotnet -ArgumentList "webapplication.dll", "clear=true", "initialize=true", "allowCleanSelf=true"
       - cd $slnDir\WebApplication
-      #- echo "Waiting for server to initialize"
-      #- ..\AWS-CICD\build-specs\waitForServer.ps1
       - echo "**** running the UI tests ****"
       - cd ClientApp
       - mkdir output
       - echo "Switching to the SolutionDir"
       - cd $slnDir
       - echo $slnDir
-      #- npx codeceptjs run $env:UITestParams
   post_build:
     commands:
       - cd $slnDir
