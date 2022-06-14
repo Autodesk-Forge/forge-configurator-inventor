@@ -31,7 +31,7 @@ public class VersionController : ControllerBase
     {
         string version = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
 
-        if(version == null || version == default_version)
+        if(String.IsNullOrEmpty(version) == null || version == default_version)
         {
             try
             {
