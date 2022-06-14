@@ -1,4 +1,4 @@
-$version="1.0.$env:CODEBUILD_BUILD_NUMBER"
+$version="1.0.777777777777777777777777777777"
 
 $targetConfiguration='Release'
 $dotnet='net6.0'
