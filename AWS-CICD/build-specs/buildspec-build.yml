@@ -27,6 +27,8 @@ phases:
       - xcopy /Y /E /s WebApplication\ClientApp\build\* app\ClientApp\build\
       - xcopy /Y /E app\* uitest\
       - rm app\appsettings.Local.json
+      - echo "Processing the commit id {$CommitId}"
+      - echo "$CommitId" > app\version.txt
       - cd uitest\
       - cd $slnDir\WebApplication
       - echo "**** running the UI tests ****"
