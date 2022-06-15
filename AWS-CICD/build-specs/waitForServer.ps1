@@ -28,7 +28,7 @@ while ($statusCode -ne 200) {
   sleep 10
   # make request agains local server
   $statusCode = try {
-    $responce = $(Invoke-WebRequest -Uri 'https://localhost:5001' -UseBasicParsing -ErrorAction Stop)
+    $responce = $(Invoke-WebRequest -Uri 'http://localhost:80' -UseBasicParsing -ErrorAction Stop)
     $responce.StatusCode
   } catch {
     404

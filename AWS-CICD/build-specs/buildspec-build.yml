@@ -30,10 +30,13 @@ phases:
       - echo "Processing the commit id {$CODEBUILD_RESOLVED_SOURCE_VERSION}"
       - echo "$CODEBUILD_RESOLVED_SOURCE_VERSION" > app\version.txt
       - cd uitest\
+      - Start-Process -NoNewWindow dotnet -ArgumentList "webapplication.dll", "clear=true", "initialize=true", "allowCleanSelf=true"      - cd $slnDir\WebApplication
       - cd $slnDir\WebApplication
-      - echo "**** running the UI tests ****"
+      - echo "Waiting for server to initialize"
+      - ..\AWS-CICD\build-specs\waitForServer.ps1      
       - cd ClientApp
       - mkdir output
+      - npx codeceptjs run $env:UITestParams
       - echo "Switching to the SolutionDir"
       - cd $slnDir
       - echo $slnDir
