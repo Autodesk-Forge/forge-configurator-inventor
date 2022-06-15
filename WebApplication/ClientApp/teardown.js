@@ -5,7 +5,7 @@ module.exports = function() {
 
    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
-   axios.get('https://localhost:5001/ClearSelf')
+   axios.get('http://localhost:80/ClearSelf')
    .then(response => {
       console.log(response.data);
    })
