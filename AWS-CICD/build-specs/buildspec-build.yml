@@ -30,7 +30,7 @@ phases:
       - echo "Processing the commit id {$CODEBUILD_RESOLVED_SOURCE_VERSION}"
       - echo "$CODEBUILD_RESOLVED_SOURCE_VERSION" > app\version.txt
       - cd uitest\
-      - Start-Process -NoNewWindow dotnet -ArgumentList "webapplication.dll", "clear=true", "initialize=true", "allowCleanSelf=true"      - cd $slnDir\WebApplication
+      - Start-Process -NoNewWindow dotnet -ArgumentList "webapplication.dll", "clear=true", "initialize=true", "allowCleanSelf=true"
       - cd $slnDir\WebApplication
       - echo "Waiting for server to initialize"
       - ..\AWS-CICD\build-specs\waitForServer.ps1      
