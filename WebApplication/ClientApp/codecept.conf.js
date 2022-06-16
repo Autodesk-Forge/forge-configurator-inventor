@@ -24,7 +24,7 @@ exports.config = {
   output: './output',
   helpers: {
     Playwright: {
-      url: 'https://localhost:5001',
+      url: 'http://localhost:80',
       show: true,
       browser: 'chromium',
       chromium: {args: chromiumArgs},

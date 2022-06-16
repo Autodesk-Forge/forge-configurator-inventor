@@ -1,5 +1,5 @@
 $version="1.0.$env:CODEBUILD_BUILD_NUMBER"
-
+Write-Host "CODEBUILD_BUILD_NUMBER = $CODEBUILD_BUILD_NUMBER"
 $targetConfiguration='Release'
 $dotnet='net6.0'
 
