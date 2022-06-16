@@ -36,7 +36,6 @@ phases:
       - ..\AWS-CICD\build-specs\waitForServer.ps1      
       - cd ClientApp
       - mkdir output
-      - npx codeceptjs run $env:UITestParams
       - echo "Switching to the SolutionDir"
       - cd $slnDir
       - echo $slnDir
