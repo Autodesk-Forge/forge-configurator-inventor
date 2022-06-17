@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
-  <assemblyIdentity name="ExtractParametersPlugin" version="1.0.0.0"></assemblyIdentity>
-  <clrClass clsid="{824d9b00-545b-4929-accf-a47b7eca80a1}" progid="ExtractParametersPlugin.PluginServer" threadingModel="Both" name="ExtractParametersPlugin.PluginServer"></clrClass>
-  <file name="ExtractParametersPlugin.dll" hashalg="SHA1"></file>
-</assembly>

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Addin Type="Plugin">
-  <ClassId>{9779EFBE-3CA7-45A6-AE90-DA85485DD674}</ClassId>
-  <ClientId>{9779EFBE-3CA7-45A6-AE90-DA85485DD674}</ClientId>
-  <DisplayName>CreateThumbnailPlugin</DisplayName>
-  <Description>a Creates a thumbnail for an Inventor document</Description>
-  <Assembly>CreateThumbnailPlugin.dll</Assembly>
-</Addin>

@@ -1,8 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Addin Type="Plugin">
-  <ClassId>{506ce94e-88ba-4891-b989-d4cf85ba0fff}</ClassId>
-  <ClientId>{506ce94e-88ba-4891-b989-d4cf85ba0fff}</ClientId>
-  <DisplayName>RFAExportRCEPlugin</DisplayName>
-  <Description>a RFAExportRCEPlugin</Description>
-  <Assembly>RFAExportRCEPlugin.dll</Assembly>
-</Addin>
