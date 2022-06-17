@@ -29,6 +29,8 @@ async function deployVersion(pipelineName, executionId, codeBuildNumber, applica
          }
    }).promise()).actionExecutionDetails;
 
+   applicationName = "SDRA";
+   environmentName = "sdra-dev";
    const sourceAction = getAction(actions, 'Source'); 
    let commitMessage = sourceAction.output.outputVariables.CommitMessage;
 

@@ -24,9 +24,29 @@ namespace webapplication.Controllers;
 [Route("[controller]")]
 public class VersionController : ControllerBase
 {
+    private const string default_version = "1.0.0";
+
     [HttpGet]
     public string Get()
     {
-        return Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
+        string version = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
+
+        if(String.IsNullOrEmpty(version) == null || version == default_version)
+        {
+            try
+            {
+                // Open the text file using a stream reader.
+                using (var sr = new StreamReader("version.txt"))
+                {
+                    version = sr.ReadToEnd();
+                }
+            }
+            catch (IOException e)
+            {
+                //Just swallow the exception for now
+            }
+        }
+
+        return version;
     }
 }

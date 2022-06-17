@@ -8,6 +8,7 @@ phases:
       - apt-get install -y npm
   build:
     commands:
+       - echo "Buildspec-mig-build initialize"
        - cd WebApplication
        - dotnet publish -c Release -o ../mig
 artifacts:

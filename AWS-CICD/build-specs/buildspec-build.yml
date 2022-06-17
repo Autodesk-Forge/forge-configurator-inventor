@@ -17,29 +17,32 @@ phases:
       - msbuild /property:Configuration=Release /Target:Publish
       - echo "**** running backend tests ****"
       - dotnet test
-      - echo "**** running linter ****"
       - cd WebApplication/ClientApp
-      - npm run lint
       - echo "**** running frontend tests ****"
       - npm test -- --coverage
       - echo "**** Starting the server ****"
       - cd $slnDir
-      - xcopy /Y /E WebApplication\bin\Release\net6.0\publish\* app\
-      - xcopy /Y /E WebApplication\AppBundles\* app\AppBundles\
+      - xcopy /Y /E /s WebApplication\bin\Release\net6.0\publish\* app\
+      - xcopy /Y /E /s WebApplication\AppBundles\* app\AppBundles\
+      - xcopy /Y /E /s WebApplication\ClientApp\build\* app\ClientApp\build\
       - xcopy /Y /E app\* uitest\
       - rm app\appsettings.Local.json
+      - echo "Processing the commit id {$CODEBUILD_RESOLVED_SOURCE_VERSION}"
+      - echo "$CODEBUILD_RESOLVED_SOURCE_VERSION" > app\version.txt
       - cd uitest\
       - Start-Process -NoNewWindow dotnet -ArgumentList "webapplication.dll", "clear=true", "initialize=true", "allowCleanSelf=true"
       - cd $slnDir\WebApplication
       - echo "Waiting for server to initialize"
-      - ..\AWS-CICD\build-specs\waitForServer.ps1
-      - echo "**** running the UI tests ****"
+      - ..\AWS-CICD\build-specs\waitForServer.ps1      
       - cd ClientApp
       - mkdir output
-      - npx codeceptjs run $env:UITestParams
+      - echo "Switching to the SolutionDir"
+      - cd $slnDir
+      - echo $slnDir
   post_build:
     commands:
       - cd $slnDir
+      - echo "**** Creating report folders ****"
       - xcopy /Y /E WebApplication\ClientApp\output\* report\errorScreenShots\
       - xcopy /Y /E WebApplication\ClientApp\coverage\* report\coverage\
       - if ($githubOAuthToken -ne $null) { .\AWS-CICD\build-specs\CreateRelease.ps1 }
