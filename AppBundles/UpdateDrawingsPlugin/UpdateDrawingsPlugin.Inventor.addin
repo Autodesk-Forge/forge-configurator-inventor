@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Addin Type="Plugin">
+  <ClassId>{7DD8A91A-B063-44F2-B93B-C80827E1E155}</ClassId>
+  <ClientId>{7DD8A91A-B063-44F2-B93B-C80827E1E155}</ClientId>
+  <DisplayName>UpdateDrawingsPlugin</DisplayName>
+  <Description>Update Drawings functionality</Description>
+  <Assembly>UpdateDrawingsPlugin.dll</Assembly>
+</Addin>
