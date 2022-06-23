@@ -17,7 +17,9 @@ phases:
       - msbuild /property:Configuration=Release /Target:Publish
       - echo "**** running backend tests ****"
       - dotnet test
+      - echo "**** running linter ****"
       - cd WebApplication/ClientApp
+      - npm run lint
       - echo "**** running frontend tests ****"
       - npm test -- --coverage
       - echo "**** Starting the server ****"
