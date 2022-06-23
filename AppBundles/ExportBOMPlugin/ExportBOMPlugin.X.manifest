@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
-  <assemblyIdentity name="ExportBOMPlugin" version="1.0.0.0"></assemblyIdentity>
-  <clrClass clsid="{282d00a7-b2b5-488e-8a76-7c22280794a6}" progid="ExportBOMPlugin.PluginServer" threadingModel="Both" name="ExportBOMPlugin.PluginServer"></clrClass>
-  <file name="ExportBOMPlugin.dll" hashalg="SHA1"></file>
-</assembly>

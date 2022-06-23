@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
-  <assemblyIdentity name="UpdateDrawingsPlugin" version="1.0.0.0"></assemblyIdentity>
-  <clrClass clsid="{7DD8A91A-B063-44F2-B93B-C80827E1E155}" progid="UpdateDrawingsPlugin.PluginServer" threadingModel="Both" name="UpdateDrawingsPlugin.PluginServer"></clrClass>
-  <file name="UpdateDrawingsPlugin.dll" hashalg="SHA1"></file>
-</assembly>

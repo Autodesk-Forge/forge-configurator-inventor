@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
-  <assemblyIdentity name="UpdateParametersPlugin" version="1.0.0.0"></assemblyIdentity>
-  <clrClass clsid="{E20F6D0B-676E-40F7-8870-205A76A5B689}" progid="UpdateParametersPlugin.PluginServer" threadingModel="Both" name="UpdateParametersPlugin.PluginServer"></clrClass>
-  <file name="UpdateParametersPlugin.dll" hashalg="SHA1"></file>
-</assembly>
