@@ -18,9 +18,9 @@
 
 using Autodesk.Forge.DesignAutomation.Model;
 using System.Collections.Generic;
-using WebApplication.Definitions;
+using webapplication.Definitions;
 
-namespace WebApplication.Processing
+namespace webapplication.Processing
 {
     /// <summary>
     /// RFA generator from Inventor document.

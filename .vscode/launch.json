@@ -14,14 +14,14 @@
           "name": "Debug Jest All",
           "type": "node",
           "request": "launch",
-          "runtimeExecutable": "${cwd}/WebApplication/ClientApp/node_modules/.bin/react-scripts",
+          "runtimeExecutable": "${cwd}/webapplication/ClientApp/node_modules/.bin/react-scripts",
           "args": [
             "test",
             "--runInBand",
             "--no-cache",
             "--env=jsdom"
           ],
-          "cwd": "${workspaceRoot}/WebApplication/ClientApp/",
+          "cwd": "${workspaceRoot}/webapplication/ClientApp/",
           "protocol": "inspector",
           "console": "integratedTerminal",
           "internalConsoleOptions": "neverOpen"
@@ -30,7 +30,7 @@
           "name": "Debug Jest File",
           "type": "node",
           "request": "launch",
-          "runtimeExecutable": "${cwd}/WebApplication/ClientApp/node_modules/.bin/react-scripts",
+          "runtimeExecutable": "${cwd}/webapplication/ClientApp/node_modules/.bin/react-scripts",
           "args": [
             "test",
             "${fileBasenameNoExtension}",
@@ -38,7 +38,7 @@
             "--no-cache",
             "--env=jsdom"
           ],
-          "cwd": "${workspaceRoot}/WebApplication/ClientApp/",
+          "cwd": "${workspaceRoot}/webapplication/ClientApp/",
           "protocol": "inspector",
           "console": "integratedTerminal",
           "internalConsoleOptions": "neverOpen"
@@ -49,16 +49,16 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/WebApplication/bin/Debug/netcoreapp3.1/WebApplication.dll",
+            "program": "${workspaceFolder}/webapplication/bin/Debug/netcoreapp3.1/webapplication.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/WebApplication",
+            "cwd": "${workspaceFolder}/webapplication",
             "stopAtEntry": false,
             "justMyCode": false,
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
             },
             "sourceFileMap": {
-                "/Views": "${workspaceFolder}/WebApplication/Views"
+                "/Views": "${workspaceFolder}/webapplication/Views"
             }
         },
         {
@@ -72,7 +72,7 @@
             "request": "launch",
             "name": "Client",
             "url": "https://localhost:5001",
-            "webRoot": "${workspaceFolder}/WebApplication"
+            "webRoot": "${workspaceFolder}/webapplication"
         }
       ]
 }

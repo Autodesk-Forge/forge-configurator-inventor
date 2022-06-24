@@ -1,39 +1,41 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
     <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
     <IsPackable>false</IsPackable>
     <SpaRoot>ClientApp\</SpaRoot>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
-    <Version>1.0.0-Hash-$(CODEBUILD_RESOLVED_SOURCE_VERSION)</Version>
-    <LangVersion>8.0</LangVersion>
+    <SpaProxyServerUrl>https://localhost:44422</SpaProxyServerUrl>
+    <SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Autodesk.Forge" Version="1.7.0" />
     <PackageReference Include="Autodesk.Forge.DesignAutomation" Version="3.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="3.1.2" />
+    <PackageReference Include="Autodesk.Forge.DesignAutomation.Inventor.Utils" Version="2.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="6.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="3.1.20" />
     <PackageReference Include="Serilog.AspNetCore" Version="3.2.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
   </ItemGroup>
 
   <ItemGroup>
     <!-- Don't publish the SPA source files, but do show them in the project files list -->
-    <Compile Remove="LocalCache\**" />
     <Content Remove="$(SpaRoot)**" />
-    <Content Remove="LocalCache\**" />
-    <EmbeddedResource Remove="LocalCache\**" />
     <None Remove="$(SpaRoot)**" />
-    <None Remove="LocalCache\**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\Shared\ExtractedBOM.cs" Link="Definitions\ExtractedBOM.cs" />
-    <Compile Include="..\Shared\InventorParameters.cs" Link="Definitions\InventorParameters.cs" />
-    <Compile Include="..\Shared\Message.cs" Link="Definitions\Message.cs" />
+    <Compile Remove="WeatherForecast.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="AppBundles\" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
@@ -55,11 +57,10 @@
     <ItemGroup>
       <DistFiles Include="$(SpaRoot)build\**" />
       <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
-        <RelativePath>%(DistFiles.Identity)</RelativePath>
+        <RelativePath>wwwroot\%(RecursiveDir)%(FileName)%(Extension)</RelativePath>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
         <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       </ResolvedFileToPublish>
     </ItemGroup>
   </Target>
-
 </Project>

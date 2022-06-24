@@ -18,7 +18,7 @@
 
 using System.Collections.Generic;
 
-namespace WebApplication.Job
+namespace webapplication.Job
 {
     public enum ErrorInfoType
     {

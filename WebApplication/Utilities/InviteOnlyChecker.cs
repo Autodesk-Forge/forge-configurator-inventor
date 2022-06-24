@@ -18,7 +18,7 @@
 
 using System.Linq;
 using System.Net.Mail;
-using WebApplication.Definitions;
+using webapplication.Definitions;
 
 public class InviteOnlyChecker
 {

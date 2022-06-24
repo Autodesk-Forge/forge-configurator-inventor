@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text;
 using Shared;
 
-namespace WebApplication.Utilities
+namespace webapplication.Utilities
 {
     public static class ExtractedBomEx
     {

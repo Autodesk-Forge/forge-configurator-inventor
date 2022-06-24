@@ -19,17 +19,17 @@ using System.Text.Json.Serialization;
 using Autodesk.Forge.Core;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
-using WebApplication.Definitions;
-using WebApplication.Processing;
-using WebApplication.Services;
-using WebApplication.Utilities;
+using webapplication.Definitions;
+using webapplication.Processing;
+using webapplication.Services;
+using webapplication.Utilities;
 using Microsoft.Extensions.Configuration;
 using Autodesk.Forge.DesignAutomation;
-using WebApplication.Middleware;
-using WebApplication.State;
+using webapplication.Middleware;
+using webapplication.State;
 using MigrationApp;
 
-namespace WebApplication
+namespace webapplication
 {
     public class ServiceConfigurator
     {

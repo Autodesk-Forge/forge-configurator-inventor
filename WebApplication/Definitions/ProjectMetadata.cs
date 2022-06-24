@@ -18,7 +18,7 @@
 
 using System.Text.Json.Serialization;
 
-namespace WebApplication.Definitions
+namespace webapplication.Definitions
 {
     public class ProjectMetadata
     {

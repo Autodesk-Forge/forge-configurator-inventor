@@ -17,9 +17,9 @@
 /////////////////////////////////////////////////////////////////////
 
 using System;
-using WebApplication.Utilities;
+using webapplication.Utilities;
 
-namespace WebApplication.State
+namespace webapplication.State
 {
     public class Project
     {
@@ -44,7 +44,7 @@ namespace WebApplication.State
         public string OSSSourceModel { get; }
         public string OSSSourceDrawings { get; }
 
-        public OSSObjectNameProvider OssNameProvider(string hash) => new OSSObjectNameProvider(Name, hash);
+        public OSSObjectNameProvider OssNameProvider(string? hash) => new OSSObjectNameProvider(Name, hash);
         public LocalNameProvider LocalNameProvider(string hash) => new LocalNameProvider(LocalAttributes.BaseDir, hash);
 
         /// <summary>
