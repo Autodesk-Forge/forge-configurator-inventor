@@ -27,11 +27,11 @@ public class VersionController : ControllerBase
     private const string default_version = "1.0.0";
 
     [HttpGet]
-    public string Get()
+    public string? Get()
     {
-        string version = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
+        string? version = Assembly.GetEntryAssembly()?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
 
-        if(String.IsNullOrEmpty(version) == null || version == default_version)
+        if(version == default_version)
         {
             try
             {
@@ -41,7 +41,7 @@ public class VersionController : ControllerBase
                     version = sr.ReadToEnd();
                 }
             }
-            catch (IOException e)
+            catch
             {
                 //Just swallow the exception for now
             }

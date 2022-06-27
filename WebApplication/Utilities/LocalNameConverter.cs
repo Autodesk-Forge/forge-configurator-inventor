@@ -96,7 +96,7 @@ namespace webapplication.Utilities
         /// </summary>
         public string DrawingsList => ToFullName(LocalName.DrawingsList);
 
-        public LocalNameProvider(string projectDir, string hash) : base(Path.Combine(projectDir, hash))
+        public LocalNameProvider(string? projectDir, string? hash) : base(Path.Combine(projectDir, hash))
         {
         }
     }

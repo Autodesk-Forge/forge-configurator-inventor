@@ -34,22 +34,22 @@ namespace Shared
     public class InventorParameter
     {
         [JsonProperty("value")]
-        public string Value { get; set; }
+        public string? Value { get; set; }
 
         [JsonProperty("unit")]
-        public string Unit { get; set; }
+        public string? Unit { get; set; }
 
         [JsonProperty("values")]
-        public string[] Values { get; set; }
+        public string[]? Values { get; set; }
 
         [JsonProperty("readonly")]
         public bool? ReadOnly { get; set; }
 
         [JsonProperty("label")]
-        public string Label { get; set; }
+        public string? Label { get; set; }
 
         [JsonProperty("errormessage")]
-        public string ErrorMessage { get; set; }
+        public string? ErrorMessage { get; set; }
     }
 
     /// <summary>

@@ -40,7 +40,7 @@ namespace webapplication.Definitions
         /// </summary>
         /// <param name="stats"></param>
         /// <returns></returns>
-        public static FdaStatsDTO All(ICollection<Statistics> stats)
+        public static FdaStatsDTO? All(ICollection<Statistics> stats)
         {
             return Convert(stats);
         }
@@ -53,7 +53,7 @@ namespace webapplication.Definitions
             return All(stats).ClearTimings();
         }
 
-        private static FdaStatsDTO Convert(ICollection<Statistics> stats)
+        private static FdaStatsDTO? Convert(ICollection<Statistics> stats)
         {
             if (stats == null || stats.Count == 0) return null;
 
@@ -74,7 +74,7 @@ namespace webapplication.Definitions
             return sum;
         }
 
-        private static FdaStatsDTO ConvertSingle(Statistics stats)
+        private static FdaStatsDTO? ConvertSingle(Statistics stats)
         {
             // it's assumed that statistics calculated for successful job, so all timings are present
             var downloadSec = stats.TimeInstructionsStarted.Value.Subtract(stats.TimeDownloadStarted.Value).TotalSeconds;

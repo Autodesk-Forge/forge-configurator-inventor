@@ -16,13 +16,10 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
 using webapplication.Processing;
 using webapplication.State;
 using webapplication.Definitions;
 using webapplication.Utilities;
-using System.IO;
 using System.Text.RegularExpressions;
 
 namespace webapplication.Job
@@ -30,11 +27,11 @@ namespace webapplication.Job
     internal class AdoptJobItem : JobItemBase
     {
         private readonly ProjectInfo _projectInfo;
-        private readonly string _fileName;
+        private readonly string? _fileName;
         private readonly UserResolver _userResolver;
         private readonly DtoGenerator _dtoGenerator;
 
-        public AdoptJobItem(ILogger logger, ProjectInfo projectInfo, string fileName, ProjectWork projectWork, DtoGenerator dtoGenerator, UserResolver userResolver)
+        public AdoptJobItem(ILogger logger, ProjectInfo projectInfo, string? fileName, ProjectWork projectWork, DtoGenerator dtoGenerator, UserResolver userResolver)
             : base(logger, null, projectWork)
         {
             _projectInfo = projectInfo;
@@ -45,7 +42,7 @@ namespace webapplication.Job
 
         public override async Task ProcessJobAsync(IResultSender resultSender)
         {
-            using var scope = Logger.BeginScope("Project Adoption ({Id})");
+            using var scope = Logger.BeginScope($"Project Adoption ({Id})");
 
             Logger.LogInformation($"ProcessJob (Adopt) {Id} for project {_projectInfo.Name} started.");
 
@@ -63,17 +60,18 @@ namespace webapplication.Job
             var bucket = await _userResolver.GetBucketAsync(tryToCreate: true);
             ProjectStorage projectStorage = await _userResolver.GetProjectStorageAsync(_projectInfo.Name);
 
-            string ossSourceModel = projectStorage.Project.OSSSourceModel;
+            string? ossSourceModel = projectStorage.Project.OSSSourceModel;
 
             await bucket.SmartUploadAsync(_fileName, ossSourceModel);
 
             // cleanup before adoption
-            File.Delete(_fileName);
+            if(!string.IsNullOrEmpty(_fileName))
+                File.Delete(_fileName);
 
             // adopt the project
             bool adopted = false;
             FdaStatsDTO stats;
-            string reportUrl = null;
+            string? reportUrl = null;
             try
             {
                 string signedUploadedUrl = await bucket.CreateSignedUrlAsync(ossSourceModel);

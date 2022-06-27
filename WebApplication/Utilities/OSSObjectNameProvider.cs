@@ -154,7 +154,7 @@ namespace webapplication.Utilities
     /// </summary>
     public class OssNameConverter
     {
-        private readonly string _namePrefix;
+        private readonly string? _namePrefix;
 
         public OssNameConverter(string? namePrefix)
         {

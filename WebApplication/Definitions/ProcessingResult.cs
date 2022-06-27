@@ -24,8 +24,8 @@ namespace webapplication.Definitions
     public class ProcessingResult
     {
         public bool Success { get; set; }
-        public string ReportUrl { get; set; }
-        public string ErrorMessage { get; set; }
+        public string? ReportUrl { get; set; }
+        public string? ErrorMessage { get; set; }
 
         public List<Statistics> Stats { get; set; } = new List<Statistics>();
 

@@ -105,7 +105,7 @@ namespace webapplication.Processing
         /// Initialize app bundle and activity.
         /// </summary>
         /// <param name="packagePathname">Pathname to the package.</param>
-        public async Task InitializeAsync(string packagePathname)
+        public async Task InitializeAsync(string? packagePathname)
         {
             await Publisher.InitializeAsync(packagePathname, this);
         }

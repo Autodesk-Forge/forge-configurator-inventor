@@ -26,13 +26,13 @@ namespace webapplication.Definitions
         /// Hash string for parameters.
         /// </summary>
         [JsonPropertyName("hash")]
-        public string Hash { get; set; }
+        public string? Hash { get; set; }
 
         /// <summary>
         /// Pathname of the top-level assembly.
         /// </summary>
         [JsonPropertyName("tla")]
-        public string TLA { get; set; }
+        public string? TLA { get; set; }
 
         public bool IsAssembly => !string.IsNullOrEmpty(TLA);
 

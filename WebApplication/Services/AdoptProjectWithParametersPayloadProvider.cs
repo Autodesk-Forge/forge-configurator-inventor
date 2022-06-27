@@ -18,7 +18,7 @@ namespace webapplication.Services
             _clientFactory = clientFactory;
         }
 
-        public async Task<AdoptProjectWithParametersPayload> GetParametersAsync(string jsonFileUrl)
+        public async Task<AdoptProjectWithParametersPayload> GetParametersAsync(string? jsonFileUrl)
         {
             _logger.LogInformation($"downloading parameters from {jsonFileUrl}");
 

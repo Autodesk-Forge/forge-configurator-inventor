@@ -38,7 +38,7 @@ namespace webapplication.Job
 
         public override async Task ProcessJobAsync(IResultSender resultSender)
         {
-            using var scope = Logger.BeginScope("Drawing generation ({Id})");
+            using var scope = Logger.BeginScope($"Drawing generation ({Id})");
 
             Logger.LogInformation($"ProcessJob (Drawing) {Id} for project {ProjectId} started.");
 
