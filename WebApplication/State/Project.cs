@@ -44,8 +44,8 @@ namespace webapplication.State
         public string? OSSSourceModel { get; }
         public string? OSSSourceDrawings { get; }
 
-        public OSSObjectNameProvider OssNameProvider(string? hash) => new OSSObjectNameProvider(Name, hash);
-        public LocalNameProvider LocalNameProvider(string? hash) => new LocalNameProvider(LocalAttributes.BaseDir, hash);
+        public OSSObjectNameProvider OssNameProvider(string? hash) => new (Name, hash);
+        public LocalNameProvider LocalNameProvider(string? hash) => new (LocalAttributes.BaseDir, hash!);
 
         /// <summary>
         /// Full local names for project attribute files.

@@ -16,9 +16,9 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using System.IO;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace webapplication.Utilities
 {
@@ -32,10 +32,16 @@ namespace webapplication.Utilities
         /// <returns>The stream. Should be disposed.</returns>
         public static MemoryStream ToStream<T>(T data, bool writeIndented = false)
         {
+            JsonSerializerOptions options = new()
+            {
+                WriteIndented = writeIndented,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+            };
+
             var memoryStream = new MemoryStream();
             using (var jsonWriter = new Utf8JsonWriter(memoryStream))
             {
-                JsonSerializer.Serialize(jsonWriter, data, typeof(T), new JsonSerializerOptions { WriteIndented = writeIndented, IgnoreNullValues = true });
+                JsonSerializer.Serialize(jsonWriter, data, typeof(T), options);
             }
 
             memoryStream.Position = 0;
@@ -48,7 +54,7 @@ namespace webapplication.Utilities
         public static T DeserializeFile<T>(string filename)
         {
             var content = File.ReadAllText(filename, Encoding.UTF8);
-            return JsonSerializer.Deserialize<T>(content);
+            return JsonSerializer.Deserialize<T>(content)!;
         }
     }
 }

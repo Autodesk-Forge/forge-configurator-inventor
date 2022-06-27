@@ -27,8 +27,9 @@ namespace webapplication.Utilities
         /// 
         /// NOTE: in case of several key-value pairs - the last value will "survive".
         /// </summary>
-        public static Dictionary<TKey, TValue>? MergeDictionaries<TKey, TValue>(IEnumerable<Dictionary<TKey, TValue>?> dictionaries)
+        public static Dictionary<TKey, TValue> MergeDictionaries<TKey, TValue>(IEnumerable<Dictionary<TKey, TValue>> dictionaries) where TKey : notnull
         {
+            if (dictionaries == null) throw new ArgumentNullException(nameof(dictionaries));
             var output = new Dictionary<TKey, TValue>();
 
             foreach (var dict in dictionaries)

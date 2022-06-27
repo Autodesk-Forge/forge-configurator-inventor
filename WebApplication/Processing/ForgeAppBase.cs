@@ -86,7 +86,7 @@ namespace webapplication.Processing
             }
         }
 
-        private AppBundle _appBundle;
+        private AppBundle _appBundle = null!;
 
         public string ActivityId => Id;
         public string ActivityLabel => Label;
@@ -125,7 +125,7 @@ namespace webapplication.Processing
         /// <param name="args">Work item arguments.</param>
         protected async Task<ProcessingResult> RunAsync(Dictionary<string, IArgument> args)
         {
-            WorkItemStatus status = await Publisher.RunWorkItemAsync(args, this);
+            WorkItemStatus status = await Publisher.RunWorkItemAsync(args!, this);
             return new ProcessingResult(status.Stats)
                     {
                         Success = (status.Status == Status.Success),
@@ -140,7 +140,7 @@ namespace webapplication.Processing
         {
             var args = ToWorkItemArgs(data);
 
-            return RunAsync(args);
+            return RunAsync(args!);
         }
 
         /// <summary>

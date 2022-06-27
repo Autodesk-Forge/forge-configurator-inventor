@@ -65,9 +65,9 @@ namespace webapplication.Processing
             return Collections.MergeDictionaries(all);
         }
 
-        public override List<string> GetBundles(string nickname)
+        public override List<string> GetBundles(string? nickname)
         {
-            return _definitions.SelectMany(def => def.GetBundles(nickname)).ToList();
+            return _definitions.SelectMany(def => def.GetBundles(nickname!)).ToList();
         }
 
         protected override string OutputUrl(ProcessingArgs projectData)

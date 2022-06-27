@@ -54,7 +54,7 @@ namespace webapplication.Processing
             _logger.LogInformation($"Adopt project '{projectInfo.Name}'");
 
             var projectStorage = await _userResolver.GetProjectStorageAsync(projectInfo.Name);
-            var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, projectInfo.TopLevelAssembly);
+            var adoptionData = await _arranger.ForAdoptionAsync(inputDocUrl, projectInfo.TopLevelAssembly!);
 
             ProcessingResult result = await _fdaClient.AdoptAsync(adoptionData);
             if (! result.Success)
@@ -65,7 +65,7 @@ namespace webapplication.Processing
             }
 
             // rearrange generated data according to the parameters hash
-            await _arranger.MoveProjectAsync(projectStorage.Project, projectInfo.TopLevelAssembly);
+            await _arranger.MoveProjectAsync(projectStorage.Project, projectInfo.TopLevelAssembly!);
 
             _logger.LogInformation("Cache the project locally");
             var bucket = await _userResolver.GetBucketAsync();
@@ -73,10 +73,10 @@ namespace webapplication.Processing
             // check for adoption errors
             // TECHDEBT: this should be done before `MoveProjectAsync`, but it will leave "garbage" at OSS.  Solve it someday.
             var messages = await bucket.DeserializeAsync<Message[]>(projectStorage.Project.OssAttributes.AdoptMessages);
-            var errors = messages.Where(m => m.Severity == Severity.Error).Select(m => m.Text).ToArray();
-            if (errors.Length > 0)
+            var errors = messages?.Where(m => m.Severity == Severity.Error).Select(m => m.Text).ToArray();
+            if (errors!.Length > 0)
             {
-                throw new ProcessingException("Adoption failed", errors);
+                throw new ProcessingException("Adoption failed", errors!);
             }
 
             await projectStorage.EnsureLocalAsync(bucket);
@@ -85,14 +85,14 @@ namespace webapplication.Processing
             var ossNames = projectStorage.GetOssNames();
             await bucket.UploadAsJsonAsync(ossNames.StatsAdopt, result.Stats);
             await bucket.CopyAsync(ossNames.StatsAdopt, ossNames.StatsUpdate);
-            return (FdaStatsDTO.All(result.Stats), result.ReportUrl);
+            return (FdaStatsDTO.All(result.Stats), result.ReportUrl)!;
         }
 
         /// <summary>
         /// Update project state with the parameters (or take it from cache).
         /// </summary>
         public async Task<(ProjectStateDTO dto, FdaStatsDTO stats, string? reportUrl)> DoSmartUpdateAsync(InventorParameters parameters, 
-            string projectId, bool bForceUpdate = false)
+            string? projectId, bool bForceUpdate = false)
         {
             var hash = Crypto.GenerateParametersHashString(parameters);
             _logger.LogInformation($"Incoming parameters hash is {hash}");
@@ -112,7 +112,7 @@ namespace webapplication.Processing
                 // restore statistics
                 var bucket = await _userResolver.GetBucketAsync();
                 var statsNative = await bucket.DeserializeAsync<List<Statistics>>(storage.GetOssNames(hash).StatsUpdate);
-                stats = FdaStatsDTO.CreditsOnly(statsNative);
+                stats = FdaStatsDTO.CreditsOnly(statsNative!);
                 reportUrl = null;
             }
             else
@@ -152,7 +152,7 @@ namespace webapplication.Processing
             if (await bucket.ObjectExistsAsync(ossNames.Rfa))
             {
                 var stats = await bucket.DeserializeAsync<Statistics[]>(ossNames.StatsRFA);
-                return (FdaStatsDTO.CreditsOnly(stats), null);
+                return (FdaStatsDTO.CreditsOnly(stats!), null);
             }
 
             // OK, nothing in cache - generate it now
@@ -168,7 +168,7 @@ namespace webapplication.Processing
 
             await _arranger.MoveRfaAsync(project, hash);
             await bucket.UploadAsJsonAsync(ossNames.StatsRFA, result.Stats);
-            return (FdaStatsDTO.All(result.Stats), result.ReportUrl);
+            return (FdaStatsDTO.All(result.Stats), result.ReportUrl)!;
         }
 
         public async Task<(FdaStatsDTO? stats, int drawingIdx, string? reportUrl)> ExportDrawingPdfAsync(string? projectName, string? hash, string? drawingKey)
@@ -187,7 +187,7 @@ namespace webapplication.Processing
             var localAttributes = project.LocalAttributes;
             // read cached drawingsList
             var drawings = Json.DeserializeFile<List<string>>(localAttributes.DrawingsList);
-            int index = drawings.IndexOf(drawingKey);
+            int index = drawings.IndexOf(drawingKey!);
             var drawingIdx = index >= 0 ? index : 0;
 
             // check if Drawing viewables file is already generated
@@ -207,7 +207,7 @@ namespace webapplication.Processing
                 if (generated)
                 {
                     var nativeStats = await bucket.DeserializeAsync<List<Statistics>>(ossNames.StatsDrawingPDF(drawingIdx));
-                    return (FdaStatsDTO.CreditsOnly(nativeStats), drawingIdx, null);
+                    return (FdaStatsDTO.CreditsOnly(nativeStats!), drawingIdx, null);
                 }
                 else
                 {
@@ -257,7 +257,7 @@ namespace webapplication.Processing
         /// <summary>
         /// Generate Drawing zip with folder structure (or take it from cache).
         /// </summary>
-        public async Task<(FdaStatsDTO stats, string? reportUrl)> GenerateDrawingAsync(string projectName, string hash)
+        public async Task<(FdaStatsDTO stats, string? reportUrl)> GenerateDrawingAsync(string? projectName, string? hash)
         {
             _logger.LogInformation($"Generating Drawing for hash {hash}");
 
@@ -271,7 +271,7 @@ namespace webapplication.Processing
             if (await bucket.ObjectExistsAsync(ossNames.Drawing))
             {
                 var stats = await bucket.DeserializeAsync<Statistics[]>(ossNames.StatsDrawings);
-                return (FdaStatsDTO.CreditsOnly(stats), null);
+                return (FdaStatsDTO.CreditsOnly(stats!), null);
             }
 
             // OK, nothing in cache - generate it now
@@ -288,10 +288,10 @@ namespace webapplication.Processing
             await _arranger.MoveDrawingAsync(project, hash);
 
             await bucket.UploadAsJsonAsync(ossNames.StatsDrawings, result.Stats);
-            return (FdaStatsDTO.All(result.Stats), result.ReportUrl);
+            return (FdaStatsDTO.All(result.Stats), result.ReportUrl)!;
         }
 
-        public async Task FileTransferAsync(string source, string target)
+        public async Task FileTransferAsync(string? source, string? target)
         {
             ProcessingResult result = await _fdaClient.TransferAsync(source, target);
             if (!result.Success) throw new ApplicationException($"Failed to transfer project file {source}");
@@ -317,7 +317,7 @@ namespace webapplication.Processing
             {
                 _logger.LogInformation("Detected existing outputs at OSS");
                 var statsNative = await bucket.DeserializeAsync<List<Statistics>>(storage.GetOssNames(hash).StatsUpdate);
-                stats = FdaStatsDTO.CreditsOnly(statsNative);
+                stats = FdaStatsDTO.CreditsOnly(statsNative!);
                 reportUrl = null;
             }
             else
@@ -342,7 +342,7 @@ namespace webapplication.Processing
 
                 // process statistics
                 await bucket.UploadAsJsonAsync(storage.GetOssNames(hash).StatsUpdate, result.Stats);
-                stats = FdaStatsDTO.All(result.Stats);
+                stats = FdaStatsDTO.All(result.Stats) ?? throw new InvalidOperationException();
                 reportUrl = result.ReportUrl;
             }
 
@@ -351,7 +351,7 @@ namespace webapplication.Processing
             // and now cache the generated stuff locally
             await storage.EnsureViewablesAsync(bucket, hash);
 
-            return (hash, stats, reportUrl);
+            return (hash, stats, reportUrl)!;
         }
 
         /// <summary>

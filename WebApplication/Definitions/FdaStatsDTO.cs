@@ -40,7 +40,7 @@ namespace webapplication.Definitions
         /// </summary>
         /// <param name="stats"></param>
         /// <returns></returns>
-        public static FdaStatsDTO? All(ICollection<Statistics> stats)
+        public static FdaStatsDTO? All(ICollection<Statistics>? stats)
         {
             return Convert(stats);
         }
@@ -50,10 +50,10 @@ namespace webapplication.Definitions
         /// </summary>
         public static FdaStatsDTO CreditsOnly(ICollection<Statistics> stats)
         {
-            return All(stats).ClearTimings();
+            return All(stats)!.ClearTimings();
         }
 
-        private static FdaStatsDTO? Convert(ICollection<Statistics> stats)
+        private static FdaStatsDTO? Convert(ICollection<Statistics>? stats)
         {
             if (stats == null || stats.Count == 0) return null;
 
@@ -62,13 +62,16 @@ namespace webapplication.Definitions
             {
                 var current = ConvertSingle(s);
 
-                sum.Queueing = sum.Queueing.GetValueOrDefault() + current.Queueing;
-                sum.Download = sum.Download.GetValueOrDefault() + current.Download;
-                sum.Processing = sum.Processing.GetValueOrDefault() + current.Processing;
-                sum.Upload = sum.Upload.GetValueOrDefault() + current.Upload;
-                sum.Total = sum.Total.GetValueOrDefault() + current.Total;
+                if (current != null)
+                {
+                    sum.Queueing = sum.Queueing.GetValueOrDefault() + current.Queueing;
+                    sum.Download = sum.Download.GetValueOrDefault() + current.Download;
+                    sum.Processing = sum.Processing.GetValueOrDefault() + current.Processing;
+                    sum.Upload = sum.Upload.GetValueOrDefault() + current.Upload;
+                    sum.Total = sum.Total.GetValueOrDefault() + current.Total;
 
-                sum.Credits += current.Credits;
+                    sum.Credits += current.Credits;
+                }
             }
 
             return sum;
@@ -77,9 +80,9 @@ namespace webapplication.Definitions
         private static FdaStatsDTO? ConvertSingle(Statistics stats)
         {
             // it's assumed that statistics calculated for successful job, so all timings are present
-            var downloadSec = stats.TimeInstructionsStarted.Value.Subtract(stats.TimeDownloadStarted.Value).TotalSeconds;
-            var processingSec = stats.TimeInstructionsEnded.Value.Subtract(stats.TimeInstructionsStarted.Value).TotalSeconds;
-            var uploadSec = stats.TimeUploadEnded.Value.Subtract(stats.TimeInstructionsEnded.Value).TotalSeconds;
+            var downloadSec = stats.TimeInstructionsStarted!.Value.Subtract(stats.TimeDownloadStarted!.Value).TotalSeconds;
+            var processingSec = stats.TimeInstructionsEnded!.Value.Subtract(stats.TimeInstructionsStarted.Value).TotalSeconds;
+            var uploadSec = stats.TimeUploadEnded!.Value.Subtract(stats.TimeInstructionsEnded.Value).TotalSeconds;
 
             var result = new FdaStatsDTO
                             {
@@ -87,7 +90,7 @@ namespace webapplication.Definitions
                                 Download = downloadSec,
                                 Processing = processingSec,
                                 Upload = uploadSec,
-                                Total = stats.TimeFinished.Value.Subtract(stats.TimeQueued).TotalSeconds,
+                                Total = stats.TimeFinished!.Value.Subtract(stats.TimeQueued).TotalSeconds,
                                 Credits = (downloadSec + processingSec + uploadSec) * CreditsPerSecond
                             };
 

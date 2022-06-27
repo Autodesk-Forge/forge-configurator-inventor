@@ -71,8 +71,8 @@ namespace MigrationApp
             ProjectService projectService;
             using (var scope = _serviceScopeFactory.CreateScope())
             {
-                bucketProvider = scope.ServiceProvider.GetService<MigrationBucketKeyProvider>();
-                projectService = scope.ServiceProvider.GetService<ProjectService>();
+                bucketProvider = scope.ServiceProvider.GetService<MigrationBucketKeyProvider>()!;
+                projectService = scope.ServiceProvider.GetService<ProjectService>()!;
             }
 
             OssBucket bucketOld = _bucketFactory.CreateBucket(bucketKeyOld);
@@ -81,7 +81,7 @@ namespace MigrationApp
             List<string> projectNamesNew = new List<string>();
             try
             {
-                List<string> projectNamesNewFromOss = (List<string>)await projectService.GetProjectNamesAsync(bucketNew);
+                List<string> projectNamesNewFromOss = (List<string>)await projectService!.GetProjectNamesAsync(bucketNew);
                 foreach (string? projectName in projectNamesNewFromOss)
                 {
                     var ossAttributes = new OssAttributes(projectName);
@@ -113,7 +113,7 @@ namespace MigrationApp
             }
 
             // gather projects to migrate
-            List<string> projectNamesOld = (List<string>)await projectService.GetProjectNamesAsync(bucketOld);
+            List<string> projectNamesOld = (List<string>)await projectService!.GetProjectNamesAsync(bucketOld);
             foreach (string? projectName in projectNamesOld)
             {
                 if (!projectNamesNew.Contains(projectName))
@@ -123,7 +123,7 @@ namespace MigrationApp
                     string? metadataFile = ossAttributes.Metadata;
                     try
                     {
-                        ProjectMetadata projectMetadata = await bucketOld.DeserializeAsync<ProjectMetadata>(metadataFile);
+                        ProjectMetadata projectMetadata = (await bucketOld.DeserializeAsync<ProjectMetadata>(metadataFile))!;
                         ProjectInfo projectInfo = new ProjectInfo();
                         projectInfo.Name = projectName;
                         projectInfo.TopLevelAssembly = projectMetadata.TLA;
@@ -131,9 +131,9 @@ namespace MigrationApp
                         MigrationJob migrationJob;
                         using (var scope = _serviceScopeFactory.CreateScope())
                         {
-                            migrationJob = scope.ServiceProvider.GetService<MigrationJob>();
+                            migrationJob = scope.ServiceProvider.GetService<MigrationJob>()!;
                         }
-                        migrationJob.SetJob(JobType.CopyAndAdopt, bucketOld, projectInfo, ONC.ProjectUrl(projectName));
+                        migrationJob!.SetJob(JobType.CopyAndAdopt, bucketOld, projectInfo, ONC.ProjectUrl(projectName));
                         adoptJobs.Add(migrationJob);
                     }
                     catch (Exception e)
@@ -150,8 +150,8 @@ namespace MigrationApp
                     if (configKey.EndsWith(LocalName.Parameters))
                     {
                         // calculate parameter hash based on new algorithmes
-                        InventorParameters parameters = await bucketOld.DeserializeAsync<InventorParameters>(configKey);
-                        string? newHash = Crypto.GenerateParametersHashString(parameters);
+                        InventorParameters parameters = (await bucketOld.DeserializeAsync<InventorParameters>(configKey))!;
+                        string? newHash = Crypto.GenerateParametersHashString(parameters!);
                         OSSObjectNameProvider onp = new OSSObjectNameProvider(projectName, newHash);
                         configKey = onp.Parameters;
 
@@ -163,7 +163,7 @@ namespace MigrationApp
                             MigrationJob migrationJob;
                             using (var scope = _serviceScopeFactory.CreateScope())
                             {
-                                migrationJob = scope.ServiceProvider.GetService<MigrationJob>();
+                                migrationJob = scope.ServiceProvider.GetService<MigrationJob>()!;
                             }
                             migrationJob.SetJob(JobType.GenerateConfiguration, bucketOld, projectInfo, ONC.ProjectUrl(projectName), parameters);
                             configJobs.Add(migrationJob);
@@ -181,9 +181,9 @@ namespace MigrationApp
                     MigrationJob migrationJob;
                     using (var scope = _serviceScopeFactory.CreateScope())
                     {
-                        migrationJob = scope.ServiceProvider.GetService<MigrationJob>();
+                        migrationJob = scope.ServiceProvider.GetService<MigrationJob>()!;
                     }
-                    migrationJob.SetJob(JobType.RemoveNew, bucketNew, new ProjectInfo(projectName), null);
+                    migrationJob.SetJob(JobType.RemoveNew, bucketNew, new ProjectInfo(projectName), null!);
                     adoptJobs.Add(migrationJob);
                 }
             }

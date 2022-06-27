@@ -54,7 +54,7 @@ namespace webapplication.Processing
                 }
             };
 
-        public Task<ProcessingResult> ProcessAsync(string source, string target)
+        public Task<ProcessingResult> ProcessAsync(string? source, string? target)
         {
             var workItemArgs = new Dictionary<string, IArgument>
             {
@@ -62,7 +62,7 @@ namespace webapplication.Processing
                 { "target", new XrefTreeArgument { Verb = Verb.Put, Url = target } }
             };
 
-            return RunAsync(workItemArgs);
+            return RunAsync(workItemArgs!);
         }
     }
 }

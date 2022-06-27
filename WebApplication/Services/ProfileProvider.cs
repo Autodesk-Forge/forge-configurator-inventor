@@ -6,7 +6,7 @@ namespace webapplication.Services
     public class ProfileProvider
     {
         private readonly Lazy<Task<dynamic>> _lazyProfile;
-        public string Token { private get; set; }
+        public string Token { private get; set; } = null!;
 
         public ProfileProvider(IForgeOSS forgeOss)
         {

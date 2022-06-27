@@ -74,7 +74,7 @@ namespace webapplication.Utilities
             // so it a Forge user gets registered into several deployments it will not cause
             // name collisions. So use client ID (as a salt) to generate bucket name.
             var userHash = userHashParam == null ? Crypto.GenerateHashString(_forgeConfiguration.ClientId + userId) : userHashParam;
-            return $"{_bucketPrefixProvider.GetBucketPrefix()}-{userId.Substring(0, 3)}-{userHash}".ToLowerInvariant();
+            return $"{_bucketPrefixProvider.GetBucketPrefix()}-{userId!.Substring(0, 3)}-{userHash}".ToLowerInvariant();
         }
     }
 }

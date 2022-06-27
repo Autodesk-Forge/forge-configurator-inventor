@@ -84,10 +84,12 @@ namespace webapplication.Utilities
 
             var dto = MakeProjectDTO<ProjectDTO>(projectStorage, string.IsNullOrEmpty(hash) ? projectStorage.Metadata.Hash : hash);
             dto.Id = project.Name;
-            dto.Label = !Regex.Match(project.Name, @"[\u0030-\u007a]").Success ? "_" + project.Name : project.Name;
+            dto.Label = !Regex.Match(project.Name!, @"[\u0030-\u007a]").Success ? "_" + project.Name : project.Name;
             dto.Image = _localCache.ToDataUrl(localAttributes.Thumbnail);
             dto.IsAssembly = projectStorage.IsAssembly;
+#pragma warning disable CS0612
             dto.HasDrawing = projectStorage.Metadata.HasDrawings;
+#pragma warning restore CS0612
             dto.DrawingsListUrl = _localCache.ToDataUrl(localAttributes.DrawingsList);
 
             // fill array with adoption messages
@@ -98,7 +100,7 @@ namespace webapplication.Utilities
                 dto.AdoptWarnings = allMessages
                     .Where(m => m.Severity == Severity.Warning)
                     .Select(m => m.Text)
-                    .ToArray();
+                    .ToArray()!;
             }
             else
             {
