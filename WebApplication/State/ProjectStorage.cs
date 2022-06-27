@@ -137,7 +137,7 @@ namespace webapplication.State
             ZipFile.ExtractToDirectory(tempFile.Name, localNames.SvfDir, overwriteFiles: true); // TODO: non-default encoding is not supported
         }
 
-        public async Task EnsureSvfAsync(OssBucket ossBucket, string hash)
+        public async Task EnsureSvfAsync(OssBucket ossBucket, string? hash)
         {
             var localNames = GetLocalNames(hash);
             var ossNames = GetOssNames(hash);

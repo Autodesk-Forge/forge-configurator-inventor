@@ -47,7 +47,9 @@ namespace webapplication
                 .AddJsonOptions(options =>
                                 {
                                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+#pragma warning disable SYSLIB0020
                                     options.JsonSerializerOptions.IgnoreNullValues = true;
+#pragma warning restore SYSLIB0020
                                 });
 
             services.AddSignalR(o =>
@@ -105,7 +107,7 @@ namespace webapplication
                 services.AddScoped<MigrationBucketKeyProvider>();
                 services.AddScoped<IBucketKeyProvider>(provider =>
                 {
-                    return provider.GetService<MigrationBucketKeyProvider>();
+                    return provider.GetService<MigrationBucketKeyProvider>()!;
                 });
                 services.AddScoped<UserResolver>();
                 services.AddSingleton<ProfileProvider>();

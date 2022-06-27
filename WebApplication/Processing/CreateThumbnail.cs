@@ -30,7 +30,7 @@ namespace webapplication.Processing
 
         protected override string OutputUrl(ProcessingArgs projectData)
         {
-            return (projectData as AdoptionData).ThumbnailUrl; // TODO: use generics
+            return (projectData as AdoptionData)!.ThumbnailUrl!; // TODO: use generics
         }
 
         protected override string OutputName => "thumbnail.png";

@@ -31,7 +31,7 @@ namespace webapplication.Processing
 
         protected internal override ForgeRegistration Registration { get; } = ForgeRegistration.All;
 
-        protected override string OutputUrl(ProcessingArgs projectData) => projectData.DrawingUrl;
+        protected override string OutputUrl(ProcessingArgs projectData) => projectData.DrawingUrl!;
         protected override string OutputName => "drawing";
         protected override bool IsOutputZip => true;
         protected override bool IsOutputOptional => true;

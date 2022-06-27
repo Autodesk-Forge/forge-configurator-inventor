@@ -68,7 +68,7 @@ namespace webapplication.Processing
             _resourceProvider = resourceProvider;
             _postProcessing = postProcessing;
 
-            _callbackUrlBase = publisherConfiguration.Value.CallbackUrlBase;
+            _callbackUrlBase = publisherConfiguration.Value.CallbackUrlBase!;
             CompletionCheck = publisherConfiguration.Value.CompletionCheck;
 
             _workItemsApi = workItemsApi;
@@ -174,7 +174,7 @@ namespace webapplication.Processing
             try {
                 // checking existence of the AppBundle
                 await _client.GetAppBundleVersionsAsync(config.Bundle.Id);
-                Alias oldVersion = null;
+                Alias? oldVersion = null;
                 try {
                     // getting version of AppBundle for the particular Alias (label)
                     oldVersion = await _client.GetAppBundleAliasAsync(config.Bundle.Id, config.Label);
@@ -203,7 +203,7 @@ namespace webapplication.Processing
 
             var activity = new Activity
             {
-                Appbundles = config.GetBundles(nickname),
+                Appbundles = config.GetBundles(nickname!),
                 Id = config.ActivityId,
                 Engine = config.Engine,
                 Description = config.Description,
@@ -214,7 +214,7 @@ namespace webapplication.Processing
             try {
                 // checking existence of Activity
                 await _client.GetActivityVersionsAsync(config.ActivityId);
-                Alias oldVersion = null;
+                Alias? oldVersion = null;
                 try {
                     // getting version of Activity for the particular Alias (label)
                     oldVersion = await _client.GetActivityAliasAsync(config.ActivityId, config.ActivityLabel);

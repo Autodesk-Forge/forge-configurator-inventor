@@ -8,8 +8,10 @@ namespace webapplication.Services
     {
         private readonly BucketPrefixProvider _bucketPrefixProvider;
         private readonly IResourceProvider _resourceProvider;
-        private string? BucketKey = "";
+        private string BucketKey = String.Empty;
+#pragma warning disable CS8766
         public string? AnonymousBucketKey {get;}
+#pragma warning restore CS8766
 
         public MigrationBucketKeyProvider(BucketPrefixProvider bucketPrefixProvider, IResourceProvider resourceProvider)
         {
@@ -18,13 +20,15 @@ namespace webapplication.Services
             AnonymousBucketKey = resourceProvider.BucketKey;
         }
 
+#pragma warning disable CS8613
         public Task<string?> GetBucketKeyAsync()
+#pragma warning restore CS8613
         {
-            return Task.FromResult(BucketKey);
+            return Task.FromResult(BucketKey)!;
         }
         public string? SetBucketKeyFromOld(string? bucketKeyOld)
         {
-            BucketKey = GetBucketKeyFromOld(bucketKeyOld);
+            BucketKey = GetBucketKeyFromOld(bucketKeyOld)!;
 
             return BucketKey;
         }

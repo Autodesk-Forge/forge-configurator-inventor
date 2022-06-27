@@ -33,7 +33,7 @@ namespace webapplication.Utilities
         public static async Task DownloadAsync(this HttpClient httpClient, string? url, string? localFile)
         {
             await using var httpStream = await httpClient.GetStreamAsync(url);
-            await using var localStream = File.Create(localFile);
+            await using var localStream = File.Create(localFile!);
             await httpStream.CopyToAsync(localStream);
         }
     }

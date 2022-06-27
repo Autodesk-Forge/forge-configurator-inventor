@@ -26,7 +26,7 @@ namespace webapplication.Processing
         public override string Id => nameof(CreateBOM);
         public override string Description => "Generate BOM for Inventor document";
 
-        protected override string OutputUrl(ProcessingArgs projectData) => projectData.BomUrl;
+        protected override string OutputUrl(ProcessingArgs projectData) => projectData.BomUrl!;
         protected override string OutputName => "bom.json";
 
         public CreateBOM(Publisher publisher) : base(publisher) {}

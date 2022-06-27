@@ -70,7 +70,7 @@ namespace MigrationApp
 
          try
          {
-            await _projectWork.DoSmartUpdateAsync(parameters, projectInfo?.Name);
+            await _projectWork.DoSmartUpdateAsync(parameters!, projectInfo?.Name!);
             _logger.LogInformation($"{logId}: Configuration {parameters} for project {projectInfo?.Name} was generated.");
          }
          catch(Exception e)
@@ -84,13 +84,13 @@ namespace MigrationApp
       private async Task RemoveNew(string logId)
       {
          _logger.LogInformation($"{logId}: Deleting project {projectInfo?.Name} from bucket {bucket?.BucketKey}");
-         List<string?> projectList = new List<string?>() {projectInfo?.Name};
-         await _projectService.DeleteProjects(projectList, bucket);
+         List<string> projectList = new List<string> { projectInfo!.Name! };
+         await _projectService.DeleteProjects(projectNameList: projectList!, bucket);
       }
 
       private async Task CopyAndAdopt(string logId)
       {
-         _bucketProvider.SetBucketKeyFromOld(bucket.BucketKey);
+         _bucketProvider.SetBucketKeyFromOld(bucket!.BucketKey);
          _logger.LogInformation($"{logId}: Processing new project {projectInfo?.Name} in bucket {bucket.BucketKey}");
          OssBucket bucketNew = await _userResolver.GetBucketAsync(true);
 
@@ -103,18 +103,18 @@ namespace MigrationApp
          }
          catch(Exception e)
          {
-            _logger.LogError(e, $"{logId}: Project {projectInfo.Name} cannot be copied.");
+            _logger.LogError(e, $"{logId}: Project {projectInfo!.Name} cannot be copied.");
             return;
          }
 
          try
          {
-            await _projectWork.AdoptAsync(projectInfo, signedUrlNew);
-            _logger.LogInformation($"{logId}: Project {projectInfo.Name} was adopted");
+            await _projectWork.AdoptAsync(projectInfo!, signedUrlNew);
+            _logger.LogInformation($"{logId}: Project {projectInfo!.Name} was adopted");
          }
          catch(Exception e)
          {
-            _logger.LogError(e, $"{logId}: Project {projectInfo.Name} was not adopted");
+            _logger.LogError(e, $"{logId}: Project {projectInfo!.Name} was not adopted");
          }
       }
 

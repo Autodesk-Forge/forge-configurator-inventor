@@ -92,7 +92,7 @@ namespace webapplication.State
         /// </summary>
         public async Task<ProjectStorage> GetProjectStorageAsync(string? projectName, bool ensureDir = true)
         {
-            var project = await GetProjectAsync(projectName, ensureDir);
+            var project = await GetProjectAsync(projectName!, ensureDir);
             return new ProjectStorage(project);
         }
 

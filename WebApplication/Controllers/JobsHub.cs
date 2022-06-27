@@ -188,7 +188,7 @@ public class JobsHub : Hub
 
         _logger.LogInformation($"invoked CreateDrawingPdfJob, connectionId : {Context.ConnectionId}");
 
-        _profileProvider.Token = token;
+        _profileProvider.Token = token!;
 
         // create job and run it
         var job = new AdoptProjectWithParametersJobItem(_logger, _projectService, payloadUrl, _adoptProjectWithParametersPayloadProvider);
@@ -208,7 +208,7 @@ public class JobsHub : Hub
         }
         catch (ProcessingException pe)
         {
-            await _sender.SendErrorAsync(new MessagesError(job.Id, pe.Title, pe.Messages));
+            await _sender.SendErrorAsync(new MessagesError(job.Id, pe.Title, pe.Messages!));
         }
         catch (Exception e)
         {

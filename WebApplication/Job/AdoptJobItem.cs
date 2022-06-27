@@ -48,7 +48,7 @@ namespace webapplication.Job
 
             // Check for valid project and root names (where applicable)
             if ((!string.IsNullOrEmpty(_projectInfo.TopLevelAssembly) && Regex.Match(_projectInfo.TopLevelAssembly, @"[\uFFF0-\uFFFF]").Success) ||
-                Regex.Match(_projectInfo.Name, @"[\uFFF0-\uFFFF]").Success) 
+                Regex.Match(_projectInfo.Name!, @"[\uFFF0-\uFFFF]").Success) 
             {
                 Logger.LogInformation($"Replacement charcters found in project name or top level assembly name for job {Id}.");
 
@@ -76,7 +76,7 @@ namespace webapplication.Job
             {
                 string signedUploadedUrl = await bucket.CreateSignedUrlAsync(ossSourceModel);
 
-                (stats, reportUrl) = await ProjectWork.AdoptAsync(_projectInfo, signedUploadedUrl);
+                (stats, reportUrl) = await ProjectWork!.AdoptAsync(_projectInfo, signedUploadedUrl);
                 adopted = true;
             }
             finally

@@ -38,12 +38,12 @@ namespace webapplication.Definitions
         /// </summary>
         public CompletionCheck CompletionCheck { get; set; } = CompletionCheck.Polling;
 
-        private string callbackUrlBase;
+        private string? callbackUrlBase;
 
         /// <summary>
         /// Base URL for callback.
         /// </summary>
-        public string CallbackUrlBase
+        public string? CallbackUrlBase
         {
             get
             {

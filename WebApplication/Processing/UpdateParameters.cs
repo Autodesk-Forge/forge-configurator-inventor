@@ -35,7 +35,7 @@ namespace webapplication.Processing
         public override string Id => nameof(UpdateParameters);
         public override string Description => "Update parameters from Inventor document, and extract the results";
         protected override string OutputName => "documentParams.json";
-        protected override string OutputUrl(ProcessingArgs projectData) => projectData.ParametersJsonUrl;
+        protected override string OutputUrl(ProcessingArgs projectData) => projectData.ParametersJsonUrl!;
 
         public override List<string> ActivityCommandLine =>
             new List<string>
@@ -77,7 +77,7 @@ namespace webapplication.Processing
         {
             var workItemArgs = base.ToWorkItemArgs(data);
 
-            UpdateData projectData = data as UpdateData;
+            UpdateData projectData = (data as UpdateData)!;
             if (projectData.InputParamsUrl != null) // TODO: use generics
             {
                 workItemArgs.Add(InventorParameters, new XrefTreeArgument { Url = projectData.InputParamsUrl });

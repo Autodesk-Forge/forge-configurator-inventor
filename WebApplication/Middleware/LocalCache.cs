@@ -64,7 +64,7 @@ namespace webapplication.Middleware
         {
             // 'bubble.json' is a top-level manifest file for SVF structure. Detect requests to it,
             // and (if necessary) restore SVF to local cache from OSS
-            app.UseWhen(context => context.Request.Path.Value.StartsWith(VirtualCacheDir) &&
+            app.UseWhen(context => context.Request.Path.Value!.StartsWith(VirtualCacheDir) &&
                                    context.Request.Path.Value.EndsWith("bubble.json"),
                 appBuilder =>
                 {

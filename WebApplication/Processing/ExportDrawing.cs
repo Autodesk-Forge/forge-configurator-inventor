@@ -33,7 +33,7 @@ namespace webapplication.Processing
 
         protected internal override ForgeRegistration Registration { get; } = ForgeRegistration.All;
 
-        protected override string OutputUrl(ProcessingArgs projectData) => projectData.DrawingPdfUrl;
+        protected override string OutputUrl(ProcessingArgs projectData) => projectData.DrawingPdfUrl!;
         protected override string OutputName => "Drawing.pdf";
         protected override bool IsOutputZip => false;
         protected override bool IsOutputOptional => true;
@@ -65,7 +65,7 @@ namespace webapplication.Processing
         {
             var workItemArgs = base.ToWorkItemArgs(data);
 
-            DrawingPdfData projectData = data as DrawingPdfData;
+            DrawingPdfData projectData = (data as DrawingPdfData)!;
             workItemArgs.Add(DrawingParameter, new StringArgument { Value = projectData.DrawingToGenerate });
 
             return workItemArgs;

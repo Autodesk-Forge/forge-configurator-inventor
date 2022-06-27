@@ -30,7 +30,7 @@ namespace webapplication.Services
 
             _logger.LogDebug($"parsing parameters from {jsonAsString}");
 
-            return JsonSerializer.Deserialize<AdoptProjectWithParametersPayload>(jsonAsString);
+            return JsonSerializer.Deserialize<AdoptProjectWithParametersPayload>(jsonAsString)!;
         }
     }
 }

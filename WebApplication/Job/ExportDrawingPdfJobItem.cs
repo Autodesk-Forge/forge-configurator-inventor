@@ -46,7 +46,7 @@ namespace webapplication.Job
             using var scope = Logger.BeginScope($"Export Drawing PDF ({Id})");
             Logger.LogInformation($"ProcessJob (ExportDrawingPDF) {Id} for project {ProjectId} started.");
 
-            (FdaStatsDTO stats, int drawingIndex, string? reportUrl) = await ProjectWork.ExportDrawingPdfAsync(ProjectId, _hash, _drawingKey);
+            (FdaStatsDTO? stats, int drawingIndex, string? reportUrl) = await ProjectWork!.ExportDrawingPdfAsync(ProjectId, _hash, _drawingKey);
 
             Logger.LogInformation($"ProcessJob (ExportDrawingPDF) {Id} for project {ProjectId} completed.");
 
@@ -58,13 +58,13 @@ namespace webapplication.Job
                                                                 values: new { projectName = ProjectId, hash = _hash, index = drawingIndex });
 
                 // when local url starts with a slash, it does not work, because it is doubled in url
-                if (url.StartsWith('/'))
+                if (url != null && url.StartsWith('/'))
                 {
                     url = url.Substring(1);
                 }
             }
 
-            await resultSender.SendSuccessAsync(url, stats, reportUrl);
+            await resultSender.SendSuccessAsync(url!, stats!, reportUrl!);
         }
     }
 }

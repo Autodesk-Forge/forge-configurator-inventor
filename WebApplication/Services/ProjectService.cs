@@ -47,7 +47,7 @@ namespace webapplication.Services
         /// <returns>project storage</returns>
         public async Task<ProjectDTO> AdoptProjectWithParametersAsync(AdoptProjectWithParametersPayload payload)
         {
-            if (!await DoesProjectAlreadyExistAsync(payload.Name))
+            if (!await DoesProjectAlreadyExistAsync(payload.Name!))
             {
                 var bucket = await _userResolver.GetBucketAsync();
                 var signedUrl = await TransferProjectToOssAsync(bucket, payload);
@@ -86,7 +86,7 @@ namespace webapplication.Services
             _logger.LogInformation($"Bucket {bucket.BucketKey} created");
 
             var projectUrl = projectConfig.Url;
-            var project = await _userResolver.GetProjectAsync(projectConfig.Name);
+            var project = await _userResolver.GetProjectAsync(projectConfig.Name!);
 
             _logger.LogInformation($"Launching 'TransferData' for {projectUrl}");
 

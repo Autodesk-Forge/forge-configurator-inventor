@@ -52,8 +52,8 @@ namespace webapplication.Services
 
         private readonly Policy _ossResiliencyPolicy;
 
-        public Task<string> TwoLeggedAccessToken => _twoLeggedAccessToken.Value;
-        private Lazy<Task<string>> _twoLeggedAccessToken;
+        public Task<string?> TwoLeggedAccessToken => _twoLeggedAccessToken!.Value;
+        private Lazy<Task<string?>>? _twoLeggedAccessToken;
 
         /// <summary>
         /// Forge configuration.
@@ -69,7 +69,7 @@ namespace webapplication.Services
             _logger = logger;
             Configuration = optionsAccessor.Value.Validate();
 
-            string apiBaseUrl = Configuration.AuthenticationAddress.GetLeftPart(System.UriPartial.Authority);
+            string? apiBaseUrl = Configuration.AuthenticationAddress.GetLeftPart(System.UriPartial.Authority);
             Autodesk.Forge.Client.Configuration.Default.setApiClientUsingDefault(new ApiClient(apiBaseUrl));
 
             RefreshApiToken();
@@ -90,10 +90,10 @@ namespace webapplication.Services
             _ossResiliencyPolicy = refreshTokenPolicy.WrapAsync(rateLimitRetryPolicy).WrapAsync(bulkHeadPolicy);
         }
 
-        public static bool PropertyExists(dynamic obj, string name)
+        public static bool PropertyExists(dynamic obj, string? name)
         {
             if (obj == null) return false;
-            if (obj is IDictionary<string, object> dict)
+            if (obj is IDictionary<string?, object> dict)
             {
                 return dict.ContainsKey(name);
             }
@@ -102,10 +102,10 @@ namespace webapplication.Services
             return property != null;
         }
 
-        public async Task<List<ObjectDetails>> GetBucketObjectsAsync(string bucketKey, string? beginsWith = null)
+        public async Task<List<ObjectDetails>> GetBucketObjectsAsync(string? bucketKey, string? beginsWith = null)
         {
             var objects = new List<ObjectDetails>();
-            string startAt = null; // next page pointer
+            string? startAt = null; // next page pointer
 
             do
             {
@@ -145,7 +145,7 @@ namespace webapplication.Services
         public async Task<List<string>> GetBucketsAsync()
         {
             var buckets = new List<string>();
-            string startAt = null;
+            string? startAt = null;
 
             do
             {
@@ -166,18 +166,21 @@ namespace webapplication.Services
             return buckets;
         }
 
-        private string GetNextStartAt(Dictionary<string, object> dict)
+        private string? GetNextStartAt(Dictionary<string, object> dict)
         {
-            string startAt = null;
+            string? startAt = null;
             // check if there is a next page with projects
             if (dict.TryGetValue("next", out var nextPage))
             {
-                string nextPageUrl = (string)nextPage;
+                string? nextPageUrl = (string)nextPage;
                 if (!string.IsNullOrEmpty(nextPageUrl))
                 {
                     Uri nextUri = new Uri(nextPageUrl, UriKind.Absolute);
-                    Dictionary<string, StringValues> query = QueryHelpers.ParseNullableQuery(nextUri.Query);
-                    startAt = query["startAt"];
+                    if (string.IsNullOrEmpty(nextUri.Query))
+                        return null;
+
+                    Dictionary<string, StringValues> query = QueryHelpers.ParseNullableQuery(nextUri.Query)!;
+                    startAt = query?["startAt"];
                 }
             }
 
@@ -188,7 +191,7 @@ namespace webapplication.Services
       /// Create bucket with given name
       /// </summary>
       /// <param name="bucketKey">The bucket name.</param>
-      public async Task CreateBucketAsync(string bucketKey)
+      public async Task CreateBucketAsync(string? bucketKey)
         {
             await WithBucketApiAsync(async api =>
             {
@@ -197,7 +200,7 @@ namespace webapplication.Services
             });
         }
 
-        public async Task DeleteBucketAsync(string bucketKey)
+        public async Task DeleteBucketAsync(string? bucketKey)
         {
             await WithBucketApiAsync(async api => await api.DeleteBucketAsync(bucketKey));
         }
@@ -216,12 +219,12 @@ namespace webapplication.Services
             return await WithObjectsApiAsync(async api => await GetSignedUrl(api, bucketKey, objectName, access, minutesExpiration));
         }
 
-        public async Task UploadObjectAsync(string bucketKey, string objectName, Stream stream)
+        public async Task UploadObjectAsync(string? bucketKey, string? objectName, Stream stream)
         {
             await WithObjectsApiAsync(async api => await api.UploadObjectAsync(bucketKey, objectName, 0, stream));
         }
 
-        public async Task UploadChunkAsync(string bucketKey, string objectName, string contentRange, string sessionId, Stream stream)
+        public async Task UploadChunkAsync(string? bucketKey, string? objectName, string? contentRange, string? sessionId, Stream stream)
         {
             await WithObjectsApiAsync(async api => await api.UploadChunkAsync(bucketKey, objectName, 0, contentRange, sessionId, stream));
         }
@@ -232,14 +235,14 @@ namespace webapplication.Services
         /// <param name="bucketKey">Bucket key.</param>
         /// <param name="oldName">Old object name.</param>
         /// <param name="newName">New object name.</param>
-        public async Task RenameObjectAsync(string bucketKey, string oldName, string newName)
+        public async Task RenameObjectAsync(string? bucketKey, string? oldName, string? newName)
         {
             // OSS does not support renaming, so emulate it with more ineffective operations
             await WithObjectsApiAsync(async api => await api.CopyToAsync(bucketKey, oldName, newName));
             await WithObjectsApiAsync(async api => await api.DeleteObjectAsync(bucketKey, oldName));   
         }
 
-        public async Task<Autodesk.Forge.Client.ApiResponse<dynamic>> GetObjectAsync(string? bucketKey, string objectName)
+        public async Task<Autodesk.Forge.Client.ApiResponse<dynamic>> GetObjectAsync(string? bucketKey, string? objectName)
         {
             return await WithObjectsApiAsync(async api => await api.GetObjectAsyncWithHttpInfo(bucketKey, objectName));
         }
@@ -337,14 +340,14 @@ namespace webapplication.Services
             });
         }
 
-        private static string AsString(ObjectAccess access)
+        private static string? AsString(ObjectAccess access)
         {
             return access.ToString().ToLowerInvariant();
         }
 
         private void RefreshApiToken()
         {
-            _twoLeggedAccessToken = new Lazy<Task<string>>(async () => await _2leggedAsync());
+            _twoLeggedAccessToken = new Lazy<Task<string>>(async () => await _2leggedAsync())!;
         }
 
         private async Task<string> _2leggedAsync()
@@ -368,7 +371,7 @@ namespace webapplication.Services
         /// <summary>
         /// Generate signed URL for the OSS object.
         /// </summary>
-        private static async Task<string> GetSignedUrl(IObjectsApi api, string bucketKey, string objectName,
+        private static async Task<string> GetSignedUrl(IObjectsApi api, string? bucketKey, string? objectName,
                                                             ObjectAccess access = ObjectAccess.Read, int minutesExpiration = 30)
         {
             var signature = new PostBucketsSigned(minutesExpiration);

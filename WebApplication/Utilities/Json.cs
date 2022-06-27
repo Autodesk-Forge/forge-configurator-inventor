@@ -54,7 +54,7 @@ namespace webapplication.Utilities
         public static T DeserializeFile<T>(string filename)
         {
             var content = File.ReadAllText(filename, Encoding.UTF8);
-            return JsonSerializer.Deserialize<T>(content);
+            return JsonSerializer.Deserialize<T>(content)!;
         }
     }
 }
