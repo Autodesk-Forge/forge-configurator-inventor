@@ -201,7 +201,7 @@ namespace webapplication.Processing
             };
         }
 
-        internal async Task<ProcessingArgs> ForRfaAsync(string inputDocUrl, string topLevelAssembly)
+        internal async Task<ProcessingArgs> ForRfaAsync(string? inputDocUrl, string? topLevelAssembly)
         {
             var bucket = await _userResolver.GetBucketAsync();
             var rfaUrl = await bucket.CreateSignedUrlAsync(OutputRFA, ObjectAccess.Write);

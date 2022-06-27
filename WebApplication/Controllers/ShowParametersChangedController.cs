@@ -42,7 +42,7 @@ public class ShowParametersChangedController : ControllerBase
     {
         bool result = true;
 
-        ApiResponse<dynamic> ossObjectResponse = null;
+        ApiResponse<dynamic>? ossObjectResponse = null;
 
         try
         {

@@ -19,7 +19,7 @@ namespace webapplication.Tests.Integration
                 _output = output;
             }
 
-            public override void Write(string? value)
+            public override void Write(string value)
             {
                 _output.WriteLine(value?.TrimEnd());
             }

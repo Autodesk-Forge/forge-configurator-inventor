@@ -16,15 +16,8 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Autodesk.Forge.Client;
 using Autodesk.Forge.DesignAutomation.Model;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using Shared;
 using webapplication.Definitions;
 using webapplication.State;
@@ -99,7 +92,7 @@ namespace webapplication.Processing
         /// Update project state with the parameters (or take it from cache).
         /// </summary>
         public async Task<(ProjectStateDTO dto, FdaStatsDTO stats, string? reportUrl)> DoSmartUpdateAsync(InventorParameters parameters, 
-            string? projectId, bool bForceUpdate = false)
+            string projectId, bool bForceUpdate = false)
         {
             var hash = Crypto.GenerateParametersHashString(parameters);
             _logger.LogInformation($"Incoming parameters hash is {hash}");
@@ -178,7 +171,7 @@ namespace webapplication.Processing
             return (FdaStatsDTO.All(result.Stats), result.ReportUrl);
         }
 
-        public async Task<(FdaStatsDTO stats, int drawingIdx, string? reportUrl)> ExportDrawingPdfAsync(string? projectName, string? hash, string? drawingKey)
+        public async Task<(FdaStatsDTO? stats, int drawingIdx, string? reportUrl)> ExportDrawingPdfAsync(string? projectName, string? hash, string? drawingKey)
         {
             _logger.LogInformation($"Getting drawing pdf for hash {hash}");
 

@@ -166,7 +166,7 @@ namespace webapplication.Processing
             }
         }
 
-        private async Task PostAppBundleAsync(string packagePathname, ForgeAppBase config)
+        private async Task PostAppBundleAsync(string? packagePathname, ForgeAppBase config)
         {
             if (!File.Exists(packagePathname))
                 throw new Exception($"App Bundle package is not found ({packagePathname})");
@@ -236,7 +236,7 @@ namespace webapplication.Processing
         /// </summary>
         /// <param name="packagePathname">Pathname to ZIP with app bundle.</param>
         /// <param name="config"></param>
-        public async Task InitializeAsync(string packagePathname, ForgeAppBase config)
+        public async Task InitializeAsync(string? packagePathname, ForgeAppBase config)
         {
             if (config.HasBundle)
             {

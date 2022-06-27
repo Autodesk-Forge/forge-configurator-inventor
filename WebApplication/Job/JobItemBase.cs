@@ -26,11 +26,11 @@ namespace webapplication.Job
     public abstract class JobItemBase
     {
         protected ILogger Logger { get; }
-        protected ProjectWork ProjectWork { get; }
-        public string ProjectId { get; }
-        public string Id { get; }
+        protected ProjectWork? ProjectWork { get; }
+        public string? ProjectId { get; }
+        public string? Id { get; }
 
-        protected JobItemBase(ILogger logger, string projectId, ProjectWork projectWork)
+        protected JobItemBase(ILogger logger, string? projectId, ProjectWork? projectWork)
         {
             ProjectId = projectId;
             Id = Guid.NewGuid().ToString();

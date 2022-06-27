@@ -40,12 +40,12 @@ namespace webapplication.State
 
         public static string ExactOssName(string projectName, string suffix="") => string.IsNullOrEmpty(suffix) ? ONC.Join(ONC.ProjectsFolder, projectName) : ONC.Join(ONC.ProjectsFolder, projectName, suffix);
 
-        public string Name { get; }
-        public string OSSSourceModel { get; }
-        public string OSSSourceDrawings { get; }
+        public string? Name { get; }
+        public string? OSSSourceModel { get; }
+        public string? OSSSourceDrawings { get; }
 
         public OSSObjectNameProvider OssNameProvider(string? hash) => new OSSObjectNameProvider(Name, hash);
-        public LocalNameProvider LocalNameProvider(string hash) => new LocalNameProvider(LocalAttributes.BaseDir, hash);
+        public LocalNameProvider LocalNameProvider(string? hash) => new LocalNameProvider(LocalAttributes.BaseDir, hash);
 
         /// <summary>
         /// Full local names for project attribute files.

@@ -30,7 +30,7 @@ namespace Shared
     public class Column
     {
         [JsonProperty("label")]
-        public string Label { get; set; }
+        public string? Label { get; set; }
 
         [JsonProperty("numeric")]
         public bool? Numeric { get; set; }
@@ -39,9 +39,9 @@ namespace Shared
     public class ExtractedBOM
     {
         [JsonProperty("columns")]
-        public Column[] Columns { get; set; }
+        public Column[]? Columns { get; set; }
 
         [JsonProperty("data")]
-        public object[][] Data { get; set; }
+        public object[][]? Data { get; set; }
     }
 }

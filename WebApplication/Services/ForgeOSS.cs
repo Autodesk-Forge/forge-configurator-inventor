@@ -211,7 +211,7 @@ namespace webapplication.Services
         /// <param name="access">Requested access to the object.</param>
         /// <param name="minutesExpiration">Minutes while the URL is valid. Default is 30 minutes.</param>
         /// <returns>Signed URL</returns>
-        public async Task<string> CreateSignedUrlAsync(string bucketKey, string objectName, ObjectAccess access = ObjectAccess.Read, int minutesExpiration = 30)
+        public async Task<string> CreateSignedUrlAsync(string? bucketKey, string? objectName, ObjectAccess access = ObjectAccess.Read, int minutesExpiration = 30)
         {
             return await WithObjectsApiAsync(async api => await GetSignedUrl(api, bucketKey, objectName, access, minutesExpiration));
         }
@@ -239,7 +239,7 @@ namespace webapplication.Services
             await WithObjectsApiAsync(async api => await api.DeleteObjectAsync(bucketKey, oldName));   
         }
 
-        public async Task<Autodesk.Forge.Client.ApiResponse<dynamic>> GetObjectAsync(string bucketKey, string objectName)
+        public async Task<Autodesk.Forge.Client.ApiResponse<dynamic>> GetObjectAsync(string? bucketKey, string objectName)
         {
             return await WithObjectsApiAsync(async api => await api.GetObjectAsyncWithHttpInfo(bucketKey, objectName));
         }
@@ -247,7 +247,7 @@ namespace webapplication.Services
         /// <summary>
         /// Copy OSS object.
         /// </summary>
-        public async Task CopyAsync(string bucketKey, string fromName, string toName)
+        public async Task CopyAsync(string? bucketKey, string? fromName, string? toName)
         {
             await WithObjectsApiAsync(async api => await api.CopyToAsync(bucketKey, fromName, toName));
         }
@@ -255,7 +255,7 @@ namespace webapplication.Services
         /// <summary>
         /// Delete OSS object.
         /// </summary>
-        public async Task DeleteAsync(string bucketKey, string objectName)
+        public async Task DeleteAsync(string? bucketKey, string? objectName)
         {
             await WithObjectsApiAsync(async api => await api.DeleteObjectAsync(bucketKey, objectName));
         }
@@ -263,7 +263,7 @@ namespace webapplication.Services
         /// <summary>
         /// Download OSS file.
         /// </summary>
-        public async Task DownloadFileAsync(string bucketKey, string objectName, string localFullName)
+        public async Task DownloadFileAsync(string? bucketKey, string? objectName, string? localFullName)
         {
             var url = await CreateSignedUrlAsync(bucketKey, objectName);
 
@@ -279,7 +279,7 @@ namespace webapplication.Services
         /// <remarks>
         /// User Profile fields: https://forge.autodesk.com/en/docs/oauth/v2/reference/http/users-@me-GET/#body-structure-200
         /// </remarks>
-        public async Task<dynamic> GetProfileAsync(string token)
+        public async Task<dynamic> GetProfileAsync(string? token)
         {
             var api = new UserProfileApi(new Configuration { AccessToken = token }); // TODO: use Polly cache policy!
             return await api.GetUserProfileAsync();

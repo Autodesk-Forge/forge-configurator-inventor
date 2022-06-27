@@ -30,7 +30,7 @@ namespace webapplication.Utilities
         /// <summary>
         /// Download URL to the local file.
         /// </summary>
-        public static async Task DownloadAsync(this HttpClient httpClient, string url, string localFile)
+        public static async Task DownloadAsync(this HttpClient httpClient, string? url, string? localFile)
         {
             await using var httpStream = await httpClient.GetStreamAsync(url);
             await using var localStream = File.Create(localFile);

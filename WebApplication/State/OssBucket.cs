@@ -43,7 +43,7 @@ namespace webapplication.State
             _forgeOSS = forgeOSS;
             _logger = logger;
         }
-        public OssBucket CreateBucket(string bucketKey)
+        public OssBucket CreateBucket(string? bucketKey)
         {
             return new OssBucket(_forgeOSS, bucketKey, _logger);
         }
@@ -51,7 +51,7 @@ namespace webapplication.State
     }
     public class OssBucket
     {
-        public string BucketKey { get; }
+        public string? BucketKey { get; }
         private readonly IForgeOSS _forgeOSS;
         private readonly ILogger _logger;
 
@@ -120,7 +120,7 @@ namespace webapplication.State
         /// <param name="access">Requested access to the object.</param>
         /// <param name="minutesExpiration">Minutes while the URL is valid. Default is 30 minutes.</param>
         /// <returns>Signed URL</returns>
-        public async Task<string> CreateSignedUrlAsync(string objectName, ObjectAccess access = ObjectAccess.Read, int minutesExpiration = 30)
+        public async Task<string> CreateSignedUrlAsync(string? objectName, ObjectAccess access = ObjectAccess.Read, int minutesExpiration = 30)
         {
             return await _forgeOSS.CreateSignedUrlAsync(BucketKey, objectName, access, minutesExpiration);
         }
@@ -128,7 +128,7 @@ namespace webapplication.State
         /// <summary>
         /// Copy OSS object.
         /// </summary>
-        public async Task CopyAsync(string fromName, string toName)
+        public async Task CopyAsync(string? fromName, string? toName)
         {
             await _forgeOSS.CopyAsync(BucketKey, fromName, toName);
         }
@@ -212,7 +212,7 @@ namespace webapplication.State
         /// <summary>
         /// Load JSON from OSS and deserialize it to <see cref="T"/> instance.
         /// </summary>
-        public async Task<T> DeserializeAsync<T>(string objectName)
+        public async Task<T?> DeserializeAsync<T>(string objectName)
         {
             var response = await _forgeOSS.GetObjectAsync(BucketKey, objectName);
             if (response == null) return default;
@@ -258,7 +258,7 @@ namespace webapplication.State
         /// Upload file to OSS.
         /// Uses upload in chunks if necessary.
         /// </summary>
-        public async Task SmartUploadAsync(string fileName, string objectName, int chunkMbSize = 5)
+        public async Task SmartUploadAsync(string? fileName, string? objectName, int chunkMbSize = 5)
         {
             // 2MB is minimal, clamp to it
             chunkMbSize = Math.Max(2, chunkMbSize);

@@ -25,10 +25,10 @@ namespace webapplication.Job
 {
     internal class RFAJobItem : JobItemBase
     {
-        private readonly string _hash;
+        private readonly string? _hash;
         private readonly LinkGenerator _linkGenerator;
 
-        public RFAJobItem(ILogger logger, string projectId, string hash, ProjectWork projectWork, LinkGenerator linkGenerator)
+        public RFAJobItem(ILogger logger, string? projectId, string? hash, ProjectWork projectWork, LinkGenerator linkGenerator)
             : base(logger, projectId, projectWork)
         {
             _hash = hash;
@@ -37,7 +37,7 @@ namespace webapplication.Job
 
         public override async Task ProcessJobAsync(IResultSender resultSender)
         {
-            using var scope = Logger.BeginScope("RFA generation ({Id})");
+            using var scope = Logger.BeginScope($"RFA generation ({Id})");
 
             Logger.LogInformation($"ProcessJob (RFA) {Id} for project {ProjectId} started.");
 
@@ -46,7 +46,7 @@ namespace webapplication.Job
 
             // TODO: this url can be generated right away... we can simply acknowledge that the OSS file is ready,
             // without generating a URL here
-            string rfaUrl = _linkGenerator.GetPathByAction(controller: "Download",
+            string? rfaUrl = _linkGenerator.GetPathByAction(controller: "Download",
                                                             action: "RFA",
                                                             values: new {projectName = ProjectId, hash = _hash});
 
