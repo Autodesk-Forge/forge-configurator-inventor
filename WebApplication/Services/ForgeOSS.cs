@@ -16,19 +16,12 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
 using Autodesk.Forge;
 using Autodesk.Forge.Client;
 using Autodesk.Forge.Core;
 using Autodesk.Forge.Model;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Polly;
@@ -109,12 +102,8 @@ namespace webapplication.Services
 
             do
             {
-                DynamicJsonResponse response = await WithObjectsApiAsync(async api =>
-                {
-                    return await api.GetObjectsAsync(bucketKey, PageSize, beginsWith, startAt);
-                });
+                DynamicJsonResponse response = await WithObjectsApiAsync(async api => await api.GetObjectsAsync(bucketKey, PageSize, beginsWith, startAt));
                 
-
                 foreach (KeyValuePair<string, dynamic> objInfo in new DynamicDictionaryItems((response as dynamic).items))
                 {
                     dynamic item = objInfo.Value;
@@ -149,10 +138,7 @@ namespace webapplication.Services
 
             do
             {
-                dynamic bucketList = await WithBucketApiAsync(async api =>
-                {
-                    return await api.GetBucketsAsync(/* use default (US region) */ null, PageSize, startAt);
-                });
+                dynamic bucketList = await WithBucketApiAsync(async api => await api.GetBucketsAsync(/* use default (US region) */ null, PageSize, startAt));
 
                 foreach (KeyValuePair<string, dynamic> bucketInfo in new DynamicDictionaryItems(bucketList.items))
                 {

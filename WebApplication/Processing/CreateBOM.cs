@@ -32,7 +32,7 @@ namespace webapplication.Processing
         public CreateBOM(Publisher publisher) : base(publisher) {}
 
         public override List<string> ActivityCommandLine =>
-            new List<string>
+            new()
             {
                 $"$(engine.path)\\InventorCoreConsole.exe /al \"$(appbundles[{ActivityId}].path)\" /i \"$(args[{InputDocParameterName}].path)\""
             };

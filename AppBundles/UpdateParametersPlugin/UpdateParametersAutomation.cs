@@ -45,10 +45,10 @@ namespace UpdateParametersPlugin
                 switch (doc.DocumentType)
                 {
                     case DocumentTypeEnum.kPartDocumentObject:
-                        parameters = ((PartDocument)doc).ComponentDefinition.Parameters;
+                        parameters = (doc as PartDocument).ComponentDefinition.Parameters;
                         break;
                     case DocumentTypeEnum.kAssemblyDocumentObject:
-                        parameters = ((AssemblyDocument)doc).ComponentDefinition.Parameters;
+                        parameters = (doc as AssemblyDocument).ComponentDefinition.Parameters;
                         break;
                     default:
                         LogError($"Unsupported document type: {doc.DocumentType}");

@@ -16,11 +16,8 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Threading.Tasks;
 using Autodesk.Forge.Core;
 using Autodesk.Forge.DesignAutomation;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using webapplication.Services;
 

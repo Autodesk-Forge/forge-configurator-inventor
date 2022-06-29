@@ -16,9 +16,6 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Routing;
 using webapplication.Processing;
 
 namespace webapplication.Job
@@ -41,7 +38,7 @@ namespace webapplication.Job
 
             Logger.LogInformation($"ProcessJob (RFA) {Id} for project {ProjectId} started.");
 
-            (var stats, var reportUrl) = await ProjectWork!.GenerateRfaAsync(ProjectId, _hash);
+            var (stats, reportUrl) = await ProjectWork!.GenerateRfaAsync(ProjectId, _hash);
             Logger.LogInformation($"ProcessJob (RFA) {Id} for project {ProjectId} completed.");
 
             // TODO: this url can be generated right away... we can simply acknowledge that the OSS file is ready,

@@ -74,7 +74,7 @@ namespace ExportBOMPlugin
 
                         try
                         {
-                            extractedBOM = ProcessAssembly((AssemblyDocument)doc);
+                            extractedBOM = ProcessAssembly(doc as AssemblyDocument);
                         }
                         catch (Exception e)
                         {

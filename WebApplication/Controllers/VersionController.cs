@@ -36,10 +36,8 @@ public class VersionController : ControllerBase
             try
             {
                 // Open the text file using a stream reader.
-                using (var sr = new StreamReader("version.txt"))
-                {
-                    version = sr.ReadToEnd();
-                }
+                using var sr = new StreamReader("version.txt");
+                version = sr.ReadToEnd();
             }
             catch
             {

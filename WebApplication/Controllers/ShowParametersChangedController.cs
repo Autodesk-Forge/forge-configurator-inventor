@@ -16,9 +16,7 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using System.IO;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Autodesk.Forge.Client;
 using Microsoft.AspNetCore.Mvc;
 using webapplication.State;
@@ -56,7 +54,7 @@ public class ShowParametersChangedController : ControllerBase
 
         if (ossObjectResponse != null)
         {
-            using (Stream objectStream = ossObjectResponse.Data)
+            await using (Stream objectStream = ossObjectResponse.Data)
             {
                 result = await JsonSerializer.DeserializeAsync<bool>(objectStream);
             }

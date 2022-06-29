@@ -28,7 +28,7 @@ namespace webapplication.Tests
     [Collection("IntegrationTests1")]
     public class NoDefaultProjectInitIntegrationTest : InitializerTestBase, IAsyncLifetime
     {
-        private static readonly DefaultProjectsConfiguration defaultProjectsConfiguration = new DefaultProjectsConfiguration();
+        private static readonly DefaultProjectsConfiguration defaultProjectsConfiguration = new();
 
         public NoDefaultProjectInitIntegrationTest() : base(defaultProjectsConfiguration)
         {}

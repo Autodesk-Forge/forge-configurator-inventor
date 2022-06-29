@@ -120,18 +120,12 @@ namespace RFAExportRCEPlugin
             }
             else
             {
-                LogTrace($"ERROR: EXPORT does not exist !!!!!!!");
+                LogTrace("ERROR: EXPORT does not exist !!!!!!!");
             }
 
-            if (System.IO.File.Exists(reportFileName))
-            {
-                LogTrace($"REPORT generated.");
-            }
-            else
-            {
-                LogTrace($"ERROR: REPORT does not exist !!!!!!!");
-            }
-
+            LogTrace(System.IO.File.Exists(reportFileName)
+                ? "REPORT generated."
+                : "ERROR: REPORT does not exist !!!!!!!");
         }
         #endregion
     }

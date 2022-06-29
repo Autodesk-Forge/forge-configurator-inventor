@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using Shared;
 
 namespace webapplication.Utilities
@@ -23,7 +21,7 @@ namespace webapplication.Utilities
 
             for (var i = 0; i < bom.Data?.Length; i++)
             {
-                object[] row = bom.Data[i];
+                object[] row = bom.Data![i];
                 if (row.Length != columnsLength)
                     throw new ApplicationException(
                         $"Invalid BOM: row {i} has different number of columns than header.");

@@ -16,13 +16,7 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Autodesk.Forge.Client;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Polly;
 using webapplication.Definitions;
@@ -142,7 +136,7 @@ public class Initializer
         await _fdaClient.CleanUpAsync();
 
         // cleanup locally cached files but keep the directory as it is initialized at the start of the app and needed to run the web server
-        Directory.EnumerateFiles(_localCache.LocalRootName).ToList().ForEach((string filePath) => File.Delete(filePath));
+        Directory.EnumerateFiles(_localCache.LocalRootName).ToList().ForEach(File.Delete);
         Directory.EnumerateDirectories(_localCache.LocalRootName).ToList().ForEach((string dirPath) => Directory.Delete(dirPath, true));
     }
 }

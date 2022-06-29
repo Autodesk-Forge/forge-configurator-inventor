@@ -16,9 +16,6 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Autodesk.Forge.DesignAutomation.Model;
 using webapplication.Definitions;
 
@@ -164,10 +161,11 @@ namespace webapplication.Processing
         /// </summary>
         protected virtual void AddInputArgs(IDictionary<string, IArgument> args, ProcessingArgs data)
         {
-            if (data.IsAssembly)
-                args.Add(InputDocParameterName, new XrefTreeArgument { PathInZip = data.TLA, LocalName = FolderToBeZippedName, Url = data.InputDocUrl });
-            else
-                args.Add(InputDocParameterName, new XrefTreeArgument { Url = data.InputDocUrl, LocalName = IptName });
+            args.Add(InputDocParameterName,
+                data.IsAssembly
+                    ? new XrefTreeArgument
+                        { PathInZip = data.TLA, LocalName = FolderToBeZippedName, Url = data.InputDocUrl }
+                    : new XrefTreeArgument { Url = data.InputDocUrl, LocalName = IptName });
         }
 
         /// <summary>
@@ -184,7 +182,7 @@ namespace webapplication.Processing
         /// Command line for activity.
         /// </summary>
         public virtual List<string> ActivityCommandLine =>
-            new List<string>
+            new()
             {
                 $"$(engine.path)\\InventorCoreConsole.exe /al \"$(appbundles[{ActivityId}].path)\" /ilod \"$(args[{InputDocParameterName}].path)\""
             };
