@@ -1,42 +1,41 @@
 {
-    "env": {
-        "browser": true,
-        "es6": true,
-        "jest": true
+  "env": {
+    "browser": true,
+    "es6": true,
+    "jest": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:jest/recommended"
+  ],
+  "globals": {
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly"
+  },
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
     },
-    "extends": [
-        "eslint:recommended",
-        "plugin:react/recommended",
-        "plugin:jest/recommended"
-    ],
-    "globals": {
-        "Atomics": "readonly",
-        "SharedArrayBuffer": "readonly"
-    },
-    "parserOptions": {
-        "ecmaFeatures": {
-            "jsx": true
-        },
-        "ecmaVersion": 2018,
-        "sourceType": "module"
-    },
-    "plugins": [
-        "react",
-        "jest"
-    ],
-    "parser": "@babel/eslint-parser",
-    "rules": {
-        "no-console": "warn",
-        "linebreak-style": "off",
-        "no-trailing-spaces": "warn",
-        "semi": "warn",
-        "no-var": "warn",
-        "prefer-const": "warn",
-        "react/prop-types": 0 // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/prop-types.md
-    },
-    "settings": {
-        "react": {
-            "version": "detect"
-        }
+    "ecmaVersion": 2020,
+    "sourceType": "module"
+  },
+  "plugins": [
+    "react",
+    "jest"
+  ],
+  "rules": {
+    "no-console": "warn",
+    "linebreak-style": "off",
+    "no-trailing-spaces": "warn",
+    "semi": "warn",
+    "no-var": "warn",
+    "prefer-const": "warn",
+    "react/prop-types": 0 // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/prop-types.md
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
     }
+  }
 }

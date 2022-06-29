@@ -22,12 +22,12 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Shared;
-using WebApplication.Definitions;
-using WebApplication.Services;
-using WebApplication.State;
-using WebApplication.Utilities;
+using webapplication.Definitions;
+using webapplication.Services;
+using webapplication.State;
+using webapplication.Utilities;
 
-namespace WebApplication.Processing
+namespace webapplication.Processing
 {
     /// <summary>
     /// Class to place generated data files to expected places.
@@ -101,7 +101,7 @@ namespace WebApplication.Processing
         /// <param name="docUrl">URL to the input Inventor document (IPT or zipped IAM)</param>
         /// <param name="tlaFilename">Top level assembly in the ZIP. (if any)</param>
         /// <param name="parameters">Inventor parameters.</param>
-        public async Task<UpdateData> ForUpdateAsync(string docUrl, string tlaFilename, InventorParameters parameters)
+        public async Task<UpdateData> ForUpdateAsync(string docUrl, string? tlaFilename, InventorParameters parameters)
         {
             var bucket = await _userResolver.GetBucketAsync();
 
@@ -140,7 +140,7 @@ namespace WebApplication.Processing
 
             var bucket = await _userResolver.GetBucketAsync();
             var drawings = await bucket.DeserializeAsync<List<string>>(DrawingsList);
-            var hasDrawings = drawings.Count > 0;
+            var hasDrawings = drawings!.Count > 0;
             var attributes = new ProjectMetadata { Hash = hashString, TLA = tlaFilename, HasDrawings = hasDrawings };
 
             var ossNames = project.OssNameProvider(hashString);
@@ -161,7 +161,7 @@ namespace WebApplication.Processing
         /// <summary>
         /// Move generated RFA OSS file to the correct place.
         /// </summary>
-        internal async Task MoveRfaAsync(Project project, string hash)
+        internal async Task MoveRfaAsync(Project project, string? hash)
         {
             var bucket = await _userResolver.GetBucketAsync();
 
@@ -172,7 +172,7 @@ namespace WebApplication.Processing
         /// <summary>
         /// Move generated Drawing PDF OSS file to the correct place.
         /// </summary>
-        internal async Task MoveDrawingPdfAsync(Project project, int drawingIdx, string hash)
+        internal async Task MoveDrawingPdfAsync(Project project, int drawingIdx, string? hash)
         {
             var bucket = await _userResolver.GetBucketAsync();
 
@@ -180,7 +180,7 @@ namespace WebApplication.Processing
             await bucket.RenameObjectAsync(OutputDrawingPdf, ossNames.DrawingPdf(drawingIdx), true);
         }
 
-        internal async Task MoveDrawingAsync(Project project, string hash)
+        internal async Task MoveDrawingAsync(Project project, string? hash)
         {
             var bucket = await _userResolver.GetBucketAsync();
 
@@ -188,7 +188,7 @@ namespace WebApplication.Processing
             await bucket.RenameObjectAsync(OutputDrawing, ossNames.Drawing, true);
         }
 
-        internal async Task<ProcessingArgs> ForDrawingAsync(string inputDocUrl, string topLevelAssembly)
+        internal async Task<ProcessingArgs> ForDrawingAsync(string? inputDocUrl, string? topLevelAssembly)
         {
             var bucket = await _userResolver.GetBucketAsync();
             var url = await bucket.CreateSignedUrlAsync(OutputDrawing, ObjectAccess.ReadWrite);
@@ -201,7 +201,7 @@ namespace WebApplication.Processing
             };
         }
 
-        internal async Task<ProcessingArgs> ForRfaAsync(string inputDocUrl, string topLevelAssembly)
+        internal async Task<ProcessingArgs> ForRfaAsync(string? inputDocUrl, string? topLevelAssembly)
         {
             var bucket = await _userResolver.GetBucketAsync();
             var rfaUrl = await bucket.CreateSignedUrlAsync(OutputRFA, ObjectAccess.Write);
@@ -214,7 +214,7 @@ namespace WebApplication.Processing
             };
         }
 
-        internal async Task<ProcessingArgs> ForDrawingPdfAsync(string inputDocUrl, string drawingKey, string topLevelAssembly)
+        internal async Task<ProcessingArgs> ForDrawingPdfAsync(string? inputDocUrl, string? drawingKey, string? topLevelAssembly)
         {
             var bucket = await _userResolver.GetBucketAsync();
             var drawingPdfUrl = await bucket.CreateSignedUrlAsync(OutputDrawingPdf, ObjectAccess.Write);
@@ -267,7 +267,7 @@ namespace WebApplication.Processing
             // generate hash for parameters
             var stream = await response.Content.ReadAsStreamAsync();
             var parameters = await JsonSerializer.DeserializeAsync<InventorParameters>(stream);
-            return Crypto.GenerateParametersHashString(parameters);
+            return Crypto.GenerateParametersHashString(parameters!);
         }
 
         /// <summary>

@@ -18,9 +18,9 @@
 
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
-using WebApplication.Definitions;
+using webapplication.Definitions;
 
-namespace WebApplication.Processing
+namespace webapplication.Processing
 {
     public class FdaClient
     {
@@ -95,7 +95,7 @@ namespace WebApplication.Processing
             return _updateProjectWork.ProcessAsync(projectData);
         }
 
-        internal Task<ProcessingResult> TransferAsync(string source, string target)
+        internal Task<ProcessingResult> TransferAsync(string? source, string? target)
         {
             return _transferData.ProcessAsync(source, target);
         }

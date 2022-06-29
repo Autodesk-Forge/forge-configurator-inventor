@@ -22,7 +22,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileProviders;
 
-namespace WebApplication.Middleware
+namespace webapplication.Middleware
 {
     /// <summary>
     /// For performance reasons - some important generated files are cached locally,
@@ -64,7 +64,7 @@ namespace WebApplication.Middleware
         {
             // 'bubble.json' is a top-level manifest file for SVF structure. Detect requests to it,
             // and (if necessary) restore SVF to local cache from OSS
-            app.UseWhen(context => context.Request.Path.Value.StartsWith(VirtualCacheDir) &&
+            app.UseWhen(context => context.Request.Path.Value!.StartsWith(VirtualCacheDir) &&
                                    context.Request.Path.Value.EndsWith("bubble.json"),
                 appBuilder =>
                 {

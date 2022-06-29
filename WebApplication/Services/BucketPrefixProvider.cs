@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
-namespace WebApplication.Services
+namespace webapplication.Services
 {
     public class BucketPrefixProvider
     {
@@ -15,9 +15,9 @@ namespace WebApplication.Services
             _forgeConfig = forgeConfiguration.Value;
         }
 
-        public string GetBucketPrefix(string suffixParam = null)
+        public string GetBucketPrefix(string? suffixParam = null)
         {
-            string suffix = suffixParam ?? _configuration?.GetValue<string>("BucketKeySuffix");
+            var suffix = suffixParam ?? _configuration?.GetValue<string>("BucketKeySuffix");
             return $"authd{suffix}-{_forgeConfig.ClientId}".ToLowerInvariant();
         }
     }

@@ -27,11 +27,11 @@ using Autodesk.Forge.DesignAutomation.Http;
 using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using WebApplication.Definitions;
-using WebApplication.Utilities;
+using webapplication.Definitions;
+using webapplication.Utilities;
 using Activity = Autodesk.Forge.DesignAutomation.Model.Activity;
 
-namespace WebApplication.Processing
+namespace webapplication.Processing
 {
     public class Publisher
     {
@@ -53,8 +53,7 @@ namespace WebApplication.Processing
         /// Tracker of WI jobs.
         /// Used for 'callback' mode only.
         /// </summary>
-        public ConcurrentDictionary<string, TaskCompletionSource<WorkItemStatus>> Tracker { get; } =
-            new ConcurrentDictionary<string, TaskCompletionSource<WorkItemStatus>>();
+        public ConcurrentDictionary<string, TaskCompletionSource<WorkItemStatus>> Tracker { get; } = new();
 
         /// <summary>
         /// Constructor.
@@ -68,7 +67,7 @@ namespace WebApplication.Processing
             _resourceProvider = resourceProvider;
             _postProcessing = postProcessing;
 
-            _callbackUrlBase = publisherConfiguration.Value.CallbackUrlBase;
+            _callbackUrlBase = publisherConfiguration.Value.CallbackUrlBase!;
             CompletionCheck = publisherConfiguration.Value.CompletionCheck;
 
             _workItemsApi = workItemsApi;
@@ -166,7 +165,7 @@ namespace WebApplication.Processing
             }
         }
 
-        private async Task PostAppBundleAsync(string packagePathname, ForgeAppBase config)
+        private async Task PostAppBundleAsync(string? packagePathname, ForgeAppBase config)
         {
             if (!File.Exists(packagePathname))
                 throw new Exception($"App Bundle package is not found ({packagePathname})");
@@ -174,7 +173,7 @@ namespace WebApplication.Processing
             try {
                 // checking existence of the AppBundle
                 await _client.GetAppBundleVersionsAsync(config.Bundle.Id);
-                Alias oldVersion = null;
+                Alias? oldVersion = null;
                 try {
                     // getting version of AppBundle for the particular Alias (label)
                     oldVersion = await _client.GetAppBundleAliasAsync(config.Bundle.Id, config.Label);
@@ -203,7 +202,7 @@ namespace WebApplication.Processing
 
             var activity = new Activity
             {
-                Appbundles = config.GetBundles(nickname),
+                Appbundles = config.GetBundles(nickname!),
                 Id = config.ActivityId,
                 Engine = config.Engine,
                 Description = config.Description,
@@ -214,7 +213,7 @@ namespace WebApplication.Processing
             try {
                 // checking existence of Activity
                 await _client.GetActivityVersionsAsync(config.ActivityId);
-                Alias oldVersion = null;
+                Alias? oldVersion = null;
                 try {
                     // getting version of Activity for the particular Alias (label)
                     oldVersion = await _client.GetActivityAliasAsync(config.ActivityId, config.ActivityLabel);
@@ -236,7 +235,7 @@ namespace WebApplication.Processing
         /// </summary>
         /// <param name="packagePathname">Pathname to ZIP with app bundle.</param>
         /// <param name="config"></param>
-        public async Task InitializeAsync(string packagePathname, ForgeAppBase config)
+        public async Task InitializeAsync(string? packagePathname, ForgeAppBase config)
         {
             if (config.HasBundle)
             {

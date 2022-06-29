@@ -16,9 +16,9 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using WebApplication.Definitions;
+using webapplication.Definitions;
 
-namespace WebApplication.Processing
+namespace webapplication.Processing
 {
     /// <summary>
     /// SVF generator from Inventor document.
@@ -28,7 +28,7 @@ namespace WebApplication.Processing
         public override string Id => nameof(CreateSVF);
         public override string Description => "Generate SVF from Inventor document";
 
-        protected override string OutputUrl(ProcessingArgs projectData) => projectData.SvfUrl;
+        protected override string OutputUrl(ProcessingArgs projectData) => projectData.SvfUrl!;
         protected override string OutputName => "SvfOutput";
         protected override bool IsOutputZip => true;
 

@@ -21,11 +21,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
-using WebApplication.Definitions;
+using webapplication.Definitions;
 using Xunit;
-using Project = WebApplication.State.Project;
+using Project = webapplication.State.Project;
 
-namespace WebApplication.Tests
+namespace webapplication.Tests
 {
     [Collection("IntegrationTests1")]
     public class InitializerIntegrationTest : InitializerTestBase, IAsyncLifetime
@@ -57,7 +57,7 @@ namespace WebApplication.Tests
         {
             HttpResponseMessage response = await httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
             string path = Path.Combine(testFileDirectory.FullName, name);
-            using (var fs = new FileStream(path, FileMode.CreateNew))
+            await using (var fs = new FileStream(path, FileMode.CreateNew))
             {
                 await response.Content.CopyToAsync(fs);
             }

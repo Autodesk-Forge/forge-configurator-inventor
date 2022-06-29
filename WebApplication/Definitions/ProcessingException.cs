@@ -18,7 +18,7 @@
 
 using System;
 
-namespace WebApplication.Definitions
+namespace webapplication.Definitions
 {
     /// <summary>
     /// Exception to report about processing problems.
@@ -26,10 +26,10 @@ namespace WebApplication.Definitions
     /// </summary>
     public class ProcessingException : Exception
     {
-        public string Title { get; }
-        public string[] Messages { get; }
+        public string? Title { get; }
+        public string[]? Messages { get; }
 
-        public ProcessingException(string title, string[] messages)
+        public ProcessingException(string? title, string[]? messages)
         {
             Title = title;
             Messages = messages;

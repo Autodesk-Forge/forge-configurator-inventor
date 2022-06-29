@@ -16,7 +16,7 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-namespace WebApplication.Definitions
+namespace webapplication.Definitions
 {
     public enum CompletionCheck
     {
@@ -38,21 +38,15 @@ namespace WebApplication.Definitions
         /// </summary>
         public CompletionCheck CompletionCheck { get; set; } = CompletionCheck.Polling;
 
-        private string callbackUrlBase;
+        private string? callbackUrlBase;
 
         /// <summary>
         /// Base URL for callback.
         /// </summary>
-        public string CallbackUrlBase
+        public string? CallbackUrlBase
         {
-            get
-            {
-                return callbackUrlBase + "/";
-            }
-            set
-            {
-                callbackUrlBase = value;
-            }
+            get => callbackUrlBase + "/";
+            set => callbackUrlBase = value;
         }
     }
 }

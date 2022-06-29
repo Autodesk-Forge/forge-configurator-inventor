@@ -31,23 +31,28 @@ Demo application showcasing Configuration with Design Automation for Inventor
 1. Specify **Forge credentials** using **one** of the following approaches:\
     **a)** Set environment variables `FORGE_CLIENT_ID` and `FORGE_CLIENT_SECRET`\
     **b)** Set environment variables `Forge__ClientId` and `Forge__ClientSecret`\
-    **c)** Make a copy of `appsettings.Local.template.json` in the `WebApplication` directory named `appsettings.Local.json` and replace the `<clientId>` and `<clientSecret>` in it\
+    **c)** Make a copy of `appsettings.Local.template.json` in the `webapplication` directory named `appsettings.Local.json` and replace the `<clientId>` and `<clientSecret>` in it\
     **d)** (not on dev machine) Modify `appsettings.json` (or `appsettings.<ENVIRONMENT>.json`) with the template mentioned in **c)**\
-    **e)** Set environment variable 'set NODE_ENV=development'
+    **e)** Set environment variable 'set NODE_ENV=development'\
+    **f)** In the file launchSettings.json substitute the line `"applicationUrl": "http://[::]:80"` to `"applicationUrl": "https://localhost:5001"`\
+    **g)** Amend the file `..\ClientApp\.env.development` to only contain the following lines:\
+    `PORT=44422`\
+    `HTTPS=true`\
+    **h)** In the file `WebApplication.csproj` substitute the line `<SpaProxyServerUrl>https://localhost:80</SpaProxyServerUrl>` to be `<SpaProxyServerUrl>https://localhost:44422</SpaProxyServerUrl>`
 
 1. Make a copy of `InventorBinFolder.props.template` in the top `AppBundles` folder named `InventorBinFolder.props` and replace the `PATH_TO_YOUR_INVENTOR_BIN` string in it with your actual Inventor bin folder path, for example: `C:\Program Files\Autodesk\Inventor 2021\Bin`
 1. (Optional) Choose network configuration for your application. By default polling is enabled as it offers an easier way to setup and run the application. This is OK for locally run applications and debugging. However
    in production using the new callback option is highly recommended to conserve resources. In order to enable the callback option modify the `Publisher` section of the appsettings.json file. 
    Change `"CompletionCheck"` value from `"Polling"` to `"Callback"` and set `"CallbackUrlBase"` url to your server URL or ngrok tunnel URL for a locally run application.
    To run and debug callbacks locally please refer to the [ngrok section](#Use-ngrok-for-localhost-callbacks)
-1. *(Optional) Specify if access should be limited in `WebApplication\appsettings.json`. Set `Enabled` to `true` or `false`, and populate the `Domains` and `Addresses` fields with comma delimited lists such as `["autodesk.com", "company.com"]` and `["person@company2.com", "person@company3.com"]`*
+1. *(Optional) Specify if access should be limited in `webapplication\appsettings.json`. Set `Enabled` to `true` or `false`, and populate the `Domains` and `Addresses` fields with comma delimited lists such as `["autodesk.com", "company.com"]` and `["person@company2.com", "person@company3.com"]`*
 1. Open the `forge-configurator-inventor.sln` file with **Visual Studio 2019** and build the solution
 ![thumbnail](/img/BuildSolution.png)\
 This will also generate the **zip** files of all the **app bundles** that the **web app** will need to upload to the **Design Automation** server\
 ![thumbnail](/img/AppBundleZips.png)\
 When building the solution, make sure that all those **app bundles** got generated successfully
 ![thumbnail](/img/SuccessfulBuild.png)\
-Now we have to initialize things both on the **Design Automation** server and locally. In the **terminal** (in **Visual Studio** or outside) navigate to the `WebApplication` folder and run `dotnet run initialize=true`
+Now we have to initialize things both on the **Design Automation** server and locally. In the **terminal** (in **Visual Studio** or outside) navigate to the `webapplication` folder and run `dotnet run initialize=true`
 ![thumbnail](/img/DotnetRunInitialize.png)\
 Once the output reaches the `Now listening on: https://localhost:5001` line just open that **URL** in your browser\
 **Next time** you'll also be able to start the app from the **Visual Studio** debugger. 
@@ -63,20 +68,20 @@ This time your browser should open up **automatically** showing the correct **UR
 * Open the `forge-configurator-inventor.sln` file with **Visual Studio 2019** and build the solution
 
 ### Web Application Alone
-* From a command prompt, go to the `WebApplication` directory, and run `dotnet build`.
+* From a command prompt, go to the `webapplication` directory, and run `dotnet build`.
 
 ## (Optional) Update the npm packages
 * If you are not running the Application for the first time, but rather getting an update, you may need to install npm packages that were added since your last successfull run:
-1.  Using command line go to `WebApplication/ClientApp` and run `npm install`. See [Adding npm package](#Add-npm-package-to-project) for more information.
+1.  Using command line go to `webapplication/ClientApp` and run `npm install`. See [Adding npm package](#Add-npm-package-to-project) for more information.
 
 ## Run The Web Application Without Debugging
 ### Clear and load initial data during app launch time
- - Create initial data: from the `WebApplication` directory, run `dotnet run initialize=true`
- - Clear data: from the `WebApplication` directory, run `dotnet run clear=true`
- - Clear and then load initial data: from the `WebApplication` directory, run `dotnet run initialize=true clear=true`
+ - Create initial data: from the `webapplication` directory, run `dotnet run initialize=true`
+ - Clear data: from the `webapplication` directory, run `dotnet run clear=true`
+ - Clear and then load initial data: from the `webapplication` directory, run `dotnet run initialize=true clear=true`
  - When the app finishes the initialization process it remains running and expects client calls. You can leave it running and follow by [opening the site](#open-site) or stop it and move to the the [Debugging section](#Debug-The-Web-Application-With-VS-Code)
 ### Run after initial data is created
- - From a command prompt, go to the `WebApplication` directory, and run `dotnet run`
+ - From a command prompt, go to the `webapplication` directory, and run `dotnet run`
 ### Open site
  - Navigate to https://localhost:5001
      * You may need to refresh the browser after it launches if you see the error `This site can't be reached`
@@ -96,20 +101,20 @@ This time your browser should open up **automatically** showing the correct **UR
 1. From Visual Studio 2019
     * Open Test Explorer and select tests to run or debug
 1. From Visual Studio Code
-    * Open a test file in the `WebApplication.Tests` directory and click on either `Run Test` or `Debug Test` above one of the methods decorated with the `[Fact]` attribute. Or, above the class declaration click on either `Run All Tests` or `Debug All Tests`
-1. From the command line, in either the root or `WebApplication.Tests` directory run `dotnet test`
+    * Open a test file in the `webapplication.Tests` directory and click on either `Run Test` or `Debug Test` above one of the methods decorated with the `[Fact]` attribute. Or, above the class declaration click on either `Run All Tests` or `Debug All Tests`
+1. From the command line, in either the root or `webapplication.Tests` directory run `dotnet test`
 ### Frontend
 1. In Visual Studio Code, on the Run tab, select the `Debug Jest All` configuration and click the "Start Debugging" (arrow) button
     * Note that once you run the tests they will only run again if they changed since the last time
-1. Alternatively, using the command line go to WebApplication/ClientApp and execute `npm test`
+1. Alternatively, using the command line go to webapplication/ClientApp and execute `npm test`
 ### UI Tests
 * For UI tests we are using `CodeCeptJs` framework. All tests are stored in `ClientApp/src/ui-tests/` and we filter all files end with `*_test.js`. 
 * Set environment variables `SDRA_USERNAME` and `SDRA_PASSWORD` for `Sign-in` workflow. We are using Autodesk Account credentials for `Sign-in`.
 * Set `"embedded" : true` In `appsettings.Local.json` file mentioned in `Run sample for the first time` 5c)
-    * Also you can create a `.env` file in the `WebApplication/ClientApp` directory to define the environment variables - for more details follow this link: https://www.npmjs.com/package/dotenv
+    * Also you can create a `.env` file in the `webapplication/ClientApp` directory to define the environment variables - for more details follow this link: https://www.npmjs.com/package/dotenv
 * Note that the server needs to be running for these tests
 
-1. From the `WebApplication/ClientApp` directory:
+1. From the `webapplication/ClientApp` directory:
     * For all UI tests Run this command: `npx codeceptjs run` or `npm run uitest`.
     * For particular file you can use this command: `npx codeceptjs run src/ui-tests/<test file name>`
 
@@ -167,8 +172,8 @@ Table is not part of todays React HIG implementation so we will use https://gith
 
 We are using npm.
 
-1. Using command line go to `WebApplication/ClientApp` and run `npm install <package>`
-    * Note that packages are normally installed as part of the build, but only if the `npm_modules` directory is not found. This means that when new packages are added, `WebApplication/ClientApp/npm install` needs to be run again manually by other users (who did not add the new package).
+1. Using command line go to `webapplication/ClientApp` and run `npm install <package>`
+    * Note that packages are normally installed as part of the build, but only if the `npm_modules` directory is not found. This means that when new packages are added, `webapplication/ClientApp/npm install` needs to be run again manually by other users (who did not add the new package).
 
 ### Manually run linter
 * For JavaScript code: `npm run lint`
@@ -177,7 +182,7 @@ We are using npm.
 ### Deploy
 * For an advanced example of CI/CD on AWS, see [AWS-CICD](AWS-CICD/README.md)
 * For a simple method of deploying to Azure, see [Publish a Web app to Azure App Service using Visual Studio](https://docs.microsoft.com/en-us/visualstudio/deployment/quickstart-deploy-to-azure?view=vs-2019)
-    * First change `WebApplication.Program.cs` by removing the `UseKestrel()` statement
+    * First change `webapplication.Program.cs` by removing the `UseKestrel()` statement
     * You will need to change the callback in your forge app to match the URL you deploy to.
 * Example of the real-life deploy of an **FDA** as an [App Service](https://github.com/Autodesk-Forge/forge-configurator-inventor/wiki/AppServiceDeploy)
 	
@@ -208,7 +213,7 @@ We are using npm.
 	* With default settings the command would look like this: `ngrok http 5001` 
 	* You are now ready to use and debug callbacks locally
 	* If you experience issues running ngrok tunnel with the web application using https settings, the simple workaround is to switch the app to http mode (only for local use). 
-	* In order to set the callback URL for local development it is recomended to create an appsettings.Local.json file in the WebApplication directory (if you don't have it already) and then put following settings into it:
+	* In order to set the callback URL for local development it is recomended to create an appsettings.Local.json file in the webapplication directory (if you don't have it already) and then put following settings into it:
       ```json		  
       {
         "Publisher": {

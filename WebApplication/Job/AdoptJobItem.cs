@@ -16,25 +16,22 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
-using WebApplication.Processing;
-using WebApplication.State;
-using WebApplication.Definitions;
-using WebApplication.Utilities;
-using System.IO;
+using webapplication.Processing;
+using webapplication.State;
+using webapplication.Definitions;
+using webapplication.Utilities;
 using System.Text.RegularExpressions;
 
-namespace WebApplication.Job
+namespace webapplication.Job
 {
     internal class AdoptJobItem : JobItemBase
     {
         private readonly ProjectInfo _projectInfo;
-        private readonly string _fileName;
+        private readonly string? _fileName;
         private readonly UserResolver _userResolver;
         private readonly DtoGenerator _dtoGenerator;
 
-        public AdoptJobItem(ILogger logger, ProjectInfo projectInfo, string fileName, ProjectWork projectWork, DtoGenerator dtoGenerator, UserResolver userResolver)
+        public AdoptJobItem(ILogger logger, ProjectInfo projectInfo, string? fileName, ProjectWork projectWork, DtoGenerator dtoGenerator, UserResolver userResolver)
             : base(logger, null, projectWork)
         {
             _projectInfo = projectInfo;
@@ -45,13 +42,13 @@ namespace WebApplication.Job
 
         public override async Task ProcessJobAsync(IResultSender resultSender)
         {
-            using var scope = Logger.BeginScope("Project Adoption ({Id})");
+            using var scope = Logger.BeginScope($"Project Adoption ({Id})");
 
             Logger.LogInformation($"ProcessJob (Adopt) {Id} for project {_projectInfo.Name} started.");
 
             // Check for valid project and root names (where applicable)
             if ((!string.IsNullOrEmpty(_projectInfo.TopLevelAssembly) && Regex.Match(_projectInfo.TopLevelAssembly, @"[\uFFF0-\uFFFF]").Success) ||
-                Regex.Match(_projectInfo.Name, @"[\uFFF0-\uFFFF]").Success) 
+                Regex.Match(_projectInfo.Name!, @"[\uFFF0-\uFFFF]").Success) 
             {
                 Logger.LogInformation($"Replacement charcters found in project name or top level assembly name for job {Id}.");
 
@@ -63,22 +60,23 @@ namespace WebApplication.Job
             var bucket = await _userResolver.GetBucketAsync(tryToCreate: true);
             ProjectStorage projectStorage = await _userResolver.GetProjectStorageAsync(_projectInfo.Name);
 
-            string ossSourceModel = projectStorage.Project.OSSSourceModel;
+            string? ossSourceModel = projectStorage.Project.OSSSourceModel;
 
             await bucket.SmartUploadAsync(_fileName, ossSourceModel);
 
             // cleanup before adoption
-            File.Delete(_fileName);
+            if(!string.IsNullOrEmpty(_fileName))
+                File.Delete(_fileName);
 
             // adopt the project
             bool adopted = false;
             FdaStatsDTO stats;
-            string reportUrl = null;
+            string? reportUrl = null;
             try
             {
                 string signedUploadedUrl = await bucket.CreateSignedUrlAsync(ossSourceModel);
 
-                (stats, reportUrl) = await ProjectWork.AdoptAsync(_projectInfo, signedUploadedUrl);
+                (stats, reportUrl) = await ProjectWork!.AdoptAsync(_projectInfo, signedUploadedUrl);
                 adopted = true;
             }
             finally

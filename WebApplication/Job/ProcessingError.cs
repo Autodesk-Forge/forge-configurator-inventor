@@ -18,7 +18,7 @@
 
 using System.Collections.Generic;
 
-namespace WebApplication.Job
+namespace webapplication.Job
 {
     public enum ErrorInfoType
     {
@@ -30,9 +30,9 @@ namespace WebApplication.Job
     public abstract class ProcessingError
     {
         public abstract ErrorInfoType ErrorType { get; }
-        public string JobId { get; }
+        public string? JobId { get; }
 
-        protected ProcessingError(string jobId)
+        protected ProcessingError(string? jobId)
         {
             JobId = jobId;
         }
@@ -42,9 +42,9 @@ namespace WebApplication.Job
     {
         public override ErrorInfoType ErrorType { get; } = ErrorInfoType.ReportUrl;
 
-        public string ReportUrl { get; }
+        public string? ReportUrl { get; }
 
-        public ReportUrlError(string jobId, string reportUrl) : base(jobId)
+        public ReportUrlError(string? jobId, string? reportUrl) : base(jobId)
         {
             ReportUrl = reportUrl;
         }
@@ -54,10 +54,10 @@ namespace WebApplication.Job
     {
         public override ErrorInfoType ErrorType { get; } = ErrorInfoType.Messages;
 
-        public string Title { get; }
-        public IEnumerable<string> Messages { get; }
+        public string? Title { get; }
+        public IEnumerable<string?> Messages { get; }
 
-        public MessagesError(string jobId, string title, IEnumerable<string> messages) : base(jobId)
+        public MessagesError(string? jobId, string? title, IEnumerable<string?> messages) : base(jobId)
         {
             Title = title;
             Messages = messages;

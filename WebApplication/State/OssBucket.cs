@@ -25,10 +25,10 @@ using Autodesk.Forge.Client;
 using Autodesk.Forge.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using WebApplication.Services;
-using WebApplication.Utilities;
+using webapplication.Services;
+using webapplication.Utilities;
 
-namespace WebApplication.State
+namespace webapplication.State
 {
     /// <summary>
     /// Wrapper to work with OSS bucket.
@@ -43,15 +43,15 @@ namespace WebApplication.State
             _forgeOSS = forgeOSS;
             _logger = logger;
         }
-        public OssBucket CreateBucket(string bucketKey)
+        public OssBucket CreateBucket(string? bucketKey)
         {
-            return new OssBucket(_forgeOSS, bucketKey, _logger);
+            return new OssBucket(_forgeOSS, bucketKey!, _logger);
         }
 
     }
     public class OssBucket
     {
-        public string BucketKey { get; }
+        public string? BucketKey { get; }
         private readonly IForgeOSS _forgeOSS;
         private readonly ILogger _logger;
 
@@ -73,7 +73,7 @@ namespace WebApplication.State
         /// </summary>
         public async Task CreateAsync()
         {
-            await _forgeOSS.CreateBucketAsync(BucketKey);
+            await _forgeOSS.CreateBucketAsync(BucketKey!);
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace WebApplication.State
         /// <returns></returns>
         public async Task DeleteAsync()
         {
-            await _forgeOSS.DeleteBucketAsync(BucketKey);
+            await _forgeOSS.DeleteBucketAsync(BucketKey!);
         }
 
         /// <summary>
@@ -98,9 +98,9 @@ namespace WebApplication.State
         /// Get bucket objects.
         /// </summary>
         /// <param name="beginsWith">Search filter ("begin with")</param>
-        public async Task<List<ObjectDetails>> GetObjectsAsync(string beginsWith = null)
+        public async Task<List<ObjectDetails>> GetObjectsAsync(string? beginsWith = null)
         {
-            return await _forgeOSS.GetBucketObjectsAsync(BucketKey, beginsWith);
+            return await _forgeOSS.GetBucketObjectsAsync(BucketKey!, beginsWith);
         }
 
         /// <summary>
@@ -120,17 +120,17 @@ namespace WebApplication.State
         /// <param name="access">Requested access to the object.</param>
         /// <param name="minutesExpiration">Minutes while the URL is valid. Default is 30 minutes.</param>
         /// <returns>Signed URL</returns>
-        public async Task<string> CreateSignedUrlAsync(string objectName, ObjectAccess access = ObjectAccess.Read, int minutesExpiration = 30)
+        public async Task<string> CreateSignedUrlAsync(string? objectName, ObjectAccess access = ObjectAccess.Read, int minutesExpiration = 30)
         {
-            return await _forgeOSS.CreateSignedUrlAsync(BucketKey, objectName, access, minutesExpiration);
+            return await _forgeOSS.CreateSignedUrlAsync(BucketKey!, objectName!, access, minutesExpiration);
         }
 
         /// <summary>
         /// Copy OSS object.
         /// </summary>
-        public async Task CopyAsync(string fromName, string toName)
+        public async Task CopyAsync(string? fromName, string? toName)
         {
-            await _forgeOSS.CopyAsync(BucketKey, fromName, toName);
+            await _forgeOSS.CopyAsync(BucketKey!, fromName!, toName!);
         }
 
         /// <summary>
@@ -138,7 +138,7 @@ namespace WebApplication.State
         /// </summary>
         public async Task DownloadFileAsync(string objectName, string localFullName)
         {
-            await _forgeOSS.DownloadFileAsync(BucketKey, objectName, localFullName);
+            await _forgeOSS.DownloadFileAsync(BucketKey!, objectName, localFullName);
         }
 
         /// <summary>
@@ -149,7 +149,7 @@ namespace WebApplication.State
         {
             if (!File.Exists(localFullName))
             {
-                await _forgeOSS.DownloadFileAsync(BucketKey, objectName, localFullName);
+                await _forgeOSS.DownloadFileAsync(BucketKey!, objectName, localFullName);
             }
         }
 
@@ -162,59 +162,60 @@ namespace WebApplication.State
         {
             try
             {
-                await _forgeOSS.RenameObjectAsync(BucketKey, oldName, newName);
+                await _forgeOSS.RenameObjectAsync(BucketKey!, oldName, newName);
             }
             catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
             {
-                if(ignoreNotExisting)
+                if (ignoreNotExisting)
                 {
                     _logger.LogInformation($"Cannot rename object: {oldName} to ${newName} because object doesn't exists which was expected by using ignoreNotExisting = true");
-                } else
+                }
+                else
                 {
                     throw;
                 }
-                
+
             }
         }
 
         /// <summary>
         /// Delete OSS object.
         /// </summary>
-        public async Task DeleteObjectAsync(string objectName)
+        public async Task DeleteObjectAsync(string? objectName)
         {
-            await _forgeOSS.DeleteAsync(BucketKey, objectName);
+            await _forgeOSS.DeleteAsync(BucketKey!, objectName!);
         }
 
-        public async Task UploadObjectAsync(string objectName, Stream stream)
+        public async Task UploadObjectAsync(string? objectName, Stream stream)
         {
-            await _forgeOSS.UploadObjectAsync(BucketKey, objectName, stream);
+            await _forgeOSS.UploadObjectAsync(BucketKey!, objectName!, stream);
         }
 
         /// <summary>
         /// Upload JSON representation of object to OSS.
         /// </summary>
-        public async Task UploadAsJsonAsync<T>(string objectName, T obj, bool writeIndented = false)
+        public async Task UploadAsJsonAsync<T>(string? objectName, T obj, bool writeIndented = false)
         {
             await using var stream = Json.ToStream(obj, writeIndented);
-            await _forgeOSS.UploadObjectAsync(BucketKey, objectName, stream);
+            await _forgeOSS.UploadObjectAsync(BucketKey!, objectName!, stream);
         }
 
-        public async Task UploadChunkAsync(string objectName, string contentRange, string sessionId, Stream stream)
+        public async Task UploadChunkAsync(string? objectName, string? contentRange, string? sessionId, Stream stream)
         {
-            await _forgeOSS.UploadChunkAsync(BucketKey, objectName, contentRange, sessionId, stream);
+            await _forgeOSS.UploadChunkAsync(BucketKey!, objectName!, contentRange, sessionId!, stream);
         }
 
-        public async Task<ApiResponse<dynamic>> GetObjectAsync(string objectName)
+        public async Task<ApiResponse<dynamic>> GetObjectAsync(string? objectName)
         {
-            return await _forgeOSS.GetObjectAsync(BucketKey, objectName);
-        }        
-        
+            return await _forgeOSS.GetObjectAsync(BucketKey!, objectName!);
+        }
+
         /// <summary>
         /// Load JSON from OSS and deserialize it to <see cref="T"/> instance.
         /// </summary>
-        public async Task<T> DeserializeAsync<T>(string objectName)
+        public async Task<T?> DeserializeAsync<T>(string? objectName)
         {
-            var response = await _forgeOSS.GetObjectAsync(BucketKey, objectName);
+            var response = await _forgeOSS.GetObjectAsync(BucketKey!, objectName!);
             if (response == null) return default;
 
             await using Stream objectStream = response.Data;
@@ -224,7 +225,7 @@ namespace WebApplication.State
         /// <summary>
         /// Check if bucket contains the object.
         /// </summary>
-        public async Task<bool> ObjectExistsAsync(string objectName)
+        public async Task<bool> ObjectExistsAsync(string? objectName)
         {
             try
             {
@@ -239,35 +240,25 @@ namespace WebApplication.State
             return false;
         }
 
-        public async Task<string> TryToCreateSignedUrlForReadAsync(string objectName)
-        {
-            string url = null;
-            try
-            {
-                url = await CreateSignedUrlAsync(objectName);
-            }
-            catch (ApiException e) when (e.ErrorCode == StatusCodes.Status404NotFound)
-            {
-                // the file does not exist
-            }
-
-            return url;
-        }
-
         /// <summary>
         /// Upload file to OSS.
         /// Uses upload in chunks if necessary.
         /// </summary>
-        public async Task SmartUploadAsync(string fileName, string objectName, int chunkMbSize = 5)
+        public async Task SmartUploadAsync(string? fileName, string? objectName, int chunkMbSize = 5)
         {
+            if (!string.IsNullOrEmpty(fileName))
+                return;
+
             // 2MB is minimal, clamp to it
             chunkMbSize = Math.Max(2, chunkMbSize);
             long chunkSize = chunkMbSize * 1024 * 1024;
 
-            await using var fileReadStream = File.OpenRead(fileName);
+            await using var fileReadStream = File.OpenRead(fileName!);
+
 
             // determine if we need to upload in chunks or in one piece
             long sizeToUpload = fileReadStream.Length;
+
 
             // use chunks for all files greater than chunk size
             if (sizeToUpload > chunkSize)
@@ -278,13 +269,13 @@ namespace WebApplication.State
                 long begin = 0;
                 byte[] buffer = new byte[chunkSize];
 
-                while (begin < sizeToUpload-1)
+                while (begin < sizeToUpload - 1)
                 {
                     var bytesRead = await fileReadStream.ReadAsync(buffer, 0, (int)chunkSize);
 
                     int memoryStreamSize = sizeToUpload - begin < chunkSize ? (int)(sizeToUpload - begin) : (int)chunkSize;
                     await using var chunkStream = new MemoryStream(buffer, 0, memoryStreamSize);
-                    
+
                     var contentRange = $"bytes {begin}-{begin + bytesRead - 1}/{sizeToUpload}";
                     await UploadChunkAsync(objectName, contentRange, sessionId, chunkStream);
                     begin += bytesRead;

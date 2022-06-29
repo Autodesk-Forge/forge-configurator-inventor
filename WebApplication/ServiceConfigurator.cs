@@ -18,18 +18,16 @@
 using System.Text.Json.Serialization;
 using Autodesk.Forge.Core;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.Extensions.DependencyInjection;
-using WebApplication.Definitions;
-using WebApplication.Processing;
-using WebApplication.Services;
-using WebApplication.Utilities;
-using Microsoft.Extensions.Configuration;
+using webapplication.Definitions;
+using webapplication.Processing;
+using webapplication.Services;
+using webapplication.Utilities;
 using Autodesk.Forge.DesignAutomation;
-using WebApplication.Middleware;
-using WebApplication.State;
+using webapplication.Middleware;
+using webapplication.State;
 using MigrationApp;
 
-namespace WebApplication
+namespace webapplication
 {
     public class ServiceConfigurator
     {
@@ -47,7 +45,9 @@ namespace WebApplication
                 .AddJsonOptions(options =>
                                 {
                                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+#pragma warning disable SYSLIB0020
                                     options.JsonSerializerOptions.IgnoreNullValues = true;
+#pragma warning restore SYSLIB0020
                                 });
 
             services.AddSignalR(o =>
@@ -103,10 +103,7 @@ namespace WebApplication
             {
                 services.AddHostedService<Worker>();
                 services.AddScoped<MigrationBucketKeyProvider>();
-                services.AddScoped<IBucketKeyProvider>(provider =>
-                {
-                    return provider.GetService<MigrationBucketKeyProvider>();
-                });
+                services.AddScoped<IBucketKeyProvider>(provider => provider.GetService<MigrationBucketKeyProvider>()!);
                 services.AddScoped<UserResolver>();
                 services.AddSingleton<ProfileProvider>();
                 services.AddSingleton<Migration>();

@@ -2,7 +2,7 @@
 using System.IO;
 using Xunit.Abstractions;
 
-namespace WebApplication.Tests.Integration
+namespace webapplication.Tests.Integration
 {
     internal static class XUnitUtils
     {
@@ -19,7 +19,7 @@ namespace WebApplication.Tests.Integration
                 _output = output;
             }
 
-            public override void Write(string? value)
+            public override void Write(string value)
             {
                 _output.WriteLine(value?.TrimEnd());
             }

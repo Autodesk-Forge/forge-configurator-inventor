@@ -7,19 +7,19 @@ using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
-using WebApplication.Definitions;
-using WebApplication.Processing;
-using WebApplication.Utilities;
+using webapplication.Definitions;
+using webapplication.Processing;
+using webapplication.Utilities;
 using Xunit;
 
-namespace WebApplication.Tests
+namespace webapplication.Tests
 {
     public class PublisherTest
     {
         private readonly Dictionary<string, IArgument> _workItemArgs;
         private readonly Mock<IForgeAppBase> _configMock;
 
-        private readonly Mock<IResourceProvider> _resourceProviderMock = new Mock<IResourceProvider>();
+        private readonly Mock<IResourceProvider> _resourceProviderMock = new();
 
         public PublisherTest()
         {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WebApplication.Utilities
+namespace webapplication.Utilities
 {
     public interface IGuidGenerator
     {

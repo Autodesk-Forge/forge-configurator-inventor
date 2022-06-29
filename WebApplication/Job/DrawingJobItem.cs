@@ -19,10 +19,10 @@
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
-using WebApplication.Definitions;
-using WebApplication.Processing;
+using webapplication.Definitions;
+using webapplication.Processing;
 
-namespace WebApplication.Job
+namespace webapplication.Job
 {
     internal class DrawingJobItem : JobItemBase
     {
@@ -38,11 +38,11 @@ namespace WebApplication.Job
 
         public override async Task ProcessJobAsync(IResultSender resultSender)
         {
-            using var scope = Logger.BeginScope("Drawing generation ({Id})");
+            using var scope = Logger.BeginScope($"Drawing generation ({Id})");
 
             Logger.LogInformation($"ProcessJob (Drawing) {Id} for project {ProjectId} started.");
 
-            (FdaStatsDTO stats, string reportUrl) = await ProjectWork.GenerateDrawingAsync(ProjectId, _hash);
+            (FdaStatsDTO stats, string? reportUrl) = await ProjectWork!.GenerateDrawingAsync(ProjectId, _hash);
             Logger.LogInformation($"ProcessJob (Drawing) {Id} for project {ProjectId} completed.");
 
             // TODO: this url can be generated right away... we can simply acknowledge that OSS file is ready,
@@ -52,7 +52,7 @@ namespace WebApplication.Job
                                                             values: new { projectName = ProjectId, hash = _hash });
 
             // send resulting URL to the client
-            await resultSender.SendSuccessAsync(drawingUrl, stats, reportUrl);
+            await resultSender.SendSuccessAsync(drawingUrl!, stats, reportUrl!);
         }
     }
 }

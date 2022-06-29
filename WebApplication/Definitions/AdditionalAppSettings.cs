@@ -18,23 +18,23 @@
 
 using System;
 
-namespace WebApplication.Definitions
+namespace webapplication.Definitions
 {
     // Strongly typed classes for settings defined in appsettings.json to be deserialized to
 
     public class AppBundleZipPaths
     {
-        public string EmptyExe { get; set; }
-        public string DataChecker { get; set; }
-        public string CreateSVF { get; set; }
-        public string CreateThumbnail { get; set; }
-        public string ExtractParameters { get; set; }
-        public string UpdateParameters { get; set; }
-        public string CreateSAT { get; set; }
-        public string CreateRFA { get; set; }
-        public string CreateBOM { get; set; }
-        public string ExportDrawing { get; set; }
-        public string UpdateDrawings { get; set; }
+        public string? EmptyExe { get; set; }
+        public string? DataChecker { get; set; }
+        public string? CreateSVF { get; set; }
+        public string? CreateThumbnail { get; set; }
+        public string? ExtractParameters { get; set; }
+        public string? UpdateParameters { get; set; }
+        public string? CreateSAT { get; set; }
+        public string? CreateRFA { get; set; }
+        public string? CreateBOM { get; set; }
+        public string? ExportDrawing { get; set; }
+        public string? UpdateDrawings { get; set; }
     }
 
     public class DefaultProjectsConfiguration
@@ -44,14 +44,14 @@ namespace WebApplication.Definitions
 
     public class DefaultProjectConfiguration : ProjectInfo
     {
-        public string Url { get; set; }
+        public string? Url { get; set; }
     }
 
     public class InviteOnlyModeConfiguration
     {
         public bool Enabled { get; set; }
-        public string[] Domains { get; set; }
-        public string[] Addresses { get; set; }
+        public string[]? Domains { get; set; }
+        public string[]? Addresses { get; set; }
     }
 
     /// <summary>

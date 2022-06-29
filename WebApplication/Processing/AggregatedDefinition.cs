@@ -20,10 +20,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Autodesk.Forge.DesignAutomation.Model;
-using WebApplication.Definitions;
-using WebApplication.Utilities;
+using webapplication.Definitions;
+using webapplication.Utilities;
 
-namespace WebApplication.Processing
+namespace webapplication.Processing
 {
     /// <summary>
     /// Special definition for aggregated activities, where all bundles are "external".
@@ -65,9 +65,9 @@ namespace WebApplication.Processing
             return Collections.MergeDictionaries(all);
         }
 
-        public override List<string> GetBundles(string nickname)
+        public override List<string> GetBundles(string? nickname)
         {
-            return _definitions.SelectMany(def => def.GetBundles(nickname)).ToList();
+            return _definitions.SelectMany(def => def.GetBundles(nickname!)).ToList();
         }
 
         protected override string OutputUrl(ProcessingArgs projectData)

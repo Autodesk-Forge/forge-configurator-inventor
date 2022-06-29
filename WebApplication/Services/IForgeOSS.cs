@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 using Autodesk.Forge.Core;
 using Autodesk.Forge.Model;
 
-namespace WebApplication.Services
+namespace webapplication.Services
 {
     public enum ObjectAccess
     {
@@ -38,12 +38,12 @@ namespace WebApplication.Services
         /// </summary>
         ForgeConfiguration Configuration { get; }
 
-        Task<List<ObjectDetails>> GetBucketObjectsAsync(string bucketKey, string beginsWith = null);
+        Task<List<ObjectDetails>> GetBucketObjectsAsync(string bucketKey, string? beginsWith = null);
         Task<List<string>> GetBucketsAsync();
         Task CreateBucketAsync(string bucketKey);
         Task DeleteBucketAsync(string bucketKey);
         Task UploadObjectAsync(string bucketKey, string objectName, Stream stream);
-        Task UploadChunkAsync(string bucketKey, string objectName, string contentRange, string sessionId, Stream stream);
+        Task UploadChunkAsync(string bucketKey, string objectName, string? contentRange, string sessionId, Stream stream);
 
         /// <summary>
         /// Generate a signed URL to OSS object.

@@ -17,9 +17,9 @@
 /////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-using WebApplication.Definitions;
+using webapplication.Definitions;
 
-namespace WebApplication.Processing
+namespace webapplication.Processing
 {
     /// <summary>
     /// Update all drawings.
@@ -31,7 +31,7 @@ namespace WebApplication.Processing
 
         protected internal override ForgeRegistration Registration { get; } = ForgeRegistration.All;
 
-        protected override string OutputUrl(ProcessingArgs projectData) => projectData.DrawingUrl;
+        protected override string OutputUrl(ProcessingArgs projectData) => projectData.DrawingUrl!;
         protected override string OutputName => "drawing";
         protected override bool IsOutputZip => true;
         protected override bool IsOutputOptional => true;
@@ -40,7 +40,7 @@ namespace WebApplication.Processing
         /// Command line for activity.
         /// </summary>
         public override List<string> ActivityCommandLine =>
-            new List<string>
+            new()
             {
                 $"$(engine.path)\\InventorCoreConsole.exe /al \"$(appbundles[{ActivityId}].path)\" \"$(args[{InputDocParameterName}].path)\" "
             };

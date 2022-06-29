@@ -1,37 +1,29 @@
 ﻿using System;
 using System.Net.Http;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
-using Serilog.Extensions.Logging;
-using Shared;
-using WebApplication.Definitions;
-using WebApplication.Processing;
-using WebApplication.Services;
-using WebApplication.State;
-using WebApplication.Utilities;
+using webapplication.Definitions;
+using webapplication.Services;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace WebApplication.Tests.Integration
+namespace webapplication.Tests.Integration
 {
     [Collection("IntegrationTests1")]
-    public class AdoptProjectWithParametersTest : InitializerTestBase, IClassFixture<WebApplicationFactory<WebApplication.Startup>>, IAsyncLifetime
+    public class AdoptProjectWithParametersTest : InitializerTestBase, IClassFixture<WebApplicationFactory<webapplication.Startup>>, IAsyncLifetime
     {
         private readonly ITestOutputHelper _output;
         private readonly ProjectService _projectService;
 
-        private static readonly DefaultProjectsConfiguration defaultProjectsConfiguration = new DefaultProjectsConfiguration();
+        private static readonly DefaultProjectsConfiguration defaultProjectsConfiguration = new();
 
         private class DefaultHttpClientFactory : IHttpClientFactory
         {
-            public HttpClient CreateClient(string name) => new HttpClient();
+            public HttpClient CreateClient(string name) => new();
         }
 
-        public AdoptProjectWithParametersTest(WebApplicationFactory<WebApplication.Startup> factory, ITestOutputHelper output)
+        public AdoptProjectWithParametersTest(WebApplicationFactory<webapplication.Startup> factory, ITestOutputHelper output)
             : base(defaultProjectsConfiguration)
         {
             _output = output;
@@ -77,8 +69,8 @@ namespace WebApplication.Tests.Integration
             // read cached values
             var state = await _projectService.getProjectParameters(project.Id, project.Hash);
             // compare with required values
-            Assert.Equal(state.Parameters["WrenchSz"].Value, wrenchSzValue);
-            Assert.Equal(state.Parameters["JawOffset"].Value, jawOffsetValue);
+            Assert.Equal(state.Parameters?["WrenchSz"].Value, wrenchSzValue);
+            Assert.Equal(state.Parameters?["JawOffset"].Value, jawOffsetValue);
 
             _output.WriteLine($"done, adapted project {project.Id}, hash:{project.Hash}");
         }

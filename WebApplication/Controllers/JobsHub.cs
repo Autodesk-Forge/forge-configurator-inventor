@@ -16,212 +16,206 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Shared;
-using WebApplication.Definitions;
-using WebApplication.Job;
-using WebApplication.Processing;
-using WebApplication.Services;
-using WebApplication.State;
-using WebApplication.Utilities;
+using webapplication.Definitions;
+using webapplication.Job;
+using webapplication.Processing;
+using webapplication.Services;
+using webapplication.State;
+using webapplication.Utilities;
 
-namespace WebApplication.Controllers
+namespace webapplication.Controllers;
+
+public class JobsHub : Hub
 {
-    public class JobsHub : Hub
+    #region Inner types
+
+    /// <summary>
+    /// Interaction with client side.
+    /// </summary>
+    /// <remarks>
+    /// It's impossible to put it directly into <see cref="JobsHub"/>, because
+    /// SignalR disallow overloaded methods, so need to name them differently.
+    /// </remarks>
+    private class Sender : IResultSender
     {
-        #region Inner types
+        /// <summary>
+        /// Remote method name to be called on success.
+        /// </summary>
+        private const string OnComplete = "onComplete";
 
         /// <summary>
-        /// Interaction with client side.
+        /// Remote method name to be called on failure.
         /// </summary>
-        /// <remarks>
-        /// It's impossible to put it directly into <see cref="JobsHub"/>, because
-        /// SignalR disallow overloaded methods, so need to name them differently.
-        /// </remarks>
-        private class Sender : IResultSender
+        private const string OnError = "onError";
+
+        /// <summary>
+        /// Where to send response.
+        /// Notify only the client, who send the job request.
+        /// </summary>
+        private IClientProxy Destination => _hub.Clients.Caller;
+        private readonly Hub _hub;
+
+        public Sender(Hub hub)
         {
-            /// <summary>
-            /// Remote method name to be called on success.
-            /// </summary>
-            private const string OnComplete = "onComplete";
-
-            /// <summary>
-            /// Remote method name to be called on failure.
-            /// </summary>
-            private const string OnError = "onError";
-
-            /// <summary>
-            /// Where to send response.
-            /// Notify only the client, who send the job request.
-            /// </summary>
-            private IClientProxy Destination => _hub.Clients.Caller;
-            private readonly Hub _hub;
-
-            public Sender(Hub hub)
-            {
-                _hub = hub;
-            }
-
-            public async Task SendSuccessAsync()
-            {
-                await Destination.SendAsync(OnComplete);
-            }
-
-            public async Task SendSuccessAsync(object arg0)
-            {
-                await Destination.SendAsync(OnComplete, arg0);
-            }
-
-            public async Task SendSuccessAsync(object arg0, object arg1)
-            {
-                await Destination.SendAsync(OnComplete, arg0, arg1);
-            }
-
-            public async Task SendSuccessAsync(object arg0, object arg1, object arg2)
-            {
-                await Destination.SendAsync(OnComplete, arg0, arg1, arg2);
-            }
-
-            public async Task SendErrorAsync(ProcessingError error)
-            {
-                await Destination.SendAsync(OnError, error);
-            }
+            _hub = hub;
         }
 
-        #endregion
-
-        private readonly ILogger<JobsHub> _logger;
-        private readonly ProjectWork _projectWork;
-        private readonly LinkGenerator _linkGenerator;
-        private readonly ProfileProvider _profileProvider;
-        private readonly UserResolver _userResolver;
-        private readonly Sender _sender;
-        private readonly Uploads _uploads;
-        private readonly DtoGenerator _dtoGenerator;
-        private readonly ProjectService _projectService;
-        private readonly AdoptProjectWithParametersPayloadProvider _adoptProjectWithParametersPayloadProvider;
-        private readonly IConfiguration _configuration;
-
-        public JobsHub(ILogger<JobsHub> logger, ProjectWork projectWork, LinkGenerator linkGenerator, UserResolver userResolver, 
-            ProfileProvider profileProvider, Uploads uploads, DtoGenerator dtoGenerator, ProjectService projectService,
-            AdoptProjectWithParametersPayloadProvider adoptProjectWithParametersPayloadProvider, IConfiguration configuration)
+        public async Task SendSuccessAsync()
         {
-            _logger = logger;
-            _projectWork = projectWork;
-            _linkGenerator = linkGenerator;
-            _profileProvider = profileProvider;
-            _userResolver = userResolver;
-            _uploads = uploads;
-            _dtoGenerator = dtoGenerator;
-            _projectService = projectService;
-            _adoptProjectWithParametersPayloadProvider = adoptProjectWithParametersPayloadProvider;
-            _configuration = configuration;
-            _sender = new Sender(this);
+            await Destination.SendAsync(OnComplete);
         }
 
-        public async Task CreateUpdateJob(string projectId, InventorParameters parameters, string token)
+        public async Task SendSuccessAsync(object arg0)
         {
-            _logger.LogInformation($"invoked CreateJob, connectionId : {Context.ConnectionId}");
-
-            _profileProvider.Token = token;
-
-            // create job and run it
-            var job = new UpdateModelJobItem(_logger, projectId, parameters, _projectWork);
-            await RunJobAsync(job);
+            await Destination.SendAsync(OnComplete, arg0);
         }
 
-        public async Task CreateRFAJob(string projectId, string hash, string token)
+        public async Task SendSuccessAsync(object arg0, object arg1)
         {
-            _logger.LogInformation($"invoked CreateRFAJob, connectionId : {Context.ConnectionId}");
-
-            _profileProvider.Token = token;
-
-            // create job and run it
-            var job = new RFAJobItem(_logger, projectId, hash, _projectWork, _linkGenerator);
-            await RunJobAsync(job);
+            await Destination.SendAsync(OnComplete, arg0, arg1);
         }
 
-        public async Task CreateDrawingDownloadJob(string projectId, string hash, string token)
+        public async Task SendSuccessAsync(object arg0, object arg1, object arg2)
         {
-            _logger.LogInformation($"invoked CreateDrawingDownloadJob, connectionId : {Context.ConnectionId}");
-
-            _profileProvider.Token = token;
-
-            // create job and run it
-            var job = new DrawingJobItem(_logger, projectId, hash, _projectWork, _linkGenerator);
-            await RunJobAsync(job);
+            await Destination.SendAsync(OnComplete, arg0, arg1, arg2);
         }
 
-        public async Task CreateAdoptJob(string packageId, string token)
+        public async Task SendErrorAsync(ProcessingError error)
         {
-            _logger.LogInformation($"invoked CreateAdoptJob, connectionId : {Context.ConnectionId}");
+            await Destination.SendAsync(OnError, error);
+        }
+    }
 
-            _profileProvider.Token = token;
+    #endregion
 
-            // get upload information
-            (ProjectInfo projectInfo, string fileName) = _uploads.GetUploadData(packageId);
-            _uploads.ClearUploadData(packageId);
+    private readonly ILogger<JobsHub> _logger;
+    private readonly ProjectWork _projectWork;
+    private readonly LinkGenerator _linkGenerator;
+    private readonly ProfileProvider _profileProvider;
+    private readonly UserResolver _userResolver;
+    private readonly Sender _sender;
+    private readonly Uploads _uploads;
+    private readonly DtoGenerator _dtoGenerator;
+    private readonly ProjectService _projectService;
+    private readonly AdoptProjectWithParametersPayloadProvider _adoptProjectWithParametersPayloadProvider;
+    private readonly IConfiguration _configuration;
 
-            // create job and run it
-            var job = new AdoptJobItem(_logger, projectInfo, fileName, _projectWork, _dtoGenerator, _userResolver);
-            await RunJobAsync(job);
+    public JobsHub(ILogger<JobsHub> logger, ProjectWork projectWork, LinkGenerator linkGenerator, UserResolver userResolver,
+        ProfileProvider profileProvider, Uploads uploads, DtoGenerator dtoGenerator, ProjectService projectService,
+        AdoptProjectWithParametersPayloadProvider adoptProjectWithParametersPayloadProvider, IConfiguration configuration)
+    {
+        _logger = logger;
+        _projectWork = projectWork;
+        _linkGenerator = linkGenerator;
+        _profileProvider = profileProvider;
+        _userResolver = userResolver;
+        _uploads = uploads;
+        _dtoGenerator = dtoGenerator;
+        _projectService = projectService;
+        _adoptProjectWithParametersPayloadProvider = adoptProjectWithParametersPayloadProvider;
+        _configuration = configuration;
+        _sender = new Sender(this);
+    }
+
+    public async Task CreateUpdateJob(string projectId, InventorParameters parameters, string token)
+    {
+        _logger.LogInformation($"invoked CreateJob, connectionId : {Context.ConnectionId}");
+
+        _profileProvider.Token = token;
+
+        // create job and run it
+        var job = new UpdateModelJobItem(_logger, projectId, parameters, _projectWork);
+        await RunJobAsync(job);
+    }
+
+    public async Task CreateRFAJob(string projectId, string hash, string token)
+    {
+        _logger.LogInformation($"invoked CreateRFAJob, connectionId : {Context.ConnectionId}");
+
+        _profileProvider.Token = token;
+
+        // create job and run it
+        var job = new RFAJobItem(_logger, projectId, hash, _projectWork, _linkGenerator);
+        await RunJobAsync(job);
+    }
+
+    public async Task CreateDrawingDownloadJob(string projectId, string hash, string token)
+    {
+        _logger.LogInformation($"invoked CreateDrawingDownloadJob, connectionId : {Context.ConnectionId}");
+
+        _profileProvider.Token = token;
+
+        // create job and run it
+        var job = new DrawingJobItem(_logger, projectId, hash, _projectWork, _linkGenerator);
+        await RunJobAsync(job);
+    }
+
+    public async Task CreateAdoptJob(string packageId, string token)
+    {
+        _logger.LogInformation($"invoked CreateAdoptJob, connectionId : {Context.ConnectionId}");
+
+        _profileProvider.Token = token;
+
+        // get upload information
+        (ProjectInfo projectInfo, string fileName) = _uploads.GetUploadData(packageId);
+        _uploads.ClearUploadData(packageId);
+
+        // create job and run it
+        var job = new AdoptJobItem(_logger, projectInfo, fileName, _projectWork, _dtoGenerator, _userResolver);
+        await RunJobAsync(job);
+    }
+
+    public async Task CreateDrawingPdfJob(string projectId, string hash, string drawingKey, string token)
+    {
+        _logger.LogInformation($"invoked CreateDrawingPdfJob, connectionId : {Context.ConnectionId}");
+
+        _profileProvider.Token = token;
+
+        // create job and run it
+        var job = new ExportDrawingPdfJobItem(_logger, projectId, hash, drawingKey, _projectWork, _linkGenerator);
+        await RunJobAsync(job);
+    }
+
+    public async Task CreateAdoptProjectWithParametersJob(string payloadUrl, string? token = null)
+    {
+        if (!_configuration.GetValue<bool>("embedded"))
+        {
+            _logger.LogInformation("Embedded AdoptProjectWithParameters feature is not turned on, quitting");
+            return;
         }
 
-        public async Task CreateDrawingPdfJob(string projectId, string hash, string drawingKey, string token)
+        _logger.LogInformation($"invoked CreateDrawingPdfJob, connectionId : {Context.ConnectionId}");
+
+        _profileProvider.Token = token!;
+
+        // create job and run it
+        var job = new AdoptProjectWithParametersJobItem(_logger, _projectService, payloadUrl, _adoptProjectWithParametersPayloadProvider);
+        await RunJobAsync(job);
+    }
+
+    private async Task RunJobAsync(JobItemBase job)
+    {
+        try
         {
-            _logger.LogInformation($"invoked CreateDrawingPdfJob, connectionId : {Context.ConnectionId}");
-
-            _profileProvider.Token = token;
-
-            // create job and run it
-            var job = new ExportDrawingPdfJobItem(_logger, projectId, hash, drawingKey, _projectWork, _linkGenerator);
-            await RunJobAsync(job);
+            await job.ProcessJobAsync(_sender);
         }
-
-        public async Task CreateAdoptProjectWithParametersJob(string payloadUrl, string token = null)
+        catch (FdaProcessingException fpe)
         {
-            if (!_configuration.GetValue<bool>("embedded"))
-            {
-                _logger.LogInformation("Embedded AdoptProjectWithParameters feature is not turned on, quitting");
-                return;
-            }
-
-            _logger.LogInformation($"invoked CreateDrawingPdfJob, connectionId : {Context.ConnectionId}");
-
-            _profileProvider.Token = token;
-
-            // create job and run it
-            var job = new AdoptProjectWithParametersJobItem(_logger, _projectService, payloadUrl, _adoptProjectWithParametersPayloadProvider);
-            await RunJobAsync(job);
+            _logger.LogError(fpe, $"Processing failed for {job.Id}");
+            await _sender.SendErrorAsync(new ReportUrlError(job.Id, fpe.ReportUrl));
         }
-
-        private async Task RunJobAsync(JobItemBase job)
+        catch (ProcessingException pe)
         {
-            try
-            {
-                await job.ProcessJobAsync(_sender);
-            }
-            catch (FdaProcessingException fpe)
-            {
-                _logger.LogError(fpe, $"Processing failed for {job.Id}");
-                await _sender.SendErrorAsync(new ReportUrlError(job.Id, fpe.ReportUrl));
-            }
-            catch (ProcessingException pe)
-            {
-                await _sender.SendErrorAsync(new MessagesError(job.Id, pe.Title, pe.Messages));
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, $"Processing failed for {job.Id}");
+            await _sender.SendErrorAsync(new MessagesError(job.Id, pe.Title, pe.Messages!));
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, $"Processing failed for {job.Id}");
 
-                var message = $"Try to repeat your last action and please report the following message: {e.Message}";
-                await _sender.SendErrorAsync(new MessagesError(job.Id, "Internal error", new[]{ message }));
-            }
+            var message = $"Try to repeat your last action and please report the following message: {e.Message}";
+            await _sender.SendErrorAsync(new MessagesError(job.Id, "Internal error", new[] { message }));
         }
     }
 }

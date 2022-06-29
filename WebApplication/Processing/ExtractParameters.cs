@@ -16,9 +16,10 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using WebApplication.Definitions;
+using webapplication.Definitions;
+using static System.String;
 
-namespace WebApplication.Processing
+namespace webapplication.Processing
 {
     /// <summary>
     /// Extract parameters from Inventor document and save the current model state.
@@ -29,7 +30,11 @@ namespace WebApplication.Processing
         public override string Description => "Extract Parameters and Save Inventor document";
 
         protected override string OutputName => "documentParams.json";
-        protected override string OutputUrl(ProcessingArgs projectData) => projectData.ParametersJsonUrl;
+        protected override string OutputUrl(ProcessingArgs projectData)
+        {
+            if (projectData.ParametersJsonUrl != null) return projectData.ParametersJsonUrl;
+            return Empty;
+        }
 
         /// <summary>
         /// Constructor.

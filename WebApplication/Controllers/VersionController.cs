@@ -19,15 +19,32 @@
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
 
-namespace WebApplication.Controllers
+namespace webapplication.Controllers;
+
+[Route("[controller]")]
+public class VersionController : ControllerBase
 {
-    [Route("[controller]")]
-    public class VersionController : ControllerBase
+    private const string default_version = "1.0.0";
+
+    [HttpGet]
+    public string? Get()
     {
-        [HttpGet]
-        public string Get()
+        string? version = Assembly.GetEntryAssembly()?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
+
+        if(version == default_version)
         {
-            return Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
+            try
+            {
+                // Open the text file using a stream reader.
+                using var sr = new StreamReader("version.txt");
+                version = sr.ReadToEnd();
+            }
+            catch
+            {
+                //Just swallow the exception for now
+            }
         }
+
+        return version;
     }
 }

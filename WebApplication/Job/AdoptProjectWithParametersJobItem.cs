@@ -19,18 +19,18 @@
 using System;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
-using WebApplication.Definitions;
-using WebApplication.Services;
+using webapplication.Definitions;
+using webapplication.Services;
 
-namespace WebApplication.Job
+namespace webapplication.Job
 {
     internal class AdoptProjectWithParametersJobItem : JobItemBase
     {
         private readonly ProjectService _projectService;
-        private readonly string _payloadUrl;
+        private readonly string? _payloadUrl;
         private readonly AdoptProjectWithParametersPayloadProvider _adoptProjectWithParametersPayloadProvider;
 
-        public AdoptProjectWithParametersJobItem(ILogger logger, ProjectService projectService, string payloadUrl, 
+        public AdoptProjectWithParametersJobItem(ILogger logger, ProjectService projectService, string? payloadUrl, 
             AdoptProjectWithParametersPayloadProvider adoptProjectWithParametersPayloadProvider)
             : base(logger, null, null)
         {
@@ -41,7 +41,7 @@ namespace WebApplication.Job
 
         public override async Task ProcessJobAsync(IResultSender resultSender)
         {
-            using var scope = Logger.BeginScope("Project Adoption ({Id})");
+            using var scope = Logger.BeginScope($"Project Adoption ({Id})");
 
                 var payload = await _adoptProjectWithParametersPayloadProvider.GetParametersAsync(_payloadUrl);
 

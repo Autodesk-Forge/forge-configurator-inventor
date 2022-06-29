@@ -16,9 +16,9 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using WebApplication.Definitions;
+using webapplication.Definitions;
 
-namespace WebApplication.Processing
+namespace webapplication.Processing
 {
     /// <summary>
     /// Generate PNG thumbnail for Inventor document.
@@ -30,7 +30,7 @@ namespace WebApplication.Processing
 
         protected override string OutputUrl(ProcessingArgs projectData)
         {
-            return (projectData as AdoptionData).ThumbnailUrl; // TODO: use generics
+            return (projectData as AdoptionData)!.ThumbnailUrl!; // TODO: use generics
         }
 
         protected override string OutputName => "thumbnail.png";

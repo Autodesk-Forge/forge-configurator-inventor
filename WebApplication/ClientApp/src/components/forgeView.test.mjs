@@ -15,11 +15,16 @@
 // DOES NOT WARRANT THAT THE OPERATION OF THE PROGRAM WILL BE
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
-
-import React from 'react';
-import Enzyme, { shallow } from 'enzyme';
-import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
-import { ForgeView } from './forgeView';
+// import { parse } from 'node-html-parser'; 
+//const parse = require('node-html-parser');
+//import React from 'react';
+const React = require('react');
+//import Enzyme, { shallow } from 'enzyme';
+const Enzyme = require('enzyme');
+//import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
+const Adapter = require('@wojtekmaj/enzyme-adapter-react-17');
+//import { ForgeView } from './forgeView';
+const ForgeView = require('./forgeView');
 
 Enzyme.configure({ adapter: new Adapter() });
 

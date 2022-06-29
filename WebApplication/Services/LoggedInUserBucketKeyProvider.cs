@@ -3,10 +3,10 @@ using System.Threading.Tasks;
 using Autodesk.Forge.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using WebApplication.State;
-using WebApplication.Utilities;
+using webapplication.State;
+using webapplication.Utilities;
 
-namespace WebApplication.Services
+namespace webapplication.Services
 {
     public class LoggedInUserBucketKeyProvider : IBucketKeyProvider
     {
@@ -19,7 +19,7 @@ namespace WebApplication.Services
             _profileProvider = profileProvider;
             _resourceProvider = resourceProvider;
 
-            AnonymousBucketKey = resourceProvider.BucketKey;
+            AnonymousBucketKey = resourceProvider.BucketKey!;
         }
 
         public async Task<string> GetBucketKeyAsync()

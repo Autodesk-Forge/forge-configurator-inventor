@@ -53,11 +53,11 @@ export class ModalFail extends Component {
         if (typeof errorData === "object" && errorData.errorType) {
 
             switch (errorData.errorType) {
-                case 1: // WebApplication.Job.ErrorInfoType.ReportUrl
+                case 1: // webapplication.Job.ErrorInfoType.ReportUrl
                     isUrl = true;
                     reportUrlOrMessage = errorData.reportUrl;
                     break;
-                case 2: // WebApplication.Job.ErrorInfoType.Messages
+                case 2: // webapplication.Job.ErrorInfoType.Messages
                     isUrl = false;
                     errorTitle = errorData.title;
                     reportUrlOrMessage = errorData.messages?.join(", ");

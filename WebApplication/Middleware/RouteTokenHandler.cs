@@ -21,9 +21,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
-using WebApplication.Services;
+using webapplication.Services;
 
-namespace WebApplication.Middleware
+namespace webapplication.Middleware
 {
     /// <summary>
     /// Middleware to extract access token from route parameters.
@@ -39,7 +39,7 @@ namespace WebApplication.Middleware
 
         public async Task InvokeAsync(HttpContext context, ProfileProvider profileProvider, ILogger<RouteTokenHandler> logger)
         {
-            string token = context.GetRouteValue("token") as string; // IMPORTANT: parameter name must be in sync with route definition
+            string token = (context.GetRouteValue("token") as string)!; // IMPORTANT: parameter name must be in sync with route definition
             if (!string.IsNullOrEmpty(token))
             {
                 logger.LogInformation("Extracted token from route");

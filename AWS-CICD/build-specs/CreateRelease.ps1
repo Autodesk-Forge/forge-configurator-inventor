@@ -1,20 +1,20 @@
 $version="1.0.$env:CODEBUILD_BUILD_NUMBER"
-
+Write-Host "CODEBUILD_BUILD_NUMBER = $CODEBUILD_BUILD_NUMBER"
 $targetConfiguration='Release'
-$targetRuntime='win7-x64'
-$dotnetCore='netcoreapp3.1'
+$dotnet='net6.0'
 
 $release_zip_filename="ForgeConvInv-$targetConfiguration-$targetRuntime-$version.zip"
 
 $githubReleasesApiUrl='https://api.github.com/repos/Autodesk-Forge/forge-configurator-inventor/releases'
 
+Write-Host 'Github OAuth token check.'
 if ($githubOAuthToken -eq $null)
 {
 	Write-Host 'Github OAuth token not defined. Please specify variable $githubOAuthToken'
 	exit 1
 }
 
-$app_publish_dir=".\WebApplication\bin\$targetConfiguration\$dotnetCore\$targetRuntime\publish"
+$app_publish_dir=".\WebApplication\bin\$targetConfiguration\$dotnet\publish"
 
 
 ##############################
