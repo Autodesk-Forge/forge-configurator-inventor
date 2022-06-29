@@ -45,14 +45,8 @@ namespace webapplication.Definitions
         /// </summary>
         public string? CallbackUrlBase
         {
-            get
-            {
-                return callbackUrlBase + "/";
-            }
-            set
-            {
-                callbackUrlBase = value;
-            }
+            get => callbackUrlBase + "/";
+            set => callbackUrlBase = value;
         }
     }
 }

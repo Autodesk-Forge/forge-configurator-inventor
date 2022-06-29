@@ -124,9 +124,11 @@ namespace MigrationApp
                     try
                     {
                         ProjectMetadata projectMetadata = (await bucketOld.DeserializeAsync<ProjectMetadata>(metadataFile))!;
-                        ProjectInfo projectInfo = new ProjectInfo();
-                        projectInfo.Name = projectName;
-                        projectInfo.TopLevelAssembly = projectMetadata.TLA;
+                        ProjectInfo projectInfo = new ProjectInfo
+                        {
+                            Name = projectName,
+                            TopLevelAssembly = projectMetadata.TLA
+                        };
 
                         MigrationJob migrationJob;
                         using (var scope = _serviceScopeFactory.CreateScope())
@@ -157,8 +159,10 @@ namespace MigrationApp
 
                         if (!configKeysNew.Contains(configKey))
                         {
-                            ProjectInfo projectInfo = new ProjectInfo();
-                            projectInfo.Name = projectName;
+                            ProjectInfo projectInfo = new ProjectInfo
+                            {
+                                Name = projectName
+                            };
 
                             MigrationJob migrationJob;
                             using (var scope = _serviceScopeFactory.CreateScope())

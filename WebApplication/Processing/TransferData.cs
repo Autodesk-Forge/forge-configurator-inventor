@@ -36,13 +36,13 @@ namespace webapplication.Processing
         protected internal override ForgeRegistration Registration { get; } = ForgeRegistration.All;
 
         public override List<string> ActivityCommandLine =>
-            new List<string>
+            new()
             {
                 $"\"$(appbundles[{ActivityId}].path)\\EmptyExePlugin.bundle\\Contents\\EmptyExePlugin.exe\""
             };
 
         public override Dictionary<string, Parameter> GetActivityParams() =>
-            new Dictionary<string, Parameter>
+            new()
             {
                 {
                     "source",

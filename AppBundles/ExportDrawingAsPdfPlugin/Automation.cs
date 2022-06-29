@@ -99,7 +99,7 @@ namespace ExportDrawingAsPdfPlugin
             LogTrace("PDF file full path : " + exportFileName);
 
             LogTrace("Create PDF Translator Addin");
-            TranslatorAddIn PDFAddIn = (TranslatorAddIn)_inventorApplication.ApplicationAddIns.ItemById["{0AC6FD96-2F4D-42CE-8BE0-8AEA580399E4}"];
+            TranslatorAddIn PDFAddIn = _inventorApplication.ApplicationAddIns.ItemById["{0AC6FD96-2F4D-42CE-8BE0-8AEA580399E4}"] as TranslatorAddIn;
 
             if (PDFAddIn == null)
             {
@@ -133,6 +133,7 @@ namespace ExportDrawingAsPdfPlugin
             DrawingDocument drawingDocument = doc as DrawingDocument;
 
             NameValueMap sheets = _inventorApplication.TransientObjects.CreateNameValueMap();
+            Debug.Assert(drawingDocument != null, nameof(drawingDocument) + " != null");
             foreach (Sheet sheet in drawingDocument.Sheets)
             {
                 NameValueMap option = _inventorApplication.TransientObjects.CreateNameValueMap();

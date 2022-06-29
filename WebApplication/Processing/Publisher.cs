@@ -53,8 +53,7 @@ namespace webapplication.Processing
         /// Tracker of WI jobs.
         /// Used for 'callback' mode only.
         /// </summary>
-        public ConcurrentDictionary<string, TaskCompletionSource<WorkItemStatus>> Tracker { get; } =
-            new ConcurrentDictionary<string, TaskCompletionSource<WorkItemStatus>>();
+        public ConcurrentDictionary<string, TaskCompletionSource<WorkItemStatus>> Tracker { get; } = new();
 
         /// <summary>
         /// Constructor.

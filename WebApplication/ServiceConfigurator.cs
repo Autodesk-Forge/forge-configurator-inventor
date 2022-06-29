@@ -18,12 +18,10 @@
 using System.Text.Json.Serialization;
 using Autodesk.Forge.Core;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.Extensions.DependencyInjection;
 using webapplication.Definitions;
 using webapplication.Processing;
 using webapplication.Services;
 using webapplication.Utilities;
-using Microsoft.Extensions.Configuration;
 using Autodesk.Forge.DesignAutomation;
 using webapplication.Middleware;
 using webapplication.State;
@@ -105,10 +103,7 @@ namespace webapplication
             {
                 services.AddHostedService<Worker>();
                 services.AddScoped<MigrationBucketKeyProvider>();
-                services.AddScoped<IBucketKeyProvider>(provider =>
-                {
-                    return provider.GetService<MigrationBucketKeyProvider>()!;
-                });
+                services.AddScoped<IBucketKeyProvider>(provider => provider.GetService<MigrationBucketKeyProvider>()!);
                 services.AddScoped<UserResolver>();
                 services.AddSingleton<ProfileProvider>();
                 services.AddSingleton<Migration>();

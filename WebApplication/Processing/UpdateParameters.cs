@@ -38,13 +38,13 @@ namespace webapplication.Processing
         protected override string OutputUrl(ProcessingArgs projectData) => projectData.ParametersJsonUrl!;
 
         public override List<string> ActivityCommandLine =>
-            new List<string>
+            new()
             {
                 $"$(engine.path)\\InventorCoreConsole.exe /al \"$(appbundles[{ActivityId}].path)\" /ilod \"$(args[{InputDocParameterName}].path)\" /paramFile \"$(args[{InventorParameters}].path)\" /p"
             };
 
         public override Dictionary<string, Parameter> GetActivityParams() =>
-            new Dictionary<string, Parameter>
+            new()
             {
                 {
                     InputDocParameterName,

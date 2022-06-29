@@ -16,16 +16,12 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Threading.Tasks;
 using System.Web;
 using Autodesk.Forge.Core;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using webapplication.Definitions;
 using webapplication.Services;
-using webapplication.State;
 using webapplication.Utilities;
 
 namespace webapplication.Controllers;
@@ -34,7 +30,7 @@ namespace webapplication.Controllers;
 [Route("login")]
 public class LoginController : ControllerBase
 {
-    private static readonly ProfileDTO AnonymousProfile = new ProfileDTO { Name = "Anonymous", AvatarUrl = "logo-xs-white-BG.svg" };
+    private static readonly ProfileDTO AnonymousProfile = new() { Name = "Anonymous", AvatarUrl = "logo-xs-white-BG.svg" };
 
     private readonly ILogger<LoginController> _logger;
     private readonly ProfileProvider _profileProvider;

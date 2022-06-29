@@ -40,7 +40,7 @@ namespace webapplication.Processing
         /// Command line for activity.
         /// </summary>
         public override List<string> ActivityCommandLine =>
-            new List<string>
+            new()
             {
                 $"$(engine.path)\\InventorCoreConsole.exe /al \"$(appbundles[{ActivityId}].path)\" \"$(args[{InputDocParameterName}].path)\" "
             };

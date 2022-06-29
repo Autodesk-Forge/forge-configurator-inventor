@@ -17,8 +17,6 @@
 /////////////////////////////////////////////////////////////////////
 
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 // TODO: This endpoint might not be needed once we solve the proper
 // application shutdown, where we would eventually do the clean up
@@ -50,8 +48,8 @@ public class ClearSelfController : ControllerBase
             _logger.LogInformation("Data deleted.");
             return "{ \"Cleared\": \"true\" }";
         }
-        else
-            _logger.LogInformation("Self clean not allowed.");
+
+        _logger.LogInformation("Self clean not allowed.");
 
         return "{ \"Cleared\": \"false\" }";
     }
