@@ -1,7 +1,5 @@
 console.log
 AppBundles/
-
 Output/
-
+metadata.json
 appsettings.Local.json
-appsettings.Development.json
