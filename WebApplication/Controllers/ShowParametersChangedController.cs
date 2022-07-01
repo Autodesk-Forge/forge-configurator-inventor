@@ -19,10 +19,10 @@
 using System.Text.Json;
 using Autodesk.Forge.Client;
 using Microsoft.AspNetCore.Mvc;
-using webapplication.State;
-using webapplication.Utilities;
+using WebApplication.State;
+using WebApplication.Utilities;
 
-namespace webapplication.Controllers;
+namespace WebApplication.Controllers;
 
 [ApiController]
 [Route("[controller]")]

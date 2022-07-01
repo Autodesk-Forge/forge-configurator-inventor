@@ -18,7 +18,7 @@
 
 using System;
 
-namespace webapplication.Definitions
+namespace WebApplication.Definitions
 {
     /// <summary>
     /// Exception to report about processing problems.

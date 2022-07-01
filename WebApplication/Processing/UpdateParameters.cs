@@ -18,9 +18,9 @@
 
 using System.Collections.Generic;
 using Autodesk.Forge.DesignAutomation.Model;
-using webapplication.Definitions;
+using WebApplication.Definitions;
 
-namespace webapplication.Processing
+namespace WebApplication.Processing
 {
     public class UpdateParameters : ForgeAppBase
     {

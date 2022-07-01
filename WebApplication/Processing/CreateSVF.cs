@@ -16,9 +16,9 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using webapplication.Definitions;
+using WebApplication.Definitions;
 
-namespace webapplication.Processing
+namespace WebApplication.Processing
 {
     /// <summary>
     /// SVF generator from Inventor document.

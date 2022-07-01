@@ -19,9 +19,9 @@
 using Autodesk.Forge.DesignAutomation.Model;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using webapplication.Definitions;
+using WebApplication.Definitions;
 
-namespace webapplication.Processing
+namespace WebApplication.Processing
 {
     /// <summary>
     /// Transfer input to output

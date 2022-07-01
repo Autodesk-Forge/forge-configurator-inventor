@@ -1,6 +1,6 @@
 ﻿using Shared;
 
-namespace webapplication.Definitions
+namespace WebApplication.Definitions
 {
     public class AdoptProjectWithParametersPayload : DefaultProjectConfiguration
     {

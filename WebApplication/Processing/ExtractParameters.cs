@@ -16,10 +16,10 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using webapplication.Definitions;
+using WebApplication.Definitions;
 using static System.String;
 
-namespace webapplication.Processing
+namespace WebApplication.Processing
 {
     /// <summary>
     /// Extract parameters from Inventor document and save the current model state.

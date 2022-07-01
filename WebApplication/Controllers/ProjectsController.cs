@@ -22,12 +22,12 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using webapplication.Definitions;
-using webapplication.Services;
-using webapplication.State;
-using webapplication.Utilities;
+using WebApplication.Definitions;
+using WebApplication.Services;
+using WebApplication.State;
+using WebApplication.Utilities;
 
-namespace webapplication.Controllers;
+namespace WebApplication.Controllers;
 
 [ApiController]
 [Route("projects")]

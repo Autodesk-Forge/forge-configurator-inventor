@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace webapplication.Utilities
+namespace WebApplication.Utilities
 {
     public interface ITaskUtil
     {

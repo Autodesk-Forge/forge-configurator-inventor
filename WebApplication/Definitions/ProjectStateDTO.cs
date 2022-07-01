@@ -19,7 +19,7 @@
 using System.Text.Json.Serialization;
 using Shared;
 
-namespace webapplication.Definitions
+namespace WebApplication.Definitions
 {
     public class ProjectStateDTO : ProjectDTOBase
     {

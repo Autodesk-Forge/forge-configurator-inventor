@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 using Autodesk.Forge.Core;
 using Autodesk.Forge.Model;
 
-namespace webapplication.Services
+namespace WebApplication.Services
 {
     public enum ObjectAccess
     {

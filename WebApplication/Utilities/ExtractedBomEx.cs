@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using Shared;
 
-namespace webapplication.Utilities
+namespace WebApplication.Utilities
 {
     public static class ExtractedBomEx
     {

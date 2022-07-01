@@ -22,7 +22,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileProviders;
 
-namespace webapplication.Middleware
+namespace WebApplication.Middleware
 {
     /// <summary>
     /// For performance reasons - some important generated files are cached locally,

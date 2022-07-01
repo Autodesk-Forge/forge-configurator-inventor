@@ -7,12 +7,12 @@ using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
-using webapplication.Definitions;
-using webapplication.Processing;
-using webapplication.Utilities;
+using WebApplication.Definitions;
+using WebApplication.Processing;
+using WebApplication.Utilities;
 using Xunit;
 
-namespace webapplication.Tests
+namespace WebApplication.Tests
 {
     public class PublisherTest
     {

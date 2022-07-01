@@ -21,11 +21,11 @@ using System.Threading.Tasks;
 using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using webapplication.Processing;
-using webapplication.State;
-using webapplication.Utilities;
+using WebApplication.Processing;
+using WebApplication.State;
+using WebApplication.Utilities;
 
-namespace webapplication.Controllers;
+namespace WebApplication.Controllers;
 
 /// <summary>
 /// The controller serves data for default project state. (IOW - no parameter hash is used)

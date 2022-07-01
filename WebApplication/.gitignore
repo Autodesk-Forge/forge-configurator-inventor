@@ -237,7 +237,7 @@ _Pvt_Extensions
 Output/
 
 # preserve `LocalCache` dir
-webapplication/LocalCache/
+WebApplication/LocalCache/
 
 AWS-CICD/scripts/config.json
 
