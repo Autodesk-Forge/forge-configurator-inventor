@@ -18,14 +18,14 @@
 
 using Microsoft.AspNetCore.SignalR;
 using Shared;
-using webapplication.Definitions;
-using webapplication.Job;
-using webapplication.Processing;
-using webapplication.Services;
-using webapplication.State;
-using webapplication.Utilities;
+using WebApplication.Definitions;
+using WebApplication.Job;
+using WebApplication.Processing;
+using WebApplication.Services;
+using WebApplication.State;
+using WebApplication.Utilities;
 
-namespace webapplication.Controllers;
+namespace WebApplication.Controllers;
 
 public class JobsHub : Hub
 {

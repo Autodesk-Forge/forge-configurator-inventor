@@ -3,10 +3,10 @@ using System.Threading.Tasks;
 using Autodesk.Forge.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using webapplication.State;
-using webapplication.Utilities;
+using WebApplication.State;
+using WebApplication.Utilities;
 
-namespace webapplication.Services
+namespace WebApplication.Services
 {
     public class LoggedInUserBucketKeyProvider : IBucketKeyProvider
     {

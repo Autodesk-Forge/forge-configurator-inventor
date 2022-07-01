@@ -19,7 +19,7 @@
 using System;
 using System.IO;
 
-namespace webapplication.Utilities
+namespace WebApplication.Utilities
 {
     /// <summary>
     /// Wrapper for temporary file, which is deleted on disposal.

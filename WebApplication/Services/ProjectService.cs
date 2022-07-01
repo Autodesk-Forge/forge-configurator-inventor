@@ -8,13 +8,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Retry;
-using webapplication.Definitions;
-using webapplication.Processing;
-using webapplication.Services.Exceptions;
-using webapplication.State;
-using webapplication.Utilities;
+using WebApplication.Definitions;
+using WebApplication.Processing;
+using WebApplication.Services.Exceptions;
+using WebApplication.State;
+using WebApplication.Utilities;
 
-namespace webapplication.Services
+namespace WebApplication.Services
 {
     public class ProjectService
     {

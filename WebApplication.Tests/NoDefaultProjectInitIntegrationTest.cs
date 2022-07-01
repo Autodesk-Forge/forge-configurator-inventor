@@ -18,10 +18,10 @@
 
 using System.IO;
 using System.Threading.Tasks;
-using webapplication.Definitions;
+using WebApplication.Definitions;
 using Xunit;
 
-namespace webapplication.Tests
+namespace WebApplication.Tests
 {
     // This initialization test cannot run in parallel because it touches the same files as other init test
     // leading to a small chance of file access collision 

@@ -24,10 +24,10 @@ using System.Threading.Tasks;
 using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using webapplication.Definitions;
-using webapplication.Middleware;
+using WebApplication.Definitions;
+using WebApplication.Middleware;
 
-namespace webapplication.Processing
+namespace WebApplication.Processing
 {
     public interface IPostProcessing
     {

@@ -19,9 +19,9 @@
 using Autodesk.Forge.Core;
 using Autodesk.Forge.DesignAutomation;
 using Microsoft.Extensions.Options;
-using webapplication.Services;
+using WebApplication.Services;
 
-namespace webapplication.Utilities
+namespace WebApplication.Utilities
 {
     public interface IResourceProvider
     {

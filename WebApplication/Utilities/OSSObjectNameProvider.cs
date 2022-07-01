@@ -18,9 +18,9 @@
 
 using System;
 using System.Collections.Generic;
-using webapplication.State;
+using WebApplication.State;
 
-namespace webapplication.Utilities
+namespace WebApplication.Utilities
 {
     /// <summary>
     /// Names for local files.

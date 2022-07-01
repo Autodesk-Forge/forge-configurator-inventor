@@ -3,15 +3,15 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using webapplication.Definitions;
-using webapplication.Services;
+using WebApplication.Definitions;
+using WebApplication.Services;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace webapplication.Tests.Integration
+namespace WebApplication.Tests.Integration
 {
     [Collection("IntegrationTests1")]
-    public class AdoptProjectWithParametersTest : InitializerTestBase, IClassFixture<WebApplicationFactory<webapplication.Startup>>, IAsyncLifetime
+    public class AdoptProjectWithParametersTest : InitializerTestBase, IClassFixture<WebApplicationFactory<WebApplication.Startup>>, IAsyncLifetime
     {
         private readonly ITestOutputHelper _output;
         private readonly ProjectService _projectService;
@@ -23,7 +23,7 @@ namespace webapplication.Tests.Integration
             public HttpClient CreateClient(string name) => new();
         }
 
-        public AdoptProjectWithParametersTest(WebApplicationFactory<webapplication.Startup> factory, ITestOutputHelper output)
+        public AdoptProjectWithParametersTest(WebApplicationFactory<WebApplication.Startup> factory, ITestOutputHelper output)
             : base(defaultProjectsConfiguration)
         {
             _output = output;

@@ -24,11 +24,11 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Routing;
 using Shared;
-using webapplication.Definitions;
-using webapplication.Middleware;
-using webapplication.State;
+using WebApplication.Definitions;
+using WebApplication.Middleware;
+using WebApplication.State;
 
-namespace webapplication.Utilities
+namespace WebApplication.Utilities
 {
     /// <summary>
     /// Utility class to deal with stuff like URLs in generated DTOs.

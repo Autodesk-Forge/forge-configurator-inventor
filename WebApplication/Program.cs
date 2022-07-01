@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
-namespace webapplication
+namespace WebApplication
 {
     public class Program
     {

@@ -16,7 +16,7 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-namespace webapplication.Definitions
+namespace WebApplication.Definitions
 {
     /// <summary>
     /// Common pieces for project-related DTOs

@@ -20,11 +20,11 @@ using System.Web;
 using Autodesk.Forge.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using webapplication.Definitions;
-using webapplication.Services;
-using webapplication.Utilities;
+using WebApplication.Definitions;
+using WebApplication.Services;
+using WebApplication.Utilities;
 
-namespace webapplication.Controllers;
+namespace WebApplication.Controllers;
 
 [ApiController]
 [Route("login")]

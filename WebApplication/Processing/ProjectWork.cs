@@ -19,11 +19,11 @@
 using Autodesk.Forge.Client;
 using Autodesk.Forge.DesignAutomation.Model;
 using Shared;
-using webapplication.Definitions;
-using webapplication.State;
-using webapplication.Utilities;
+using WebApplication.Definitions;
+using WebApplication.State;
+using WebApplication.Utilities;
 
-namespace webapplication.Processing
+namespace WebApplication.Processing
 {
     /// <summary>
     /// Business logic for project tasks (adapt, update parameters, rfa generation)

@@ -17,9 +17,9 @@
 /////////////////////////////////////////////////////////////////////
 
 using System;
-using webapplication.Utilities;
+using WebApplication.Utilities;
 
-namespace webapplication.State
+namespace WebApplication.State
 {
     public class Project
     {

@@ -25,10 +25,10 @@ using Autodesk.Forge.Client;
 using Autodesk.Forge.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using webapplication.Services;
-using webapplication.Utilities;
+using WebApplication.Services;
+using WebApplication.Utilities;
 
-namespace webapplication.State
+namespace WebApplication.State
 {
     /// <summary>
     /// Wrapper to work with OSS bucket.

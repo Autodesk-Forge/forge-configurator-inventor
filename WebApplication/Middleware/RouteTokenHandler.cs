@@ -21,9 +21,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
-using webapplication.Services;
+using WebApplication.Services;
 
-namespace webapplication.Middleware
+namespace WebApplication.Middleware
 {
     /// <summary>
     /// Middleware to extract access token from route parameters.

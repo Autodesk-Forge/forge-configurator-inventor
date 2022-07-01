@@ -19,7 +19,7 @@
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
 
-namespace webapplication.Controllers;
+namespace WebApplication.Controllers;
 
 [Route("[controller]")]
 public class VersionController : ControllerBase

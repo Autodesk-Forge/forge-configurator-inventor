@@ -18,7 +18,7 @@
 
 using System;
 
-namespace webapplication.Definitions
+namespace WebApplication.Definitions
 {
     /// <summary>
     /// Exception for FDA processing failures.

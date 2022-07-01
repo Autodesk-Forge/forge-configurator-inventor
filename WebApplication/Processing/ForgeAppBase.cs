@@ -17,9 +17,9 @@
 /////////////////////////////////////////////////////////////////////
 
 using Autodesk.Forge.DesignAutomation.Model;
-using webapplication.Definitions;
+using WebApplication.Definitions;
 
-namespace webapplication.Processing
+namespace WebApplication.Processing
 {
     [Flags]
     public enum ForgeRegistration
