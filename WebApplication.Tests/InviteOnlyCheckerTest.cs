@@ -16,10 +16,10 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using webapplication.Definitions;
+using WebApplication.Definitions;
 using Xunit;
 
-namespace webapplication.Tests
+namespace WebApplication.Tests
 {
     public class InviteOnlyCheckerTest
     {

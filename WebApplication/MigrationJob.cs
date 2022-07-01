@@ -21,10 +21,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Shared;
-using webapplication.Definitions;
-using webapplication.Processing;
-using webapplication.Services;
-using webapplication.State;
+using WebApplication.Definitions;
+using WebApplication.Processing;
+using WebApplication.Services;
+using WebApplication.State;
 
 namespace MigrationApp
 {

@@ -23,11 +23,11 @@ using System.Threading.Tasks;
 using Autodesk.Forge.Client;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using webapplication.Middleware;
-using webapplication.Services;
-using webapplication.Utilities;
+using WebApplication.Middleware;
+using WebApplication.Services;
+using WebApplication.Utilities;
 
-namespace webapplication.State
+namespace WebApplication.State
 {
     /// <summary>
     /// Business logic to differentiate state for logged in and anonymous users.

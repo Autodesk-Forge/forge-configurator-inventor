@@ -25,9 +25,9 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Polly;
-using webapplication.Utilities;
+using WebApplication.Utilities;
 
-namespace webapplication.Services
+namespace WebApplication.Services
 {
     /// <summary>
     /// Class to work with Forge APIs.

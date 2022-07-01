@@ -19,13 +19,13 @@
 using Autodesk.Forge.Client;
 using Microsoft.Extensions.Options;
 using Polly;
-using webapplication.Definitions;
-using webapplication.Middleware;
-using webapplication.Processing;
-using webapplication.Services;
-using webapplication.State;
+using WebApplication.Definitions;
+using WebApplication.Middleware;
+using WebApplication.Processing;
+using WebApplication.Services;
+using WebApplication.State;
 
-namespace webapplication;
+namespace WebApplication;
 
 /// <summary>
 /// Initialize data for anonymous user.

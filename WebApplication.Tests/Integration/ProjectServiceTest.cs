@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Shared;
-using webapplication.Definitions;
-using webapplication.Services;
+using WebApplication.Definitions;
+using WebApplication.Services;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace webapplication.Tests.Integration
+namespace WebApplication.Tests.Integration
 {
-    public class ProjectServiceTest : IClassFixture<WebApplicationFactory<webapplication.Startup>>
+    public class ProjectServiceTest : IClassFixture<WebApplicationFactory<WebApplication.Startup>>
     {
         private readonly ITestOutputHelper _output;
         private readonly ProjectService _projectService;
 
-        public ProjectServiceTest(WebApplicationFactory<webapplication.Startup> factory, ITestOutputHelper output)
+        public ProjectServiceTest(WebApplicationFactory<WebApplication.Startup> factory, ITestOutputHelper output)
         {
             _output = output;
             XUnitUtils.RedirectConsoleToXUnitOutput(output);

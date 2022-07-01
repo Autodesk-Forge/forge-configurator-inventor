@@ -16,7 +16,7 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-namespace webapplication.Definitions
+namespace WebApplication.Definitions
 {
     //TODO: split the update urls and rfa urls
     public class ProcessingArgs

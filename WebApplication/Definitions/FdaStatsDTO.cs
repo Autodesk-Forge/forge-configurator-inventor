@@ -20,7 +20,7 @@ using System.Collections.Generic;
 using Autodesk.Forge.DesignAutomation.Model;
 // ReSharper disable PossibleInvalidOperationException
 
-namespace webapplication.Definitions
+namespace WebApplication.Definitions
 {
     public class FdaStatsDTO
     {

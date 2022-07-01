@@ -16,9 +16,9 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using webapplication.Processing;
+using WebApplication.Processing;
 
-namespace webapplication.Job
+namespace WebApplication.Job
 {
     internal class RFAJobItem : JobItemBase
     {

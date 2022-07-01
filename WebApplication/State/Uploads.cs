@@ -17,9 +17,9 @@
 /////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-using webapplication.Definitions;
+using WebApplication.Definitions;
 
-namespace webapplication.State
+namespace WebApplication.State
 {
     public class Uploads
     {

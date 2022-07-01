@@ -18,7 +18,7 @@
 
 using System.Threading.Tasks;
 
-namespace webapplication.Job
+namespace WebApplication.Job
 {
     /// <summary>
     /// Interface to send results back.

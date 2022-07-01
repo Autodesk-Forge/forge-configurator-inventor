@@ -16,7 +16,7 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-namespace webapplication.Definitions
+namespace WebApplication.Definitions
 {
     public enum CompletionCheck
     {

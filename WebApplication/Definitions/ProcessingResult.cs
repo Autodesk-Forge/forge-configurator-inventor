@@ -19,7 +19,7 @@
 using System.Collections.Generic;
 using Autodesk.Forge.DesignAutomation.Model;
 
-namespace webapplication.Definitions
+namespace WebApplication.Definitions
 {
     public class ProcessingResult
     {

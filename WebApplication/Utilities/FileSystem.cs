@@ -18,7 +18,7 @@
 
 using System.IO;
 
-namespace webapplication.Utilities
+namespace WebApplication.Utilities
 {
     /// <summary>
     /// Utilities for files/directories work.

@@ -1,9 +1,9 @@
 ﻿using System;
 using Shared;
-using webapplication.Utilities;
+using WebApplication.Utilities;
 using Xunit;
 
-namespace webapplication.Tests
+namespace WebApplication.Tests
 {
     public class BomToCsvTest
     {

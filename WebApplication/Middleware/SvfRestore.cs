@@ -21,9 +21,9 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using webapplication.State;
+using WebApplication.State;
 
-namespace webapplication.Middleware
+namespace WebApplication.Middleware
 {
     /// <summary>
     /// Middleware to restore missing SVFs in local cache

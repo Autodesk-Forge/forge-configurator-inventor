@@ -23,11 +23,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Shared;
-using webapplication.Middleware;
-using webapplication.State;
-using webapplication.Utilities;
+using WebApplication.Middleware;
+using WebApplication.State;
+using WebApplication.Utilities;
 
-namespace webapplication.Controllers;
+namespace WebApplication.Controllers;
 
 // The app is not keeping user session, so it's necessary to pass auth token
 // for authenticated users to resolve the downloaded item correctly.

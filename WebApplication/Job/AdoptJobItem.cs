@@ -16,13 +16,13 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using webapplication.Processing;
-using webapplication.State;
-using webapplication.Definitions;
-using webapplication.Utilities;
+using WebApplication.Processing;
+using WebApplication.State;
+using WebApplication.Definitions;
+using WebApplication.Utilities;
 using System.Text.RegularExpressions;
 
-namespace webapplication.Job
+namespace WebApplication.Job
 {
     internal class AdoptJobItem : JobItemBase
     {

@@ -22,7 +22,7 @@ using Microsoft.AspNetCore.Mvc;
 // application shutdown, where we would eventually do the clean up
 // That is potential tech debt work
 
-namespace webapplication.Controllers;
+namespace WebApplication.Controllers;
 
 [Route("[controller]")]
 public class ClearSelfController : ControllerBase

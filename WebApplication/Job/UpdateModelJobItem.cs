@@ -19,10 +19,10 @@
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using Shared;
-using webapplication.Definitions;
-using webapplication.Processing;
+using WebApplication.Definitions;
+using WebApplication.Processing;
 
-namespace webapplication.Job
+namespace WebApplication.Job
 {
     public class UpdateModelJobItem : JobItemBase
     {

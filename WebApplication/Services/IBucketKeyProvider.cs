@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace webapplication.Services
+namespace WebApplication.Services
 {
     public interface IBucketKeyProvider
     {

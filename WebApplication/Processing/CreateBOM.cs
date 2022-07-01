@@ -17,9 +17,9 @@
 /////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-using webapplication.Definitions;
+using WebApplication.Definitions;
 
-namespace webapplication.Processing
+namespace WebApplication.Processing
 {
     public class CreateBOM : ForgeAppBase
     {

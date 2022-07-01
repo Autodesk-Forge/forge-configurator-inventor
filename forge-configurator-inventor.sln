@@ -13,9 +13,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{C71B55
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AppBundles", "AppBundles", "{B22033E4-9CB2-46E5-A9B2-B99C1B4C0326}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "webapplication", "webapplication\webapplication.csproj", "{13D82DC1-617C-4ACF-A483-B47600DE89B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApplication", "WebApplication\WebApplication.csproj", "{13D82DC1-617C-4ACF-A483-B47600DE89B5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "webapplication.tests", "WebApplication.Tests\webapplication.tests.csproj", "{3062CF0E-7C06-4693-827A-3CF0D9B917B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApplication.tests", "WebApplication.Tests\WebApplication.tests.csproj", "{3062CF0E-7C06-4693-827A-3CF0D9B917B5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateSVFPlugin", "AppBundles\CreateSVFPlugin\CreateSVFPlugin.csproj", "{B5611651-E1E1-482F-8C7E-21A11EFCAAC7}"
 EndProject

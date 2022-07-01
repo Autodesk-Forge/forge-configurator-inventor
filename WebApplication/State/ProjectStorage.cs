@@ -20,10 +20,10 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
-using webapplication.Definitions;
-using webapplication.Utilities;
+using WebApplication.Definitions;
+using WebApplication.Utilities;
 
-namespace webapplication.State
+namespace WebApplication.State
 {
     /// <summary>
     /// Logic related to local cache storage for project.

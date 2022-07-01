@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using webapplication.Utilities;
+using WebApplication.Utilities;
 
-namespace webapplication.Services
+namespace WebApplication.Services
 {
     public class MigrationBucketKeyProvider : IBucketKeyProvider
     {

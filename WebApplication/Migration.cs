@@ -19,10 +19,10 @@
 using Autodesk.Forge.Client;
 using Autodesk.Forge.Model;
 using Shared;
-using webapplication.Definitions;
-using webapplication.Services;
-using webapplication.State;
-using webapplication.Utilities;
+using WebApplication.Definitions;
+using WebApplication.Services;
+using WebApplication.State;
+using WebApplication.Utilities;
 using static MigrationApp.MigrationJob;
 
 namespace MigrationApp
