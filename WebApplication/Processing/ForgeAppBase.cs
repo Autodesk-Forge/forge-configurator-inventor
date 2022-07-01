@@ -16,9 +16,6 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Autodesk.Forge.DesignAutomation.Model;
 using WebApplication.Definitions;
 
@@ -86,7 +83,7 @@ namespace WebApplication.Processing
             }
         }
 
-        private AppBundle _appBundle;
+        private AppBundle _appBundle = null!;
 
         public string ActivityId => Id;
         public string ActivityLabel => Label;
@@ -105,7 +102,7 @@ namespace WebApplication.Processing
         /// Initialize app bundle and activity.
         /// </summary>
         /// <param name="packagePathname">Pathname to the package.</param>
-        public async Task InitializeAsync(string packagePathname)
+        public async Task InitializeAsync(string? packagePathname)
         {
             await Publisher.InitializeAsync(packagePathname, this);
         }
@@ -125,7 +122,7 @@ namespace WebApplication.Processing
         /// <param name="args">Work item arguments.</param>
         protected async Task<ProcessingResult> RunAsync(Dictionary<string, IArgument> args)
         {
-            WorkItemStatus status = await Publisher.RunWorkItemAsync(args, this);
+            WorkItemStatus status = await Publisher.RunWorkItemAsync(args!, this);
             return new ProcessingResult(status.Stats)
                     {
                         Success = (status.Status == Status.Success),
@@ -140,7 +137,7 @@ namespace WebApplication.Processing
         {
             var args = ToWorkItemArgs(data);
 
-            return RunAsync(args);
+            return RunAsync(args!);
         }
 
         /// <summary>
@@ -164,10 +161,11 @@ namespace WebApplication.Processing
         /// </summary>
         protected virtual void AddInputArgs(IDictionary<string, IArgument> args, ProcessingArgs data)
         {
-            if (data.IsAssembly)
-                args.Add(InputDocParameterName, new XrefTreeArgument { PathInZip = data.TLA, LocalName = FolderToBeZippedName, Url = data.InputDocUrl });
-            else
-                args.Add(InputDocParameterName, new XrefTreeArgument { Url = data.InputDocUrl, LocalName = IptName });
+            args.Add(InputDocParameterName,
+                data.IsAssembly
+                    ? new XrefTreeArgument
+                        { PathInZip = data.TLA, LocalName = FolderToBeZippedName, Url = data.InputDocUrl }
+                    : new XrefTreeArgument { Url = data.InputDocUrl, LocalName = IptName });
         }
 
         /// <summary>
@@ -184,7 +182,7 @@ namespace WebApplication.Processing
         /// Command line for activity.
         /// </summary>
         public virtual List<string> ActivityCommandLine =>
-            new List<string>
+            new()
             {
                 $"$(engine.path)\\InventorCoreConsole.exe /al \"$(appbundles[{ActivityId}].path)\" /ilod \"$(args[{InputDocParameterName}].path)\""
             };

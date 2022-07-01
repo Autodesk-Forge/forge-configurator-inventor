@@ -9,6 +9,7 @@ phases:
       - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
   build:
     commands:
+      - echo "Buildspec-mig-image initialize"
       - echo Build started on `date`
       - IMAGE_TAG=${CommitId:0:7}
       - wget https://s3.us-west-2.amazonaws.com/amazoncloudwatch-agent-us-west-2/debian/amd64/latest/amazon-cloudwatch-agent.deb

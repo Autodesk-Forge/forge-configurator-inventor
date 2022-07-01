@@ -39,7 +39,7 @@ namespace WebApplication.Middleware
 
         public async Task InvokeAsync(HttpContext context, ProfileProvider profileProvider, ILogger<RouteTokenHandler> logger)
         {
-            string token = context.GetRouteValue("token") as string; // IMPORTANT: parameter name must be in sync with route definition
+            string token = (context.GetRouteValue("token") as string)!; // IMPORTANT: parameter name must be in sync with route definition
             if (!string.IsNullOrEmpty(token))
             {
                 logger.LogInformation("Extracted token from route");

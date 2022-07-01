@@ -50,7 +50,7 @@ namespace WebApplication.Middleware
                 // 3 - Parameters hash (0B81352BCE7C9CEB8C8EAA7297A8AB64274C75A5)
                 // 4 - Subdir for SVF structure (SVF)
                 // 5 - Manifest file for SVF (bubble.json)
-                string[] pieces = httpRequest.Path.Value.Split('/', StringSplitOptions.RemoveEmptyEntries);
+                string[] pieces = httpRequest.Path.Value!.Split('/', StringSplitOptions.RemoveEmptyEntries);
                 if (pieces.Length != 6) break;
 
                 string projectName = pieces[2];

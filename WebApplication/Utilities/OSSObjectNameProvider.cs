@@ -135,7 +135,7 @@ namespace WebApplication.Utilities
         /// <summary>
         /// Join path pieces into OSS name.
         /// </summary>
-        public static string Join(params string[] pieces)
+        public static string Join(params string?[] pieces)
         {
             return string.Join(OssSeparator, pieces);
         }
@@ -154,9 +154,9 @@ namespace WebApplication.Utilities
     /// </summary>
     public class OssNameConverter
     {
-        private readonly string _namePrefix;
+        private readonly string? _namePrefix;
 
-        public OssNameConverter(string namePrefix)
+        public OssNameConverter(string? namePrefix)
         {
             _namePrefix = namePrefix;
         }
@@ -180,7 +180,7 @@ namespace WebApplication.Utilities
     /// </summary>
     public class OSSObjectNameProvider : OssNameConverter
     {
-        public OSSObjectNameProvider(string projectName, string parametersHash) :
+        public OSSObjectNameProvider(string? projectName, string? parametersHash) :
                 base(ONC.Join(ONC.CacheFolder, projectName, parametersHash)) {}
 
         /// <summary>

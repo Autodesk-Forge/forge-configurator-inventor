@@ -47,7 +47,7 @@ namespace WebApplication.Utilities
         /// <summary>
         /// Create ProjectDTOBase based DTO and fill its properties.
         /// </summary>
-        public TProjectDTOBase MakeProjectDTO<TProjectDTOBase>(ProjectStorage projectStorage, string hash) where TProjectDTOBase: ProjectDTOBase, new()
+        public TProjectDTOBase MakeProjectDTO<TProjectDTOBase>(ProjectStorage projectStorage, string? hash) where TProjectDTOBase: ProjectDTOBase, new()
         {
             Project project = projectStorage.Project;
             // TODO: fix workaround for `_linkGenerator` check for null
@@ -77,17 +77,19 @@ namespace WebApplication.Utilities
         /// <summary>
         /// Generate project DTO.
         /// </summary>
-        public ProjectDTO ToDTO(ProjectStorage projectStorage, string hash=null)
+        public ProjectDTO ToDTO(ProjectStorage projectStorage, string? hash=null)
         {
             Project project = projectStorage.Project;
             var localAttributes = project.LocalAttributes;
 
             var dto = MakeProjectDTO<ProjectDTO>(projectStorage, string.IsNullOrEmpty(hash) ? projectStorage.Metadata.Hash : hash);
             dto.Id = project.Name;
-            dto.Label = !Regex.Match(project.Name, @"[\u0030-\u007a]").Success ? "_" + project.Name : project.Name;
+            dto.Label = !Regex.Match(project.Name!, @"[\u0030-\u007a]").Success ? "_" + project.Name : project.Name;
             dto.Image = _localCache.ToDataUrl(localAttributes.Thumbnail);
             dto.IsAssembly = projectStorage.IsAssembly;
+#pragma warning disable CS0612
             dto.HasDrawing = projectStorage.Metadata.HasDrawings;
+#pragma warning restore CS0612
             dto.DrawingsListUrl = _localCache.ToDataUrl(localAttributes.DrawingsList);
 
             // fill array with adoption messages
@@ -98,7 +100,7 @@ namespace WebApplication.Utilities
                 dto.AdoptWarnings = allMessages
                     .Where(m => m.Severity == Severity.Warning)
                     .Select(m => m.Text)
-                    .ToArray();
+                    .ToArray()!;
             }
             else
             {

@@ -36,13 +36,13 @@ namespace WebApplication.Processing
         protected internal override ForgeRegistration Registration { get; } = ForgeRegistration.All;
 
         public override List<string> ActivityCommandLine =>
-            new List<string>
+            new()
             {
                 $"\"$(appbundles[{ActivityId}].path)\\EmptyExePlugin.bundle\\Contents\\EmptyExePlugin.exe\""
             };
 
         public override Dictionary<string, Parameter> GetActivityParams() =>
-            new Dictionary<string, Parameter>
+            new()
             {
                 {
                     "source",
@@ -54,7 +54,7 @@ namespace WebApplication.Processing
                 }
             };
 
-        public Task<ProcessingResult> ProcessAsync(string source, string target)
+        public Task<ProcessingResult> ProcessAsync(string? source, string? target)
         {
             var workItemArgs = new Dictionary<string, IArgument>
             {
@@ -62,7 +62,7 @@ namespace WebApplication.Processing
                 { "target", new XrefTreeArgument { Verb = Verb.Put, Url = target } }
             };
 
-            return RunAsync(workItemArgs);
+            return RunAsync(workItemArgs!);
         }
     }
 }

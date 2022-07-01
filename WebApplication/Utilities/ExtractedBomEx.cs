@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using Shared;
 
 namespace WebApplication.Utilities
@@ -15,20 +13,20 @@ namespace WebApplication.Utilities
         {
             if (! bom.HasColumns()) throw new ApplicationException("Invalid BOM: header is expected.");
 
-            var columnsLength = bom.Columns.Length;
+            var columnsLength = bom.Columns!.Length;
 
             var builder = new StringBuilder(32 * 1024);
-            builder.AppendJoin(",", bom.Columns.Select(column => Encode(column.Label)));
+            builder.AppendJoin(",", bom.Columns.Select(column => Encode(column.Label!)));
             builder.AppendLine();
 
             for (var i = 0; i < bom.Data?.Length; i++)
             {
-                object[] row = bom.Data[i];
+                object[] row = bom.Data![i];
                 if (row.Length != columnsLength)
                     throw new ApplicationException(
                         $"Invalid BOM: row {i} has different number of columns than header.");
 
-                builder.AppendJoin(",", row.Select(value => Encode(value.ToString())));
+                builder.AppendJoin(",", row.Select(value => Encode(value.ToString()!)));
                 builder.AppendLine();
             }
 

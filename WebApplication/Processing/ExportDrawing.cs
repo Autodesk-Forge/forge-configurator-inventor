@@ -33,7 +33,7 @@ namespace WebApplication.Processing
 
         protected internal override ForgeRegistration Registration { get; } = ForgeRegistration.All;
 
-        protected override string OutputUrl(ProcessingArgs projectData) => projectData.DrawingPdfUrl;
+        protected override string OutputUrl(ProcessingArgs projectData) => projectData.DrawingPdfUrl!;
         protected override string OutputName => "Drawing.pdf";
         protected override bool IsOutputZip => false;
         protected override bool IsOutputOptional => true;
@@ -42,7 +42,7 @@ namespace WebApplication.Processing
         /// Command line for activity.
         /// </summary>
         public override List<string> ActivityCommandLine =>
-            new List<string>
+            new()
             {
                 $"$(engine.path)\\InventorCoreConsole.exe /al \"$(appbundles[{ActivityId}].path)\" \"$(args[{InputDocParameterName}].path)\" \"$(args[{DrawingParameter}].value)\""
             };
@@ -65,7 +65,7 @@ namespace WebApplication.Processing
         {
             var workItemArgs = base.ToWorkItemArgs(data);
 
-            DrawingPdfData projectData = data as DrawingPdfData;
+            DrawingPdfData projectData = (data as DrawingPdfData)!;
             workItemArgs.Add(DrawingParameter, new StringArgument { Value = projectData.DrawingToGenerate });
 
             return workItemArgs;

@@ -22,7 +22,7 @@ namespace WebApplication.State
 {
     public class NewProjectModel
     {
-        public string root {get; set;}
-        public IFormFile package { get; set; }
+        public string root {get; set;} = null!;
+        public IFormFile package { get; set; } = null!;
     }
 }

@@ -19,7 +19,7 @@ namespace WebApplication.Services
             _profileProvider = profileProvider;
             _resourceProvider = resourceProvider;
 
-            AnonymousBucketKey = resourceProvider.BucketKey;
+            AnonymousBucketKey = resourceProvider.BucketKey!;
         }
 
         public async Task<string> GetBucketKeyAsync()

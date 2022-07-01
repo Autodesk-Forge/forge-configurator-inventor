@@ -23,13 +23,13 @@ namespace WebApplication.Definitions
 {
     public class ProjectDTO : ProjectDTOBase
     {
-        public string Id { get; set; }
-        public string Label { get; set; }
+        public string? Id { get; set; }
+        public string? Label { get; set; }
 
         /// <summary>
         /// Thumbnail URL.
         /// </summary>
-        public string Image { get; set; }
+        public string? Image { get; set; }
 
         /// <summary>
         /// If project is assembly.
@@ -45,11 +45,11 @@ namespace WebApplication.Definitions
         /// <summary>
         /// URL to DrawingsList JSON.
         /// </summary>
-        public string DrawingsListUrl { get; set; }
+        public string? DrawingsListUrl { get; set; }
 
         /// <summary>
         /// Adoption messages.
         /// </summary>
-        public string[] AdoptWarnings { get; set; }
+        public string[]? AdoptWarnings { get; set; }
     }
 }

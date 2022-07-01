@@ -47,7 +47,7 @@ namespace WebApplication.Services
         /// <returns>project storage</returns>
         public async Task<ProjectDTO> AdoptProjectWithParametersAsync(AdoptProjectWithParametersPayload payload)
         {
-            if (!await DoesProjectAlreadyExistAsync(payload.Name))
+            if (!await DoesProjectAlreadyExistAsync(payload.Name!))
             {
                 var bucket = await _userResolver.GetBucketAsync();
                 var signedUrl = await TransferProjectToOssAsync(bucket, payload);
@@ -86,7 +86,7 @@ namespace WebApplication.Services
             _logger.LogInformation($"Bucket {bucket.BucketKey} created");
 
             var projectUrl = projectConfig.Url;
-            var project = await _userResolver.GetProjectAsync(projectConfig.Name);
+            var project = await _userResolver.GetProjectAsync(projectConfig.Name!);
 
             _logger.LogInformation($"Launching 'TransferData' for {projectUrl}");
 
@@ -105,7 +105,7 @@ namespace WebApplication.Services
         /// <summary>
         /// Get list of project names for a bucket.
         /// </summary>
-        public async Task<ICollection<string>> GetProjectNamesAsync(OssBucket bucket = null)
+        public async Task<ICollection<string>> GetProjectNamesAsync(OssBucket? bucket = null)
         {
             bucket ??= await _userResolver.GetBucketAsync(true);
 
@@ -116,7 +116,7 @@ namespace WebApplication.Services
             return projectNames;
         }
 
-        public async Task DeleteProjects(ICollection<string> projectNameList, OssBucket bucket = null)
+        public async Task DeleteProjects(ICollection<string> projectNameList, OssBucket? bucket = null)
         {
             bucket ??= await _userResolver.GetBucketAsync(true);
 

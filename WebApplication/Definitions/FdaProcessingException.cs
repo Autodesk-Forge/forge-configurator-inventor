@@ -26,9 +26,9 @@ namespace WebApplication.Definitions
     /// </summary>
     public class FdaProcessingException : Exception
     {
-        public string ReportUrl { get; }
+        public string? ReportUrl { get; }
 
-        public FdaProcessingException(string message, string reportUrl) : base(message)
+        public FdaProcessingException(string message, string? reportUrl) : base(message)
         {
             ReportUrl = reportUrl;
         }

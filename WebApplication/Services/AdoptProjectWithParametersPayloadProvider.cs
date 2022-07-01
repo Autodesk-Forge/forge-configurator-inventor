@@ -18,7 +18,7 @@ namespace WebApplication.Services
             _clientFactory = clientFactory;
         }
 
-        public async Task<AdoptProjectWithParametersPayload> GetParametersAsync(string jsonFileUrl)
+        public async Task<AdoptProjectWithParametersPayload> GetParametersAsync(string? jsonFileUrl)
         {
             _logger.LogInformation($"downloading parameters from {jsonFileUrl}");
 
@@ -30,7 +30,7 @@ namespace WebApplication.Services
 
             _logger.LogDebug($"parsing parameters from {jsonAsString}");
 
-            return JsonSerializer.Deserialize<AdoptProjectWithParametersPayload>(jsonAsString);
+            return JsonSerializer.Deserialize<AdoptProjectWithParametersPayload>(jsonAsString)!;
         }
     }
 }

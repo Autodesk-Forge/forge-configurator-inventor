@@ -27,6 +27,6 @@ namespace WebApplication.Definitions
         /// Parameters.
         /// </summary>
         [JsonPropertyName("parameters")]
-        public InventorParameters Parameters { get; set; }
+        public InventorParameters? Parameters { get; set; }
     }
 }

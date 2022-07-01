@@ -36,11 +36,11 @@ namespace WebApplication.Tests
             var stats = MakeStat(downloadOffset: 15, instructionStartedOffset: 20, instructionEndedOffset: 40, uploadOffset: 50, finishedOffset: 52);
 
             var calculated = FdaStatsDTO.All(new List<Statistics>(new []{ stats }));
-            Assert.Equal(15, calculated.Queueing.Value, 1);
-            Assert.Equal(5, calculated.Download.Value, 1);
-            Assert.Equal(20, calculated.Processing.Value, 1);
-            Assert.Equal(10, calculated.Upload.Value, 1);
-            Assert.Equal(52, calculated.Total.Value, 1);
+            Assert.Equal(15, calculated!.Queueing.Value, 1);
+            Assert.Equal(5, calculated!.Download.Value, 1);
+            Assert.Equal(20, calculated!.Processing.Value, 1);
+            Assert.Equal(10, calculated!.Upload.Value, 1);
+            Assert.Equal(52, calculated!.Total.Value, 1);
 
             // validate credits
             const double paidTimeSec = 35.0; // download + processing + upload

@@ -57,7 +57,7 @@ namespace WebApplication.Tests
         {
             HttpResponseMessage response = await httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
             string path = Path.Combine(testFileDirectory.FullName, name);
-            using (var fs = new FileStream(path, FileMode.CreateNew))
+            await using (var fs = new FileStream(path, FileMode.CreateNew))
             {
                 await response.Content.CopyToAsync(fs);
             }

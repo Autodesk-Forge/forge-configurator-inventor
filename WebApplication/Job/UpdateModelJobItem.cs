@@ -36,16 +36,18 @@ namespace WebApplication.Job
 
         public override async Task ProcessJobAsync(IResultSender resultSender)
         {
-            using var scope = Logger.BeginScope("Update Model ({Id})");
+            using var scope = Logger.BeginScope($"Update Model ({Id})");
 
             Logger.LogInformation($"ProcessJob (Update) {Id} for project {ProjectId} started.");
 
-            (ProjectStateDTO state, FdaStatsDTO stats, string reportUrl) = await ProjectWork.DoSmartUpdateAsync(Parameters, ProjectId);
+            (ProjectStateDTO dto, FdaStatsDTO stats, string? reportUrl) p;
+            p = await ProjectWork!.DoSmartUpdateAsync(Parameters, ProjectId);
+            (ProjectStateDTO state, FdaStatsDTO stats, string? reportUrl) = p;
 
             Logger.LogInformation($"ProcessJob (Update) {Id} for project {ProjectId} completed.");
 
             // send that we are done to client
-            await resultSender.SendSuccessAsync(state, stats, reportUrl);
+            await resultSender.SendSuccessAsync(state, stats, reportUrl!);
         }
     }
 }

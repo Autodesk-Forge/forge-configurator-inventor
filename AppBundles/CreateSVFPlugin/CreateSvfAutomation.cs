@@ -63,7 +63,7 @@ namespace CreateSVFPlugin
                         .Cast<ApplicationAddIn>()
                         .FirstOrDefault(item => item.ClassIdString == "{C200B99B-B7DD-4114-A5E9-6557AB5ED8EC}");
                         
-                    var oAddin = (TranslatorAddIn)svfAddin;
+                    var oAddin = svfAddin as TranslatorAddIn;
 
                     if (oAddin != null)
                     {

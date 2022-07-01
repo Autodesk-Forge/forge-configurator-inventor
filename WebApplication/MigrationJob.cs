@@ -38,10 +38,10 @@ namespace MigrationApp
 
       public enum JobType {CopyAndAdopt, RemoveNew, GenerateConfiguration };
       private JobType jobType;
-      private OssBucket bucket;
-      private ProjectInfo projectInfo;
-      private string projectUrl;
-      private InventorParameters parameters;
+      private OssBucket? bucket;
+      private ProjectInfo? projectInfo;
+      private string? projectUrl;
+      private InventorParameters? parameters;
       public MigrationJob(MigrationBucketKeyProvider bucketProvider, UserResolver userResolver, ProjectWork projectWork, ILogger<MigrationJob> logger, ProjectService projectService)
       {
          _bucketProvider = bucketProvider;
@@ -50,7 +50,7 @@ namespace MigrationApp
          _logger = logger;
          _projectService = projectService;
       }
-      public void SetJob(JobType jobTypeParam, OssBucket bucketParam, ProjectInfo projectInfoParam, string projectUrlParam, InventorParameters parametersParam = null)
+      public void SetJob(JobType jobTypeParam, OssBucket bucketParam, ProjectInfo projectInfoParam, string projectUrlParam, InventorParameters? parametersParam = null)
       {
          jobType = jobTypeParam;
          bucket = bucketParam;
@@ -61,21 +61,21 @@ namespace MigrationApp
 
       private async Task GenerateConfiguration(string logId)
       {
-         _bucketProvider.SetBucketKeyFromOld(bucket.BucketKey);
-         _logger.LogInformation($"{logId}: Generating config for project {projectInfo.Name} in bucket {bucket.BucketKey}");
+         _bucketProvider.SetBucketKeyFromOld(bucket?.BucketKey);
+         _logger.LogInformation($"{logId}: Generating config for project {projectInfo?.Name} in bucket {bucket?.BucketKey}");
 
          OssBucket bucketNew = await _userResolver.GetBucketAsync();
-         var storage = await _userResolver.GetProjectStorageAsync(projectInfo.Name);
+         var storage = await _userResolver.GetProjectStorageAsync(projectInfo?.Name);
          await storage.EnsureAttributesAsync(bucketNew);
 
          try
          {
-            await _projectWork.DoSmartUpdateAsync(parameters, projectInfo.Name);
-            _logger.LogInformation($"{logId}: Configuration {parameters} for project {projectInfo.Name} was generated.");
+            await _projectWork.DoSmartUpdateAsync(parameters!, projectInfo?.Name!);
+            _logger.LogInformation($"{logId}: Configuration {parameters} for project {projectInfo?.Name} was generated.");
          }
          catch(Exception e)
          {
-            _logger.LogError(e, $"{logId}: Configuration {parameters} for project {projectInfo.Name} was NOT generated.");
+            _logger.LogError(e, $"{logId}: Configuration {parameters} for project {projectInfo?.Name} was NOT generated.");
          }
 
          return;
@@ -83,15 +83,15 @@ namespace MigrationApp
 
       private async Task RemoveNew(string logId)
       {
-         _logger.LogInformation($"{logId}: Deleting project {projectInfo.Name} from bucket {bucket.BucketKey}");
-         List<string> projectList = new List<string>() {projectInfo.Name};
-         await _projectService.DeleteProjects(projectList, bucket);
+         _logger.LogInformation($"{logId}: Deleting project {projectInfo?.Name} from bucket {bucket?.BucketKey}");
+         List<string> projectList = new List<string> { projectInfo!.Name! };
+         await _projectService.DeleteProjects(projectNameList: projectList!, bucket);
       }
 
       private async Task CopyAndAdopt(string logId)
       {
-         _bucketProvider.SetBucketKeyFromOld(bucket.BucketKey);
-         _logger.LogInformation($"{logId}: Processing new project {projectInfo.Name} in bucket {bucket.BucketKey}");
+         _bucketProvider.SetBucketKeyFromOld(bucket!.BucketKey);
+         _logger.LogInformation($"{logId}: Processing new project {projectInfo?.Name} in bucket {bucket.BucketKey}");
          OssBucket bucketNew = await _userResolver.GetBucketAsync(true);
 
          string signedUrlOld = await bucket.CreateSignedUrlAsync(projectUrl, ObjectAccess.Read);
@@ -103,18 +103,18 @@ namespace MigrationApp
          }
          catch(Exception e)
          {
-            _logger.LogError(e, $"{logId}: Project {projectInfo.Name} cannot be copied.");
+            _logger.LogError(e, $"{logId}: Project {projectInfo!.Name} cannot be copied.");
             return;
          }
 
          try
          {
-            await _projectWork.AdoptAsync(projectInfo, signedUrlNew);
-            _logger.LogInformation($"{logId}: Project {projectInfo.Name} was adopted");
+            await _projectWork.AdoptAsync(projectInfo!, signedUrlNew);
+            _logger.LogInformation($"{logId}: Project {projectInfo!.Name} was adopted");
          }
          catch(Exception e)
          {
-            _logger.LogError(e, $"{logId}: Project {projectInfo.Name} was not adopted");
+            _logger.LogError(e, $"{logId}: Project {projectInfo!.Name} was not adopted");
          }
       }
 

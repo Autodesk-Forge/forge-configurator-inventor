@@ -128,8 +128,8 @@ namespace DataCheckerPlugin
             public DefaultDocComparer(string defaultDoc) { _defaultDoc = defaultDoc; }
             public int Compare(string x, string y)
             {
-                var filenameX = Path.GetFileNameWithoutExtension(x).ToLower();
-                var filenameY = Path.GetFileNameWithoutExtension(y).ToLower();
+                var filenameX = Path.GetFileNameWithoutExtension(x)?.ToLower();
+                var filenameY = Path.GetFileNameWithoutExtension(y)?.ToLower();
 
                 if (filenameX.Equals(filenameY))
                     return 0;
@@ -173,7 +173,7 @@ namespace DataCheckerPlugin
                            !lowName.Contains(oldVersionMask);
                 })
                 .Select(path => path.Substring(index))
-                .OrderBy(path => Path.GetFileName(path), new DefaultDocComparer(fileName))
+                .OrderBy(Path.GetFileName, new DefaultDocComparer(fileName))
                 .ToArray();
 
             // drawings is also valid when no drawings exists, so test drawings?.Length

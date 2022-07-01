@@ -19,7 +19,7 @@ namespace WebApplication.Tests
         private readonly Dictionary<string, IArgument> _workItemArgs;
         private readonly Mock<IForgeAppBase> _configMock;
 
-        private readonly Mock<IResourceProvider> _resourceProviderMock = new Mock<IResourceProvider>();
+        private readonly Mock<IResourceProvider> _resourceProviderMock = new();
 
         public PublisherTest()
         {

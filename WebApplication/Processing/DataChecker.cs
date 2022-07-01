@@ -34,7 +34,7 @@ namespace WebApplication.Processing
         public override string Description => "Data checker during adoption";
 
         // first output argument: JSON with list of drawings in the project
-        protected override string OutputUrl(ProcessingArgs projectData) => projectData.DrawingsListUrl;
+        protected override string OutputUrl(ProcessingArgs projectData) => projectData.DrawingsListUrl!;
         protected override string OutputName => "drawings-list.json";
         protected override bool IsOutputZip => false;
 
@@ -64,7 +64,7 @@ namespace WebApplication.Processing
         }
 
         public override List<string> ActivityCommandLine =>
-            new List<string>
+            new()
             {
                 $"$(engine.path)\\InventorCoreConsole.exe /al \"$(appbundles[{ActivityId}].path)\" /i \"$(args[{InputDocParameterName}].path)\""
             };

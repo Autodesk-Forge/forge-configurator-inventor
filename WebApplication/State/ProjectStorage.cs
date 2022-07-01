@@ -115,7 +115,7 @@ namespace WebApplication.State
         /// <param name="ossBucket">OSS bucket.</param>
         /// <param name="hash">Parameters hash.</param>
         /// <param name="ensureDir">Create local dir if necessary.</param>
-        public async Task EnsureViewablesAsync(OssBucket ossBucket, string hash, bool ensureDir = true)
+        public async Task EnsureViewablesAsync(OssBucket ossBucket, string? hash, bool ensureDir = true)
         {
             var localNames = GetLocalNames(hash);
 
@@ -137,7 +137,7 @@ namespace WebApplication.State
             ZipFile.ExtractToDirectory(tempFile.Name, localNames.SvfDir, overwriteFiles: true); // TODO: non-default encoding is not supported
         }
 
-        public async Task EnsureSvfAsync(OssBucket ossBucket, string hash)
+        public async Task EnsureSvfAsync(OssBucket ossBucket, string? hash)
         {
             var localNames = GetLocalNames(hash);
             var ossNames = GetOssNames(hash);
@@ -153,13 +153,13 @@ namespace WebApplication.State
         /// OSS names for "hashed" files.
         /// Uses default parameters hash if <paramref name="hash"/> is not provided.
         /// </summary>
-        public OSSObjectNameProvider GetOssNames(string hash = null) => Project.OssNameProvider(hash ?? Metadata.Hash);
+        public OSSObjectNameProvider GetOssNames(string? hash = null) => Project.OssNameProvider(hash ?? Metadata.Hash);
 
         /// <summary>
         /// Local names for "hashed" files.
         /// Uses default parameters hash if <paramref name="hash"/> is not provided.
         /// </summary>
-        public LocalNameProvider GetLocalNames(string hash = null) => Project.LocalNameProvider(hash ?? Metadata.Hash);
+        public LocalNameProvider GetLocalNames(string? hash = null) => Project.LocalNameProvider(hash ?? Metadata.Hash);
 
         /// <summary>
         /// Delete local cache for the project.

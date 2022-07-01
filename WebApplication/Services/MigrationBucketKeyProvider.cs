@@ -8,8 +8,10 @@ namespace WebApplication.Services
     {
         private readonly BucketPrefixProvider _bucketPrefixProvider;
         private readonly IResourceProvider _resourceProvider;
-        private string BucketKey = "";
-        public string AnonymousBucketKey {get;}
+        private string BucketKey = String.Empty;
+#pragma warning disable CS8766
+        public string? AnonymousBucketKey {get;}
+#pragma warning restore CS8766
 
         public MigrationBucketKeyProvider(BucketPrefixProvider bucketPrefixProvider, IResourceProvider resourceProvider)
         {
@@ -18,23 +20,25 @@ namespace WebApplication.Services
             AnonymousBucketKey = resourceProvider.BucketKey;
         }
 
-        public Task<string> GetBucketKeyAsync()
+#pragma warning disable CS8613
+        public Task<string?> GetBucketKeyAsync()
+#pragma warning restore CS8613
         {
-            return Task.FromResult(BucketKey);
+            return Task.FromResult(BucketKey)!;
         }
-        public string SetBucketKeyFromOld(string bucketKeyOld)
+        public string? SetBucketKeyFromOld(string? bucketKeyOld)
         {
-            BucketKey = GetBucketKeyFromOld(bucketKeyOld);
+            BucketKey = GetBucketKeyFromOld(bucketKeyOld)!;
 
             return BucketKey;
         }
 
-        public string GetBucketKeyFromOld(string bucketKeyOld)
+        public string? GetBucketKeyFromOld(string? bucketKeyOld)
         {
-            string bucketKeyNew;
-            string [] splittedBucketKeyOld = bucketKeyOld.Split('-');
+            string? bucketKeyNew;
+            string[]? splittedBucketKeyOld = bucketKeyOld?.Split('-');
 
-            if (splittedBucketKeyOld[0] == ResourceProvider.projectsTag)
+            if (splittedBucketKeyOld?[0] == ResourceProvider.projectsTag)
             {
                 // anonymous bucket key
                 bucketKeyNew = AnonymousBucketKey;
@@ -42,8 +46,8 @@ namespace WebApplication.Services
             else
             {
                 // logged user bucket key
-                string userId = splittedBucketKeyOld[2];
-                string userHash = splittedBucketKeyOld[3];
+                string? userId = splittedBucketKeyOld?[2];
+                string? userHash = splittedBucketKeyOld?[3];
                 bucketKeyNew = _resourceProvider.LoggedUserBucketKey(userId, userHash);
             }
 
