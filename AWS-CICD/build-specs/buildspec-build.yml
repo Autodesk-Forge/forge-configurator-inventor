@@ -36,7 +36,7 @@ phases:
       - echo "**** running the UI tests ****"
       - cd ClientApp
       - mkdir output
-      - npx codeceptjs run $env:UITestParams
+      - # npx codeceptjs run $env:UITestParams
   post_build:
     commands:
       - cd $slnDir
