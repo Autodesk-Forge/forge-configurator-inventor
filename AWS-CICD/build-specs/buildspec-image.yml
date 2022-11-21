@@ -28,4 +28,5 @@ artifacts:
   files:
     - Dockerrun.aws.json
     - .ebextensions/**/*
+    - .platform/**/*
   base-directory: AWS-CICD
