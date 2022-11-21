@@ -47,6 +47,7 @@ artifacts:
   files:
     - 'app/**/*'
     - 'AWS-CICD/.ebextensions/**/*'
+    - 'AWS-CICD/.platform/**/*'
     - 'AWS-CICD/amazon-cloudwatch-agent.json'
     - 'AWS-CICD/commands.sh'
     - 'AWS-CICD/Dockerfile.image'
