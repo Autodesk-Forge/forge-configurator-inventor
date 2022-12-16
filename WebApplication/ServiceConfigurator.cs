@@ -65,8 +65,8 @@ namespace WebApplication
 
             services.Configure<FormOptions>(x =>
             {
-                x.ValueLengthLimit = 500 * 1024 * 1024;
-                x.MultipartBodyLengthLimit = 500 * 1024 * 1024; // default was 134217728, 500000000 is enough due to FDA quotas (500 MB uncompressed size)
+                x.ValueLengthLimit = 1000 * 1024 * 1024;
+                x.MultipartBodyLengthLimit = 1000 * 1024 * 1024; // default was 134217728, 1000000000 is enough due to FDA quotas (1000 MB uncompressed size)
             });
 
             // NOTE: eventually we might want to use `AddForgeService()`, but right now it might break existing stuff
