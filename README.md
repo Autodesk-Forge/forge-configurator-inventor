@@ -1,5 +1,5 @@
 <h1>DEPRECATED</h1>
-This repository has been depricated and all its content was moved to the new one located here https://github.com/autodesk-platform-services/aps-configurator-inventor
+This repository has been deprecated and all its content was moved to the new one located here https://github.com/autodesk-platform-services/aps-configurator-inventor
 
 # Forge Configurator Inventor
 Demo application showcasing Configuration with Design Automation for Inventor
